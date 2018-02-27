@@ -1,0 +1,53 @@
+// Top-level build file where you can add configuration options common to all sub-projects/modules.
+
+buildscript {
+    ext.kotlin_version = '1.2.21'
+    ext.compatlib_version = '26.1.0'
+
+    repositories {
+        google()
+        jcenter()
+    }
+    dependencies {
+        classpath 'com.android.tools.build:gradle:3.0.1'
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+    }
+}
+
+allprojects {
+    repositories {
+        google()
+        jcenter()
+        maven {
+            url "https://oss.sonatype.org/service/local/repositories/dehalfbit-1017/content"
+        }
+    }
+}
+
+task clean(type: Delete) {
+    delete rootProject.buildDir
+}
+
+ext {
+    appJavaVersion = JavaVersion.VERSION_1_8
+    toolsJavaVersion = JavaVersion.VERSION_1_8
+}
+
+ext.deps = [:]
+
+// android
+ext.deps.appcompat = "com.android.support:appcompat-v7:$compatlib_version"
+ext.deps.design = "com.android.support:design:$compatlib_version"
+ext.deps.constraintLayout = 'com.android.support.constraint:constraint-layout:1.0.2'
+
+// open source
+ext.deps.javapoet = 'com.squareup:javapoet:1.7.0'
+ext.deps.jsr305 = 'com.google.code.findbugs:jsr305:3.0.2'
+ext.deps.kotlinjdk8 = "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
+ext.deps.kotlinjdk7 = "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+
+// testing
+ext.deps.junit = 'junit:junit:4.12'
+ext.deps.mockito = 'org.mockito:mockito-core:2.11.0'
+ext.deps.truth = 'com.google.truth:truth:0.37'
+ext.deps.compileTesting = 'com.google.testing.compile:compile-testing:0.15'

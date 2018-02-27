@@ -1,0 +1,42 @@
+apply plugin: 'java-library'
+apply plugin: 'kotlin'
+
+sourceCompatibility = toolsJavaVersion
+targetCompatibility = toolsJavaVersion
+
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+compileKotlin {
+    kotlinOptions {
+        jvmTarget = toolsJavaVersion
+    }
+}
+
+compileTestKotlin {
+    kotlinOptions {
+        jvmTarget = toolsJavaVersion
+    }
+}
+
+dependencies {
+    implementation project(':magnet')
+    implementation deps.kotlinjdk8
+    implementation deps.javapoet
+
+    testImplementation deps.compileTesting
+    testImplementation deps.jsr305
+    testImplementation files(org.gradle.internal.jvm.Jvm.current().getToolsJar()) // for ./gradlew test
+}
+
+apply from: rootProject.file('build-maven-push.gradle')

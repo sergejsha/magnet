@@ -1,0 +1,14 @@
+apply plugin: 'java-library'
+
+sourceCompatibility = appJavaVersion
+targetCompatibility = appJavaVersion
+
+dependencies {
+
+    testImplementation deps.junit
+    testImplementation deps.mockito
+    testImplementation deps.truth
+
+}
+
+apply from: rootProject.file('build-maven-push.gradle')
