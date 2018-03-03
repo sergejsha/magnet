@@ -74,8 +74,9 @@ public interface DependencyScope {
      * @param type       type of dependency to be registered.
      * @param dependency dependency to be registered.
      * @param <T>        type of dependency to be registered.
+     * @return this dependency scope for building chained calls.
      */
-    <T> void register(Class<T> type, T dependency);
+    <T> DependencyScope register(Class<T> type, T dependency);
 
     /**
      * Used to create a dependency sub-scope using this scope as the parent.

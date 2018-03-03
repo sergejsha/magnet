@@ -56,7 +56,7 @@ final class MagnetDependencyScope implements DependencyScope {
     }
 
     @Override
-    public <T> void register(Class<T> type, T dependency) {
+    public <T> DependencyScope register(Class<T> type, T dependency) {
         Object existing = dependencies.put(type, dependency);
         if (existing != null) {
             throw new IllegalStateException(
@@ -64,6 +64,7 @@ final class MagnetDependencyScope implements DependencyScope {
                                     " Existing dependency %s, new dependency %s",
                             type, existing, dependency));
         }
+        return this;
     }
 
     @Override
