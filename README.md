@@ -49,7 +49,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 ```
 
-[1]: docs/images/how-diagram.png
-[2]: docs/images/why-diagram.png
+[1]: docs/images/why-diagram.png
+[2]: docs/images/how-diagram.png
 [3]: https://en.wikipedia.org/wiki/Dependency_inversion_principle
 [4]: https://en.wikipedia.org/wiki/SOLID_(object-oriented_design)
