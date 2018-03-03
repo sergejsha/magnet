@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/beworker/magnet.svg?branch=master)](https://travis-ci.org/beworker/magnet)
+
 # Magnet
 Dependency inversion library for Android.
 
