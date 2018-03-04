@@ -26,6 +26,7 @@ import com.squareup.javapoet.TypeSpec
 import magnet.internal.Factory
 import javax.lang.model.element.Modifier
 import javax.lang.model.element.TypeElement
+import javax.lang.model.type.TypeKind
 import javax.lang.model.util.ElementFilter
 
 class FactoryGenerator {
@@ -111,8 +112,16 @@ class FactoryGenerator {
             val paramName = if (isDependencyScopeParam) "dependencyScope" else it.simpleName.toString()
 
             if (!isDependencyScopeParam) {
-                val paramClassName = ClassName.get(it.asType())
+                val type = it.asType()
+                if (type.kind == TypeKind.TYPEVAR) {
+                    env.reportError(implTypeElement,
+                            "Constructor parameter '$paramName' is specified using a generic type which" +
+                                    " is an invalid parameter type. Use a class or an interface type instead." +
+                                    " 'DependencyScope' is a valid parameter type too.")
+                    throw BreakGenerationException()
+                }
 
+                val paramClassName = ClassName.get(type)
                 val nullableAnnotation = it.annotationMirrors.find {
                     it.toString().endsWith(".Nullable")
                 }

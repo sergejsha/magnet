@@ -81,6 +81,21 @@ class MagnetProcessorTest {
     }
 
     @Test
+    fun generateFactory_FailsOnGenericTypeInConstructorParameter() {
+
+        val compilation = Compiler.javac()
+                .withProcessors(MagnetProcessor())
+                .compile(
+                        withResource("HomePageWithGenericParam.java"),
+                        withResource("Page.java")
+                )
+
+        assertThat(compilation).failed()
+        assertThat(compilation).hadErrorContaining(
+                "is specified using a generic type")
+    }
+
+    @Test
     fun generateFactoryIndex_Target() {
 
         val compilation = Compiler.javac()
