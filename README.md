@@ -32,17 +32,17 @@ Sample application located in this repo implements exactly the logic described a
 # Gradle build
 
 Kotlin:
-```groovy
+```gradle
 dependencies {
-    implementation "de.halfbit:magnet:0.0.1"
+    api "de.halfbit:magnet:0.0.1"
     kapt "de.halfbit:magnet-processor:0.0.1"
 }
 ```
 
 Java:
-```groovy
+```gradle
 dependencies {
-    implementation 'de.halfbit:magnet:0.0.1'
+    api 'de.halfbit:magnet:0.0.1'
     annotationProcessor 'de.halfbit:magnet-processor:0.0.1'
 }
 ```

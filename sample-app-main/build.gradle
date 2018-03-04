@@ -27,10 +27,8 @@ android {
 }
 
 dependencies {
-    implementation "de.halfbit:magnet:0.0.1"
-    kapt "de.halfbit:magnet-processor:0.0.1"
-    //implementation project(':magnet')
-    //kapt project(':magnet-processor')
+    api project(':magnet')
+    kapt project(':magnet-processor')
 
     implementation deps.design
     implementation deps.appcompat
