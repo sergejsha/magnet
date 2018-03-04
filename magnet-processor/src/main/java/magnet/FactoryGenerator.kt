@@ -107,20 +107,19 @@ class FactoryGenerator {
         val methodParamsBuilder = StringBuilder()
 
         parameters.forEach {
+            val type = it.asType()
+            if (type.kind == TypeKind.TYPEVAR) {
+                env.reportError(implTypeElement,
+                        "Constructor parameter '${it.simpleName}' is specified using a generic type which" +
+                                " is an invalid parameter type. Use a class or an interface type instead." +
+                                " 'DependencyScope' is a valid parameter type too.")
+                throw BreakGenerationException()
+            }
 
-            val isDependencyScopeParam = it.asType().toString() == DependencyScope::class.java.name
+            val isDependencyScopeParam = type.toString() == DependencyScope::class.java.name
             val paramName = if (isDependencyScopeParam) "dependencyScope" else it.simpleName.toString()
 
             if (!isDependencyScopeParam) {
-                val type = it.asType()
-                if (type.kind == TypeKind.TYPEVAR) {
-                    env.reportError(implTypeElement,
-                            "Constructor parameter '$paramName' is specified using a generic type which" +
-                                    " is an invalid parameter type. Use a class or an interface type instead." +
-                                    " 'DependencyScope' is a valid parameter type too.")
-                    throw BreakGenerationException()
-                }
-
                 val paramClassName = ClassName.get(type)
                 val nullableAnnotation = it.annotationMirrors.find {
                     it.toString().endsWith(".Nullable")
@@ -137,6 +136,7 @@ class FactoryGenerator {
 
             methodParamsBuilder.append(paramName).append(", ")
         }
+
         if (methodParamsBuilder.isNotEmpty()) {
             methodParamsBuilder.setLength(methodParamsBuilder.length - 2)
         }
