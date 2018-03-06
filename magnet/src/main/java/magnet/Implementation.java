@@ -16,7 +16,10 @@
 
 package magnet;
 
+import static java.lang.annotation.RetentionPolicy.SOURCE;
+
 import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
 /**
@@ -24,6 +27,7 @@ import java.lang.annotation.Target;
  * for those classes and allow to query those implementations using
  * {@link ImplementationManager}.
  */
+@Retention(SOURCE)
 @Target({ ElementType.TYPE })
 public @interface Implementation {
 
