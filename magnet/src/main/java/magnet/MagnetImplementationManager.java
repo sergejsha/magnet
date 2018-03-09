@@ -115,7 +115,7 @@ final class MagnetImplementationManager implements ImplementationManager {
     }
 
     private <T> List<T> createFromRange(Range range, DependencyScope dependencyScope) {
-        List<T> impls = new ArrayList<T>();
+        List<T> impls = new ArrayList<>();
         for (int i = range.getFrom(), to = range.getFrom() + range.getCount(); i < to; i++) {
             //noinspection unchecked
             impls.add((T) factories[i].create(dependencyScope));

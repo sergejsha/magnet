@@ -52,5 +52,5 @@ public @interface Implementation {
      * @see ImplementationManager#getSingle(Class, String, DependencyScope)
      * @see ImplementationManager#requireSingle(Class, String, DependencyScope)
      */
-    String forTarget() default "";
+    String forTarget() default ImplementationManager.DEFAULT_TARGET;
 }
