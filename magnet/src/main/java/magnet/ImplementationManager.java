@@ -40,10 +40,10 @@ import java.util.List;
 public interface ImplementationManager {
 
     /**
-     * Searches system for all registered {@link Implementation}'s of given type
+     * Searches for all registered {@link Implementation}'s of given type
      * and creates instances of those.
      *
-     * @param forType         type of implementations to searche for. This is the
+     * @param forType         type of implementations to search for. This is the
      *                        same type used in {@link Implementation#forType()}.
      * @param dependencyScope instance of dependency scope used by Magnet to inject
      *                        dependencies into implementations, when they are
@@ -51,10 +51,10 @@ public interface ImplementationManager {
      * @param <T>             type of implementations to search for.
      * @return list of instantiated implementations or an empty list.
      */
-    <T> List<T> get(Class<T> forType, DependencyScope dependencyScope);
+    <T> List<T> getMany(Class<T> forType, DependencyScope dependencyScope);
 
     /**
-     * Searches system for all registered {@link Implementation}'s of given type
+     * Searches for all registered {@link Implementation}'s of given type
      * plus target and creates instances of those.
      *
      * @param forType         type of implementations to search for. This is the same
@@ -67,6 +67,74 @@ public interface ImplementationManager {
      * @param <T>             type of implementations to search for.
      * @return list of instantiated implementations or an empty list.
      */
-    <T> List<T> get(Class<T> forType, String forTarget, DependencyScope dependencyScope);
+    <T> List<T> getMany(Class<T> forType, String forTarget, DependencyScope dependencyScope);
+
+    /**
+     * Searches for zero or one registered {@link Implementation} of given type
+     * and creates an instance if exactly one was found. This method throws
+     * exception if more than one implementation was found.
+     *
+     * @param forType         type of implementations to search for. This is the
+     *                        same type used in {@link Implementation#forType()}.
+     * @param dependencyScope instance of dependency scope used by Magnet to inject
+     *                        dependencies into implementations, when they are
+     *                        instantiated.
+     * @param <T>             type of implementations to search for.
+     * @return instance of the implementation found or {@code null}.
+     * @throws IllegalStateException if more than one implementation was found.
+     */
+    <T> T getSingle(Class<T> forType, DependencyScope dependencyScope);
+
+    /**
+     * Searches for zero or one registered {@link Implementation} of given type
+     * and creates an instance if exactly one was found. This method throws
+     * exception if more than one implementation was found.
+     *
+     * @param forType         type of implementations to search for. This is the
+     *                        same type used in {@link Implementation#forType()}.
+     * @param forTarget       target of implementations to search for. This is the same
+     *                        target as the one used in {@link Implementation#forTarget()}.
+     * @param dependencyScope instance of dependency scope used by Magnet to inject
+     *                        dependencies into implementations, when they are
+     *                        instantiated.
+     * @param <T>             type of implementations to search for.
+     * @return instance of the implementation found or {@code null}.
+     * @throws IllegalStateException if more than one implementation was found.
+     */
+    <T> T getSingle(Class<T> forType, String forTarget, DependencyScope dependencyScope);
+
+    /**
+     * Searches for exactly one registered {@link Implementation} of given type
+     * and creates the instance of it. This method throws exception if more
+     * than one or none implementation was found.
+     *
+     * @param forType         type of the implementation to search for. This is the
+     *                        same type used in {@link Implementation#forType()}.
+     * @param dependencyScope instance of dependency scope used by Magnet to inject
+     *                        dependencies into implementations, when they are
+     *                        instantiated.
+     * @param <T>             type of implementations to search for.
+     * @return instance of the implementation found.
+     * @throws IllegalStateException if none or more than one implementation was found.
+     */
+    <T> T requireSingle(Class<T> forType, DependencyScope dependencyScope);
+
+    /**
+     * Searches for exactly one registered {@link Implementation} of given type
+     * and creates the instance of it. This method throws exception if more
+     * than one or none implementation was found.
+     *
+     * @param forType         type of the implementation to search for. This is the
+     *                        same type used in {@link Implementation#forType()}.
+     * @param forTarget       target of the implementation to search for. This is the same
+     *                        target as the one used in {@link Implementation#forTarget()}.
+     * @param dependencyScope instance of dependency scope used by Magnet to inject
+     *                        dependencies into implementations, when they are
+     *                        instantiated.
+     * @param <T>             type of implementations to search for.
+     * @return instance of the implementation found.
+     * @throws IllegalStateException if none or more than one implementation was found.
+     */
+    <T> T requireSingle(Class<T> forType, String forTarget, DependencyScope dependencyScope);
 
 }

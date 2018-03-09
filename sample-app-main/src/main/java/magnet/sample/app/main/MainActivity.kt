@@ -43,10 +43,10 @@ class MainActivity : AppCompatActivity() {
         activityScope.register(Resources::class.java, resources)
 
         // query registered pages
-        val pages = App.implManager.get(
+        val pages = App.implManager.getMany(
                 // they are implementations of type Page.class
                 Page::class.java,
-                // each page receives own dependency scope that it cannot override values in activity scope
+                // each page receives its own dependency scope that it cannot override values in activity scope
                 activityScope.subscope()
         )
 

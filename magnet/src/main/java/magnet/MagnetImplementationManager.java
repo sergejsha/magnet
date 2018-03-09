@@ -55,12 +55,12 @@ final class MagnetImplementationManager implements ImplementationManager {
     }
 
     @Override
-    public <T> List<T> get(Class<T> forType, DependencyScope dependencyScope) {
-        return get(forType, DEFAULT_TARGET, dependencyScope);
+    public <T> List<T> getMany(Class<T> forType, DependencyScope dependencyScope) {
+        return getMany(forType, DEFAULT_TARGET, dependencyScope);
     }
 
     @Override
-    public <T> List<T> get(Class<T> forType, String forTarget, DependencyScope dependencyScope) {
+    public <T> List<T> getMany(Class<T> forType, String forTarget, DependencyScope dependencyScope) {
         Object indexed = index.get(forType);
 
         if (indexed instanceof Range) {
@@ -82,6 +82,38 @@ final class MagnetImplementationManager implements ImplementationManager {
         }
 
         return Collections.emptyList();
+    }
+
+    @Override
+    public <T> T getSingle(Class<T> forType, DependencyScope dependencyScope) {
+        return getSingle(forType, DEFAULT_TARGET, dependencyScope);
+    }
+
+    @Override
+    public <T> T getSingle(Class<T> forType, String forTarget, DependencyScope dependencyScope) {
+        List<T> instances = getMany(forType, forTarget, dependencyScope);
+        if (instances.size() > 1) {
+            throw new IllegalStateException(
+                    String.format("Expect zero or one instance forType: %s, forTarget: %s, but found %s: %s",
+                            forType, forTarget, instances.size(), instances));
+        }
+        return instances.size() == 0 ? null : instances.get(0);
+    }
+
+    @Override
+    public <T> T requireSingle(Class<T> forType, DependencyScope dependencyScope) {
+        return requireSingle(forType, DEFAULT_TARGET, dependencyScope);
+    }
+
+    @Override
+    public <T> T requireSingle(Class<T> forType, String forTarget, DependencyScope dependencyScope) {
+        List<T> instances = getMany(forType, forTarget, dependencyScope);
+        if (instances.size() != 1) {
+            throw new IllegalStateException(
+                    String.format("Expect exactly one instance forType: %s, forTarget: %s, but found: %s: %s",
+                            forType, forTarget, instances.size(), instances));
+        }
+        return instances.get(0);
     }
 
     private <T> List<T> createFromRange(Range range, DependencyScope dependencyScope) {

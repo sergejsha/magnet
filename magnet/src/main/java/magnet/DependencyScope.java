@@ -39,8 +39,8 @@ package magnet;
  * continue to search in parent scope and so on, until a dependency is found
  * or root scope is reached.
  *
- * @see ImplementationManager#get(Class, DependencyScope)
- * @see ImplementationManager#get(Class, String, DependencyScope)
+ * @see ImplementationManager#getMany(Class, DependencyScope)
+ * @see ImplementationManager#getMany(Class, String, DependencyScope)
  */
 public interface DependencyScope {
 

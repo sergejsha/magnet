@@ -35,8 +35,9 @@ public @interface Implementation {
      * Defines the interface this implementation implements. Same type is used
      * when implementations are queried by means of {@link ImplementationManager}.
      *
-     * @see ImplementationManager#get(Class, DependencyScope)
-     * @see ImplementationManager#get(Class, String, DependencyScope)
+     * @see ImplementationManager#getMany(Class, DependencyScope)
+     * @see ImplementationManager#getSingle(Class, DependencyScope)
+     * @see ImplementationManager#requireSingle(Class, DependencyScope)
      */
     Class<?> forType();
 
@@ -47,7 +48,9 @@ public @interface Implementation {
      * one of those menus by declaring "main" or "debug" as the target. Main
      * and debug menus will correspondingly query their menu items.
      *
-     * @see ImplementationManager#get(Class, String, DependencyScope)
+     * @see ImplementationManager#getMany(Class, String, DependencyScope)
+     * @see ImplementationManager#getSingle(Class, String, DependencyScope)
+     * @see ImplementationManager#requireSingle(Class, String, DependencyScope)
      */
     String forTarget() default "";
 }
