@@ -27,8 +27,6 @@ import magnet.internal.Range;
 
 final class MagnetImplementationManager implements ImplementationManager {
 
-    private static final String DEFAULT_TARGET = "";
-
     private Factory[] factories;
     private Map<Class, Object> index;
 
@@ -117,7 +115,7 @@ final class MagnetImplementationManager implements ImplementationManager {
     }
 
     private <T> List<T> createFromRange(Range range, DependencyScope dependencyScope) {
-        List<T> impls = new ArrayList<>();
+        List<T> impls = new ArrayList<T>();
         for (int i = range.getFrom(), to = range.getFrom() + range.getCount(); i < to; i++) {
             //noinspection unchecked
             impls.add((T) factories[i].create(dependencyScope));

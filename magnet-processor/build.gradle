@@ -13,10 +13,6 @@ buildscript {
     }
 }
 
-repositories {
-    mavenCentral()
-}
-
 compileKotlin {
     kotlinOptions {
         jvmTarget = toolsJavaVersion

@@ -39,6 +39,8 @@ import java.util.List;
  */
 public interface ImplementationManager {
 
+    String DEFAULT_TARGET = "";
+
     /**
      * Searches for all registered {@link Implementation}'s of given type
      * and creates instances of those.

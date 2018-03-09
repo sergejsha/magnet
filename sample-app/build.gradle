@@ -35,7 +35,7 @@ dependencies {
     // mandatory modules
     implementation project(':sample-app-main')
 
-    api project(':magnet')
+    api project(':magnet-kotlin')
     kapt project(':magnet-processor')
 
     implementation deps.kotlinjdk7

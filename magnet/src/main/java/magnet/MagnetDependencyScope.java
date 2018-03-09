@@ -26,12 +26,12 @@ final class MagnetDependencyScope implements DependencyScope {
 
     private MagnetDependencyScope(DependencyScope parent) {
         this.parent = parent;
-        this.dependencies = new HashMap<>();
+        this.dependencies = new HashMap<Class<?>, Object>();
     }
 
     MagnetDependencyScope() {
         this.parent = null;
-        this.dependencies = new HashMap<>();
+        this.dependencies = new HashMap<Class<?>, Object>();
     }
 
     @Override
