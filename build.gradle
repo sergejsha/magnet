@@ -27,6 +27,7 @@ task clean(type: Delete) {
 ext {
     appJavaVersion = JavaVersion.VERSION_1_8
     toolsJavaVersion = JavaVersion.VERSION_1_8
+    kotlinExtJavaVersion = JavaVersion.VERSION_1_6
 }
 
 ext.deps = [:]

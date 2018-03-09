@@ -15,7 +15,6 @@ android {
         versionName "1.0"
 
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
-
     }
 
     buildTypes {
@@ -28,7 +27,7 @@ android {
 }
 
 dependencies {
-    api project(':magnet')
+    api project(':magnet-kotlin')
     kapt project(':magnet-processor')
 
     implementation deps.design

@@ -27,8 +27,6 @@ import magnet.internal.Range;
 
 final class MagnetImplementationManager implements ImplementationManager {
 
-    private static final String DEFAULT_TARGET = "";
-
     private Factory[] factories;
     private Map<Class, Object> index;
 

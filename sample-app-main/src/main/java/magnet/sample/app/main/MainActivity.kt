@@ -25,6 +25,7 @@ import android.widget.TextView
 import kotlinx.android.synthetic.main.activity_main.message
 import kotlinx.android.synthetic.main.activity_main.navigation
 import magnet.DependencyScope
+import magnet.getMany
 import magnet.sample.app.App
 
 class MainActivity : AppCompatActivity() {
@@ -42,12 +43,10 @@ class MainActivity : AppCompatActivity() {
         // registered Resources.class making it available to the pages down below
         activityScope.register(Resources::class.java, resources)
 
-        // query registered pages
-        val pages = App.implManager.getMany(
-                // they are implementations of type Page.class
-                Page::class.java,
+        // query registered implementations of Page type
+        val pages = App.implManager.getMany<Page>(
                 // each page receives its own dependency scope that it cannot override values in activity scope
-                activityScope.subscope()
+                dependencyScope = activityScope.subscope()
         )
 
         // add queried pages to the menu and register listeners

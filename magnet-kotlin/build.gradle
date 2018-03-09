@@ -1,0 +1,33 @@
+apply plugin: 'java-library'
+apply plugin: 'kotlin'
+
+sourceCompatibility = kotlinExtJavaVersion
+targetCompatibility = kotlinExtJavaVersion
+
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+    }
+}
+
+compileKotlin {
+    kotlinOptions {
+        jvmTarget = kotlinExtJavaVersion
+    }
+}
+
+compileTestKotlin {
+    kotlinOptions {
+        jvmTarget = kotlinExtJavaVersion
+    }
+}
+
+dependencies {
+    api project(':magnet')
+    implementation deps.kotlinjdk7
+}
+
+apply from: rootProject.file('build-maven-push.gradle')
