@@ -1,4 +1,7 @@
+[![Maven Central](https://maven-badges.herokuapp.com/maven-central/de.halfbit/magnet/badge.svg)](https://maven-badges.herokuapp.com/maven-central/de.halfbit/magnet/)
 [![Build Status](https://travis-ci.org/beworker/magnet.svg?branch=master)](https://travis-ci.org/beworker/magnet)
+[![Kotlin version badge](https://img.shields.io/badge/kotlin-1.2.30-blue.svg)](http://kotlinlang.org/)
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](http://www.apache.org/licenses/LICENSE-2.0)
 
 # Magnet
 Dependency inversion library for Android.
