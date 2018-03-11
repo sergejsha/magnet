@@ -9,7 +9,7 @@
 
 Dependency inversion library for Android.
 
-[Dependency inversion principle][3] helps to decouple high-level modules from the low-level module implementation details and completes [SOLID object-oriented desing][4]. If you are about to modularize your Android application and apply dependency inversion prinsible, then Magnet library would be a good fit for your project as it makes dependency inversion a fun task.
+[Dependency inversion principle][3] helps to decouple high-level modules from the low-level module implementation details and completes [SOLID object-oriented design][4]. If you are about to modularize your Android application and apply dependency inversion princible, then Magnet library would be a good fit for your project as it makes dependency inversion a fun task.
 
 # Why?
 Let's compare traditional layered design to the desing based on dependency inversion principle. As an example we take an application consisting of a navigation bar with three tabbed pages.
