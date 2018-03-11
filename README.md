@@ -4,6 +4,9 @@
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](http://www.apache.org/licenses/LICENSE-2.0)
 
 # Magnet
+
+<img src="docs/images/logo.png" width="112">
+
 Dependency inversion library for Android.
 
 [Dependency inversion principle][3] helps to decouple high-level modules from the low-level module implementation details and completes [SOLID object-oriented desing][4]. If you are about to modularize your Android application and apply dependency inversion prinsible, then Magnet library would be a good fit for your project as it makes dependency inversion a fun task.
