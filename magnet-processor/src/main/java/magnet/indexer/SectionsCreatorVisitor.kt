@@ -54,7 +54,7 @@ class SectionsCreatorVisitor : ImplVisitor {
     private fun addRange(impl: Impl) {
 
         val section = sectionsByType.getOrPut(impl.type) {
-            Section(impl.type)
+            Section(impl.type, impl.factoryIndex)
         }
 
         val rangeIndex = calculateIndex()

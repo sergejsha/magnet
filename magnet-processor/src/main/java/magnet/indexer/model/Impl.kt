@@ -16,10 +16,13 @@
 
 package magnet.indexer.model
 
+import javax.lang.model.element.Element
+
 data class Impl(
         val type: String,
         val target: String,
-        val factory: String
+        val factory: String,
+        val factoryIndex: Element
 ) {
     fun accept(visitor: ImplVisitor) {
         visitor.visit(this)

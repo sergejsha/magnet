@@ -9,4 +9,8 @@ import magnet.internal.FactoryIndex;
         type = Page.class,
         target = ""
 )
-public final class app_extension_MagnetHomePageFactory {}
+public final class app_extension_MagnetHomePageFactory {
+    public static Class getTypeClass() {
+        return Page.class;
+    }
+}

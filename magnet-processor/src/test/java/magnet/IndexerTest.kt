@@ -1,11 +1,26 @@
 package magnet
 
 import com.google.common.truth.Truth.assertThat
+import com.sun.tools.javac.model.JavacElements
+import com.sun.tools.javac.util.Context
 import magnet.indexer.Indexer
 import magnet.indexer.model.Impl
+import org.junit.Before
 import org.junit.Test
+import javax.lang.model.element.Element
 
 class IndexerTest {
+
+    private lateinit var factoryElement: Element
+
+    @Before
+    fun setUp() {
+        val context = Context()
+        val elements = JavacElements.instance(context)
+        factoryElement = elements.getTypeElement(
+                Object::class.java.canonicalName
+        )
+    }
 
     @Test
     fun test_IndexNodes() {
@@ -33,39 +48,39 @@ class IndexerTest {
 
     fun unsortedNodes(): List<Impl> {
         return listOf(
-                Impl("CType", "four", "Factory"),
-                Impl("CType", "two", "Factory"),
-                Impl("CType", "one", "Factory"),
-                Impl("CType", "three", "Factory"),
-                Impl("CType", "four", "Factory"),
+                Impl("CType", "four", "Factory", factoryElement),
+                Impl("CType", "two", "Factory", factoryElement),
+                Impl("CType", "one", "Factory", factoryElement),
+                Impl("CType", "three", "Factory", factoryElement),
+                Impl("CType", "four", "Factory", factoryElement),
 
-                Impl("BType", "", "Factory"),
-                Impl("BType", "", "Factory"),
-                Impl("BType", "", "Factory"),
+                Impl("BType", "", "Factory", factoryElement),
+                Impl("BType", "", "Factory", factoryElement),
+                Impl("BType", "", "Factory", factoryElement),
 
-                Impl("AType", "", "Factory"),
-                Impl("AType", "one", "Factory"),
-                Impl("AType", "", "Factory"),
-                Impl("AType", "two", "Factory"),
-                Impl("AType", "one", "Factory")
+                Impl("AType", "", "Factory", factoryElement),
+                Impl("AType", "one", "Factory", factoryElement),
+                Impl("AType", "", "Factory", factoryElement),
+                Impl("AType", "two", "Factory", factoryElement),
+                Impl("AType", "one", "Factory", factoryElement)
         )
     }
 
     fun sortedNodes(): List<Impl> {
         return listOf(
-                Impl("AType", "", "Factory"),
-                Impl("AType", "", "Factory"),
-                Impl("AType", "one", "Factory"),
-                Impl("AType", "one", "Factory"),
-                Impl("AType", "two", "Factory"),
-                Impl("BType", "", "Factory"),
-                Impl("BType", "", "Factory"),
-                Impl("BType", "", "Factory"),
-                Impl("CType", "four", "Factory"),
-                Impl("CType", "four", "Factory"),
-                Impl("CType", "one", "Factory"),
-                Impl("CType", "three", "Factory"),
-                Impl("CType", "two", "Factory")
+                Impl("AType", "", "Factory", factoryElement),
+                Impl("AType", "", "Factory", factoryElement),
+                Impl("AType", "one", "Factory", factoryElement),
+                Impl("AType", "one", "Factory", factoryElement),
+                Impl("AType", "two", "Factory", factoryElement),
+                Impl("BType", "", "Factory", factoryElement),
+                Impl("BType", "", "Factory", factoryElement),
+                Impl("BType", "", "Factory", factoryElement),
+                Impl("CType", "four", "Factory", factoryElement),
+                Impl("CType", "four", "Factory", factoryElement),
+                Impl("CType", "one", "Factory", factoryElement),
+                Impl("CType", "three", "Factory", factoryElement),
+                Impl("CType", "two", "Factory", factoryElement)
         )
     }
 
