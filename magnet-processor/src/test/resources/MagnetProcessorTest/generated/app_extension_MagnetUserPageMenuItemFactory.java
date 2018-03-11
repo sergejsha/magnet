@@ -9,4 +9,8 @@ import magnet.internal.FactoryIndex;
         type = MenuItem.class,
         target = "extended-menu"
 )
-public final class app_extension_MagnetUserPageMenuItemFactory {}
+public final class app_extension_MagnetUserPageMenuItemFactory {
+    public static Class getTypeClass() {
+        return MenuItem.class;
+    }
+}

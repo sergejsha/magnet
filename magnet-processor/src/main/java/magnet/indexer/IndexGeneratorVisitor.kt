@@ -16,8 +16,8 @@
 
 package magnet.indexer
 
-import com.squareup.javapoet.ClassName
 import com.squareup.javapoet.CodeBlock
+import magnet.FactoryIndexGenerator
 import magnet.indexer.model.Impl
 import magnet.indexer.model.Index
 import magnet.indexer.model.IndexVisitor
@@ -53,8 +53,9 @@ class IndexGeneratorVisitor : IndexVisitor {
         val targetsName = "ranges${++sectionIndex}"
 
         indexBuilder.addStatement(
-                "index.put(\$T.class, \$L)",
-                ClassName.bestGuess(section.type),
+                "index.put(\$T.\$N(), \$L)",
+                section.factoryIndex,
+                FactoryIndexGenerator.METHOD_NAME_GET_TYPE_CLASS,
                 targetsName
         )
 
@@ -73,8 +74,9 @@ class IndexGeneratorVisitor : IndexVisitor {
         if (generateSingleRange) {
             currentSection?.let {
                 indexBuilder.addStatement(
-                        "index.put(\$T.class, new \$T(\$L, \$L, \$S))",
-                        ClassName.bestGuess(it.type),
+                        "index.put(\$T.\$N(), new \$T(\$L, \$L, \$S))",
+                        it.factoryIndex,
+                        FactoryIndexGenerator.METHOD_NAME_GET_TYPE_CLASS,
                         magnet.internal.Range::class.java,
                         range.from,
                         range.impls.size,

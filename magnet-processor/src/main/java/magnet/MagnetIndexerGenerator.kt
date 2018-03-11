@@ -84,7 +84,7 @@ class MagnetIndexerGenerator {
         val impls = mutableListOf<Impl>()
         indexElements.forEach {
             parseFactoryIndexAnnotation(it, factoryIndexClassName) { implTypeName, implFactoryName, implTargetName ->
-                impls.add(Impl(implTypeName, implTargetName, implFactoryName))
+                impls.add(Impl(implTypeName, implTargetName, implFactoryName, it))
             }
         }
 

@@ -20,6 +20,7 @@ import com.squareup.javapoet.AnnotationSpec
 import com.squareup.javapoet.ClassName
 import com.squareup.javapoet.JavaFile
 import com.squareup.javapoet.TypeSpec
+import com.squareup.javapoet.MethodSpec
 import magnet.internal.FactoryIndex
 import javax.lang.model.element.Element
 import javax.lang.model.element.ExecutableElement
@@ -101,6 +102,7 @@ class FactoryIndexGenerator {
                                 implTarget
                         )
                 )
+                .addMethod(generateGetterForTargetClass(implTypeClassName))
                 .build()
     }
 
@@ -114,6 +116,19 @@ class FactoryIndexGenerator {
                 .addMember("type", "\$T.class", implTypeClassName)
                 .addMember("target", "\$S", implTarget)
                 .build()
+    }
+
+    private fun generateGetterForTargetClass(implTypeClassName: ClassName): MethodSpec {
+        return MethodSpec
+                .methodBuilder(METHOD_NAME_GET_TYPE_CLASS)
+                .addModifiers(Modifier.PUBLIC, Modifier.STATIC)
+                .returns(Class::class.java)
+                .addStatement("return \$T.class", implTypeClassName)
+                .build()
+    }
+
+    companion object {
+        const val METHOD_NAME_GET_TYPE_CLASS = "getTypeClass"
     }
 
 }

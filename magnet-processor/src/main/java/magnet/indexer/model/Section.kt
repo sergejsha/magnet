@@ -16,8 +16,11 @@
 
 package magnet.indexer.model
 
+import javax.lang.model.element.Element
+
 data class Section(
-        val type: String
+        val type: String,
+        val factoryIndex: Element
 ) {
     val ranges = mutableMapOf<String, Range>()
 
