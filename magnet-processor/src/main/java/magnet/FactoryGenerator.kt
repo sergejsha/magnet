@@ -82,6 +82,22 @@ class FactoryGenerator {
                                 implTypeElement
                         )
                 )
+                .addMethod(
+                        generateGetTypeMethod(
+                                implTypeClassName
+                        )
+                )
+                .build()
+    }
+
+    private fun generateGetTypeMethod(
+            implTypeClassName: ClassName
+    ): MethodSpec {
+        return MethodSpec
+                .methodBuilder("getType")
+                .addModifiers(Modifier.PUBLIC, Modifier.STATIC)
+                .returns(Class::class.java)
+                .addStatement("return \$T.class", implTypeClassName)
                 .build()
     }
 

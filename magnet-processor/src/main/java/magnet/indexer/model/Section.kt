@@ -20,6 +20,8 @@ data class Section(
         val type: String
 ) {
     val ranges = mutableMapOf<String, Range>()
+    val firstFactory
+        get() = ranges.values.elementAt(0).firstFactory
 
     fun accept(visitor: IndexVisitor) {
         visitor.visit(this)

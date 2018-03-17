@@ -23,6 +23,8 @@ data class Range(
         val from: Int
 ) {
     val impls = mutableListOf<Impl>()
+    val firstFactory
+        get() = impls[0].factory
 
     init {
         impls.add(impl)

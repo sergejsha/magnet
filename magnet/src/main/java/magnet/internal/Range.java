@@ -16,7 +16,7 @@
 
 package magnet.internal;
 
-/** For internal use only. */
+/** Subject to change. For internal use only. */
 public final class Range {
 
     private final int from;

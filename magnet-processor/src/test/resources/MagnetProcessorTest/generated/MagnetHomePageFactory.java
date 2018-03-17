@@ -15,4 +15,7 @@ public final class MagnetHomePageFactory implements Factory<Page> {
         return new HomePage(homeRepository, userData, dependencyScope);
     }
 
+    public static Class getType() {
+        return Page.class;
+    }
 }
