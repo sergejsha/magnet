@@ -35,7 +35,7 @@ class FactoryIndexGenerator {
 
             val factoryTypeSpec = generateFactoryIndex(
                     implClassName,
-                    ClassName.bestGuess(forType),
+                    forType,
                     forTarget
             )
 
@@ -76,7 +76,7 @@ class FactoryIndexGenerator {
 
     private fun generateFactoryIndex(
             implClassName: ClassName,
-            implTypeClassName: ClassName,
+            implType: String,
             implTarget: String = ""
     ): TypeSpec {
 
@@ -97,7 +97,7 @@ class FactoryIndexGenerator {
                 .addAnnotation(
                         generateFactoryIndexAnnotation(
                                 factoryClassName,
-                                implTypeClassName,
+                                implType,
                                 implTarget
                         )
                 )
@@ -106,12 +106,12 @@ class FactoryIndexGenerator {
 
     private fun generateFactoryIndexAnnotation(
             factoryClassName: ClassName,
-            implTypeClassName: ClassName,
+            implType: String,
             implTarget: String
     ): AnnotationSpec {
         return AnnotationSpec.builder(FactoryIndex::class.java)
                 .addMember("factory", "\$T.class", factoryClassName)
-                .addMember("type", "\$T.class", implTypeClassName)
+                .addMember("type", "\$S", implType)
                 .addMember("target", "\$S", implTarget)
                 .build()
     }

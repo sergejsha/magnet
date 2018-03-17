@@ -11,4 +11,7 @@ public final class MagnetHomePageWithDependencyScopeFactory implements Factory<P
         return new HomePageWithDependencyScope(dependencyScope);
     }
 
+    public static Class getType() {
+        return Page.class;
+    }
 }

@@ -19,7 +19,7 @@ package magnet.internal;
 
 import magnet.DependencyScope;
 
-/** For internal use only. */
+/** Subject to change. For internal use only. */
 public interface Factory<T> {
 
     T create(DependencyScope dependencyScope);

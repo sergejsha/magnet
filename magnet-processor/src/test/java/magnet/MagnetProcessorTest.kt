@@ -132,6 +132,55 @@ class MagnetProcessorTest {
     }
 
     @Test
+    fun generateFactoryIndex_UnknownType_SingleImpl() {
+
+        val compilation = Compiler.javac()
+                .withProcessors(MagnetProcessor())
+                .compile(
+                        withResource("Tab.java"), // interface Tab is package private
+                        withResource("UnknownTypeTab.java"),
+                        withResource("AppExtensionRegistry.java")
+                )
+
+        assertThat(compilation).succeededWithoutWarnings()
+
+        assertThat(compilation)
+                .generatedSourceFile("app/extension/MagnetUnknownTypeTabFactory")
+                .hasSourceEquivalentTo(withResource("generated/UnknownType_MagnetUnknownTypeTabFactory.java"))
+
+        assertThat(compilation)
+                .generatedSourceFile("magnet/MagnetIndexer")
+                .hasSourceEquivalentTo(withResource("generated/UnknownType_MagnetIndexer.java"))
+    }
+
+    @Test
+    fun generateFactoryIndex_UnknownType_MultipleImpls() {
+
+        val compilation = Compiler.javac()
+                .withProcessors(MagnetProcessor())
+                .compile(
+                        withResource("Tab.java"), // interface Tab is package private
+                        withResource("UnknownTypeTab.java"),
+                        withResource("UnknownTypeTab2.java"),
+                        withResource("AppExtensionRegistry.java")
+                )
+
+        assertThat(compilation).succeededWithoutWarnings()
+
+        assertThat(compilation)
+                .generatedSourceFile("app/extension/MagnetUnknownTypeTabFactory")
+                .hasSourceEquivalentTo(withResource("generated/UnknownType_MagnetUnknownTypeTabFactory.java"))
+
+        assertThat(compilation)
+                .generatedSourceFile("app/extension/MagnetUnknownTypeTab2Factory")
+                .hasSourceEquivalentTo(withResource("generated/UnknownType_MagnetUnknownTypeTab2Factory.java"))
+
+        assertThat(compilation)
+                .generatedSourceFile("magnet/MagnetIndexer")
+                .hasSourceEquivalentTo(withResource("generated/UnknownType_MultipleImpls_MagnetIndexer.java"))
+    }
+
+    @Test
     fun generateMagnetRegistry() {
 
         val compilation = Compiler.javac()

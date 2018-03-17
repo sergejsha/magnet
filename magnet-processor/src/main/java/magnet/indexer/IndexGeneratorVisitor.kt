@@ -53,8 +53,8 @@ class IndexGeneratorVisitor : IndexVisitor {
         val targetsName = "ranges${++sectionIndex}"
 
         indexBuilder.addStatement(
-                "index.put(\$T.class, \$L)",
-                ClassName.bestGuess(section.type),
+                "index.put(\$T.getType(), \$L)",
+                ClassName.bestGuess(section.firstFactory),
                 targetsName
         )
 
@@ -73,8 +73,8 @@ class IndexGeneratorVisitor : IndexVisitor {
         if (generateSingleRange) {
             currentSection?.let {
                 indexBuilder.addStatement(
-                        "index.put(\$T.class, new \$T(\$L, \$L, \$S))",
-                        ClassName.bestGuess(it.type),
+                        "index.put(\$T.getType(), new \$T(\$L, \$L, \$S))",
+                        ClassName.bestGuess(range.firstFactory),
                         magnet.internal.Range::class.java,
                         range.from,
                         range.impls.size,

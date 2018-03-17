@@ -1,7 +1,5 @@
 package magnet;
 
-import app.MenuItem;
-import app.Page;
 import app.extension.MagnetHomePageFactory;
 import app.extension.MagnetHomePageMenuItemFactory;
 import app.extension.MagnetUserPageFactory;
@@ -27,8 +25,8 @@ public final class MagnetIndexer {
         ranges1.put("extended-menu", new Range(0, 1, "extended-menu"));
         ranges1.put("main-menu", new Range(1, 1, "main-menu"));
 
-        index.put(MenuItem.class, ranges1);
-        index.put(Page.class, new Range(2, 2, ""));
+        index.put(MagnetUserPageMenuItemFactory.getType(), ranges1);
+        index.put(MagnetHomePageFactory.getType(), new Range(2, 2, ""));
 
         implementationManager.register(factories, index);
     }

@@ -15,4 +15,7 @@ public final class MagnetHomePageWithParamsFactory implements Factory<Page> {
         return new HomePageWithParams(homeRepository, userData);
     }
 
+    public static Class getType() {
+        return Page.class;
+    }
 }

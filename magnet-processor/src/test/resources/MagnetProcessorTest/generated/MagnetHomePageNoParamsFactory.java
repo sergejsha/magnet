@@ -11,4 +11,7 @@ public final class MagnetHomePageNoParamsFactory implements Factory<Page> {
         return new HomePageNoParams();
     }
 
+    public static Class getType() {
+        return Page.class;
+    }
 }
