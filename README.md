@@ -9,13 +9,13 @@
 
 Dependency inversion library for Android.
 
-[Dependency inversion principle][3] helps to decouple high-level modules from the low-level module implementation details and completes [SOLID object-oriented design][4]. If you are about to modularize your Android application and apply dependency inversion princible, then Magnet library would be a good fit for your project as it makes dependency inversion a fun task.
+[Dependency inversion principle][3] helps to decouple high-level modules from the low-level module implementation details and completes [SOLID object-oriented design][4]. If you are about to modularize your Android application and apply dependency inversion principle, then Magnet library would be a good fit for your project as it makes dependency inversion a fun task.
 
 # Why?
-Let's compare traditional layered design to the desing based on dependency inversion principle. As an example we take an application consisting of a navigation bar with three tabbed pages.
+Let's compare traditional layered design to the design based on dependency inversion principle. As an example we take an application consisting of a navigation bar with three tabbed pages.
 ![Why diagram][1]
 
-Dependency inversion principle requires us to desing our application for extension right away instead of adding feature-specific code here and there uncontrolled, by spreading it all over the application as the application grows. Needless to say how more extensible, testable and maintainable our application becomes when it is desined for extension.
+Dependency inversion principle requires us to design our application for extension right away instead of adding feature-specific code here and there uncontrolled, by spreading it all over the application as the application grows. Needless to say how more extensible, testable and maintainable our application becomes when it is designed for extension.
 
 Another advantage of structuring the application in such a modular way is the ability to repackage the app according to new requirements. For instance we want to create a new companion app which uses some of the already existing modules or we want to create an Android Instant app. If we did everything right, we will be able to repackage some of existing modules into the new app and write missing ones.
 
