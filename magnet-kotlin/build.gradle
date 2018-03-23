@@ -28,6 +28,9 @@ compileTestKotlin {
 dependencies {
     api project(':magnet')
     implementation deps.kotlinjdk7
+
+    testImplementation deps.junit
+    testImplementation deps.mockito
 }
 
 apply from: rootProject.file('build-maven-push.gradle')

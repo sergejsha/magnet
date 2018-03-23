@@ -45,18 +45,17 @@ package magnet;
 public interface DependencyScope {
 
     /**
-     * Used to find a dependency on given type.
+     * Returns dependency of given type or null if none was found.
      *
-     * @param type type of dependency to search for.
-     * @param <T>  type of dependency to search for.
+     * @param type the type of dependency to search for.
+     * @param <T>  the type of dependency to search for.
      * @return dependency found or {@code null} if none was found.
      */
     <T> T get(Class<T> type);
 
     /**
-     * Same as {@link #get(Class)} but require dependency to exist. If
-     * dependency of given type has not been found, then
-     * {@link IllegalArgumentException} gets thrown.
+     * Returns dependency of given type. If dependency has not been
+     * found, then method throws {@link IllegalArgumentException}.
      *
      * @param type type of dependency to search for.
      * @param <T>  type of dependency to search for.
@@ -65,10 +64,10 @@ public interface DependencyScope {
     <T> T require(Class<T> type);
 
     /**
-     * Used to register a new dependency in this scope. If dependency
+     * Registers a new dependency within this scope. If dependency
      * of given type already exists, then implementation will throw an
      * {@link IllegalStateException}. If you want to avoid issues with
-     * overwriting dependencies create a new {@link #subscope()} and
+     * overwriting dependencies, then create a new {@link #subscope()} and
      * add dependencies in there.
      *
      * @param type       type of dependency to be registered.
@@ -79,9 +78,9 @@ public interface DependencyScope {
     <T> DependencyScope register(Class<T> type, T dependency);
 
     /**
-     * Used to create a dependency sub-scope using this scope as the parent.
+     * Creates a new dependency scope using this scope as the parent.
      *
-     * @return new dependency scope.
+     * @return new child dependency scope.
      */
     DependencyScope subscope();
 
