@@ -44,7 +44,6 @@ class MagnetProcessor : AbstractProcessor() {
             roundEnv: RoundEnvironment
     ): Boolean {
 
-        println("Round: $round, annotations: ${annotations.size}")
         val env = MagnetProcessorEnv(processEnvironment)
 
         return try {

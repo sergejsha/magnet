@@ -63,8 +63,6 @@ class FactoryGenerator {
         val factoryName = "Magnet${implClassName.simpleName()}Factory"
         val factoryClassName = ClassName.bestGuess("$factoryPackage.$factoryName")
 
-        println("  Generating $factoryClassName")
-
         val extensionFactorySuperInterface = ParameterizedTypeName.get(
                 ClassName.get(Factory::class.java),
                 implTypeClassName)

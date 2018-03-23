@@ -40,9 +40,12 @@ final class MagnetImplementationManager implements ImplementationManager {
             Method registerFactories = magnetClass.getMethod("register", MagnetImplementationManager.class);
             registerFactories.invoke(magnetClass, this);
         } catch (Exception e) {
-            System.out.println(
-                    "MagnetIndexer.class cannot be found. " +
-                            "Add a @MagnetizeImplementations-annotated class to the application module.");
+            System.err.println(
+                    String.format(
+                            "MagnetIndexer cannot be found. Add a @%s-annotated class to the application module.",
+                            MagnetizeImplementations.class
+                    )
+            );
         }
     }
 

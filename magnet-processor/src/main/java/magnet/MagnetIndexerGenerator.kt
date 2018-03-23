@@ -51,8 +51,6 @@ class MagnetIndexerGenerator {
         }
 
         val registryClassName = ClassName.get("magnet", "MagnetIndexer")
-        println("  Generating $registryClassName")
-
         val indexElements = env.elements.getPackageElement("magnet.index")?.enclosedElements ?: listOf()
         val magnetRegistryTypeSpec = generateMagnetRegistry(indexElements, registryClassName)
 

@@ -89,8 +89,6 @@ class FactoryIndexGenerator {
         val factoryIndexName = "${factoryPackage.replace('.', '_')}_$factoryName"
         val factoryIndexClassName = ClassName.get(factoryIndexPackage, factoryIndexName)
 
-        println("  Generating $factoryIndexClassName")
-
         return TypeSpec
                 .classBuilder(factoryIndexClassName)
                 .addModifiers(Modifier.PUBLIC, Modifier.FINAL)
