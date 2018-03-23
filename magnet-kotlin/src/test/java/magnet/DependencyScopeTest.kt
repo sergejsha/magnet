@@ -1,13 +1,3 @@
-import magnet.DependencyScope
-import magnet.get
-import magnet.register
-import magnet.require
-import org.junit.Test
-import org.junit.runner.RunWith
-import org.mockito.Mock
-import org.mockito.Mockito.verify
-import org.mockito.junit.MockitoJUnitRunner
-
 /*
  * Copyright (C) 2018 Sergej Shafarenka, www.halfbit.de
  *
@@ -24,6 +14,15 @@ import org.mockito.junit.MockitoJUnitRunner
  * limitations under the License.
  */
 
+package magnet
+
+import org.junit.Test
+import org.junit.runner.RunWith
+import org.mockito.Mock
+import org.mockito.Mockito.verify
+import org.mockito.junit.MockitoJUnitRunner
+
+@Suppress("UNUSED_VARIABLE")
 @RunWith(MockitoJUnitRunner.StrictStubs::class)
 class DependencyScopeTest {
 
@@ -32,19 +31,28 @@ class DependencyScopeTest {
 
     @Test
     fun testGet() {
+        // when
         val value: String? = dependencyScope.get<String>()
+
+        // then
         verify(dependencyScope).get(String::class.java)
     }
 
     @Test
     fun testRequire() {
+        // when
         val value: String = dependencyScope.require<String>()
+
+        // then
         verify(dependencyScope).require(String::class.java)
     }
 
     @Test
     fun testRegister() {
+        // when
         dependencyScope.register<String>("value")
+
+        // then
         verify(dependencyScope).register("value")
     }
 
