@@ -20,6 +20,7 @@ import javax.annotation.processing.Filer
 import javax.annotation.processing.ProcessingEnvironment
 import javax.lang.model.element.Element
 import javax.lang.model.util.Elements
+import javax.lang.model.util.Types
 import javax.tools.Diagnostic
 
 class MagnetProcessorEnv(private val processEnvironment: ProcessingEnvironment) {
@@ -29,6 +30,9 @@ class MagnetProcessorEnv(private val processEnvironment: ProcessingEnvironment) 
 
     val elements: Elements
         get() = processEnvironment.elementUtils
+
+    val types: Types
+        get() = processEnvironment.typeUtils
 
     fun reportError(element: Element, message: String) {
         processEnvironment.messager
