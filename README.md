@@ -1,4 +1,3 @@
-[![Maven Central](https://maven-badges.herokuapp.com/maven-central/de.halfbit/magnet/badge.svg)](https://maven-badges.herokuapp.com/maven-central/de.halfbit/magnet/)
 [![Build Status](https://travis-ci.org/beworker/magnet.svg?branch=master)](https://travis-ci.org/beworker/magnet)
 [![Kotlin version badge](https://img.shields.io/badge/kotlin-1.2.30-blue.svg)](http://kotlinlang.org/)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](http://www.apache.org/licenses/LICENSE-2.0)
@@ -40,16 +39,16 @@ Sample application located in this repo implements exactly the logic described a
 Kotlin:
 ```gradle
 dependencies {
-    api "de.halfbit:magnet-kotlin:0.0.6"
-    kapt "de.halfbit:magnet-processor:0.0.6"
+    api "de.halfbit:magnet-kotlin:0.0.7"
+    kapt "de.halfbit:magnet-processor:0.0.7"
 }
 ```
 
 Java:
 ```gradle
 dependencies {
-    api 'de.halfbit:magnet:0.0.6'
-    annotationProcessor 'de.halfbit:magnet-processor:0.0.6'
+    api 'de.halfbit:magnet:0.0.7'
+    annotationProcessor 'de.halfbit:magnet-processor:0.0.7'
 }
 ```
 
