@@ -91,8 +91,21 @@ class MagnetProcessorTest {
                 )
 
         assertThat(compilation).failed()
-        assertThat(compilation).hadErrorContaining(
-                "is specified using a generic type")
+        assertThat(compilation).hadErrorContaining("is specified using a generic type")
+    }
+
+    @Test
+    fun generateFactory_ForTypeNotImplemented() {
+
+        val compilation = Compiler.javac()
+                .withProcessors(MagnetProcessor())
+                .compile(
+                        withResource("Tab.java"),
+                        withResource("UnimplementedTab.java")
+                )
+
+        assertThat(compilation).failed()
+        assertThat(compilation).hadErrorContaining("must implement")
     }
 
     @Test

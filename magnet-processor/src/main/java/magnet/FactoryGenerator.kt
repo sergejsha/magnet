@@ -41,7 +41,14 @@ class FactoryGenerator {
             val extensionClass = it.elementValues.entries.find { "forType" == it.key.simpleName.toString() }?.value
 
             extensionClass?.let {
-                val implTypeClassName = ClassName.bestGuess(it.value.toString())
+                val implType = env.elements.getTypeElement(it.value.toString())
+                val isForTypeImplemented = env.types.isAssignable(implTypeElement.asType(), implType.asType())
+                if (!isForTypeImplemented) {
+                    env.reportError(implTypeElement, "$implTypeElement must implement $implType")
+                    throw BreakGenerationException()
+                }
+
+                val implTypeClassName = ClassName.get(implType)
                 val factoryTypeSpec = generateFactory(implClassName, implTypeClassName, implTypeElement)
 
                 val packageName = implClassName.packageName()
