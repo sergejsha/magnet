@@ -42,7 +42,10 @@ class FactoryGenerator {
 
             extensionClass?.let {
                 val implType = env.elements.getTypeElement(it.value.toString())
-                val isForTypeImplemented = env.types.isAssignable(implTypeElement.asType(), implType.asType())
+                val isForTypeImplemented = env.types.isAssignable(
+                        implTypeElement.asType(),
+                        env.types.getDeclaredType(implType) // we deliberately erase generic type here
+                )
                 if (!isForTypeImplemented) {
                     env.reportError(implTypeElement, "$implTypeElement must implement $implType")
                     throw BreakGenerationException()
