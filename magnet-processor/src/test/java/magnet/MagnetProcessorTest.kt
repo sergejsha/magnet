@@ -194,6 +194,20 @@ class MagnetProcessorTest {
     }
 
     @Test
+    fun generateFactoryIndex_ForInterfaceWithGenericType() {
+
+        val compilation = Compiler.javac()
+                .withProcessors(MagnetProcessor())
+                .compile(
+                        withResource("Executor.java"),
+                        withResource("ExecutorImpl.java")
+                )
+
+        assertThat(compilation).succeededWithoutWarnings()
+
+    }
+
+    @Test
     fun generateMagnetRegistry() {
 
         val compilation = Compiler.javac()
