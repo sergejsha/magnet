@@ -36,16 +36,16 @@ Sample application located in this repo implements exactly the logic described a
 Kotlin:
 ```gradle
 dependencies {
-    api "de.halfbit:magnet-kotlin:0.0.7"
-    kapt "de.halfbit:magnet-processor:0.0.7"
+    api "de.halfbit:magnet-kotlin:0.0.8"
+    kapt "de.halfbit:magnet-processor:0.0.8"
 }
 ```
 
 Java:
 ```gradle
 dependencies {
-    api 'de.halfbit:magnet:0.0.7'
-    annotationProcessor 'de.halfbit:magnet-processor:0.0.7'
+    api 'de.halfbit:magnet:0.0.8'
+    annotationProcessor 'de.halfbit:magnet-processor:0.0.8'
 }
 ```
 
