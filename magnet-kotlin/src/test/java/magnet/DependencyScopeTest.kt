@@ -35,25 +35,25 @@ class DependencyScopeTest {
         val value: String? = dependencyScope.get<String>()
 
         // then
-        verify(dependencyScope).get(String::class.java)
+        verify(dependencyScope).get(String::class.java, "")
     }
 
     @Test
     fun testRequire() {
         // when
-        val value: String = dependencyScope.require<String>()
+        val value = dependencyScope.require<String>()
 
         // then
-        verify(dependencyScope).require(String::class.java)
+        verify(dependencyScope).require(String::class.java, "")
     }
 
     @Test
     fun testRegister() {
         // when
-        dependencyScope.register<String>("value")
+        dependencyScope.register("component")
 
         // then
-        verify(dependencyScope).register("value")
+        verify(dependencyScope).register("component", "")
     }
 
 }

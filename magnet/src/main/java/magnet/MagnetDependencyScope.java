@@ -21,10 +21,10 @@ import java.util.Map;
 
 final class MagnetDependencyScope implements DependencyScope {
 
-    private final DependencyScope parent;
-    private final Map<Class<?>, Object> dependencies;
+    private final MagnetDependencyScope parent;
+    private final Map<String, Object> dependencies;
 
-    private MagnetDependencyScope(DependencyScope parent) {
+    private MagnetDependencyScope(MagnetDependencyScope parent) {
         this.parent = parent;
         this.dependencies = new HashMap<>();
     }
@@ -36,34 +36,33 @@ final class MagnetDependencyScope implements DependencyScope {
 
     @Override
     public <T> T get(Class<T> type) {
-        Object component = dependencies.get(type);
-        if (component == null && parent != null) {
-            return parent.get(type);
-        }
-        //noinspection unchecked
-        return (T) component;
+        return get(type.getName());
+    }
+
+    @Override
+    public <T> T get(Class<T> type, String qualifier) {
+        return get(key(qualifier, type));
     }
 
     @Override
     public <T> T require(Class<T> type) {
-        T component = get(type);
-        if (component == null) {
-            throw new IllegalStateException(
-                    String.format(
-                            "Component of type %s must be registered, but it's not.", type));
-        }
-        return component;
+        return require(type.getName());
+    }
+
+    @Override
+    public <T> T require(Class<T> type, String qualifier) {
+        return require(key(qualifier, type));
     }
 
     @Override
     public <T> DependencyScope register(Class<T> type, T dependency) {
-        Object existing = dependencies.put(type, dependency);
-        if (existing != null) {
-            throw new IllegalStateException(
-                    String.format("Dependency of type %s already registered." +
-                                    " Existing dependency %s, new dependency %s",
-                            type, existing, dependency));
-        }
+        register(type.getName(), dependency);
+        return this;
+    }
+
+    @Override
+    public <T> DependencyScope register(Class<T> type, T dependency, String qualifier) {
+        register(key(qualifier, type), dependency);
         return this;
     }
 
@@ -71,5 +70,42 @@ final class MagnetDependencyScope implements DependencyScope {
     public DependencyScope subscope() {
         return new MagnetDependencyScope(this);
     }
+
+    private static String key(String qualifier, Class<?> type) {
+        if (qualifier == null || qualifier.length() == 0) {
+            return type.getName();
+        }
+        return qualifier + "#" + type.getName();
+    }
+
+    private <T> T get(String key) {
+        Object component = dependencies.get(key);
+        if (component == null && parent != null) {
+            return parent.get(key);
+        }
+        //noinspection unchecked
+        return (T) component;
+    }
+
+    private <T> T require(String key) {
+        T component = get(key);
+        if (component == null) {
+            throw new IllegalStateException(
+                    String.format(
+                            "Component of type %s must be registered, but it's not.", key));
+        }
+        return component;
+    }
+
+    private void register(String key, Object dependency) {
+        Object existing = dependencies.put(key, dependency);
+        if (existing != null) {
+            throw new IllegalStateException(
+                    String.format("Dependency of type %s already registered." +
+                                    " Existing dependency %s, new dependency %s",
+                            key, existing, dependency));
+        }
+    }
+
 
 }
