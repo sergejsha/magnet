@@ -17,10 +17,10 @@
 package magnet.indexer.model
 
 data class Range(
-        val type: String,
-        val target: String,
-        private val impl: Impl,
-        val from: Int
+    val type: String,
+    val target: String,
+    private val impl: Impl,
+    val from: Int
 ) {
     val impls = mutableListOf<Impl>()
     val firstFactory

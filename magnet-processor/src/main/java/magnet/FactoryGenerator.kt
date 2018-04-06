@@ -29,6 +29,9 @@ import javax.lang.model.element.TypeElement
 import javax.lang.model.type.TypeKind
 import javax.lang.model.util.ElementFilter
 
+private const val CLASS_JAVAX_NAMED = "javax.inject.Named"
+private const val CLASS_NULLABLE = ".Nullable"
+
 class FactoryGenerator {
 
     private lateinit var env: MagnetProcessorEnv
@@ -43,8 +46,8 @@ class FactoryGenerator {
             extensionClass?.let {
                 val implType = env.elements.getTypeElement(it.value.toString())
                 val isForTypeImplemented = env.types.isAssignable(
-                        implTypeElement.asType(),
-                        env.types.getDeclaredType(implType) // we deliberately erase generic type here
+                    implTypeElement.asType(),
+                    env.types.getDeclaredType(implType) // we deliberately erase generic type here
                 )
                 if (!isForTypeImplemented) {
                     env.reportError(implTypeElement, "$implTypeElement must implement $implType")
@@ -56,17 +59,17 @@ class FactoryGenerator {
 
                 val packageName = implClassName.packageName()
                 JavaFile.builder(packageName, factoryTypeSpec)
-                        .skipJavaLangImports(true)
-                        .build()
-                        .writeTo(env.filer)
+                    .skipJavaLangImports(true)
+                    .build()
+                    .writeTo(env.filer)
             }
         }
     }
 
     private fun generateFactory(
-            implClassName: ClassName,
-            implTypeClassName: ClassName,
-            implTypeElement: TypeElement
+        implClassName: ClassName,
+        implTypeClassName: ClassName,
+        implTypeElement: TypeElement
     ): TypeSpec {
 
         val factoryPackage = implClassName.packageName()
@@ -74,45 +77,45 @@ class FactoryGenerator {
         val factoryClassName = ClassName.bestGuess("$factoryPackage.$factoryName")
 
         val extensionFactorySuperInterface = ParameterizedTypeName.get(
-                ClassName.get(Factory::class.java),
-                implTypeClassName)
+            ClassName.get(Factory::class.java),
+            implTypeClassName)
 
         return TypeSpec
-                .classBuilder(factoryClassName)
-                .addModifiers(Modifier.PUBLIC, Modifier.FINAL)
-                .addSuperinterface(extensionFactorySuperInterface)
-                //.addField(generateComponentRegistryField())
-                //.addMethod(generateConstructor())
-                .addMethod(
-                        generateCreateMethod(
-                                implClassName,
-                                implTypeClassName,
-                                implTypeElement
-                        )
+            .classBuilder(factoryClassName)
+            .addModifiers(Modifier.PUBLIC, Modifier.FINAL)
+            .addSuperinterface(extensionFactorySuperInterface)
+            //.addField(generateComponentRegistryField())
+            //.addMethod(generateConstructor())
+            .addMethod(
+                generateCreateMethod(
+                    implClassName,
+                    implTypeClassName,
+                    implTypeElement
                 )
-                .addMethod(
-                        generateGetTypeMethod(
-                                implTypeClassName
-                        )
+            )
+            .addMethod(
+                generateGetTypeMethod(
+                    implTypeClassName
                 )
-                .build()
+            )
+            .build()
     }
 
     private fun generateGetTypeMethod(
-            implTypeClassName: ClassName
+        implTypeClassName: ClassName
     ): MethodSpec {
         return MethodSpec
-                .methodBuilder("getType")
-                .addModifiers(Modifier.PUBLIC, Modifier.STATIC)
-                .returns(Class::class.java)
-                .addStatement("return \$T.class", implTypeClassName)
-                .build()
+            .methodBuilder("getType")
+            .addModifiers(Modifier.PUBLIC, Modifier.STATIC)
+            .returns(Class::class.java)
+            .addStatement("return \$T.class", implTypeClassName)
+            .build()
     }
 
     private fun generateCreateMethod(
-            implClassName: ClassName,
-            implTypeClassName: ClassName,
-            implTypeElement: TypeElement
+        implClassName: ClassName,
+        implTypeClassName: ClassName,
+        implTypeElement: TypeElement
     ): MethodSpec {
         val dependencyScopeClassName = ClassName.get(DependencyScope::class.java)
 
@@ -134,9 +137,9 @@ class FactoryGenerator {
             val type = it.asType()
             if (type.kind == TypeKind.TYPEVAR) {
                 env.reportError(implTypeElement,
-                        "Constructor parameter '${it.simpleName}' is specified using a generic type which" +
-                                " is an invalid parameter type. Use a class or an interface type instead." +
-                                " 'DependencyScope' is a valid parameter type too.")
+                    "Constructor parameter '${it.simpleName}' is specified using a generic type which" +
+                        " is an invalid parameter type. Use a class or an interface type instead." +
+                        " 'DependencyScope' is a valid parameter type too.")
                 throw BreakGenerationException()
             }
 
@@ -145,17 +148,38 @@ class FactoryGenerator {
 
             if (!isDependencyScopeParam) {
                 val paramClassName = ClassName.get(type)
-                val nullableAnnotation = it.annotationMirrors.find {
-                    it.toString().endsWith(".Nullable")
+
+                var hasNullableAnnotation = false
+                var namedAnnotationValue: String? = null
+
+                it.annotationMirrors.forEach { annotation ->
+                    val annotationType = annotation.annotationType.toString()
+                    if (annotationType.endsWith(CLASS_NULLABLE)) {
+                        hasNullableAnnotation = true
+
+                    } else if (annotationType == CLASS_JAVAX_NAMED) {
+                        namedAnnotationValue = annotation.elementValues.values.firstOrNull()?.value.toString()
+                        namedAnnotationValue?.removeSurrounding("\"", "\"")
+                    }
                 }
 
-                val getMethodName = if (nullableAnnotation != null) "get" else "require"
+                val getMethodName = if (hasNullableAnnotation) "get" else "require"
 
-                codeBlockBuilder.addStatement(
+                if (namedAnnotationValue != null) {
+                    codeBlockBuilder.addStatement(
+                        "\$T $paramName = dependencyScope.$getMethodName(\$T.class, \$S)",
+                        paramClassName,
+                        paramClassName,
+                        namedAnnotationValue
+                    )
+                } else {
+                    codeBlockBuilder.addStatement(
                         "\$T $paramName = dependencyScope.$getMethodName(\$T.class)",
                         paramClassName,
                         paramClassName
-                )
+                    )
+                }
+
             }
 
             methodParamsBuilder.append(paramName).append(", ")
@@ -166,16 +190,16 @@ class FactoryGenerator {
         }
 
         return MethodSpec
-                .methodBuilder("create")
-                .addAnnotation(Override::class.java)
-                .addModifiers(Modifier.PUBLIC)
-                .addParameter(ParameterSpec
-                        .builder(dependencyScopeClassName, "dependencyScope")
-                        .build())
-                .returns(implTypeClassName)
-                .addCode(codeBlockBuilder.build())
-                .addStatement("return new \$T($methodParamsBuilder)", implClassName)
-                .build()
+            .methodBuilder("create")
+            .addAnnotation(Override::class.java)
+            .addModifiers(Modifier.PUBLIC)
+            .addParameter(ParameterSpec
+                .builder(dependencyScopeClassName, "dependencyScope")
+                .build())
+            .returns(implTypeClassName)
+            .addCode(codeBlockBuilder.build())
+            .addStatement("return new \$T($methodParamsBuilder)", implClassName)
+            .build()
     }
 
 }

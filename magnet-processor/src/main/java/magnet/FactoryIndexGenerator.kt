@@ -34,22 +34,22 @@ class FactoryIndexGenerator {
         parseImplementationAnnotation(implTypeElement, annotationsClassName) { forType, forTarget ->
 
             val factoryTypeSpec = generateFactoryIndex(
-                    implClassName,
-                    forType,
-                    forTarget
+                implClassName,
+                forType,
+                forTarget
             )
 
             JavaFile.builder("magnet.index", factoryTypeSpec)
-                    .skipJavaLangImports(true)
-                    .build()
-                    .writeTo(env.filer)
+                .skipJavaLangImports(true)
+                .build()
+                .writeTo(env.filer)
         }
     }
 
     private fun <T> parseImplementationAnnotation(
-            element: Element,
-            annotationClassName: ClassName,
-            body: (forType: String, forTarget: String) -> T
+        element: Element,
+        annotationClassName: ClassName,
+        body: (forType: String, forTarget: String) -> T
     ) {
         element.annotationMirrors.forEach {
             val itClassName = ClassName.get(it.annotationType)
@@ -66,8 +66,8 @@ class FactoryIndexGenerator {
 
                 if (forTypeKey != null) {
                     body(
-                            it.elementValues[forTypeKey]!!.value.toString(),
-                            if (forTargetKey != null) it.elementValues[forTargetKey]!!.value.toString() else ""
+                        it.elementValues[forTypeKey]!!.value.toString(),
+                        if (forTargetKey != null) it.elementValues[forTargetKey]!!.value.toString() else ""
                     )
                 }
             }
@@ -75,9 +75,9 @@ class FactoryIndexGenerator {
     }
 
     private fun generateFactoryIndex(
-            implClassName: ClassName,
-            implType: String,
-            implTarget: String = ""
+        implClassName: ClassName,
+        implType: String,
+        implTarget: String = ""
     ): TypeSpec {
 
 
@@ -90,28 +90,28 @@ class FactoryIndexGenerator {
         val factoryIndexClassName = ClassName.get(factoryIndexPackage, factoryIndexName)
 
         return TypeSpec
-                .classBuilder(factoryIndexClassName)
-                .addModifiers(Modifier.PUBLIC, Modifier.FINAL)
-                .addAnnotation(
-                        generateFactoryIndexAnnotation(
-                                factoryClassName,
-                                implType,
-                                implTarget
-                        )
+            .classBuilder(factoryIndexClassName)
+            .addModifiers(Modifier.PUBLIC, Modifier.FINAL)
+            .addAnnotation(
+                generateFactoryIndexAnnotation(
+                    factoryClassName,
+                    implType,
+                    implTarget
                 )
-                .build()
+            )
+            .build()
     }
 
     private fun generateFactoryIndexAnnotation(
-            factoryClassName: ClassName,
-            implType: String,
-            implTarget: String
+        factoryClassName: ClassName,
+        implType: String,
+        implTarget: String
     ): AnnotationSpec {
         return AnnotationSpec.builder(FactoryIndex::class.java)
-                .addMember("factory", "\$T.class", factoryClassName)
-                .addMember("type", "\$S", implType)
-                .addMember("target", "\$S", implTarget)
-                .build()
+            .addMember("factory", "\$T.class", factoryClassName)
+            .addMember("type", "\$S", implType)
+            .addMember("target", "\$S", implTarget)
+            .build()
     }
 
 }

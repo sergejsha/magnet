@@ -17,7 +17,7 @@
 package magnet.indexer.model
 
 data class Section(
-        val type: String
+    val type: String
 ) {
     val ranges = mutableMapOf<String, Range>()
     val firstFactory

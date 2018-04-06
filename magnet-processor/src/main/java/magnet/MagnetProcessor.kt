@@ -40,8 +40,8 @@ class MagnetProcessor : AbstractProcessor() {
     }
 
     override fun process(
-            annotations: MutableSet<out TypeElement>,
-            roundEnv: RoundEnvironment
+        annotations: MutableSet<out TypeElement>,
+        roundEnv: RoundEnvironment
     ): Boolean {
 
         val env = MagnetProcessorEnv(processEnvironment)
@@ -57,8 +57,8 @@ class MagnetProcessor : AbstractProcessor() {
     }
 
     private fun processExtensionAnnotation(
-            env: MagnetProcessorEnv,
-            roundEnv: RoundEnvironment
+        env: MagnetProcessorEnv,
+        roundEnv: RoundEnvironment
     ): Boolean {
         val annotatedElements = roundEnv.getElementsAnnotatedWith(Implementation::class.java)
         if (annotatedElements.isEmpty()) {
@@ -77,19 +77,19 @@ class MagnetProcessor : AbstractProcessor() {
     }
 
     private fun processExtensionRegistryAnnotation(
-            env: MagnetProcessorEnv,
-            roundEnv: RoundEnvironment
+        env: MagnetProcessorEnv,
+        roundEnv: RoundEnvironment
     ): Boolean {
         return magnetIndexerGenerator.generate(
-                roundEnv.getElementsAnnotatedWith(MagnetizeImplementations::class.java),
-                env
+            roundEnv.getElementsAnnotatedWith(MagnetizeImplementations::class.java),
+            env
         )
     }
 
     override fun getSupportedAnnotationTypes(): MutableSet<String> {
         return mutableSetOf<String>(
-                Implementation::class.java.name,
-                MagnetizeImplementations::class.java.name
+            Implementation::class.java.name,
+            MagnetizeImplementations::class.java.name
         )
     }
 

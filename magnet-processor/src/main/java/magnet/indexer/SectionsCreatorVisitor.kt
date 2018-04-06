@@ -42,7 +42,7 @@ class SectionsCreatorVisitor : ImplVisitor {
 
         currentRange?.let {
             if (it.type == impl.type
-                    && it.target == impl.target) {
+                && it.target == impl.target) {
                 it.impls.add(impl)
                 return
             }

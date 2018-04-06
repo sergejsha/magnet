@@ -12,7 +12,7 @@ class IndexerTest {
         val index = Indexer().index(unsortedNodes())
 
         assertThat(index.implementations.toTypedArray()
-                contentDeepEquals sortedNodes().toTypedArray())
+            contentDeepEquals sortedNodes().toTypedArray())
     }
 
     @Test
@@ -33,39 +33,39 @@ class IndexerTest {
 
     fun unsortedNodes(): List<Impl> {
         return listOf(
-                Impl("CType", "four", "Factory"),
-                Impl("CType", "two", "Factory"),
-                Impl("CType", "one", "Factory"),
-                Impl("CType", "three", "Factory"),
-                Impl("CType", "four", "Factory"),
+            Impl("CType", "four", "Factory"),
+            Impl("CType", "two", "Factory"),
+            Impl("CType", "one", "Factory"),
+            Impl("CType", "three", "Factory"),
+            Impl("CType", "four", "Factory"),
 
-                Impl("BType", "", "Factory"),
-                Impl("BType", "", "Factory"),
-                Impl("BType", "", "Factory"),
+            Impl("BType", "", "Factory"),
+            Impl("BType", "", "Factory"),
+            Impl("BType", "", "Factory"),
 
-                Impl("AType", "", "Factory"),
-                Impl("AType", "one", "Factory"),
-                Impl("AType", "", "Factory"),
-                Impl("AType", "two", "Factory"),
-                Impl("AType", "one", "Factory")
+            Impl("AType", "", "Factory"),
+            Impl("AType", "one", "Factory"),
+            Impl("AType", "", "Factory"),
+            Impl("AType", "two", "Factory"),
+            Impl("AType", "one", "Factory")
         )
     }
 
     fun sortedNodes(): List<Impl> {
         return listOf(
-                Impl("AType", "", "Factory"),
-                Impl("AType", "", "Factory"),
-                Impl("AType", "one", "Factory"),
-                Impl("AType", "one", "Factory"),
-                Impl("AType", "two", "Factory"),
-                Impl("BType", "", "Factory"),
-                Impl("BType", "", "Factory"),
-                Impl("BType", "", "Factory"),
-                Impl("CType", "four", "Factory"),
-                Impl("CType", "four", "Factory"),
-                Impl("CType", "one", "Factory"),
-                Impl("CType", "three", "Factory"),
-                Impl("CType", "two", "Factory")
+            Impl("AType", "", "Factory"),
+            Impl("AType", "", "Factory"),
+            Impl("AType", "one", "Factory"),
+            Impl("AType", "one", "Factory"),
+            Impl("AType", "two", "Factory"),
+            Impl("BType", "", "Factory"),
+            Impl("BType", "", "Factory"),
+            Impl("BType", "", "Factory"),
+            Impl("CType", "four", "Factory"),
+            Impl("CType", "four", "Factory"),
+            Impl("CType", "one", "Factory"),
+            Impl("CType", "three", "Factory"),
+            Impl("CType", "two", "Factory")
         )
     }
 
