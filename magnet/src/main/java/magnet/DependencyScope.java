@@ -54,6 +54,16 @@ public interface DependencyScope {
     <T> T get(Class<T> type);
 
     /**
+     * Returns dependency of given type or null if none was found.
+     *
+     * @param type      the type of dependency to search for.
+     * @param <T>       the type of dependency to search for.
+     * @param qualifier the type's qualifier of dependency to search for.
+     * @return dependency found or {@code null} if none was found.
+     */
+    <T> T get(Class<T> type, String qualifier);
+
+    /**
      * Returns dependency of given type. If dependency has not been
      * found, then method throws {@link IllegalArgumentException}.
      *
@@ -62,6 +72,17 @@ public interface DependencyScope {
      * @return dependency found.
      */
     <T> T require(Class<T> type);
+
+    /**
+     * Returns dependency of given type. If dependency has not been
+     * found, then method throws {@link IllegalArgumentException}.
+     *
+     * @param type      type of dependency to search for.
+     * @param <T>       type of dependency to search for.
+     * @param qualifier the type's qualifier of dependency to search for.
+     * @return dependency found.
+     */
+    <T> T require(Class<T> type, String qualifier);
 
     /**
      * Registers a new dependency within this scope. If dependency
@@ -76,6 +97,21 @@ public interface DependencyScope {
      * @return this dependency scope for building chained calls.
      */
     <T> DependencyScope register(Class<T> type, T dependency);
+
+    /**
+     * Registers a new dependency within this scope. If dependency
+     * of given type already exists, then implementation will throw an
+     * {@link IllegalStateException}. If you want to avoid issues with
+     * overwriting dependencies, then create a new {@link #subscope()} and
+     * add dependencies in there.
+     *
+     * @param type       type of dependency to be registered.
+     * @param dependency dependency to be registered.
+     * @param <T>        type of dependency to be registered.
+     * @param qualifier  the type's qualifier of dependency to search for.
+     * @return this dependency scope for building chained calls.
+     */
+    <T> DependencyScope register(Class<T> type, T dependency, String qualifier);
 
     /**
      * Creates a new dependency scope using this scope as the parent.

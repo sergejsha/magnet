@@ -21,7 +21,7 @@ import magnet.indexer.model.ImplComparator
 import magnet.indexer.model.Index
 
 class Indexer(
-        private val comparator: Comparator<Impl> = ImplComparator()
+    private val comparator: Comparator<Impl> = ImplComparator()
 ) {
 
     fun index(impls: List<Impl>): Index {

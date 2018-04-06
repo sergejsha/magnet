@@ -22,8 +22,8 @@ import magnet.sample.app.main.Page
 
 @Implementation(forType = Page::class)
 class HomePage(
-        // mandatory dependency available through DependencyScope (see MainActivity.kt)
-        val resources: Resources
+    // mandatory dependency available through DependencyScope (see MainActivity.kt)
+    private val resources: Resources
 ) : Page {
 
     override fun id(): Int {

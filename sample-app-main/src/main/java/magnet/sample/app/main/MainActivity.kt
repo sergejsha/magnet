@@ -16,7 +16,6 @@
 
 package magnet.sample.app.main
 
-import android.content.res.Resources
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.util.SparseArray
@@ -26,6 +25,7 @@ import kotlinx.android.synthetic.main.activity_main.message
 import kotlinx.android.synthetic.main.activity_main.navigation
 import magnet.DependencyScope
 import magnet.getMany
+import magnet.register
 import magnet.sample.app.App
 
 class MainActivity : AppCompatActivity() {
@@ -41,12 +41,12 @@ class MainActivity : AppCompatActivity() {
         activityScope = App.appScope.subscope()
 
         // registered Resources.class making it available to the pages down below
-        activityScope.register(Resources::class.java, resources)
+        activityScope.register(resources)
 
         // query registered implementations of Page type
         val pages = App.implManager.getMany<Page>(
-                // each page receives its own dependency scope that it cannot override values in activity scope
-                dependencyScope = activityScope.subscope()
+            // each page receives its own dependency scope that it cannot override values in activity scope
+            dependencyScope = activityScope.subscope()
         )
 
         // add queried pages to the menu and register listeners
@@ -70,16 +70,16 @@ class MainActivity : AppCompatActivity() {
 }
 
 class PageBinder(
-        private val page: Page
+    private val page: Page
 ) {
 
     fun register(menu: Menu, message: TextView, pageBinders: SparseArray<PageBinder>) {
         menu.add(0, page.id(), page.order(), page.menuTitleId())
-                .setIcon(page.menuIconId())
-                .setOnMenuItemClickListener {
-                    updateMessage(message)
-                    false
-                }
+            .setIcon(page.menuIconId())
+            .setOnMenuItemClickListener {
+                updateMessage(message)
+                false
+            }
 
         pageBinders.put(page.id(), this)
     }

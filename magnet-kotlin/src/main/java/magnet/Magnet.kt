@@ -30,8 +30,8 @@ package magnet
  *      inject dependencies into implementations, when they are instantiated.
  */
 inline fun <reified T> ImplementationManager.getMany(
-        forTarget: String? = ImplementationManager.DEFAULT_TARGET,
-        dependencyScope: DependencyScope
+    forTarget: String? = ImplementationManager.DEFAULT_TARGET,
+    dependencyScope: DependencyScope
 ): List<T> {
     return this.getMany(T::class.java, forTarget, dependencyScope)
 }
@@ -50,8 +50,8 @@ inline fun <reified T> ImplementationManager.getMany(
  *      dependencies into implementations, when they are instantiated.
  */
 inline fun <reified T> ImplementationManager.getSingle(
-        forTarget: String? = ImplementationManager.DEFAULT_TARGET,
-        dependencyScope: DependencyScope
+    forTarget: String? = ImplementationManager.DEFAULT_TARGET,
+    dependencyScope: DependencyScope
 ): T? {
     return this.getSingle(T::class.java, forTarget, dependencyScope)
 }
@@ -71,8 +71,8 @@ inline fun <reified T> ImplementationManager.getSingle(
  * @throws IllegalStateException if implementation could not be found.
  */
 inline fun <reified T> ImplementationManager.requireSingle(
-        forTarget: String? = ImplementationManager.DEFAULT_TARGET,
-        dependencyScope: DependencyScope
+    forTarget: String? = ImplementationManager.DEFAULT_TARGET,
+    dependencyScope: DependencyScope
 ): T {
     return this.requireSingle(T::class.java, forTarget, dependencyScope)
 }

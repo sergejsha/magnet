@@ -36,7 +36,7 @@ class MagnetProcessorEnv(private val processEnvironment: ProcessingEnvironment) 
 
     fun reportError(element: Element, message: String) {
         processEnvironment.messager
-                .printMessage(Diagnostic.Kind.ERROR, message, element)
+            .printMessage(Diagnostic.Kind.ERROR, message, element)
     }
 
 }

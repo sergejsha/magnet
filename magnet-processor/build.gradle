@@ -32,6 +32,7 @@ dependencies {
 
     testImplementation deps.compileTesting
     testImplementation deps.jsr305
+    testImplementation deps.javaxInject
     testImplementation files(org.gradle.internal.jvm.Jvm.current().getToolsJar()) // for ./gradlew test
 }
 

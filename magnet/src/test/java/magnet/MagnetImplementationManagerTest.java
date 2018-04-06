@@ -1,7 +1,6 @@
 package magnet;
 
 import static com.google.common.truth.Truth.assertThat;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -36,16 +35,16 @@ public class MagnetImplementationManagerTest {
     @Mock
     DependencyScope dependencyScope;
 
-    private MagnetImplementationManager registry;
+    private MagnetImplementationManager implManager;
 
     @Before
     public void before() {
-        registry = new MagnetImplementationManager();
+        implManager = new MagnetImplementationManager();
 
-        when(factoryType1Impl1.create(any())).thenReturn(new Type1Impl());
-        when(factoryType1Impl2.create(any())).thenReturn(new Type1Impl());
-        when(factoryType2Impl1.create(any())).thenReturn(new Type2Impl());
-        when(factoryType2Impl2.create(any())).thenReturn(new Type2Impl());
+        when(factoryType1Impl1.create(dependencyScope)).thenReturn(new Type1Impl());
+        when(factoryType1Impl2.create(dependencyScope)).thenReturn(new Type1Impl());
+        when(factoryType2Impl1.create(dependencyScope)).thenReturn(new Type2Impl());
+        when(factoryType2Impl2.create(dependencyScope)).thenReturn(new Type2Impl());
 
         Factory[] factories = new Factory[] {
                 factoryType1Impl1,
@@ -63,13 +62,13 @@ public class MagnetImplementationManagerTest {
         index.put(Type1.class, ranges1);
         index.put(Type2.class, new Range(2, 2, ""));
 
-        registry.register(factories, index);
+        implManager.register(factories, index);
     }
 
     @Test
     public void test_GetMany_UnknownType_NoTarget() {
         // when
-        List<Object> impls = registry.getMany(Object.class, dependencyScope);
+        List<Object> impls = implManager.getMany(Object.class, dependencyScope);
 
         // then
         assertThat(impls).isEmpty();
@@ -78,7 +77,7 @@ public class MagnetImplementationManagerTest {
     @Test
     public void test_GetMany_Type_Target_default() {
         // when
-        List<Type2> impls = registry.getMany(Type2.class, dependencyScope);
+        List<Type2> impls = implManager.getMany(Type2.class, dependencyScope);
 
         // then
         verify(factoryType2Impl1).create(dependencyScope);
@@ -91,7 +90,7 @@ public class MagnetImplementationManagerTest {
     @Test
     public void test_GetMany_Type_Target_impl1() {
         // when
-        List<Type1> impls = registry.getMany(Type1.class, "impl1", dependencyScope);
+        List<Type1> impls = implManager.getMany(Type1.class, "impl1", dependencyScope);
 
         // then
         verify(factoryType1Impl1).create(dependencyScope);
@@ -102,7 +101,7 @@ public class MagnetImplementationManagerTest {
     @Test
     public void test_GetMany_Type_Target_impl2() {
         // when
-        List<Type1> impls = registry.getMany(Type1.class, "impl2", dependencyScope);
+        List<Type1> impls = implManager.getMany(Type1.class, "impl2", dependencyScope);
 
         // then
         verify(factoryType1Impl2).create(dependencyScope);
@@ -113,7 +112,7 @@ public class MagnetImplementationManagerTest {
     @Test
     public void test_GetSingle_OneFound() {
         // when
-        Type1 impl = registry.getSingle(Type1.class, "impl2", dependencyScope);
+        Type1 impl = implManager.getSingle(Type1.class, "impl2", dependencyScope);
 
         // then
         assertThat(impl).isNotNull();
@@ -123,7 +122,7 @@ public class MagnetImplementationManagerTest {
     @Test
     public void test_GetSingle_NoneFound() {
         // when
-        Type3 impl = registry.getSingle(Type3.class, dependencyScope);
+        Type3 impl = implManager.getSingle(Type3.class, dependencyScope);
 
         // then
         assertThat(impl).isNull();
@@ -131,13 +130,13 @@ public class MagnetImplementationManagerTest {
 
     @Test(expected = IllegalStateException.class)
     public void test_GetSingle_MultipleFound() {
-        registry.getSingle(Type2.class, dependencyScope);
+        implManager.getSingle(Type2.class, dependencyScope);
     }
 
     @Test
     public void test_RequireSingle_OneFound() {
         // when
-        Type1 impl = registry.requireSingle(Type1.class, "impl2", dependencyScope);
+        Type1 impl = implManager.requireSingle(Type1.class, "impl2", dependencyScope);
 
         // then
         assertThat(impl).isNotNull();
@@ -146,12 +145,12 @@ public class MagnetImplementationManagerTest {
 
     @Test(expected = IllegalStateException.class)
     public void test_RequireSingle_NoneFound() {
-        registry.requireSingle(Type3.class, dependencyScope);
+        implManager.requireSingle(Type3.class, dependencyScope);
     }
 
     @Test(expected = IllegalStateException.class)
     public void test_RequireSingle_MultipleFound() {
-        registry.requireSingle(Type2.class, dependencyScope);
+        implManager.requireSingle(Type2.class, dependencyScope);
     }
 
     interface Type1 {}

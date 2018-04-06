@@ -53,18 +53,18 @@ class IndexGeneratorVisitor : IndexVisitor {
         val targetsName = "ranges${++sectionIndex}"
 
         indexBuilder.addStatement(
-                "index.put(\$T.getType(), \$L)",
-                ClassName.bestGuess(section.firstFactory),
-                targetsName
+            "index.put(\$T.getType(), \$L)",
+            ClassName.bestGuess(section.firstFactory),
+            targetsName
         )
 
         targetsBuilder.addStatement(
-                "\$T<\$T, \$T> \$L = new \$T<>()",
-                Map::class.java,
-                String::class.java,
-                magnet.internal.Range::class.java,
-                targetsName,
-                HashMap::class.java
+            "\$T<\$T, \$T> \$L = new \$T<>()",
+            Map::class.java,
+            String::class.java,
+            magnet.internal.Range::class.java,
+            targetsName,
+            HashMap::class.java
         )
     }
 
@@ -73,12 +73,12 @@ class IndexGeneratorVisitor : IndexVisitor {
         if (generateSingleRange) {
             currentSection?.let {
                 indexBuilder.addStatement(
-                        "index.put(\$T.getType(), new \$T(\$L, \$L, \$S))",
-                        ClassName.bestGuess(range.firstFactory),
-                        magnet.internal.Range::class.java,
-                        range.from,
-                        range.impls.size,
-                        range.target
+                    "index.put(\$T.getType(), new \$T(\$L, \$L, \$S))",
+                    ClassName.bestGuess(range.firstFactory),
+                    magnet.internal.Range::class.java,
+                    range.from,
+                    range.impls.size,
+                    range.target
                 )
             }
             return
@@ -87,13 +87,13 @@ class IndexGeneratorVisitor : IndexVisitor {
         val targetsName = "ranges${sectionIndex}"
 
         targetsBuilder.addStatement(
-                "\$L.put(\$S, new \$T(\$L, \$L, \$S))",
-                targetsName,
-                range.target,
-                magnet.internal.Range::class.java,
-                range.from,
-                range.impls.size,
-                range.target
+            "\$L.put(\$S, new \$T(\$L, \$L, \$S))",
+            targetsName,
+            range.target,
+            magnet.internal.Range::class.java,
+            range.from,
+            range.impls.size,
+            range.target
         )
     }
 
