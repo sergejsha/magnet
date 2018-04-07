@@ -31,12 +31,12 @@ class FactoryIndexGenerator {
     fun generate(implTypeElement: TypeElement, env: MagnetProcessorEnv) {
         val implClassName = ClassName.get(implTypeElement)
         val annotationsClassName = ClassName.get(Implementation::class.java)
-        parseImplementationAnnotation(implTypeElement, annotationsClassName) { type, forTarget ->
+        parseImplementationAnnotation(implTypeElement, annotationsClassName) { type, classifier ->
 
             val factoryTypeSpec = generateFactoryIndex(
                 implClassName,
                 type,
-                forTarget
+                classifier
             )
 
             JavaFile.builder("magnet.index", factoryTypeSpec)
@@ -49,25 +49,25 @@ class FactoryIndexGenerator {
     private fun <T> parseImplementationAnnotation(
         element: Element,
         annotationClassName: ClassName,
-        body: (type: String, forTarget: String) -> T
+        body: (type: String, classifier: String) -> T
     ) {
         element.annotationMirrors.forEach {
             val itClassName = ClassName.get(it.annotationType)
             if (itClassName == annotationClassName) {
                 var typeKey: ExecutableElement? = null
-                var forTargetKey: ExecutableElement? = null
+                var classifierKey: ExecutableElement? = null
 
                 it.elementValues.entries.forEach {
                     when (it.key.simpleName.toString()) {
                         "type" -> typeKey = it.key
-                        "forTarget" -> forTargetKey = it.key
+                        "classifier" -> classifierKey = it.key
                     }
                 }
 
                 if (typeKey != null) {
                     body(
                         it.elementValues[typeKey]!!.value.toString(),
-                        if (forTargetKey != null) it.elementValues[forTargetKey]!!.value.toString() else ""
+                        if (classifierKey != null) it.elementValues[classifierKey]!!.value.toString() else ""
                     )
                 }
             }

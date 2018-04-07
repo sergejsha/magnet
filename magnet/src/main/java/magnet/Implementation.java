@@ -52,7 +52,7 @@ public @interface Implementation {
      * @see ImplementationManager#getSingle(Class, String, DependencyScope)
      * @see ImplementationManager#requireSingle(Class, String, DependencyScope)
      */
-    String forTarget() default ImplementationManager.DEFAULT_TARGET;
+    String classifier() default ImplementationManager.DEFAULT_TARGET;
 
     //Class<?> type();
     //String classifier() default ImplementationManager.DEFAULT_TARGET;

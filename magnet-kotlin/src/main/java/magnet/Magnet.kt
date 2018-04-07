@@ -24,16 +24,16 @@ package magnet
  * @receiver ImplementationManager
  * @param T type of implementations to search for. This is the same type as
  *      the one used in `Implementation.type()`.
- * @param forTarget type of implementations to search for. This is the same
+ * @param classifier type of implementations to search for. This is the same
  *      type as the one used in `Implementation.type()`.
  * @param dependencyScope instance of dependency scope used by Magnet to
  *      inject dependencies into implementations, when they are instantiated.
  */
 inline fun <reified T> ImplementationManager.getMany(
-    forTarget: String? = ImplementationManager.DEFAULT_TARGET,
+    classifier: String? = ImplementationManager.DEFAULT_TARGET,
     dependencyScope: DependencyScope
 ): List<T> {
-    return this.getMany(T::class.java, forTarget, dependencyScope)
+    return this.getMany(T::class.java, classifier, dependencyScope)
 }
 
 /**
@@ -44,16 +44,16 @@ inline fun <reified T> ImplementationManager.getMany(
  * @receiver ImplementationManager
  * @param T type of the implementation to search for. This is the same type as
  *      the one used in `Implementation.type()`.
- * @param forTarget type of the implementation to search for. This is the same
+ * @param classifier type of the implementation to search for. This is the same
  *      type as the one used in `Implementation.type()`.
  * @param dependencyScope instance of dependency scope used by Magnet to inject
  *      dependencies into implementations, when they are instantiated.
  */
 inline fun <reified T> ImplementationManager.getSingle(
-    forTarget: String? = ImplementationManager.DEFAULT_TARGET,
+    classifier: String? = ImplementationManager.DEFAULT_TARGET,
     dependencyScope: DependencyScope
 ): T? {
-    return this.getSingle(T::class.java, forTarget, dependencyScope)
+    return this.getSingle(T::class.java, classifier, dependencyScope)
 }
 
 /**
@@ -64,15 +64,15 @@ inline fun <reified T> ImplementationManager.getSingle(
  * @receiver ImplementationManager
  * @param T type of the implementation to search for. This is the same type
  *      as the one used in `Implementation.type()`.
- * @param forTarget type of the implementation to search for. This is the
+ * @param classifier type of the implementation to search for. This is the
  *      same type as the one used in `Implementation.type()`.
  * @param dependencyScope instance of dependency scope used by Magnet to
  *      inject dependencies into implementations, when they are instantiated.
  * @throws IllegalStateException if implementation could not be found.
  */
 inline fun <reified T> ImplementationManager.requireSingle(
-    forTarget: String? = ImplementationManager.DEFAULT_TARGET,
+    classifier: String? = ImplementationManager.DEFAULT_TARGET,
     dependencyScope: DependencyScope
 ): T {
-    return this.requireSingle(T::class.java, forTarget, dependencyScope)
+    return this.requireSingle(T::class.java, classifier, dependencyScope)
 }

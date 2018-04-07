@@ -6,7 +6,7 @@ import magnet.Implementation;
 
 @Implementation(
         type = MenuItem.class,
-        forTarget = "main-menu"
+        classifier = "main-menu"
 )
 class HomePageMenuItem implements MenuItem {
 

@@ -61,12 +61,12 @@ final class MagnetImplementationManager implements ImplementationManager {
     }
 
     @Override
-    public <T> List<T> getMany(Class<T> type, String forTarget, DependencyScope dependencyScope) {
+    public <T> List<T> getMany(Class<T> type, String classifier, DependencyScope dependencyScope) {
         Object indexed = index.get(type);
 
         if (indexed instanceof Range) {
             Range range = (Range) indexed;
-            if (range.getTarget().equals(forTarget)) {
+            if (range.getTarget().equals(classifier)) {
                 return createFromRange(range, dependencyScope);
             }
             return Collections.emptyList();
@@ -75,7 +75,7 @@ final class MagnetImplementationManager implements ImplementationManager {
         if (indexed instanceof Map) {
             //noinspection unchecked
             Map<String, Range> ranges = (Map<String, Range>) indexed;
-            Range range = ranges.get(forTarget);
+            Range range = ranges.get(classifier);
             if (range != null) {
                 return createFromRange(range, dependencyScope);
             }
@@ -91,12 +91,12 @@ final class MagnetImplementationManager implements ImplementationManager {
     }
 
     @Override
-    public <T> T getSingle(Class<T> type, String forTarget, DependencyScope dependencyScope) {
-        List<T> instances = getMany(type, forTarget, dependencyScope);
+    public <T> T getSingle(Class<T> type, String classifier, DependencyScope dependencyScope) {
+        List<T> instances = getMany(type, classifier, dependencyScope);
         if (instances.size() > 1) {
             throw new IllegalStateException(
-                    String.format("Expect zero or one instance type: %s, forTarget: %s, but found %s: %s",
-                            type, forTarget, instances.size(), instances));
+                    String.format("Expect zero or one instance type: %s, classifier: %s, but found %s: %s",
+                            type, classifier, instances.size(), instances));
         }
         return instances.size() == 0 ? null : instances.get(0);
     }
@@ -107,12 +107,12 @@ final class MagnetImplementationManager implements ImplementationManager {
     }
 
     @Override
-    public <T> T requireSingle(Class<T> type, String forTarget, DependencyScope dependencyScope) {
-        List<T> instances = getMany(type, forTarget, dependencyScope);
+    public <T> T requireSingle(Class<T> type, String classifier, DependencyScope dependencyScope) {
+        List<T> instances = getMany(type, classifier, dependencyScope);
         if (instances.size() != 1) {
             throw new IllegalStateException(
-                    String.format("Expect exactly one instance type: %s, forTarget: %s, but found: %s: %s",
-                            type, forTarget, instances.size(), instances));
+                    String.format("Expect exactly one instance type: %s, classifier: %s, but found: %s: %s",
+                            type, classifier, instances.size(), instances));
         }
         return instances.get(0);
     }

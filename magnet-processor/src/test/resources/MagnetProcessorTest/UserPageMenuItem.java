@@ -6,7 +6,7 @@ import magnet.Implementation;
 
 @Implementation(
         type = MenuItem.class,
-        forTarget = "extended-menu"
+        classifier = "extended-menu"
 )
 class UserPageMenuItem implements MenuItem {
 
