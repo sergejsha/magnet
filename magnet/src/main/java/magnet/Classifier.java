@@ -9,5 +9,6 @@ import java.lang.annotation.Target;
 @Retention(SOURCE)
 @Target({ ElementType.PARAMETER })
 public @interface Classifier {
+    String NONE = "";
     String name();
 }

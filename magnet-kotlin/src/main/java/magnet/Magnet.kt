@@ -30,7 +30,7 @@ package magnet
  *      inject dependencies into implementations, when they are instantiated.
  */
 inline fun <reified T> ImplementationManager.getMany(
-    classifier: String? = ImplementationManager.DEFAULT_TARGET,
+    classifier: String? = Classifier.NONE,
     scope: Scope
 ): List<T> {
     return this.getMany(T::class.java, classifier, scope)
@@ -50,7 +50,7 @@ inline fun <reified T> ImplementationManager.getMany(
  *      dependencies into implementations, when they are instantiated.
  */
 inline fun <reified T> ImplementationManager.getSingle(
-    classifier: String? = ImplementationManager.DEFAULT_TARGET,
+    classifier: String? = Classifier.NONE,
     scope: Scope
 ): T? {
     return this.getSingle(T::class.java, classifier, scope)
@@ -71,7 +71,7 @@ inline fun <reified T> ImplementationManager.getSingle(
  * @throws IllegalStateException if implementation could not be found.
  */
 inline fun <reified T> ImplementationManager.requireSingle(
-    classifier: String? = ImplementationManager.DEFAULT_TARGET,
+    classifier: String? = Classifier.NONE,
     scope: Scope
 ): T {
     return this.requireSingle(T::class.java, classifier, scope)

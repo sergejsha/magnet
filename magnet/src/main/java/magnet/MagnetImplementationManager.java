@@ -57,7 +57,7 @@ final class MagnetImplementationManager implements ImplementationManager {
 
     @Override
     public <T> List<T> getMany(Class<T> type, Scope scope) {
-        return getMany(type, DEFAULT_TARGET, scope);
+        return getMany(type, Classifier.NONE, scope);
     }
 
     @Override
@@ -87,7 +87,7 @@ final class MagnetImplementationManager implements ImplementationManager {
 
     @Override
     public <T> T getSingle(Class<T> type, Scope scope) {
-        return getSingle(type, DEFAULT_TARGET, scope);
+        return getSingle(type, Classifier.NONE, scope);
     }
 
     @Override
@@ -103,7 +103,7 @@ final class MagnetImplementationManager implements ImplementationManager {
 
     @Override
     public <T> T requireSingle(Class<T> type, Scope scope) {
-        return requireSingle(type, DEFAULT_TARGET, scope);
+        return requireSingle(type, Classifier.NONE, scope);
     }
 
     @Override
