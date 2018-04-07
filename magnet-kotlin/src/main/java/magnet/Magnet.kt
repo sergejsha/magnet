@@ -23,9 +23,9 @@ package magnet
  *
  * @receiver ImplementationManager
  * @param T type of implementations to search for. This is the same type as
- *      the one used in `Implementation.forType()`.
+ *      the one used in `Implementation.type()`.
  * @param forTarget type of implementations to search for. This is the same
- *      type as the one used in `Implementation.forType()`.
+ *      type as the one used in `Implementation.type()`.
  * @param dependencyScope instance of dependency scope used by Magnet to
  *      inject dependencies into implementations, when they are instantiated.
  */
@@ -43,9 +43,9 @@ inline fun <reified T> ImplementationManager.getMany(
  *
  * @receiver ImplementationManager
  * @param T type of the implementation to search for. This is the same type as
- *      the one used in `Implementation.forType()`.
+ *      the one used in `Implementation.type()`.
  * @param forTarget type of the implementation to search for. This is the same
- *      type as the one used in `Implementation.forType()`.
+ *      type as the one used in `Implementation.type()`.
  * @param dependencyScope instance of dependency scope used by Magnet to inject
  *      dependencies into implementations, when they are instantiated.
  */
@@ -63,9 +63,9 @@ inline fun <reified T> ImplementationManager.getSingle(
  *
  * @receiver ImplementationManager
  * @param T type of the implementation to search for. This is the same type
- *      as the one used in `Implementation.forType()`.
+ *      as the one used in `Implementation.type()`.
  * @param forTarget type of the implementation to search for. This is the
- *      same type as the one used in `Implementation.forType()`.
+ *      same type as the one used in `Implementation.type()`.
  * @param dependencyScope instance of dependency scope used by Magnet to
  *      inject dependencies into implementations, when they are instantiated.
  * @throws IllegalStateException if implementation could not be found.

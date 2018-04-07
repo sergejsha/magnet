@@ -5,7 +5,7 @@ import magnet.DependencyScope;
 import magnet.Implementation;
 
 @Implementation(
-        forType = MenuItem.class,
+        type = MenuItem.class,
         forTarget = "main-menu"
 )
 class HomePageMenuItem implements MenuItem {

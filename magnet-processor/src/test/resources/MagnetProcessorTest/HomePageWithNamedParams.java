@@ -8,7 +8,7 @@ import app.Page;
 import app.UserData;
 import magnet.Implementation;
 
-@Implementation(forType = Page.class)
+@Implementation(type = Page.class)
 class HomePageWithNamedParams implements Page {
 
     private static final String LOCAL = "local";

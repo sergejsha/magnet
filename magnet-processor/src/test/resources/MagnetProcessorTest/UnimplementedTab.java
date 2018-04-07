@@ -2,5 +2,5 @@ package app.extension;
 
 import magnet.Implementation;
 
-@Implementation(forType = Tab.class)
+@Implementation(type = Tab.class)
 class UnimplementedTypeTab {}

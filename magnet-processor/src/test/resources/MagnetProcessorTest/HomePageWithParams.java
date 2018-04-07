@@ -9,7 +9,7 @@ import app.Page;
 import app.UserData;
 import magnet.Implementation;
 
-@Implementation(forType = Page.class)
+@Implementation(type = Page.class)
 class HomePageWithParams implements Page {
 
     HomePageWithParams(

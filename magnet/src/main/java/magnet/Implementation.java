@@ -39,7 +39,7 @@ public @interface Implementation {
      * @see ImplementationManager#getSingle(Class, DependencyScope)
      * @see ImplementationManager#requireSingle(Class, DependencyScope)
      */
-    Class<?> forType();
+    Class<?> type();
 
     /**
      * Defines an optional string used for querying an implementation associated
@@ -53,4 +53,8 @@ public @interface Implementation {
      * @see ImplementationManager#requireSingle(Class, String, DependencyScope)
      */
     String forTarget() default ImplementationManager.DEFAULT_TARGET;
+
+    //Class<?> type();
+    //String classifier() default ImplementationManager.DEFAULT_TARGET;
+
 }

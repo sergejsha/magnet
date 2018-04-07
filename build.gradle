@@ -38,7 +38,7 @@ ext.deps.design = "com.android.support:design:$compatlib_version"
 ext.deps.constraintLayout = 'com.android.support.constraint:constraint-layout:1.0.2'
 
 // open source
-ext.deps.javapoet = 'com.squareup:javapoet:1.7.0'
+ext.deps.javapoet = 'com.squareup:javapoet:1.10.0'
 ext.deps.jsr305 = 'com.google.code.findbugs:jsr305:3.0.2'
 ext.deps.javaxInject = 'javax.inject:javax.inject:1'
 ext.deps.kotlinjdk8 = "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"

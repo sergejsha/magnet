@@ -20,7 +20,7 @@ import android.content.res.Resources
 import magnet.Implementation
 import magnet.sample.app.main.Page
 
-@Implementation(forType = Page::class)
+@Implementation(type = Page::class)
 class NotificationPage(
     // optional (nullable) dependency available through DependencyScope (see MainActivity.kt)
     private val resource: Resources?

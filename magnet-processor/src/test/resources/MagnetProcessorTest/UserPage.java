@@ -4,7 +4,7 @@ import app.Page;
 import magnet.DependencyScope;
 import magnet.Implementation;
 
-@Implementation(forType = Page.class)
+@Implementation(type = Page.class)
 class UserPage implements Page {
 
     UserPage(DependencyScope registry) {

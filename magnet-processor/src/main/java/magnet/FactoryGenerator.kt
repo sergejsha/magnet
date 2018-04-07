@@ -41,15 +41,15 @@ class FactoryGenerator {
         val implClassName = ClassName.get(implTypeElement)
 
         implTypeElement.annotationMirrors.forEach {
-            val extensionClass = it.elementValues.entries.find { "forType" == it.key.simpleName.toString() }?.value
+            val extensionClass = it.elementValues.entries.find { "type" == it.key.simpleName.toString() }?.value
 
             extensionClass?.let {
                 val implType = env.elements.getTypeElement(it.value.toString())
-                val isForTypeImplemented = env.types.isAssignable(
+                val isTypeImplemented = env.types.isAssignable(
                     implTypeElement.asType(),
                     env.types.getDeclaredType(implType) // we deliberately erase generic type here
                 )
-                if (!isForTypeImplemented) {
+                if (!isTypeImplemented) {
                     env.reportError(implTypeElement, "$implTypeElement must implement $implType")
                     throw BreakGenerationException()
                 }

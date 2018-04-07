@@ -31,11 +31,11 @@ class FactoryIndexGenerator {
     fun generate(implTypeElement: TypeElement, env: MagnetProcessorEnv) {
         val implClassName = ClassName.get(implTypeElement)
         val annotationsClassName = ClassName.get(Implementation::class.java)
-        parseImplementationAnnotation(implTypeElement, annotationsClassName) { forType, forTarget ->
+        parseImplementationAnnotation(implTypeElement, annotationsClassName) { type, forTarget ->
 
             val factoryTypeSpec = generateFactoryIndex(
                 implClassName,
-                forType,
+                type,
                 forTarget
             )
 
@@ -49,24 +49,24 @@ class FactoryIndexGenerator {
     private fun <T> parseImplementationAnnotation(
         element: Element,
         annotationClassName: ClassName,
-        body: (forType: String, forTarget: String) -> T
+        body: (type: String, forTarget: String) -> T
     ) {
         element.annotationMirrors.forEach {
             val itClassName = ClassName.get(it.annotationType)
             if (itClassName == annotationClassName) {
-                var forTypeKey: ExecutableElement? = null
+                var typeKey: ExecutableElement? = null
                 var forTargetKey: ExecutableElement? = null
 
                 it.elementValues.entries.forEach {
                     when (it.key.simpleName.toString()) {
-                        "forType" -> forTypeKey = it.key
+                        "type" -> typeKey = it.key
                         "forTarget" -> forTargetKey = it.key
                     }
                 }
 
-                if (forTypeKey != null) {
+                if (typeKey != null) {
                     body(
-                        it.elementValues[forTypeKey]!!.value.toString(),
+                        it.elementValues[typeKey]!!.value.toString(),
                         if (forTargetKey != null) it.elementValues[forTargetKey]!!.value.toString() else ""
                     )
                 }

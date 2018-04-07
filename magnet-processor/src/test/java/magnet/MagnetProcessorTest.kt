@@ -95,7 +95,7 @@ class MagnetProcessorTest {
     }
 
     @Test
-    fun generateFactory_ForTypeNotImplemented() {
+    fun generateFactory_TypeNotImplemented() {
 
         val compilation = Compiler.javac()
             .withProcessors(MagnetProcessor())
