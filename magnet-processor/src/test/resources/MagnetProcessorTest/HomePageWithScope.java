@@ -1,13 +1,13 @@
 package app.extension;
 
 import app.Page;
-import magnet.DependencyScope;
 import magnet.Implementation;
+import magnet.Scope;
 
 @Implementation(type = Page.class)
-class HomePageWithDependencyScope implements Page {
+class HomePageWithScope implements Page {
 
-    HomePageWithDependencyScope(DependencyScope dependencyScope) { }
+    HomePageWithScope(Scope scope) { }
 
     @Override
     public void show() {

@@ -26,14 +26,14 @@ package magnet
  *      the one used in `Implementation.type()`.
  * @param classifier type of implementations to search for. This is the same
  *      type as the one used in `Implementation.type()`.
- * @param dependencyScope instance of dependency scope used by Magnet to
+ * @param scope instance of dependency scope used by Magnet to
  *      inject dependencies into implementations, when they are instantiated.
  */
 inline fun <reified T> ImplementationManager.getMany(
     classifier: String? = ImplementationManager.DEFAULT_TARGET,
-    dependencyScope: DependencyScope
+    scope: Scope
 ): List<T> {
-    return this.getMany(T::class.java, classifier, dependencyScope)
+    return this.getMany(T::class.java, classifier, scope)
 }
 
 /**
@@ -46,14 +46,14 @@ inline fun <reified T> ImplementationManager.getMany(
  *      the one used in `Implementation.type()`.
  * @param classifier type of the implementation to search for. This is the same
  *      type as the one used in `Implementation.type()`.
- * @param dependencyScope instance of dependency scope used by Magnet to inject
+ * @param scope instance of dependency scope used by Magnet to inject
  *      dependencies into implementations, when they are instantiated.
  */
 inline fun <reified T> ImplementationManager.getSingle(
     classifier: String? = ImplementationManager.DEFAULT_TARGET,
-    dependencyScope: DependencyScope
+    scope: Scope
 ): T? {
-    return this.getSingle(T::class.java, classifier, dependencyScope)
+    return this.getSingle(T::class.java, classifier, scope)
 }
 
 /**
@@ -66,13 +66,13 @@ inline fun <reified T> ImplementationManager.getSingle(
  *      as the one used in `Implementation.type()`.
  * @param classifier type of the implementation to search for. This is the
  *      same type as the one used in `Implementation.type()`.
- * @param dependencyScope instance of dependency scope used by Magnet to
+ * @param scope instance of dependency scope used by Magnet to
  *      inject dependencies into implementations, when they are instantiated.
  * @throws IllegalStateException if implementation could not be found.
  */
 inline fun <reified T> ImplementationManager.requireSingle(
     classifier: String? = ImplementationManager.DEFAULT_TARGET,
-    dependencyScope: DependencyScope
+    scope: Scope
 ): T {
-    return this.requireSingle(T::class.java, classifier, dependencyScope)
+    return this.requireSingle(T::class.java, classifier, scope)
 }

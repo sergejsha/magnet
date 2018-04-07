@@ -35,9 +35,9 @@ public @interface Implementation {
      * Defines the interface this implementation implements. Same type is used
      * when implementations are queried by means of {@link ImplementationManager}.
      *
-     * @see ImplementationManager#getMany(Class, DependencyScope)
-     * @see ImplementationManager#getSingle(Class, DependencyScope)
-     * @see ImplementationManager#requireSingle(Class, DependencyScope)
+     * @see ImplementationManager#getMany(Class, Scope)
+     * @see ImplementationManager#getSingle(Class, Scope)
+     * @see ImplementationManager#requireSingle(Class, Scope)
      */
     Class<?> type();
 
@@ -48,13 +48,10 @@ public @interface Implementation {
      * one of those menus by declaring "main" or "debug" as the target. Main
      * and debug menus will correspondingly query their menu items.
      *
-     * @see ImplementationManager#getMany(Class, String, DependencyScope)
-     * @see ImplementationManager#getSingle(Class, String, DependencyScope)
-     * @see ImplementationManager#requireSingle(Class, String, DependencyScope)
+     * @see ImplementationManager#getMany(Class, String, Scope)
+     * @see ImplementationManager#getSingle(Class, String, Scope)
+     * @see ImplementationManager#requireSingle(Class, String, Scope)
      */
     String classifier() default ImplementationManager.DEFAULT_TARGET;
-
-    //Class<?> type();
-    //String classifier() default ImplementationManager.DEFAULT_TARGET;
 
 }

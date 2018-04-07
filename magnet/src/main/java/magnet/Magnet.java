@@ -18,7 +18,7 @@ package magnet;
 
 /**
  * Main class serving as a factory for {@link ImplementationManager} and the
- * root {@link DependencyScope}.
+ * root {@link Scope}.
  */
 public final class Magnet {
 
@@ -31,9 +31,9 @@ public final class Magnet {
         return IMPLEMENTATION_MANAGER;
     }
 
-    /** Creates a new root {@link DependencyScope} instance. */
-    public static DependencyScope createDependencyScope() {
-        return new MagnetDependencyScope();
+    /** Creates a new root {@link Scope} instance. */
+    public static Scope createScope() {
+        return new MagnetScope();
     }
 
 }

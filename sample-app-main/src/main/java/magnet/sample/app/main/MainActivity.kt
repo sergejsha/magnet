@@ -23,7 +23,7 @@ import android.view.Menu
 import android.widget.TextView
 import kotlinx.android.synthetic.main.activity_main.message
 import kotlinx.android.synthetic.main.activity_main.navigation
-import magnet.DependencyScope
+import magnet.Scope
 import magnet.getMany
 import magnet.register
 import magnet.sample.app.App
@@ -31,7 +31,7 @@ import magnet.sample.app.App
 class MainActivity : AppCompatActivity() {
 
     private val pageBinders = SparseArray<PageBinder>()
-    private lateinit var activityScope: DependencyScope
+    private lateinit var activityScope: Scope
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -46,7 +46,7 @@ class MainActivity : AppCompatActivity() {
         // query registered implementations of Page type
         val pages = App.implManager.getMany<Page>(
             // each page receives its own dependency scope that it cannot override values in activity scope
-            dependencyScope = activityScope.subscope()
+            scope = activityScope.subscope()
         )
 
         // add queried pages to the menu and register listeners

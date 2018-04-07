@@ -39,10 +39,10 @@ package magnet;
  * continue to search in parent scope and so on, until a dependency is found
  * or root scope is reached.
  *
- * @see ImplementationManager#getMany(Class, DependencyScope)
- * @see ImplementationManager#getMany(Class, String, DependencyScope)
+ * @see ImplementationManager#getMany(Class, Scope)
+ * @see ImplementationManager#getMany(Class, String, Scope)
  */
-public interface DependencyScope {
+public interface Scope {
 
     /**
      * Returns dependency of given type or null if none was found.
@@ -56,12 +56,12 @@ public interface DependencyScope {
     /**
      * Returns dependency of given type or null if none was found.
      *
-     * @param type      the type of dependency to search for.
-     * @param <T>       the type of dependency to search for.
-     * @param qualifier the type's qualifier of dependency to search for.
+     * @param type       the type of dependency to search for.
+     * @param <T>        the type of dependency to search for.
+     * @param classifier the type's classifier of dependency to search for.
      * @return dependency found or {@code null} if none was found.
      */
-    <T> T get(Class<T> type, String qualifier);
+    <T> T get(Class<T> type, String classifier);
 
     /**
      * Returns dependency of given type. If dependency has not been
@@ -77,12 +77,12 @@ public interface DependencyScope {
      * Returns dependency of given type. If dependency has not been
      * found, then method throws {@link IllegalArgumentException}.
      *
-     * @param type      type of dependency to search for.
-     * @param <T>       type of dependency to search for.
-     * @param qualifier the type's qualifier of dependency to search for.
+     * @param type       type of dependency to search for.
+     * @param <T>        type of dependency to search for.
+     * @param classifier the type's classifier of dependency to search for.
      * @return dependency found.
      */
-    <T> T require(Class<T> type, String qualifier);
+    <T> T require(Class<T> type, String classifier);
 
     /**
      * Registers a new dependency within this scope. If dependency
@@ -96,7 +96,7 @@ public interface DependencyScope {
      * @param <T>        type of dependency to be registered.
      * @return this dependency scope for building chained calls.
      */
-    <T> DependencyScope register(Class<T> type, T dependency);
+    <T> Scope register(Class<T> type, T dependency);
 
     /**
      * Registers a new dependency within this scope. If dependency
@@ -108,16 +108,16 @@ public interface DependencyScope {
      * @param type       type of dependency to be registered.
      * @param dependency dependency to be registered.
      * @param <T>        type of dependency to be registered.
-     * @param qualifier  the type's qualifier of dependency to search for.
+     * @param classifier the type's classifier of dependency to search for.
      * @return this dependency scope for building chained calls.
      */
-    <T> DependencyScope register(Class<T> type, T dependency, String qualifier);
+    <T> Scope register(Class<T> type, T dependency, String classifier);
 
     /**
      * Creates a new dependency scope using this scope as the parent.
      *
      * @return new child dependency scope.
      */
-    DependencyScope subscope();
+    Scope subscope();
 
 }

@@ -31,6 +31,7 @@ import javax.lang.model.util.ElementFilter
 
 private const val CLASS_JAVAX_NAMED = "javax.inject.Named"
 private const val CLASS_NULLABLE = ".Nullable"
+private const val PARAM_SCOPE = "scope"
 
 class FactoryGenerator {
 
@@ -117,11 +118,11 @@ class FactoryGenerator {
         implTypeClassName: ClassName,
         implTypeElement: TypeElement
     ): MethodSpec {
-        val dependencyScopeClassName = ClassName.get(DependencyScope::class.java)
+        val scopeClassName = ClassName.get(Scope::class.java)
 
         // We have following cases:
         // 1. No parameters -> empty constructor
-        // 2. One or many parameters -> DependencyScope used "as is" others are required() from scope
+        // 2. One or many parameters -> Scope used "as is" others are required() from scope
 
         val constructors = ElementFilter.constructorsIn(implTypeElement.enclosedElements)
         if (constructors.size != 1) {
@@ -139,14 +140,14 @@ class FactoryGenerator {
                 env.reportError(implTypeElement,
                     "Constructor parameter '${it.simpleName}' is specified using a generic type which" +
                         " is an invalid parameter type. Use a class or an interface type instead." +
-                        " 'DependencyScope' is a valid parameter type too.")
+                        " 'Scope' is a valid parameter type too.")
                 throw BreakGenerationException()
             }
 
-            val isDependencyScopeParam = type.toString() == DependencyScope::class.java.name
-            val paramName = if (isDependencyScopeParam) "dependencyScope" else it.simpleName.toString()
+            val isScopeParam = type.toString() == Scope::class.java.name
+            val paramName = if (isScopeParam) PARAM_SCOPE else it.simpleName.toString()
 
-            if (!isDependencyScopeParam) {
+            if (!isScopeParam) {
                 val paramClassName = ClassName.get(type)
 
                 var hasNullableAnnotation = false
@@ -167,14 +168,14 @@ class FactoryGenerator {
 
                 if (namedAnnotationValue != null) {
                     codeBlockBuilder.addStatement(
-                        "\$T $paramName = dependencyScope.$getMethodName(\$T.class, \$S)",
+                        "\$T $paramName = scope.$getMethodName(\$T.class, \$S)",
                         paramClassName,
                         paramClassName,
                         namedAnnotationValue
                     )
                 } else {
                     codeBlockBuilder.addStatement(
-                        "\$T $paramName = dependencyScope.$getMethodName(\$T.class)",
+                        "\$T $paramName = scope.$getMethodName(\$T.class)",
                         paramClassName,
                         paramClassName
                     )
@@ -194,7 +195,7 @@ class FactoryGenerator {
             .addAnnotation(Override::class.java)
             .addModifiers(Modifier.PUBLIC)
             .addParameter(ParameterSpec
-                .builder(dependencyScopeClassName, "dependencyScope")
+                .builder(scopeClassName, PARAM_SCOPE)
                 .build())
             .returns(implTypeClassName)
             .addCode(codeBlockBuilder.build())

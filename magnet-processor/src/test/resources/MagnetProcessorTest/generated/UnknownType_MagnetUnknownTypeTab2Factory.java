@@ -1,11 +1,11 @@
 package app.extension;
 
-import magnet.DependencyScope;
+import magnet.Scope;
 import magnet.internal.Factory;
 
 public final class MagnetUnknownTypeTab2Factory implements Factory<Tab> {
     @Override
-    public Tab create(DependencyScope dependencyScope) {
+    public Tab create(Scope scope) {
         return new UnknownTypeTab2();
     }
 

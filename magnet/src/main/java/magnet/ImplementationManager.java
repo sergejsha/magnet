@@ -47,13 +47,13 @@ public interface ImplementationManager {
      *
      * @param type            type of implementations to search for. This is the
      *                        same type used in {@link Implementation#type()}.
-     * @param dependencyScope instance of dependency scope used by Magnet to inject
+     * @param scope instance of dependency scope used by Magnet to inject
      *                        dependencies into implementations, when they are
      *                        instantiated.
      * @param <T>             type of implementations to search for.
      * @return list of instantiated implementations or an empty list.
      */
-    <T> List<T> getMany(Class<T> type, DependencyScope dependencyScope);
+    <T> List<T> getMany(Class<T> type, Scope scope);
 
     /**
      * Searches for all registered {@link Implementation}'s of given type
@@ -63,13 +63,13 @@ public interface ImplementationManager {
      *                        type as the one used in {@link Implementation#type()}.
      * @param classifier      target of implementations to search for. This is the same
      *                        target as the one used in {@link Implementation#classifier()}.
-     * @param dependencyScope instance of dependency scope used by Magnet to inject
+     * @param scope instance of dependency scope used by Magnet to inject
      *                        dependencies into implementations, when they are
      *                        instantiated.
      * @param <T>             type of implementations to search for.
      * @return list of instantiated implementations or an empty list.
      */
-    <T> List<T> getMany(Class<T> type, String classifier, DependencyScope dependencyScope);
+    <T> List<T> getMany(Class<T> type, String classifier, Scope scope);
 
     /**
      * Searches for zero or one registered {@link Implementation} of given type
@@ -78,14 +78,14 @@ public interface ImplementationManager {
      *
      * @param type            type of implementations to search for. This is the
      *                        same type used in {@link Implementation#type()}.
-     * @param dependencyScope instance of dependency scope used by Magnet to inject
+     * @param scope instance of dependency scope used by Magnet to inject
      *                        dependencies into implementations, when they are
      *                        instantiated.
      * @param <T>             type of implementations to search for.
      * @return instance of the implementation found or {@code null}.
      * @throws IllegalStateException if more than one implementation was found.
      */
-    <T> T getSingle(Class<T> type, DependencyScope dependencyScope);
+    <T> T getSingle(Class<T> type, Scope scope);
 
     /**
      * Searches for zero or one registered {@link Implementation} of given type
@@ -96,14 +96,14 @@ public interface ImplementationManager {
      *                        same type used in {@link Implementation#type()}.
      * @param classifier      target of implementations to search for. This is the same
      *                        target as the one used in {@link Implementation#classifier()}.
-     * @param dependencyScope instance of dependency scope used by Magnet to inject
+     * @param scope instance of dependency scope used by Magnet to inject
      *                        dependencies into implementations, when they are
      *                        instantiated.
      * @param <T>             type of implementations to search for.
      * @return instance of the implementation found or {@code null}.
      * @throws IllegalStateException if more than one implementation was found.
      */
-    <T> T getSingle(Class<T> type, String classifier, DependencyScope dependencyScope);
+    <T> T getSingle(Class<T> type, String classifier, Scope scope);
 
     /**
      * Searches for exactly one registered {@link Implementation} of given type
@@ -112,14 +112,14 @@ public interface ImplementationManager {
      *
      * @param type            type of the implementation to search for. This is the
      *                        same type used in {@link Implementation#type()}.
-     * @param dependencyScope instance of dependency scope used by Magnet to inject
+     * @param scope instance of dependency scope used by Magnet to inject
      *                        dependencies into implementations, when they are
      *                        instantiated.
      * @param <T>             type of implementations to search for.
      * @return instance of the implementation found.
      * @throws IllegalStateException if none or more than one implementation was found.
      */
-    <T> T requireSingle(Class<T> type, DependencyScope dependencyScope);
+    <T> T requireSingle(Class<T> type, Scope scope);
 
     /**
      * Searches for exactly one registered {@link Implementation} of given type
@@ -130,13 +130,13 @@ public interface ImplementationManager {
      *                        same type used in {@link Implementation#type()}.
      * @param classifier      target of the implementation to search for. This is the same
      *                        target as the one used in {@link Implementation#classifier()}.
-     * @param dependencyScope instance of dependency scope used by Magnet to inject
+     * @param scope instance of dependency scope used by Magnet to inject
      *                        dependencies into implementations, when they are
      *                        instantiated.
      * @param <T>             type of implementations to search for.
      * @return instance of the implementation found.
      * @throws IllegalStateException if none or more than one implementation was found.
      */
-    <T> T requireSingle(Class<T> type, String classifier, DependencyScope dependencyScope);
+    <T> T requireSingle(Class<T> type, String classifier, Scope scope);
 
 }

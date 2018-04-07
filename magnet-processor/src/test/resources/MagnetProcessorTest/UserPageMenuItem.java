@@ -1,7 +1,7 @@
 package app.extension;
 
 import app.MenuItem;
-import magnet.DependencyScope;
+import magnet.Scope;
 import magnet.Implementation;
 
 @Implementation(
@@ -10,7 +10,7 @@ import magnet.Implementation;
 )
 class UserPageMenuItem implements MenuItem {
 
-    UserPageMenuItem(DependencyScope registry) {
+    UserPageMenuItem(Scope registry) {
     }
 
     @Override

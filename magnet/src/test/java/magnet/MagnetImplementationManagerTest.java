@@ -33,7 +33,7 @@ public class MagnetImplementationManagerTest {
     Factory<Type2> factoryType2Impl2;
 
     @Mock
-    DependencyScope dependencyScope;
+    Scope scope;
 
     private MagnetImplementationManager implManager;
 
@@ -41,10 +41,10 @@ public class MagnetImplementationManagerTest {
     public void before() {
         implManager = new MagnetImplementationManager();
 
-        when(factoryType1Impl1.create(dependencyScope)).thenReturn(new Type1Impl());
-        when(factoryType1Impl2.create(dependencyScope)).thenReturn(new Type1Impl());
-        when(factoryType2Impl1.create(dependencyScope)).thenReturn(new Type2Impl());
-        when(factoryType2Impl2.create(dependencyScope)).thenReturn(new Type2Impl());
+        when(factoryType1Impl1.create(scope)).thenReturn(new Type1Impl());
+        when(factoryType1Impl2.create(scope)).thenReturn(new Type1Impl());
+        when(factoryType2Impl1.create(scope)).thenReturn(new Type2Impl());
+        when(factoryType2Impl2.create(scope)).thenReturn(new Type2Impl());
 
         Factory[] factories = new Factory[] {
                 factoryType1Impl1,
@@ -68,7 +68,7 @@ public class MagnetImplementationManagerTest {
     @Test
     public void test_GetMany_UnknownType_NoTarget() {
         // when
-        List<Object> impls = implManager.getMany(Object.class, dependencyScope);
+        List<Object> impls = implManager.getMany(Object.class, scope);
 
         // then
         assertThat(impls).isEmpty();
@@ -77,11 +77,11 @@ public class MagnetImplementationManagerTest {
     @Test
     public void test_GetMany_Type_Target_default() {
         // when
-        List<Type2> impls = implManager.getMany(Type2.class, dependencyScope);
+        List<Type2> impls = implManager.getMany(Type2.class, scope);
 
         // then
-        verify(factoryType2Impl1).create(dependencyScope);
-        verify(factoryType2Impl2).create(dependencyScope);
+        verify(factoryType2Impl1).create(scope);
+        verify(factoryType2Impl2).create(scope);
         assertThat(impls).hasSize(2);
         assertThat(impls.get(0)).isNotNull();
         assertThat(impls.get(1)).isNotNull();
@@ -90,10 +90,10 @@ public class MagnetImplementationManagerTest {
     @Test
     public void test_GetMany_Type_Target_impl1() {
         // when
-        List<Type1> impls = implManager.getMany(Type1.class, "impl1", dependencyScope);
+        List<Type1> impls = implManager.getMany(Type1.class, "impl1", scope);
 
         // then
-        verify(factoryType1Impl1).create(dependencyScope);
+        verify(factoryType1Impl1).create(scope);
         assertThat(impls).hasSize(1);
         assertThat(impls.get(0)).isNotNull();
     }
@@ -101,10 +101,10 @@ public class MagnetImplementationManagerTest {
     @Test
     public void test_GetMany_Type_Target_impl2() {
         // when
-        List<Type1> impls = implManager.getMany(Type1.class, "impl2", dependencyScope);
+        List<Type1> impls = implManager.getMany(Type1.class, "impl2", scope);
 
         // then
-        verify(factoryType1Impl2).create(dependencyScope);
+        verify(factoryType1Impl2).create(scope);
         assertThat(impls).hasSize(1);
         assertThat(impls.get(0)).isNotNull();
     }
@@ -112,17 +112,17 @@ public class MagnetImplementationManagerTest {
     @Test
     public void test_GetSingle_OneFound() {
         // when
-        Type1 impl = implManager.getSingle(Type1.class, "impl2", dependencyScope);
+        Type1 impl = implManager.getSingle(Type1.class, "impl2", scope);
 
         // then
         assertThat(impl).isNotNull();
-        verify(factoryType1Impl2).create(dependencyScope);
+        verify(factoryType1Impl2).create(scope);
     }
 
     @Test
     public void test_GetSingle_NoneFound() {
         // when
-        Type3 impl = implManager.getSingle(Type3.class, dependencyScope);
+        Type3 impl = implManager.getSingle(Type3.class, scope);
 
         // then
         assertThat(impl).isNull();
@@ -130,27 +130,27 @@ public class MagnetImplementationManagerTest {
 
     @Test(expected = IllegalStateException.class)
     public void test_GetSingle_MultipleFound() {
-        implManager.getSingle(Type2.class, dependencyScope);
+        implManager.getSingle(Type2.class, scope);
     }
 
     @Test
     public void test_RequireSingle_OneFound() {
         // when
-        Type1 impl = implManager.requireSingle(Type1.class, "impl2", dependencyScope);
+        Type1 impl = implManager.requireSingle(Type1.class, "impl2", scope);
 
         // then
         assertThat(impl).isNotNull();
-        verify(factoryType1Impl2).create(dependencyScope);
+        verify(factoryType1Impl2).create(scope);
     }
 
     @Test(expected = IllegalStateException.class)
     public void test_RequireSingle_NoneFound() {
-        implManager.requireSingle(Type3.class, dependencyScope);
+        implManager.requireSingle(Type3.class, scope);
     }
 
     @Test(expected = IllegalStateException.class)
     public void test_RequireSingle_MultipleFound() {
-        implManager.requireSingle(Type2.class, dependencyScope);
+        implManager.requireSingle(Type2.class, scope);
     }
 
     interface Type1 {}

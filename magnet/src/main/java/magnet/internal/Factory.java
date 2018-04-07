@@ -17,11 +17,11 @@
 package magnet.internal;
 
 
-import magnet.DependencyScope;
+import magnet.Scope;
 
 /** Subject to change. For internal use only. */
 public interface Factory<T> {
 
-    T create(DependencyScope dependencyScope);
+    T create(Scope scope);
 
 }

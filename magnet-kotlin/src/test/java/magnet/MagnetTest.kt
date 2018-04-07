@@ -30,33 +30,33 @@ class MagnetTest {
     lateinit var implManager: ImplementationManager
 
     @Mock
-    lateinit var dependencyScope: DependencyScope
+    lateinit var scope: Scope
 
     @Test
     fun testGetMany() {
         // when
-        val many: List<String> = implManager.getMany<String>("target", dependencyScope)
+        val many: List<String> = implManager.getMany<String>("target", scope)
 
         // then
-        verify(implManager).getMany(String::class.java, "target", dependencyScope)
+        verify(implManager).getMany(String::class.java, "target", scope)
     }
 
     @Test
     fun testGetSingle() {
         // when
-        val single: String? = implManager.getSingle<String>("target", dependencyScope)
+        val single: String? = implManager.getSingle<String>("target", scope)
 
         // then
-        verify(implManager).getSingle(String::class.java, "target", dependencyScope)
+        verify(implManager).getSingle(String::class.java, "target", scope)
     }
 
     @Test
     fun testRequireSingle() {
         // when
-        val single: String = implManager.requireSingle<String>("target", dependencyScope)
+        val single: String = implManager.requireSingle<String>("target", scope)
 
         // then
-        verify(implManager).requireSingle(String::class.java, "target", dependencyScope)
+        verify(implManager).requireSingle(String::class.java, "target", scope)
     }
 
 }

@@ -3,15 +3,15 @@ package app.extension;
 import app.HomeRepository;
 import app.Page;
 import app.UserData;
-import magnet.DependencyScope;
+import magnet.Scope;
 import magnet.internal.Factory;
 
 public final class MagnetHomePageWithParamsFactory implements Factory<Page> {
 
     @Override
-    public Page create(DependencyScope dependencyScope) {
-        HomeRepository homeRepository = dependencyScope.get(HomeRepository.class);
-        UserData userData = dependencyScope.require(UserData.class);
+    public Page create(Scope scope) {
+        HomeRepository homeRepository = scope.get(HomeRepository.class);
+        UserData userData = scope.require(UserData.class);
         return new HomePageWithParams(homeRepository, userData);
     }
 

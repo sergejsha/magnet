@@ -24,36 +24,36 @@ import org.mockito.junit.MockitoJUnitRunner
 
 @Suppress("UNUSED_VARIABLE")
 @RunWith(MockitoJUnitRunner.StrictStubs::class)
-class DependencyScopeTest {
+class ScopeTest {
 
     @Mock
-    lateinit var dependencyScope: DependencyScope
+    lateinit var scope: Scope
 
     @Test
     fun testGet() {
         // when
-        val value: String? = dependencyScope.get<String>()
+        val value: String? = scope.get<String>()
 
         // then
-        verify(dependencyScope).get(String::class.java, "")
+        verify(scope).get(String::class.java, "")
     }
 
     @Test
     fun testRequire() {
         // when
-        val value = dependencyScope.require<String>()
+        val value = scope.require<String>()
 
         // then
-        verify(dependencyScope).require(String::class.java, "")
+        verify(scope).require(String::class.java, "")
     }
 
     @Test
     fun testRegister() {
         // when
-        dependencyScope.register("component")
+        scope.register("component")
 
         // then
-        verify(dependencyScope).register("component", "")
+        verify(scope).register("component", "")
     }
 
 }

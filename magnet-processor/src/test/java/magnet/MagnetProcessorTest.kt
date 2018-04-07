@@ -26,20 +26,20 @@ class MagnetProcessorTest {
     }
 
     @Test
-    fun generateFactory_WithDependencyScope() {
+    fun generateFactory_WithScope() {
 
         val compilation = Compiler.javac()
             .withProcessors(MagnetProcessor())
             .compile(
-                withResource("HomePageWithDependencyScope.java"),
+                withResource("HomePageWithScope.java"),
                 withResource("Page.java")
             )
 
         assertThat(compilation).succeededWithoutWarnings()
 
         assertThat(compilation)
-            .generatedSourceFile("app/extension/MagnetHomePageWithDependencyScopeFactory")
-            .hasSourceEquivalentTo(withResource("generated/MagnetHomePageWithDependencyScopeFactory.java"))
+            .generatedSourceFile("app/extension/MagnetHomePageWithScopeFactory")
+            .hasSourceEquivalentTo(withResource("generated/MagnetHomePageWithScopeFactory.java"))
     }
 
     @Test
@@ -62,7 +62,7 @@ class MagnetProcessorTest {
     }
 
     @Test
-    fun generateFactory_WithArbitraryParamsAndDependencyScope() {
+    fun generateFactory_WithArbitraryParamsAndScope() {
 
         val compilation = Compiler.javac()
             .withProcessors(MagnetProcessor())

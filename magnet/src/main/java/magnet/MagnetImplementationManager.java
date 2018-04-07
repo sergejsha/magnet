@@ -56,18 +56,18 @@ final class MagnetImplementationManager implements ImplementationManager {
     }
 
     @Override
-    public <T> List<T> getMany(Class<T> type, DependencyScope dependencyScope) {
-        return getMany(type, DEFAULT_TARGET, dependencyScope);
+    public <T> List<T> getMany(Class<T> type, Scope scope) {
+        return getMany(type, DEFAULT_TARGET, scope);
     }
 
     @Override
-    public <T> List<T> getMany(Class<T> type, String classifier, DependencyScope dependencyScope) {
+    public <T> List<T> getMany(Class<T> type, String classifier, Scope scope) {
         Object indexed = index.get(type);
 
         if (indexed instanceof Range) {
             Range range = (Range) indexed;
             if (range.getTarget().equals(classifier)) {
-                return createFromRange(range, dependencyScope);
+                return createFromRange(range, scope);
             }
             return Collections.emptyList();
         }
@@ -77,7 +77,7 @@ final class MagnetImplementationManager implements ImplementationManager {
             Map<String, Range> ranges = (Map<String, Range>) indexed;
             Range range = ranges.get(classifier);
             if (range != null) {
-                return createFromRange(range, dependencyScope);
+                return createFromRange(range, scope);
             }
             return Collections.emptyList();
         }
@@ -86,13 +86,13 @@ final class MagnetImplementationManager implements ImplementationManager {
     }
 
     @Override
-    public <T> T getSingle(Class<T> type, DependencyScope dependencyScope) {
-        return getSingle(type, DEFAULT_TARGET, dependencyScope);
+    public <T> T getSingle(Class<T> type, Scope scope) {
+        return getSingle(type, DEFAULT_TARGET, scope);
     }
 
     @Override
-    public <T> T getSingle(Class<T> type, String classifier, DependencyScope dependencyScope) {
-        List<T> instances = getMany(type, classifier, dependencyScope);
+    public <T> T getSingle(Class<T> type, String classifier, Scope scope) {
+        List<T> instances = getMany(type, classifier, scope);
         if (instances.size() > 1) {
             throw new IllegalStateException(
                     String.format("Expect zero or one instance type: %s, classifier: %s, but found %s: %s",
@@ -102,13 +102,13 @@ final class MagnetImplementationManager implements ImplementationManager {
     }
 
     @Override
-    public <T> T requireSingle(Class<T> type, DependencyScope dependencyScope) {
-        return requireSingle(type, DEFAULT_TARGET, dependencyScope);
+    public <T> T requireSingle(Class<T> type, Scope scope) {
+        return requireSingle(type, DEFAULT_TARGET, scope);
     }
 
     @Override
-    public <T> T requireSingle(Class<T> type, String classifier, DependencyScope dependencyScope) {
-        List<T> instances = getMany(type, classifier, dependencyScope);
+    public <T> T requireSingle(Class<T> type, String classifier, Scope scope) {
+        List<T> instances = getMany(type, classifier, scope);
         if (instances.size() != 1) {
             throw new IllegalStateException(
                     String.format("Expect exactly one instance type: %s, classifier: %s, but found: %s: %s",
@@ -117,11 +117,11 @@ final class MagnetImplementationManager implements ImplementationManager {
         return instances.get(0);
     }
 
-    private <T> List<T> createFromRange(Range range, DependencyScope dependencyScope) {
+    private <T> List<T> createFromRange(Range range, Scope scope) {
         List<T> impls = new ArrayList<>();
         for (int i = range.getFrom(), to = range.getFrom() + range.getCount(); i < to; i++) {
             //noinspection unchecked
-            impls.add((T) factories[i].create(dependencyScope));
+            impls.add((T) factories[i].create(scope));
         }
         return impls;
     }

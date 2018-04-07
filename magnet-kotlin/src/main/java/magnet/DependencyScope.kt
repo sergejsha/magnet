@@ -19,24 +19,24 @@ package magnet
 /**
  * Returns dependency of given type or null if none was found.
  *
- * @receiver DependencyScope
+ * @receiver Scope
  * @param T the type of dependency to search for.
  * @return  dependency found or `null` if none was found.
  */
-inline fun <reified T> DependencyScope.get(qualifier: String = ""): T? {
-    return this.get(T::class.java, qualifier)
+inline fun <reified T> Scope.get(classifier: String = ""): T? {
+    return this.get(T::class.java, classifier)
 }
 
 /**
  * Returns dependency of given type or fails with [IllegalStateException]
  * if none was found.
  *
- * @receiver DependencyScope
+ * @receiver Scope
  * @param T the type of dependency to search for.
  * @return  dependency found.
  */
-inline fun <reified T> DependencyScope.require(qualifier: String = ""): T {
-    return this.require(T::class.java, qualifier)
+inline fun <reified T> Scope.require(classifier: String = ""): T {
+    return this.require(T::class.java, classifier)
 }
 
 /**
@@ -46,6 +46,6 @@ inline fun <reified T> DependencyScope.require(qualifier: String = ""): T {
  * overwriting dependencies, then create a new subscope and
  * add dependencies in there.
  */
-inline fun <reified T> DependencyScope.register(component: T, qualifier: String = "") {
-    this.register(T::class.java, component, qualifier)
+inline fun <reified T> Scope.register(component: T, classifier: String = "") {
+    this.register(T::class.java, component, classifier)
 }

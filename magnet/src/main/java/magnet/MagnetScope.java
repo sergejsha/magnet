@@ -19,17 +19,17 @@ package magnet;
 import java.util.HashMap;
 import java.util.Map;
 
-final class MagnetDependencyScope implements DependencyScope {
+final class MagnetScope implements Scope {
 
-    private final MagnetDependencyScope parent;
+    private final MagnetScope parent;
     private final Map<String, Object> dependencies;
 
-    private MagnetDependencyScope(MagnetDependencyScope parent) {
+    private MagnetScope(MagnetScope parent) {
         this.parent = parent;
         this.dependencies = new HashMap<>();
     }
 
-    MagnetDependencyScope() {
+    MagnetScope() {
         this.parent = null;
         this.dependencies = new HashMap<>();
     }
@@ -40,8 +40,8 @@ final class MagnetDependencyScope implements DependencyScope {
     }
 
     @Override
-    public <T> T get(Class<T> type, String qualifier) {
-        return get(key(qualifier, type));
+    public <T> T get(Class<T> type, String classifier) {
+        return get(key(classifier, type));
     }
 
     @Override
@@ -50,32 +50,32 @@ final class MagnetDependencyScope implements DependencyScope {
     }
 
     @Override
-    public <T> T require(Class<T> type, String qualifier) {
-        return require(key(qualifier, type));
+    public <T> T require(Class<T> type, String classifier) {
+        return require(key(classifier, type));
     }
 
     @Override
-    public <T> DependencyScope register(Class<T> type, T dependency) {
+    public <T> Scope register(Class<T> type, T dependency) {
         register(type.getName(), dependency);
         return this;
     }
 
     @Override
-    public <T> DependencyScope register(Class<T> type, T dependency, String qualifier) {
-        register(key(qualifier, type), dependency);
+    public <T> Scope register(Class<T> type, T dependency, String classifier) {
+        register(key(classifier, type), dependency);
         return this;
     }
 
     @Override
-    public DependencyScope subscope() {
-        return new MagnetDependencyScope(this);
+    public Scope subscope() {
+        return new MagnetScope(this);
     }
 
-    private static String key(String qualifier, Class<?> type) {
-        if (qualifier == null || qualifier.length() == 0) {
+    private static String key(String classifier, Class<?> type) {
+        if (classifier == null || classifier.length() == 0) {
             return type.getName();
         }
-        return qualifier + "#" + type.getName();
+        return classifier + "@" + type.getName();
     }
 
     private <T> T get(String key) {

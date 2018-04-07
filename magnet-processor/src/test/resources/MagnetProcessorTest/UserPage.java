@@ -1,13 +1,13 @@
 package app.extension;
 
 import app.Page;
-import magnet.DependencyScope;
+import magnet.Scope;
 import magnet.Implementation;
 
 @Implementation(type = Page.class)
 class UserPage implements Page {
 
-    UserPage(DependencyScope registry) {
+    UserPage(Scope registry) {
     }
 
     @Override

@@ -22,7 +22,7 @@ import magnet.sample.app.main.Page
 
 @Implementation(type = Page::class)
 class NotificationPage(
-    // optional (nullable) dependency available through DependencyScope (see MainActivity.kt)
+    // optional (nullable) dependency available through Scope (see MainActivity.kt)
     private val resource: Resources?
 ) : Page {
 

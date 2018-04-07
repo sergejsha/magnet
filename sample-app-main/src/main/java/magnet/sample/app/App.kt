@@ -17,7 +17,7 @@
 package magnet.sample.app
 
 import android.app.Application
-import magnet.DependencyScope
+import magnet.Scope
 import magnet.ImplementationManager
 import magnet.Magnet
 
@@ -26,14 +26,14 @@ class App : Application() {
     override fun onCreate() {
         super.onCreate()
         implManager = Magnet.getImplementationManager()
-        appScope = Magnet.createDependencyScope()
+        appScope = Magnet.createScope()
     }
 
     companion object {
         lateinit var implManager: ImplementationManager
             private set
 
-        lateinit var appScope: DependencyScope
+        lateinit var appScope: Scope
             private set
     }
 
