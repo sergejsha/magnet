@@ -24,6 +24,9 @@ public interface Scope {
     <T> T getSingle(Class<T> type);
     <T> T getSingle(Class<T> type, String classifier);
 
+    <T> T getList(Class<T> type);
+    <T> T getList(Class<T> type, String classifier);
+
     <T> Scope register(Class<T> type, T instance);
     <T> Scope register(Class<T> type, T instance, String classifier);
 

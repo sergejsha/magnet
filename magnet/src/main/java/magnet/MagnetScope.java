@@ -51,6 +51,14 @@ final class MagnetScope implements Scope {
         return getInstance(type, classifier, true);
     }
 
+    @Override public <T> T getList(Class<T> type) {
+        return null;
+    }
+
+    @Override public <T> T getList(Class<T> type, String classifier) {
+        return null;
+    }
+
     @Override
     public <T> Scope register(Class<T> type, T instance) {
         register(key(type, Classifier.NONE), instance);
@@ -72,8 +80,8 @@ final class MagnetScope implements Scope {
         Object existing = instances.put(key, dependency);
         if (existing != null) {
             throw new IllegalStateException(
-                    String.format("Dependency of type %s already registered." +
-                                    " Existing dependency %s, new dependency %s",
+                    String.format("Instance of type %s already registered." +
+                                    " Existing instance %s, new instance %s",
                             key, existing, dependency));
         }
     }
@@ -85,7 +93,10 @@ final class MagnetScope implements Scope {
             String key = key(type, classifier);
             T instance = findInstance(key);
             if (required && instance == null) {
-                throw new IllegalStateException("Kaboom");
+                throw new IllegalStateException(
+                        String.format(
+                                "Instance of type '%s' and classifier '%s' was not found in scopes.",
+                                type, classifier));
             }
             return instance;
         }

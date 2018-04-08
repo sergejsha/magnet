@@ -123,7 +123,10 @@ final class MagnetInstanceManager implements InstanceManager {
             return null;
         }
         if (range.getCount() > 1) {
-            throw new IllegalStateException("Kaboom");
+            throw new IllegalStateException(
+                    String.format(
+                            "Multiple factories for type '%s' and classifier '%s' found," +
+                                    " while only one required", type, classifier));
         }
         return factories[range.getFrom()];
     }
