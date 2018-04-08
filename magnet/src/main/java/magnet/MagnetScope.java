@@ -23,15 +23,12 @@ final class MagnetScope implements Scope {
 
     private final MagnetScope parent;
     private final Map<String, Object> dependencies;
+    private final InstanceManager instanceManager;
 
-    private MagnetScope(MagnetScope parent) {
+    MagnetScope(MagnetScope parent, InstanceManager instanceManager) {
         this.parent = parent;
         this.dependencies = new HashMap<>();
-    }
-
-    MagnetScope() {
-        this.parent = null;
-        this.dependencies = new HashMap<>();
+        this.instanceManager = instanceManager;
     }
 
     @Override
@@ -68,7 +65,7 @@ final class MagnetScope implements Scope {
 
     @Override
     public Scope subscope() {
-        return new MagnetScope(this);
+        return new MagnetScope(this, instanceManager);
     }
 
     private static String key(String classifier, Class<?> type) {

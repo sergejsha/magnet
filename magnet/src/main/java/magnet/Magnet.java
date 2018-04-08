@@ -22,18 +22,18 @@ package magnet;
  */
 public final class Magnet {
 
-    private static final InstanceManager IMPLEMENTATION_MANAGER = new MagnetInstanceManager();
+    private static final InstanceManager INSTANCE_MANAGER = new MagnetInstanceManager();
 
     private Magnet() { }
 
     /** Returns singleton instance of the {@link InstanceManager}. */
     public static InstanceManager getImplementationManager() {
-        return IMPLEMENTATION_MANAGER;
+        return INSTANCE_MANAGER;
     }
 
     /** Creates a new root {@link Scope} instance. */
     public static Scope createScope() {
-        return new MagnetScope();
+        return new MagnetScope(null, INSTANCE_MANAGER);
     }
 
 }

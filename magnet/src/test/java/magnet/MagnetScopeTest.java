@@ -5,16 +5,20 @@ import static com.google.common.truth.Truth.assertThat;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
 @RunWith(MockitoJUnitRunner.StrictStubs.class)
 public class MagnetScopeTest {
 
+    @Mock
+    InstanceManager instanceManager;
+
     private Scope scope;
 
     @Before
     public void before() {
-        scope = new MagnetScope();
+        scope = new MagnetScope(null, instanceManager);
     }
 
     @Test
