@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package magnet.internal;
+package magnet;
 
 
 import magnet.Scope;

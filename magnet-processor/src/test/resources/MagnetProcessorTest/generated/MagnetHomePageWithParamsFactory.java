@@ -3,8 +3,8 @@ package app.extension;
 import app.HomeRepository;
 import app.Page;
 import app.UserData;
+import magnet.Factory;
 import magnet.Scope;
-import magnet.internal.Factory;
 
 public final class MagnetHomePageWithParamsFactory implements Factory<Page> {
 

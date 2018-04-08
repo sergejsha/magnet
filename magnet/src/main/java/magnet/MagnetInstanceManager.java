@@ -22,7 +22,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import magnet.internal.Factory;
 import magnet.internal.Range;
 
 final class MagnetInstanceManager implements InstanceManager {

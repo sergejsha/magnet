@@ -6,7 +6,7 @@ import app.extension.MagnetUserPageFactory;
 import app.extension.MagnetUserPageMenuItemFactory;
 import java.util.HashMap;
 import java.util.Map;
-import magnet.internal.Factory;
+
 import magnet.internal.Range;
 
 public final class MagnetIndexer {

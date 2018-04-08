@@ -14,7 +14,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import magnet.internal.Factory;
 import magnet.internal.Range;
 
 @RunWith(MockitoJUnitRunner.StrictStubs.class)

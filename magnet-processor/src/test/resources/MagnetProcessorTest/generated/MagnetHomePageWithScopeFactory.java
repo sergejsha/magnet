@@ -1,8 +1,8 @@
 package app.extension;
 
 import app.Page;
+import magnet.Factory;
 import magnet.Scope;
-import magnet.internal.Factory;
 
 public final class MagnetHomePageWithScopeFactory implements Factory<Page> {
 

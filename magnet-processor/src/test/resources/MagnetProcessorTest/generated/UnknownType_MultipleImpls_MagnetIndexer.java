@@ -4,7 +4,7 @@ import app.extension.MagnetUnknownTypeTab2Factory;
 import app.extension.MagnetUnknownTypeTabFactory;
 import java.util.HashMap;
 import java.util.Map;
-import magnet.internal.Factory;
+
 import magnet.internal.Range;
 
 public final class MagnetIndexer {

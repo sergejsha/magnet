@@ -1,7 +1,7 @@
 package app.extension;
 
+import magnet.Factory;
 import magnet.Scope;
-import magnet.internal.Factory;
 
 public final class MagnetUnknownTypeTabFactory implements Factory<Tab> {
     @Override
