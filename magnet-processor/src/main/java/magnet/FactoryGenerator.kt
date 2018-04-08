@@ -32,6 +32,8 @@ import javax.lang.model.util.ElementFilter
 private const val CLASS_JAVAX_NAMED = "javax.inject.Named"
 private const val CLASS_NULLABLE = ".Nullable"
 private const val PARAM_SCOPE = "scope"
+private const val METHOD_GET_OPTIONAL = "getOptional"
+private const val METHOD_GET_SINGLE = "getSingle"
 
 class FactoryGenerator {
 
@@ -164,7 +166,7 @@ class FactoryGenerator {
                     }
                 }
 
-                val getMethodName = if (hasNullableAnnotation) "get" else "require"
+                val getMethodName = if (hasNullableAnnotation) METHOD_GET_OPTIONAL else METHOD_GET_SINGLE
 
                 if (namedAnnotationValue != null) {
                     codeBlockBuilder.addStatement(

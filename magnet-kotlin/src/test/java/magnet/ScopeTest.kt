@@ -35,16 +35,16 @@ class ScopeTest {
         val value: String? = scope.get<String>()
 
         // then
-        verify(scope).get(String::class.java, "")
+        verify(scope).getOptional(String::class.java, Classifier.NONE)
     }
 
     @Test
     fun testRequire() {
         // when
-        val value = scope.require<String>()
+        val value = scope.getSingle<String>()
 
         // then
-        verify(scope).require(String::class.java, "")
+        verify(scope).getSingle(String::class.java, Classifier.NONE)
     }
 
     @Test
@@ -53,7 +53,7 @@ class ScopeTest {
         scope.register("component")
 
         // then
-        verify(scope).register("component", "")
+        verify(scope).register("component", Classifier.NONE)
     }
 
 }

@@ -10,8 +10,8 @@ public final class MagnetHomePageFactory implements Factory<Page> {
 
     @Override
     public Page create(Scope scope) {
-        HomeRepository homeRepository = scope.require(HomeRepository.class);
-        UserData userData = scope.require(UserData.class);
+        HomeRepository homeRepository = scope.getSingle(HomeRepository.class);
+        UserData userData = scope.getSingle(UserData.class);
         return new HomePage(homeRepository, userData, scope);
     }
 

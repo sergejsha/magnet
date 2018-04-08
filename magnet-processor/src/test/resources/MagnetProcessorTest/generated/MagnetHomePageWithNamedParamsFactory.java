@@ -10,8 +10,8 @@ public final class MagnetHomePageWithNamedParamsFactory implements Factory<Page>
 
     @Override
     public Page create(Scope scope) {
-        HomeRepository homeRepository = scope.get(HomeRepository.class, "local");
-        UserData userData = scope.require(UserData.class, "global");
+        HomeRepository homeRepository = scope.getOptional(HomeRepository.class, "local");
+        UserData userData = scope.getSingle(UserData.class, "global");
         return new HomePageWithNamedParams(homeRepository, userData);
     }
 

@@ -18,38 +18,38 @@ public class MagnetScopeTest {
     }
 
     @Test
-    public void noClassifier_GetNotRegistered() {
+    public void noClassifier_GetOptionalNotRegistered() {
         // when
-        Integer dependency = scope.get(Integer.class);
+        Integer dependency = scope.getOptional(Integer.class);
 
         // then
         assertThat(dependency).isNull();
     }
 
     @Test
-    public void noClassifier_GetRegistered() {
+    public void noClassifier_GetOptionalRegistered() {
         // given
         scope.register(Integer.class, 100);
 
         // when
-        Integer dependency = scope.get(Integer.class);
+        Integer dependency = scope.getOptional(Integer.class);
 
         // then
         assertThat(dependency).isEqualTo(100);
     }
 
     @Test(expected = IllegalStateException.class)
-    public void noClassifier_RequireNotRegistered() {
-        scope.require(Integer.class);
+    public void noClassifier_GetSingleNotRegistered() {
+        scope.getSingle(Integer.class);
     }
 
     @Test
-    public void noClassifier_RequireRegistered() {
+    public void noClassifier_GetSingleRegistered() {
         // given
         scope.register(Integer.class, 100);
 
         // when
-        Integer dependency = scope.require(Integer.class);
+        Integer dependency = scope.getSingle(Integer.class);
 
         // then
         assertThat(dependency).isEqualTo(100);
@@ -62,50 +62,50 @@ public class MagnetScopeTest {
     }
 
     @Test
-    public void classifier_GetNotRegistered() {
+    public void classifier_GetOptionalNotRegistered() {
         // when
-        Integer dependency = scope.get(Integer.class, "common");
+        Integer dependency = scope.getOptional(Integer.class, "common");
 
         // then
         assertThat(dependency).isNull();
     }
 
     @Test
-    public void classifier_GetRegisteredNoClassifier() {
+    public void classifier_GetOptionalRegisteredNoClassifier() {
         // given
         scope.register(Integer.class, 100, "common");
 
         // when
-        Integer dependency = scope.get(Integer.class);
+        Integer dependency = scope.getOptional(Integer.class);
 
         // then
         assertThat(dependency).isNull();
     }
 
     @Test
-    public void classifier_GetRegisteredWrongClassifier() {
+    public void classifier_GetOptionalRegisteredWrongClassifier() {
         // given
         scope.register(Integer.class, 100, "common");
 
         // when
-        Integer dependency = scope.get(Integer.class, "wrong");
+        Integer dependency = scope.getOptional(Integer.class, "wrong");
 
         // then
         assertThat(dependency).isNull();
     }
 
     @Test(expected = IllegalStateException.class)
-    public void classifier_RequireNotRegistered() {
-        scope.require(Integer.class, "common");
+    public void classifier_GetSingleNotRegistered() {
+        scope.getSingle(Integer.class, "common");
     }
 
     @Test
-    public void classifier_RequireRegistered() {
+    public void classifier_GetSingleRegistered() {
         // given
         scope.register(Integer.class, 100, "common");
 
         // when
-        Integer dependency = scope.require(Integer.class, "common");
+        Integer dependency = scope.getSingle(Integer.class, "common");
 
         // then
         assertThat(dependency).isEqualTo(100);

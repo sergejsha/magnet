@@ -24,7 +24,7 @@ package magnet
  * @return  dependency found or `null` if none was found.
  */
 inline fun <reified T> Scope.get(classifier: String = ""): T? {
-    return this.get(T::class.java, classifier)
+    return this.getOptional(T::class.java, classifier)
 }
 
 /**
@@ -35,8 +35,8 @@ inline fun <reified T> Scope.get(classifier: String = ""): T? {
  * @param T the type of dependency to search for.
  * @return  dependency found.
  */
-inline fun <reified T> Scope.require(classifier: String = ""): T {
-    return this.require(T::class.java, classifier)
+inline fun <reified T> Scope.getSingle(classifier: String = Classifier.NONE): T {
+    return this.getSingle(T::class.java, classifier)
 }
 
 /**
@@ -46,6 +46,6 @@ inline fun <reified T> Scope.require(classifier: String = ""): T {
  * overwriting dependencies, then create a new subscope and
  * add dependencies in there.
  */
-inline fun <reified T> Scope.register(component: T, classifier: String = "") {
+inline fun <reified T> Scope.register(component: T, classifier: String = Classifier.NONE) {
     this.register(T::class.java, component, classifier)
 }

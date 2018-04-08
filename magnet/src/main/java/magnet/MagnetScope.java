@@ -35,22 +35,22 @@ final class MagnetScope implements Scope {
     }
 
     @Override
-    public <T> T get(Class<T> type) {
+    public <T> T getOptional(Class<T> type) {
         return get(type.getName());
     }
 
     @Override
-    public <T> T get(Class<T> type, String classifier) {
+    public <T> T getOptional(Class<T> type, String classifier) {
         return get(key(classifier, type));
     }
 
     @Override
-    public <T> T require(Class<T> type) {
+    public <T> T getSingle(Class<T> type) {
         return require(type.getName());
     }
 
     @Override
-    public <T> T require(Class<T> type, String classifier) {
+    public <T> T getSingle(Class<T> type, String classifier) {
         return require(key(classifier, type));
     }
 
