@@ -14,27 +14,19 @@
  * limitations under the License.
  */
 
-package magnet.sample.app
+package magnet;
 
-import android.app.Application
-import magnet.Scope
-import magnet.InstanceManager
-import magnet.Magnet
+import java.util.List;
 
-class App : Application() {
+public interface InstanceManager {
 
-    override fun onCreate() {
-        super.onCreate()
-        implManager = Magnet.getImplementationManager()
-        appScope = Magnet.createScope()
-    }
+    <T> List<T> getMany(Class<T> type, Scope scope);
+    <T> List<T> getMany(Class<T> type, String classifier, Scope scope);
 
-    companion object {
-        lateinit var implManager: InstanceManager
-            private set
+    <T> T getSingle(Class<T> type, Scope scope);
+    <T> T getSingle(Class<T> type, String classifier, Scope scope);
 
-        lateinit var appScope: Scope
-            private set
-    }
+    <T> T requireSingle(Class<T> type, Scope scope);
+    <T> T requireSingle(Class<T> type, String classifier, Scope scope);
 
 }

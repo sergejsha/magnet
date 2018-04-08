@@ -21,7 +21,7 @@ package magnet
  * and creates instances of implementations found by providing them with given
  * dependencies.
  *
- * @receiver ImplementationManager
+ * @receiver InstanceManager
  * @param T type of implementations to search for. This is the same type as
  *      the one used in `Implementation.type()`.
  * @param classifier type of implementations to search for. This is the same
@@ -29,7 +29,7 @@ package magnet
  * @param scope instance of dependency scope used by Magnet to
  *      inject dependencies into implementations, when they are instantiated.
  */
-inline fun <reified T> ImplementationManager.getMany(
+inline fun <reified T> InstanceManager.getMany(
     classifier: String? = Classifier.NONE,
     scope: Scope
 ): List<T> {
@@ -41,7 +41,7 @@ inline fun <reified T> ImplementationManager.getMany(
  * target and creates an instance of the implementation found by providing
  * them with given dependencies.
  *
- * @receiver ImplementationManager
+ * @receiver InstanceManager
  * @param T type of the implementation to search for. This is the same type as
  *      the one used in `Implementation.type()`.
  * @param classifier type of the implementation to search for. This is the same
@@ -49,7 +49,7 @@ inline fun <reified T> ImplementationManager.getMany(
  * @param scope instance of dependency scope used by Magnet to inject
  *      dependencies into implementations, when they are instantiated.
  */
-inline fun <reified T> ImplementationManager.getSingle(
+inline fun <reified T> InstanceManager.getSingle(
     classifier: String? = Classifier.NONE,
     scope: Scope
 ): T? {
@@ -61,7 +61,7 @@ inline fun <reified T> ImplementationManager.getSingle(
  * target and creates an instance of the implementation found by providing
  * them with given dependencies.
  *
- * @receiver ImplementationManager
+ * @receiver InstanceManager
  * @param T type of the implementation to search for. This is the same type
  *      as the one used in `Implementation.type()`.
  * @param classifier type of the implementation to search for. This is the
@@ -70,7 +70,7 @@ inline fun <reified T> ImplementationManager.getSingle(
  *      inject dependencies into implementations, when they are instantiated.
  * @throws IllegalStateException if implementation could not be found.
  */
-inline fun <reified T> ImplementationManager.requireSingle(
+inline fun <reified T> InstanceManager.requireSingle(
     classifier: String? = Classifier.NONE,
     scope: Scope
 ): T {

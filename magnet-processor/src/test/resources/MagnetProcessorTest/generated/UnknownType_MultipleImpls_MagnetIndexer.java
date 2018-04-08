@@ -8,7 +8,7 @@ import magnet.internal.Factory;
 import magnet.internal.Range;
 
 public final class MagnetIndexer {
-    public static void register(MagnetImplementationManager implementationManager) {
+    public static void register(MagnetInstanceManager instanceManager) {
         Factory[] factories = new Factory[] {
                 new MagnetUnknownTypeTabFactory(),
                 new MagnetUnknownTypeTab2Factory(),
@@ -18,6 +18,6 @@ public final class MagnetIndexer {
         ranges1.put("", new Range(0, 1, ""));
         ranges1.put("2", new Range(1, 1, "2"));
         index.put(MagnetUnknownTypeTabFactory.getType(), ranges1);
-        implementationManager.register(factories, index);
+        instanceManager.register(factories, index);
     }
 }

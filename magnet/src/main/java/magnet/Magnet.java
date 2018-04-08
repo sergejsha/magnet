@@ -17,17 +17,17 @@
 package magnet;
 
 /**
- * Main class serving as a factory for {@link ImplementationManager} and the
+ * Main class serving as a factory for {@link InstanceManager} and the
  * root {@link Scope}.
  */
 public final class Magnet {
 
-    private static final ImplementationManager IMPLEMENTATION_MANAGER = new MagnetImplementationManager();
+    private static final InstanceManager IMPLEMENTATION_MANAGER = new MagnetInstanceManager();
 
     private Magnet() { }
 
-    /** Returns singleton instance of the {@link ImplementationManager}. */
-    public static ImplementationManager getImplementationManager() {
+    /** Returns singleton instance of the {@link InstanceManager}. */
+    public static InstanceManager getImplementationManager() {
         return IMPLEMENTATION_MANAGER;
     }
 

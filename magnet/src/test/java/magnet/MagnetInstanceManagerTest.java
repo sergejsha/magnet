@@ -18,7 +18,7 @@ import magnet.internal.Factory;
 import magnet.internal.Range;
 
 @RunWith(MockitoJUnitRunner.StrictStubs.class)
-public class MagnetImplementationManagerTest {
+public class MagnetInstanceManagerTest {
 
     @Mock
     Factory<Type1> factoryType1Impl1;
@@ -35,11 +35,11 @@ public class MagnetImplementationManagerTest {
     @Mock
     Scope scope;
 
-    private MagnetImplementationManager implManager;
+    private MagnetInstanceManager implManager;
 
     @Before
     public void before() {
-        implManager = new MagnetImplementationManager();
+        implManager = new MagnetInstanceManager();
 
         when(factoryType1Impl1.create(scope)).thenReturn(new Type1Impl());
         when(factoryType1Impl2.create(scope)).thenReturn(new Type1Impl());

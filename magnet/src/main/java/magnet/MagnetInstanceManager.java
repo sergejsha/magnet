@@ -25,19 +25,19 @@ import java.util.Map;
 import magnet.internal.Factory;
 import magnet.internal.Range;
 
-final class MagnetImplementationManager implements ImplementationManager {
+final class MagnetInstanceManager implements InstanceManager {
 
     private Factory[] factories;
     private Map<Class, Object> index;
 
-    MagnetImplementationManager() {
+    MagnetInstanceManager() {
         registerImplementations();
     }
 
     private void registerImplementations() {
         try {
             Class<?> magnetClass = Class.forName("magnet.MagnetIndexer");
-            Method registerFactories = magnetClass.getMethod("register", MagnetImplementationManager.class);
+            Method registerFactories = magnetClass.getMethod("register", MagnetInstanceManager.class);
             registerFactories.invoke(magnetClass, this);
         } catch (Exception e) {
             System.err.println(

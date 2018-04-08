@@ -27,7 +27,7 @@ import org.mockito.junit.MockitoJUnitRunner
 class MagnetTest {
 
     @Mock
-    lateinit var implManager: ImplementationManager
+    lateinit var implManager: InstanceManager
 
     @Mock
     lateinit var scope: Scope

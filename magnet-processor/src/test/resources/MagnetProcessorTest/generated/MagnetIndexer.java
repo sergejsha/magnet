@@ -11,7 +11,7 @@ import magnet.internal.Range;
 
 public final class MagnetIndexer {
 
-    public static void register(MagnetImplementationManager implementationManager) {
+    public static void register(MagnetInstanceManager instanceManager) {
         Factory[] factories = new Factory[] {
                 new MagnetUserPageMenuItemFactory(),
                 new MagnetHomePageMenuItemFactory(),
@@ -28,7 +28,7 @@ public final class MagnetIndexer {
         index.put(MagnetUserPageMenuItemFactory.getType(), ranges1);
         index.put(MagnetHomePageFactory.getType(), new Range(2, 2, ""));
 
-        implementationManager.register(factories, index);
+        instanceManager.register(factories, index);
     }
 
 }

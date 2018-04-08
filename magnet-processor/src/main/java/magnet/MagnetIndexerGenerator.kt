@@ -32,6 +32,8 @@ import javax.lang.model.element.Element
 import javax.lang.model.element.ExecutableElement
 import javax.lang.model.element.Modifier
 
+private const val INSTANCE_MANAGER = "instanceManager"
+
 class MagnetIndexerGenerator {
 
     private var shouldGenerateRegistry = false
@@ -76,7 +78,7 @@ class MagnetIndexerGenerator {
 
     private fun generateRegisterFactoriesMethod(indexElements: MutableList<out Element>): MethodSpec {
 
-        val factoryRegistryClassName = ClassName.get(MagnetImplementationManager::class.java)
+        val factoryRegistryClassName = ClassName.get(MagnetInstanceManager::class.java)
         val factoryIndexClassName = ClassName.get(FactoryIndex::class.java)
 
         val impls = mutableListOf<Impl>()
@@ -92,11 +94,11 @@ class MagnetIndexerGenerator {
             .methodBuilder("register")
             .addModifiers(Modifier.PUBLIC, Modifier.STATIC)
             .addParameter(ParameterSpec
-                .builder(factoryRegistryClassName, "implementationManager")
+                .builder(factoryRegistryClassName, INSTANCE_MANAGER)
                 .build())
             .addCode(generateArrayOfFactoriesCodeBlock(index))
             .addCode(generateIndexCodeBlock(index))
-            .addStatement("implementationManager.register(factories, index)")
+            .addStatement("\$L.register(factories, index)", INSTANCE_MANAGER)
             .build()
     }
 
