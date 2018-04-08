@@ -39,6 +39,10 @@ inline fun <reified T> Scope.getSingle(classifier: String = Classifier.NONE): T 
     return this.getSingle(T::class.java, classifier)
 }
 
+inline fun <reified T> Scope.getMany(classifier: String = Classifier.NONE): List<T> {
+    return this.getMany(T::class.java, classifier)
+}
+
 /**
  * Registers a new dependency within this scope. If dependency
  * of given type already exists, then implementation will throw an

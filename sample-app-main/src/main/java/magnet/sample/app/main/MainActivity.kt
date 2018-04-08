@@ -38,20 +38,16 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
         // create dependency scope for this activity
-        activityScope = App.appScope.subscope()
-
-        // registered Resources.class making it available to the pages down below
-        activityScope.register(resources)
+        activityScope = App.appScope.subscope().apply {
+            register(resources)
+        }
 
         // query registered implementations of Page type
-        val pages = App.implManager.getMany<Page>(
-            // each page receives its own dependency scope that it cannot override values in activity scope
-            scope = activityScope.subscope()
-        )
+        val pages = activityScope.getMany<Page>()
 
-        // add queried pages to the menu and register listeners
-        pages.forEach {
-            PageBinder(it).register(navigation.menu, message, pageBinders)
+        // use pages for creating ui
+        pages.forEach { page ->
+            PageBinder(page).register(navigation.menu, message, pageBinders)
         }
 
         // select initial message
@@ -63,7 +59,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onRestoreInstanceState(savedInstanceState: Bundle?) {
         super.onRestoreInstanceState(savedInstanceState)
-        // restore message according to selected page
+        // restore message for selected page
         pageBinders[navigation.selectedItemId].updateMessage(message)
     }
 

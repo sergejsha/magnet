@@ -17,6 +17,7 @@
 package magnet;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 final class MagnetScope implements Scope {
@@ -51,12 +52,14 @@ final class MagnetScope implements Scope {
         return getInstance(type, classifier, true);
     }
 
-    @Override public <T> T getList(Class<T> type) {
-        return null;
+    @Override public <T> List<T> getMany(Class<T> type) {
+        // todo, reimplement with instanceManager.getManyFactories()
+        return instanceManager.getMany(type, this);
     }
 
-    @Override public <T> T getList(Class<T> type, String classifier) {
-        return null;
+    @Override public <T> List<T> getMany(Class<T> type, String classifier) {
+        // todo, reimplement with instanceManager.getManyFactories()
+        return instanceManager.getMany(type, classifier, this);
     }
 
     @Override

@@ -135,6 +135,10 @@ final class MagnetInstanceManager implements InstanceManager {
     private Range getOptionalRange(Class<?> type, String classifier) {
         Object indexed = index.get(type);
 
+        if (indexed == null) {
+            return null;
+        }
+
         if (indexed instanceof Range) {
             if (classifier.equals(Classifier.NONE)) {
                 return (Range) indexed;
