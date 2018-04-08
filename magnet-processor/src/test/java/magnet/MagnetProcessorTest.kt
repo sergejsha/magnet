@@ -109,12 +109,12 @@ class MagnetProcessorTest {
     }
 
     @Test
-    fun generateFactory_WithNamedParams() {
+    fun generateFactory_WithClassifierParams() {
 
         val compilation = Compiler.javac()
             .withProcessors(MagnetProcessor())
             .compile(
-                withResource("HomePageWithNamedParams.java"),
+                withResource("HomePageWithClassifierParams.java"),
                 withResource("Page.java"),
                 withResource("HomeRepository.java"),
                 withResource("UserData.java")
@@ -123,8 +123,8 @@ class MagnetProcessorTest {
         assertThat(compilation).succeededWithoutWarnings()
 
         assertThat(compilation)
-            .generatedSourceFile("app/extension/MagnetHomePageWithNamedParamsFactory")
-            .hasSourceEquivalentTo(withResource("generated/MagnetHomePageWithNamedParamsFactory.java"))
+            .generatedSourceFile("app/extension/MagnetHomePageWithClassifierParamsFactory")
+            .hasSourceEquivalentTo(withResource("generated/MagnetHomePageWithClassifierParamsFactory.java"))
 
     }
 

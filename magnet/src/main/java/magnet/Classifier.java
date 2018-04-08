@@ -11,6 +11,6 @@ import java.lang.annotation.Target;
 public @interface Classifier {
 
     String NONE = "";
-    String name();
+    String value();
 
 }

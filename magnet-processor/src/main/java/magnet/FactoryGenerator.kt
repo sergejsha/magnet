@@ -29,7 +29,6 @@ import javax.lang.model.element.TypeElement
 import javax.lang.model.type.TypeKind
 import javax.lang.model.util.ElementFilter
 
-private const val CLASS_JAVAX_NAMED = "javax.inject.Named"
 private const val CLASS_NULLABLE = ".Nullable"
 private const val PARAM_SCOPE = "scope"
 private const val METHOD_GET_OPTIONAL = "getOptional"
@@ -188,14 +187,18 @@ class FactoryGenerator {
                 var hasNullableAnnotation = false
                 var namedAnnotationValue: String? = null
 
-                it.annotationMirrors.forEach { annotation ->
-                    val annotationType = annotation.annotationType.toString()
-                    if (annotationType.endsWith(CLASS_NULLABLE)) {
-                        hasNullableAnnotation = true
+                it.annotationMirrors.forEach { annotationMirror ->
 
-                    } else if (annotationType == CLASS_JAVAX_NAMED) {
-                        namedAnnotationValue = annotation.elementValues.values.firstOrNull()?.value.toString()
+                    if (annotationMirror.mirrors<Classifier>()) {
+                        namedAnnotationValue = annotationMirror.elementValues.values.firstOrNull()?.value.toString()
                         namedAnnotationValue?.removeSurrounding("\"", "\"")
+
+                    } else {
+                        val annotationType = annotationMirror.annotationType.toString()
+                        if (annotationType.endsWith(CLASS_NULLABLE)) {
+                            hasNullableAnnotation = true
+
+                        }
                     }
                 }
 

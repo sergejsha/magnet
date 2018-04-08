@@ -1,21 +1,23 @@
 package app.extension;
 
 import javax.annotation.Nullable;
-import javax.inject.Named;
 
 import app.HomeRepository;
 import app.Page;
 import app.UserData;
+import magnet.InstanceFactory;
 import magnet.Implementation;
+import magnet.Classifier;
+import magnet.Scope;
 
 @Implementation(type = Page.class)
-class HomePageWithNamedParams implements Page {
+class HomePageWithClassifierParams implements Page {
 
     private static final String LOCAL = "local";
 
-    HomePageWithNamedParams(
-            @Nullable @Named(LOCAL) HomeRepository homeRepository,
-            @Named("global") UserData userData
+    HomePageWithClassifierParams(
+            @Nullable @Classifier(LOCAL) HomeRepository homeRepository,
+            @Classifier("global") UserData userData
     ) { }
 
     @Override
