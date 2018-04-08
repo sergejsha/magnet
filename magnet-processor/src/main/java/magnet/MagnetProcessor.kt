@@ -81,7 +81,7 @@ class MagnetProcessor : AbstractProcessor() {
         roundEnv: RoundEnvironment
     ): Boolean {
         return magnetIndexerGenerator.generate(
-            roundEnv.getElementsAnnotatedWith(MagnetizeImplementations::class.java),
+            roundEnv.getElementsAnnotatedWith(Magnetizer::class.java),
             env
         )
     }
@@ -89,7 +89,7 @@ class MagnetProcessor : AbstractProcessor() {
     override fun getSupportedAnnotationTypes(): MutableSet<String> {
         return mutableSetOf<String>(
             Implementation::class.java.name,
-            MagnetizeImplementations::class.java.name
+            Magnetizer::class.java.name
         )
     }
 

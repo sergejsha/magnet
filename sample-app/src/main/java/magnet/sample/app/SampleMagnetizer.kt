@@ -16,7 +16,7 @@
 
 package magnet.sample.app
 
-import magnet.MagnetizeImplementations
+import magnet.Magnetizer
 
-@MagnetizeImplementations
-interface Magnetizer
+@Magnetizer
+interface SampleMagnetizer

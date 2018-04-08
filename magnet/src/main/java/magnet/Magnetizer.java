@@ -29,4 +29,4 @@ import java.lang.annotation.Target;
  */
 @Retention(SOURCE)
 @Target({ ElementType.TYPE })
-public @interface MagnetizeImplementations {}
+public @interface Magnetizer {}
