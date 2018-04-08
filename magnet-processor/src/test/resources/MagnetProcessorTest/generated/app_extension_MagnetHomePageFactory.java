@@ -6,6 +6,6 @@ import magnet.internal.FactoryIndex;
 @FactoryIndex(
         factory = MagnetHomePageFactory.class,
         type = "app.Page",
-        target = ""
+        classifier = ""
 )
 public final class app_extension_MagnetHomePageFactory {}

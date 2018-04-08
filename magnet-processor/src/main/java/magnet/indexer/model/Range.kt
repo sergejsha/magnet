@@ -18,7 +18,7 @@ package magnet.indexer.model
 
 data class Range(
     val type: String,
-    val target: String,
+    val classifier: String,
     private val impl: Impl,
     val from: Int
 ) {

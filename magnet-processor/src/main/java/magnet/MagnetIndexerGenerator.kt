@@ -148,13 +148,13 @@ class MagnetIndexerGenerator {
             if (itClassName == annotationClassName) {
                 var interfaceKey: ExecutableElement? = null
                 var factoryKey: ExecutableElement? = null
-                var targetKey: ExecutableElement? = null
+                var classifierKey: ExecutableElement? = null
 
                 it.elementValues.entries.forEach {
                     when (it.key.simpleName.toString()) {
                         "type" -> interfaceKey = it.key
                         "factory" -> factoryKey = it.key
-                        "target" -> targetKey = it.key
+                        "classifier" -> classifierKey = it.key
                     }
                 }
 
@@ -162,7 +162,7 @@ class MagnetIndexerGenerator {
                     body(
                         it.elementValues[interfaceKey]!!.value.toString(),
                         it.elementValues[factoryKey]!!.value.toString(),
-                        it.elementValues[targetKey]!!.value.toString()
+                        it.elementValues[classifierKey]!!.value.toString()
                     )
                 }
             }

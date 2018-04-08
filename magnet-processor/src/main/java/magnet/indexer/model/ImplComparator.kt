@@ -22,7 +22,7 @@ class ImplComparator() : Comparator<Impl> {
         if (c1 != 0) {
             return c1
         }
-        val c2 = left.target.compareTo(right.target)
+        val c2 = left.classifier.compareTo(right.classifier)
         if (c2 != 0) {
             return c2
         }

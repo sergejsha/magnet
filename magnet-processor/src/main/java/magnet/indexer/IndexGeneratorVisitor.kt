@@ -78,7 +78,7 @@ class IndexGeneratorVisitor : IndexVisitor {
                     magnet.internal.Range::class.java,
                     range.from,
                     range.impls.size,
-                    range.target
+                    range.classifier
                 )
             }
             return
@@ -89,11 +89,11 @@ class IndexGeneratorVisitor : IndexVisitor {
         targetsBuilder.addStatement(
             "\$L.put(\$S, new \$T(\$L, \$L, \$S))",
             targetsName,
-            range.target,
+            range.classifier,
             magnet.internal.Range::class.java,
             range.from,
             range.impls.size,
-            range.target
+            range.classifier
         )
     }
 

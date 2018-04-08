@@ -66,7 +66,7 @@ final class MagnetImplementationManager implements ImplementationManager {
 
         if (indexed instanceof Range) {
             Range range = (Range) indexed;
-            if (range.getTarget().equals(classifier)) {
+            if (range.getClassifier().equals(classifier)) {
                 return createFromRange(range, scope);
             }
             return Collections.emptyList();

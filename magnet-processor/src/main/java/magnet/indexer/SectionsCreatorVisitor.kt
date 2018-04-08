@@ -42,7 +42,7 @@ class SectionsCreatorVisitor : ImplVisitor {
 
         currentRange?.let {
             if (it.type == impl.type
-                && it.target == impl.target) {
+                && it.classifier == impl.classifier) {
                 it.impls.add(impl)
                 return
             }
@@ -58,8 +58,8 @@ class SectionsCreatorVisitor : ImplVisitor {
         }
 
         val rangeIndex = calculateIndex()
-        val range = Range(impl.type, impl.target, impl, rangeIndex)
-        section.ranges[range.target] = range
+        val range = Range(impl.type, impl.classifier, impl, rangeIndex)
+        section.ranges[range.classifier] = range
 
         currentRange = range
     }

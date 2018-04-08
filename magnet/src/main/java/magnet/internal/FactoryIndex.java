@@ -24,5 +24,5 @@ import java.lang.annotation.Target;
 public @interface FactoryIndex {
     Class<? extends Factory<?>> factory();
     String type();
-    String target();
+    String classifier();
 }

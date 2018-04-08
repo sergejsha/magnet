@@ -18,7 +18,7 @@ package magnet.indexer.model
 
 data class Impl(
     val type: String,
-    val target: String,
+    val classifier: String,
     val factory: String
 ) {
     fun accept(visitor: ImplVisitor) {

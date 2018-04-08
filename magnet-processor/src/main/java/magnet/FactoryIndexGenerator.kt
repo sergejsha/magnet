@@ -77,7 +77,7 @@ class FactoryIndexGenerator {
     private fun generateFactoryIndex(
         implClassName: ClassName,
         implType: String,
-        implTarget: String = ""
+        implClassifier: String = Classifier.NONE
     ): TypeSpec {
 
 
@@ -96,7 +96,7 @@ class FactoryIndexGenerator {
                 generateFactoryIndexAnnotation(
                     factoryClassName,
                     implType,
-                    implTarget
+                    implClassifier
                 )
             )
             .build()
@@ -105,12 +105,12 @@ class FactoryIndexGenerator {
     private fun generateFactoryIndexAnnotation(
         factoryClassName: ClassName,
         implType: String,
-        implTarget: String
+        implClassifier: String
     ): AnnotationSpec {
         return AnnotationSpec.builder(FactoryIndex::class.java)
             .addMember("factory", "\$T.class", factoryClassName)
             .addMember("type", "\$S", implType)
-            .addMember("target", "\$S", implTarget)
+            .addMember("classifier", "\$S", implClassifier)
             .build()
     }
 

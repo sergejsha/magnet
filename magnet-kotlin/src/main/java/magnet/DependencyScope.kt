@@ -23,7 +23,7 @@ package magnet
  * @param T the type of dependency to search for.
  * @return  dependency found or `null` if none was found.
  */
-inline fun <reified T> Scope.get(classifier: String = ""): T? {
+inline fun <reified T> Scope.get(classifier: String = Classifier.NONE): T? {
     return this.getOptional(T::class.java, classifier)
 }
 
