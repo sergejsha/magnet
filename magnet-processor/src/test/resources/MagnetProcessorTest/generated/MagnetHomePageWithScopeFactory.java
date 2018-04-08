@@ -1,10 +1,10 @@
 package app.extension;
 
 import app.Page;
-import magnet.Factory;
+import magnet.InstanceFactory;
 import magnet.Scope;
 
-public final class MagnetHomePageWithScopeFactory implements Factory<Page> {
+public final class MagnetHomePageWithScopeFactory implements InstanceFactory<Page> {
 
     @Override
     public Page create(Scope scope) {

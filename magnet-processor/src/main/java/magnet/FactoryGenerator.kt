@@ -97,7 +97,7 @@ class FactoryGenerator {
         val factoryClassName = ClassName.bestGuess("$factoryPackage.$factoryName")
 
         val extensionFactorySuperInterface = ParameterizedTypeName.get(
-            ClassName.get(Factory::class.java),
+            ClassName.get(InstanceFactory::class.java),
             implTypeClassName
         )
 

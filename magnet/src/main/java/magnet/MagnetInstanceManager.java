@@ -26,7 +26,7 @@ import magnet.internal.Range;
 
 final class MagnetInstanceManager implements InstanceManager {
 
-    private Factory[] factories;
+    private InstanceFactory[] factories;
     private Map<Class, Object> index;
 
     MagnetInstanceManager() {
@@ -49,7 +49,7 @@ final class MagnetInstanceManager implements InstanceManager {
     }
 
     // called by generated index class
-    void register(Factory[] factories, Map<Class, Object> index) {
+    void register(InstanceFactory[] factories, Map<Class, Object> index) {
         this.factories = factories;
         this.index = index;
     }

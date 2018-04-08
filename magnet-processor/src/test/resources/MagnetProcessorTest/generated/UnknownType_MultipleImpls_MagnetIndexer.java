@@ -9,7 +9,7 @@ import magnet.internal.Range;
 
 public final class MagnetIndexer {
     public static void register(MagnetInstanceManager instanceManager) {
-        Factory[] factories = new Factory[] {
+        InstanceFactory[] factories = new InstanceFactory[] {
                 new MagnetUnknownTypeTabFactory(),
                 new MagnetUnknownTypeTab2Factory(),
         };

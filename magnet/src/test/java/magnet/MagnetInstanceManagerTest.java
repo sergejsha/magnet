@@ -20,16 +20,16 @@ import magnet.internal.Range;
 public class MagnetInstanceManagerTest {
 
     @Mock
-    Factory<Type1> factoryType1Impl1;
+    InstanceFactory<Type1> instanceFactoryType1Impl1;
 
     @Mock
-    Factory<Type1> factoryType1Impl2;
+    InstanceFactory<Type1> instanceFactoryType1Impl2;
 
     @Mock
-    Factory<Type2> factoryType2Impl1;
+    InstanceFactory<Type2> instanceFactoryType2Impl1;
 
     @Mock
-    Factory<Type2> factoryType2Impl2;
+    InstanceFactory<Type2> instanceFactoryType2Impl2;
 
     @Mock
     Scope scope;
@@ -40,16 +40,16 @@ public class MagnetInstanceManagerTest {
     public void before() {
         implManager = new MagnetInstanceManager();
 
-        when(factoryType1Impl1.create(scope)).thenReturn(new Type1Impl());
-        when(factoryType1Impl2.create(scope)).thenReturn(new Type1Impl());
-        when(factoryType2Impl1.create(scope)).thenReturn(new Type2Impl());
-        when(factoryType2Impl2.create(scope)).thenReturn(new Type2Impl());
+        when(instanceFactoryType1Impl1.create(scope)).thenReturn(new Type1Impl());
+        when(instanceFactoryType1Impl2.create(scope)).thenReturn(new Type1Impl());
+        when(instanceFactoryType2Impl1.create(scope)).thenReturn(new Type2Impl());
+        when(instanceFactoryType2Impl2.create(scope)).thenReturn(new Type2Impl());
 
-        Factory[] factories = new Factory[] {
-                factoryType1Impl1,
-                factoryType1Impl2,
-                factoryType2Impl1,
-                factoryType2Impl2
+        InstanceFactory[] factories = new InstanceFactory[] {
+                instanceFactoryType1Impl1,
+                instanceFactoryType1Impl2,
+                instanceFactoryType2Impl1,
+                instanceFactoryType2Impl2
         };
 
         Map<Class, Object> index = new HashMap<>();
@@ -79,8 +79,8 @@ public class MagnetInstanceManagerTest {
         List<Type2> impls = implManager.getMany(Type2.class, scope);
 
         // then
-        verify(factoryType2Impl1).create(scope);
-        verify(factoryType2Impl2).create(scope);
+        verify(instanceFactoryType2Impl1).create(scope);
+        verify(instanceFactoryType2Impl2).create(scope);
         assertThat(impls).hasSize(2);
         assertThat(impls.get(0)).isNotNull();
         assertThat(impls.get(1)).isNotNull();
@@ -92,7 +92,7 @@ public class MagnetInstanceManagerTest {
         List<Type1> impls = implManager.getMany(Type1.class, "impl1", scope);
 
         // then
-        verify(factoryType1Impl1).create(scope);
+        verify(instanceFactoryType1Impl1).create(scope);
         assertThat(impls).hasSize(1);
         assertThat(impls.get(0)).isNotNull();
     }
@@ -103,7 +103,7 @@ public class MagnetInstanceManagerTest {
         List<Type1> impls = implManager.getMany(Type1.class, "impl2", scope);
 
         // then
-        verify(factoryType1Impl2).create(scope);
+        verify(instanceFactoryType1Impl2).create(scope);
         assertThat(impls).hasSize(1);
         assertThat(impls.get(0)).isNotNull();
     }
@@ -115,7 +115,7 @@ public class MagnetInstanceManagerTest {
 
         // then
         assertThat(impl).isNotNull();
-        verify(factoryType1Impl2).create(scope);
+        verify(instanceFactoryType1Impl2).create(scope);
     }
 
     @Test
@@ -139,7 +139,7 @@ public class MagnetInstanceManagerTest {
 
         // then
         assertThat(impl).isNotNull();
-        verify(factoryType1Impl2).create(scope);
+        verify(instanceFactoryType1Impl2).create(scope);
     }
 
     @Test(expected = IllegalStateException.class)

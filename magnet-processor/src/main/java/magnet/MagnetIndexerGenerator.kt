@@ -120,12 +120,12 @@ class MagnetIndexerGenerator {
     private fun generateArrayOfFactoriesCodeBlock(index: Index): CodeBlock {
         if (index.implementations.isEmpty()) {
             return CodeBlock.builder()
-                .addStatement("\$T[] factories = new \$T[0]", Factory::class.java, Factory::class.java)
+                .addStatement("\$T[] factories = new \$T[0]", InstanceFactory::class.java, InstanceFactory::class.java)
                 .build()
 
         } else {
             val builder = CodeBlock.builder()
-                .add("\$T[] factories = new \$T[] {", Factory::class.java, Factory::class.java)
+                .add("\$T[] factories = new \$T[] {", InstanceFactory::class.java, InstanceFactory::class.java)
                 .indent()
 
             index.implementations.forEach {

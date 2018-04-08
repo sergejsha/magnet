@@ -16,11 +16,7 @@
 
 package magnet;
 
-
-import magnet.Scope;
-
-/** Subject to change. For internal use only. */
-public interface Factory<T> {
+public interface InstanceFactory<T> {
 
     T create(Scope scope);
     boolean isScoped();
