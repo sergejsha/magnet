@@ -25,4 +25,5 @@ public @interface FactoryIndex {
     Class<? extends Factory<?>> factory();
     String type();
     String classifier();
+    //boolean scoped();
 }

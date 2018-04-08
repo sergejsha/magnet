@@ -23,5 +23,6 @@ import magnet.Scope;
 public interface Factory<T> {
 
     T create(Scope scope);
+    boolean isScoped();
 
 }

@@ -9,6 +9,11 @@ public final class MagnetUnknownTypeTab2Factory implements Factory<Tab> {
         return new UnknownTypeTab2();
     }
 
+    @Override
+    public boolean isScoped() {
+        return true;
+    }
+
     public static Class getType() {
         return Tab.class;
     }

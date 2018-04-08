@@ -15,6 +15,11 @@ public final class MagnetHomePageFactory implements Factory<Page> {
         return new HomePage(homeRepository, userData, scope);
     }
 
+    @Override
+    public boolean isScoped() {
+        return true;
+    }
+
     public static Class getType() {
         return Page.class;
     }

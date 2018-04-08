@@ -22,6 +22,7 @@ import com.squareup.javapoet.JavaFile
 import com.squareup.javapoet.MethodSpec
 import com.squareup.javapoet.ParameterSpec
 import com.squareup.javapoet.ParameterizedTypeName
+import com.squareup.javapoet.TypeName
 import com.squareup.javapoet.TypeSpec
 import magnet.internal.Factory
 import javax.lang.model.element.Modifier
@@ -44,10 +45,21 @@ class FactoryGenerator {
         val implClassName = ClassName.get(implTypeElement)
 
         implTypeElement.annotationMirrors.forEach {
-            val extensionClass = it.elementValues.entries.find { "type" == it.key.simpleName.toString() }?.value
+            if (it.mirrors<Implementation>()) {
+                var annotationValueType: String? = null
+                var implIsScoped = true
 
-            extensionClass?.let {
-                val implType = env.elements.getTypeElement(it.value.toString())
+                it.elementValues.entries.forEach {
+                    val valueName = it.key.simpleName.toString()
+                    val value = it.value.value.toString()
+                    if (valueName == "type") {
+                        annotationValueType = value
+                    } else if (valueName == "scoped") {
+                        implIsScoped = value.toBoolean()
+                    }
+                }
+
+                val implType = env.elements.getTypeElement(annotationValueType)
                 val isTypeImplemented = env.types.isAssignable(
                     implTypeElement.asType(),
                     env.types.getDeclaredType(implType) // we deliberately erase generic type here
@@ -58,7 +70,12 @@ class FactoryGenerator {
                 }
 
                 val implTypeClassName = ClassName.get(implType)
-                val factoryTypeSpec = generateFactory(implClassName, implTypeClassName, implTypeElement)
+                val factoryTypeSpec = generateFactory(
+                    implClassName,
+                    implTypeClassName,
+                    implTypeElement,
+                    implIsScoped
+                )
 
                 val packageName = implClassName.packageName()
                 JavaFile.builder(packageName, factoryTypeSpec)
@@ -72,7 +89,8 @@ class FactoryGenerator {
     private fun generateFactory(
         implClassName: ClassName,
         implTypeClassName: ClassName,
-        implTypeElement: TypeElement
+        implTypeElement: TypeElement,
+        implIsScoped: Boolean
     ): TypeSpec {
 
         val factoryPackage = implClassName.packageName()
@@ -81,14 +99,13 @@ class FactoryGenerator {
 
         val extensionFactorySuperInterface = ParameterizedTypeName.get(
             ClassName.get(Factory::class.java),
-            implTypeClassName)
+            implTypeClassName
+        )
 
         return TypeSpec
             .classBuilder(factoryClassName)
             .addModifiers(Modifier.PUBLIC, Modifier.FINAL)
             .addSuperinterface(extensionFactorySuperInterface)
-            //.addField(generateComponentRegistryField())
-            //.addMethod(generateConstructor())
             .addMethod(
                 generateCreateMethod(
                     implClassName,
@@ -97,10 +114,27 @@ class FactoryGenerator {
                 )
             )
             .addMethod(
+                generateIsScopedMethod(
+                    implIsScoped
+                )
+            )
+            .addMethod(
                 generateGetTypeMethod(
                     implTypeClassName
                 )
             )
+            .build()
+    }
+
+    private fun generateIsScopedMethod(
+        implIsScoped: Boolean
+    ): MethodSpec {
+        return MethodSpec
+            .methodBuilder("isScoped")
+            .addModifiers(Modifier.PUBLIC)
+            .addAnnotation(Override::class.java)
+            .returns(TypeName.BOOLEAN)
+            .addStatement("return \$L", implIsScoped)
             .build()
     }
 

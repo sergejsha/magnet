@@ -15,6 +15,11 @@ public final class MagnetHomePageWithNamedParamsFactory implements Factory<Page>
         return new HomePageWithNamedParams(homeRepository, userData);
     }
 
+    @Override
+    public boolean isScoped() {
+        return true;
+    }
+
     public static Class getType() {
         return Page.class;
     }
