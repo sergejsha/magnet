@@ -85,12 +85,12 @@ final class MagnetInstanceManager implements InstanceManager {
     }
 
     @Override
-    public <T> T getSingle(Class<T> type, Scope scope) {
-        return getSingle(type, Classifier.NONE, scope);
+    public <T> T getOptional(Class<T> type, Scope scope) {
+        return getOptional(type, Classifier.NONE, scope);
     }
 
     @Override
-    public <T> T getSingle(Class<T> type, String classifier, Scope scope) {
+    public <T> T getOptional(Class<T> type, String classifier, Scope scope) {
         List<T> instances = getMany(type, classifier, scope);
         if (instances.size() > 1) {
             throw new IllegalStateException(
@@ -101,12 +101,12 @@ final class MagnetInstanceManager implements InstanceManager {
     }
 
     @Override
-    public <T> T requireSingle(Class<T> type, Scope scope) {
-        return requireSingle(type, Classifier.NONE, scope);
+    public <T> T getSingle(Class<T> type, Scope scope) {
+        return getSingle(type, Classifier.NONE, scope);
     }
 
     @Override
-    public <T> T requireSingle(Class<T> type, String classifier, Scope scope) {
+    public <T> T getSingle(Class<T> type, String classifier, Scope scope) {
         List<T> instances = getMany(type, classifier, scope);
         if (instances.size() != 1) {
             throw new IllegalStateException(
@@ -116,7 +116,7 @@ final class MagnetInstanceManager implements InstanceManager {
         return instances.get(0);
     }
 
-    @SuppressWarnings("unchecked") @Override
+    @Override @SuppressWarnings("unchecked")
     public <T> InstanceFactory<T> getOptionalFactory(Class<T> type, String classifier) {
         Range range = getOptionalRange(type, classifier);
         if (range == null) {

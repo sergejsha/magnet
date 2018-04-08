@@ -20,6 +20,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import magnet.internal.Dependencies;
+
 final class MagnetScope implements Scope {
 
     private final MagnetScope parent;
@@ -52,25 +54,27 @@ final class MagnetScope implements Scope {
         return getInstance(type, classifier, true);
     }
 
-    @Override public <T> List<T> getMany(Class<T> type) {
+    @Override
+    public <T> List<T> getMany(Class<T> type) {
         // todo, reimplement with instanceManager.getManyFactories()
         return instanceManager.getMany(type, this);
     }
 
-    @Override public <T> List<T> getMany(Class<T> type, String classifier) {
+    @Override
+    public <T> List<T> getMany(Class<T> type, String classifier) {
         // todo, reimplement with instanceManager.getManyFactories()
         return instanceManager.getMany(type, classifier, this);
     }
 
     @Override
     public <T> Scope register(Class<T> type, T instance) {
-        register(key(type, Classifier.NONE), instance);
+        register(Dependencies.key(type, Classifier.NONE), instance);
         return this;
     }
 
     @Override
     public <T> Scope register(Class<T> type, T instance, String classifier) {
-        register(key(type, classifier), instance);
+        register(Dependencies.key(type, classifier), instance);
         return this;
     }
 
@@ -93,7 +97,7 @@ final class MagnetScope implements Scope {
         InstanceFactory<T> factory = instanceManager.getOptionalFactory(type, classifier);
 
         if (factory == null) {
-            String key = key(type, classifier);
+            String key = Dependencies.key(type, classifier);
             T instance = findInstance(key);
             if (required && instance == null) {
                 throw new IllegalStateException(
@@ -105,7 +109,7 @@ final class MagnetScope implements Scope {
         }
 
         if (factory.isScoped()) {
-            String key = key(type, classifier);
+            String key = Dependencies.key(type, classifier);
             T instance = findInstance(key);
             if (instance != null) {
                 return instance;
@@ -125,13 +129,6 @@ final class MagnetScope implements Scope {
         }
         //noinspection unchecked
         return (T) instance;
-    }
-
-    private static String key(Class<?> type, String classifier) {
-        if (classifier == null || classifier.length() == 0) {
-            return type.getName();
-        }
-        return classifier + "@" + type.getName();
     }
 
 }

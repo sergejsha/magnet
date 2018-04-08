@@ -111,7 +111,7 @@ public class MagnetInstanceManagerTest {
     @Test
     public void test_GetSingle_OneFound() {
         // when
-        Type1 impl = implManager.getSingle(Type1.class, "impl2", scope);
+        Type1 impl = implManager.getOptional(Type1.class, "impl2", scope);
 
         // then
         assertThat(impl).isNotNull();
@@ -121,7 +121,7 @@ public class MagnetInstanceManagerTest {
     @Test
     public void test_GetSingle_NoneFound() {
         // when
-        Type3 impl = implManager.getSingle(Type3.class, scope);
+        Type3 impl = implManager.getOptional(Type3.class, scope);
 
         // then
         assertThat(impl).isNull();
@@ -129,13 +129,13 @@ public class MagnetInstanceManagerTest {
 
     @Test(expected = IllegalStateException.class)
     public void test_GetSingle_MultipleFound() {
-        implManager.getSingle(Type2.class, scope);
+        implManager.getOptional(Type2.class, scope);
     }
 
     @Test
     public void test_RequireSingle_OneFound() {
         // when
-        Type1 impl = implManager.requireSingle(Type1.class, "impl2", scope);
+        Type1 impl = implManager.getSingle(Type1.class, "impl2", scope);
 
         // then
         assertThat(impl).isNotNull();
@@ -144,12 +144,12 @@ public class MagnetInstanceManagerTest {
 
     @Test(expected = IllegalStateException.class)
     public void test_RequireSingle_NoneFound() {
-        implManager.requireSingle(Type3.class, scope);
+        implManager.getSingle(Type3.class, scope);
     }
 
     @Test(expected = IllegalStateException.class)
     public void test_RequireSingle_MultipleFound() {
-        implManager.requireSingle(Type2.class, scope);
+        implManager.getSingle(Type2.class, scope);
     }
 
     interface Type1 {}

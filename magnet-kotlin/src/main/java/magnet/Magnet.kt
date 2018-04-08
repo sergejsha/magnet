@@ -53,7 +53,7 @@ inline fun <reified T> InstanceManager.getSingle(
     classifier: String? = Classifier.NONE,
     scope: Scope
 ): T? {
-    return this.getSingle(T::class.java, classifier, scope)
+    return this.getOptional(T::class.java, classifier, scope)
 }
 
 /**
@@ -74,5 +74,5 @@ inline fun <reified T> InstanceManager.requireSingle(
     classifier: String? = Classifier.NONE,
     scope: Scope
 ): T {
-    return this.requireSingle(T::class.java, classifier, scope)
+    return this.getSingle(T::class.java, classifier, scope)
 }

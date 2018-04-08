@@ -47,7 +47,7 @@ class MagnetTest {
         val single: String? = implManager.getSingle<String>("target", scope)
 
         // then
-        verify(implManager).getSingle(String::class.java, "target", scope)
+        verify(implManager).getOptional(String::class.java, "target", scope)
     }
 
     @Test
@@ -56,7 +56,7 @@ class MagnetTest {
         val single: String = implManager.requireSingle<String>("target", scope)
 
         // then
-        verify(implManager).requireSingle(String::class.java, "target", scope)
+        verify(implManager).getSingle(String::class.java, "target", scope)
     }
 
 }
