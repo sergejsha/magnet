@@ -22,44 +22,44 @@ import java.util.Map;
 final class MagnetScope implements Scope {
 
     private final MagnetScope parent;
-    private final Map<String, Object> dependencies;
+    private final Map<String, Object> instances;
     private final InstanceManager instanceManager;
 
     MagnetScope(MagnetScope parent, InstanceManager instanceManager) {
         this.parent = parent;
-        this.dependencies = new HashMap<>();
+        this.instances = new HashMap<>();
         this.instanceManager = instanceManager;
     }
 
     @Override
     public <T> T getOptional(Class<T> type) {
-        return get(type.getName());
+        return getInstance(type, Classifier.NONE, false);
     }
 
     @Override
     public <T> T getOptional(Class<T> type, String classifier) {
-        return get(key(classifier, type));
+        return getInstance(type, classifier, false);
     }
 
     @Override
     public <T> T getSingle(Class<T> type) {
-        return require(type.getName());
+        return getInstance(type, Classifier.NONE, true);
     }
 
     @Override
     public <T> T getSingle(Class<T> type, String classifier) {
-        return require(key(classifier, type));
+        return getInstance(type, classifier, true);
     }
 
     @Override
-    public <T> Scope register(Class<T> type, T dependency) {
-        register(type.getName(), dependency);
+    public <T> Scope register(Class<T> type, T instance) {
+        register(key(type, Classifier.NONE), instance);
         return this;
     }
 
     @Override
-    public <T> Scope register(Class<T> type, T dependency, String classifier) {
-        register(key(classifier, type), dependency);
+    public <T> Scope register(Class<T> type, T instance, String classifier) {
+        register(key(type, classifier), instance);
         return this;
     }
 
@@ -68,34 +68,8 @@ final class MagnetScope implements Scope {
         return new MagnetScope(this, instanceManager);
     }
 
-    private static String key(String classifier, Class<?> type) {
-        if (classifier == null || classifier.length() == 0) {
-            return type.getName();
-        }
-        return classifier + "@" + type.getName();
-    }
-
-    private <T> T get(String key) {
-        Object component = dependencies.get(key);
-        if (component == null && parent != null) {
-            return parent.get(key);
-        }
-        //noinspection unchecked
-        return (T) component;
-    }
-
-    private <T> T require(String key) {
-        T component = get(key);
-        if (component == null) {
-            throw new IllegalStateException(
-                    String.format(
-                            "Component of type %s must be registered, but it's not.", key));
-        }
-        return component;
-    }
-
     private void register(String key, Object dependency) {
-        Object existing = dependencies.put(key, dependency);
+        Object existing = instances.put(key, dependency);
         if (existing != null) {
             throw new IllegalStateException(
                     String.format("Dependency of type %s already registered." +
@@ -104,5 +78,46 @@ final class MagnetScope implements Scope {
         }
     }
 
+    private <T> T getInstance(Class<T> type, String classifier, boolean required) {
+        InstanceFactory<T> factory = instanceManager.getOptionalFactory(type, classifier);
+
+        if (factory == null) {
+            String key = key(type, classifier);
+            T instance = findInstance(key);
+            if (required && instance == null) {
+                throw new IllegalStateException("Kaboom");
+            }
+            return instance;
+        }
+
+        if (factory.isScoped()) {
+            String key = key(type, classifier);
+            T instance = findInstance(key);
+            if (instance != null) {
+                return instance;
+            }
+        }
+
+        T instance = factory.create(this);
+        // todo register instance in scope
+
+        return instance;
+    }
+
+    private <T> T findInstance(String key) {
+        Object instance = instances.get(key);
+        if (instance == null && parent != null) {
+            return parent.findInstance(key);
+        }
+        //noinspection unchecked
+        return (T) instance;
+    }
+
+    private static String key(Class<?> type, String classifier) {
+        if (classifier == null || classifier.length() == 0) {
+            return type.getName();
+        }
+        return classifier + "@" + type.getName();
+    }
 
 }

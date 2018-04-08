@@ -116,6 +116,39 @@ final class MagnetInstanceManager implements InstanceManager {
         return instances.get(0);
     }
 
+    @SuppressWarnings("unchecked") @Override
+    public <T> InstanceFactory<T> getOptionalFactory(Class<T> type, String classifier) {
+        Range range = getOptionalRange(type, classifier);
+        if (range == null) {
+            return null;
+        }
+        if (range.getCount() > 1) {
+            throw new IllegalStateException("Kaboom");
+        }
+        return factories[range.getFrom()];
+    }
+
+    @SuppressWarnings("unchecked")
+    private Range getOptionalRange(Class<?> type, String classifier) {
+        Object indexed = index.get(type);
+
+        if (indexed instanceof Range) {
+            if (classifier.equals(Classifier.NONE)) {
+                return (Range) indexed;
+            }
+            return null;
+        }
+
+        if (indexed instanceof Map) {
+            Map<String, Range> ranges = (Map<String, Range>) indexed;
+            return ranges.get(classifier);
+        }
+
+        throw new IllegalStateException(
+                String.format(
+                        "Unsupported index type: %s", indexed.getClass()));
+    }
+
     private <T> List<T> createFromRange(Range range, Scope scope) {
         List<T> impls = new ArrayList<>();
         for (int i = range.getFrom(), to = range.getFrom() + range.getCount(); i < to; i++) {

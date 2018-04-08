@@ -29,4 +29,6 @@ public interface InstanceManager {
     <T> T requireSingle(Class<T> type, Scope scope);
     <T> T requireSingle(Class<T> type, String classifier, Scope scope);
 
+    <T> InstanceFactory<T> getOptionalFactory(Class<T> type, String classifier);
+
 }
