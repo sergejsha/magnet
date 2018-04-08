@@ -16,10 +16,7 @@
 
 package magnet;
 
-/**
- * Main class serving as a factory for {@link InstanceManager} and the
- * root {@link Scope}.
- */
+/** Main class serving as a factory for {@link InstanceManager} and the root {@link Scope}. */
 public final class Magnet {
 
     private static final InstanceManager INSTANCE_MANAGER = new MagnetInstanceManager();
@@ -27,7 +24,7 @@ public final class Magnet {
     private Magnet() { }
 
     /** Returns singleton instance of the {@link InstanceManager}. */
-    public static InstanceManager getImplementationManager() {
+    public static InstanceManager getInstanceManager() {
         return INSTANCE_MANAGER;
     }
 
