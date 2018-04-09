@@ -9,7 +9,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class MagnetAutoScopeTest {
+public class MagnetAutoScopeForScopedTest {
 
     private InstanceManager instanceManager;
 
@@ -24,7 +24,6 @@ public class MagnetAutoScopeTest {
         // one -> [], two -> [dep1], three -> [one, dep0], four -> [dep2], five -> [one, two]
 
         instanceManager = new StubInstanceManager();
-
         scope0 = (MagnetScope) new MagnetScope(null, instanceManager).register(Dependency0.class, new Dependency0());
         scope1 = (MagnetScope) scope0.subscope().register(Dependency1.class, new Dependency1());
         scope2 = (MagnetScope) scope1.subscope().register(Dependency2.class, new Dependency2());
@@ -184,85 +183,113 @@ public class MagnetAutoScopeTest {
         assertThat(scope2.getScopeObject(MenuItem.class, "five")).isNull();
         assertThat(scope1.getScopeObject(MenuItem.class, "five")).isEqualTo(menuItemFive);
         assertThat(scope0.getScopeObject(MenuItem.class, "five")).isNull();
+
+        assertThat(scope2.getScopeObject(MenuItem.class, "one")).isNull();
+        assertThat(scope1.getScopeObject(MenuItem.class, "one")).isNull();
+        assertThat(scope0.getScopeObject(MenuItem.class, "one")).isNotNull();
+
+        assertThat(scope2.getScopeObject(MenuItem.class, "two")).isNull();
+        assertThat(scope1.getScopeObject(MenuItem.class, "two")).isNotNull();
+        assertThat(scope0.getScopeObject(MenuItem.class, "two")).isNull();
     }
+
+    @Test
+    public void itemFive_requestedWithinScope2() {
+        // when
+        MenuItem menuItemFive = scope2.getSingle(MenuItem.class, "five");
+
+        // then
+        assertThat(menuItemFive).isNotNull();
+        assertThat(scope2.getScopeObject(MenuItem.class, "five")).isNull();
+        assertThat(scope1.getScopeObject(MenuItem.class, "five")).isEqualTo(menuItemFive);
+        assertThat(scope0.getScopeObject(MenuItem.class, "five")).isNull();
+
+        assertThat(scope2.getScopeObject(MenuItem.class, "one")).isNull();
+        assertThat(scope1.getScopeObject(MenuItem.class, "one")).isNull();
+        assertThat(scope0.getScopeObject(MenuItem.class, "one")).isNotNull();
+
+        assertThat(scope2.getScopeObject(MenuItem.class, "two")).isNull();
+        assertThat(scope1.getScopeObject(MenuItem.class, "two")).isNotNull();
+        assertThat(scope0.getScopeObject(MenuItem.class, "two")).isNull();
+    }
+
+    private static class MenuItemOneFactory implements InstanceFactory<MenuItem> {
+        @Override public MenuItem create(Scope scope) {
+            return new MenuItemOne();
+        }
+        @Override public boolean isScoped() { return true; }
+    }
+
+    private static class MenuItemTwoFactory implements InstanceFactory<MenuItem> {
+        @Override public MenuItem create(Scope scope) {
+            scope.getSingle(Dependency1.class);
+            return new MenuItemTwo();
+        }
+        @Override public boolean isScoped() { return true; }
+    }
+
+    private static class MenuItemThreeFactory implements InstanceFactory<MenuItem> {
+        @Override public MenuItem create(Scope scope) {
+            scope.getSingle(Dependency0.class);
+            scope.getSingle(MenuItem.class, "one");
+            return new MenuItemThree();
+        }
+        @Override public boolean isScoped() { return true; }
+    }
+
+    private static class MenuItemFourFactory implements InstanceFactory<MenuItem> {
+        @Override public MenuItem create(Scope scope) {
+            scope.getSingle(Dependency2.class);
+            return new MenuItemFour();
+        }
+        @Override public boolean isScoped() { return true; }
+    }
+
+    private static class MenuItemFiveFactory implements InstanceFactory<MenuItem> {
+        @Override public MenuItem create(Scope scope) {
+            scope.getSingle(MenuItem.class, "one");
+            scope.getSingle(MenuItem.class, "two");
+            return new MenuItemFive();
+        }
+        @Override public boolean isScoped() { return true; }
+    }
+
+    private static class StubInstanceManager implements InstanceManager {
+        private final Map<String, InstanceFactory<MenuItem>> factories;
+
+        StubInstanceManager() {
+            factories = new HashMap<>();
+            factories.put("one", new MenuItemOneFactory());
+            factories.put("two", new MenuItemTwoFactory());
+            factories.put("three", new MenuItemThreeFactory());
+            factories.put("four", new MenuItemFourFactory());
+            factories.put("five", new MenuItemFiveFactory());
+        }
+
+        @Override public <T> List<T> getMany(Class<T> type, Scope scope) {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override public <T> List<T> getMany(Class<T> type, String classifier, Scope scope) {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override public <T> InstanceFactory<T> getOptionalFactory(Class<T> type, String classifier) {
+            //noinspection unchecked
+            return (InstanceFactory<T>) factories.get(classifier);
+        }
+    }
+
+    private interface MenuItem {}
+
+    private static class MenuItemOne implements MenuItem {}
+    private static class MenuItemTwo implements MenuItem {}
+    private static class MenuItemThree implements MenuItem {}
+    private static class MenuItemFour implements MenuItem {}
+    private static class MenuItemFive implements MenuItem {}
+
+    private static class Dependency0 {}
+    private static class Dependency1 {}
+    private static class Dependency2 {}
 
 }
-
-class MenuItemOneFactory implements InstanceFactory<MenuItem> {
-    @Override public MenuItem create(Scope scope) {
-        return new MenuItemOne();
-    }
-    @Override public boolean isScoped() { return true; }
-}
-
-class MenuItemTwoFactory implements InstanceFactory<MenuItem> {
-    @Override public MenuItem create(Scope scope) {
-        scope.getSingle(Dependency1.class);
-        return new MenuItemTwo();
-    }
-    @Override public boolean isScoped() { return true; }
-}
-
-class MenuItemThreeFactory implements InstanceFactory<MenuItem> {
-    @Override public MenuItem create(Scope scope) {
-        scope.getSingle(Dependency0.class);
-        scope.getSingle(MenuItem.class, "one");
-        return new MenuItemThree();
-    }
-    @Override public boolean isScoped() { return true; }
-}
-
-class MenuItemFourFactory implements InstanceFactory<MenuItem> {
-    @Override public MenuItem create(Scope scope) {
-        scope.getSingle(Dependency2.class);
-        return new MenuItemFour();
-    }
-    @Override public boolean isScoped() { return true; }
-}
-
-class MenuItemFiveFactory implements InstanceFactory<MenuItem> {
-    @Override public MenuItem create(Scope scope) {
-        scope.getSingle(MenuItem.class, "one");
-        scope.getSingle(MenuItem.class, "two");
-        return new MenuItemFive();
-    }
-    @Override public boolean isScoped() { return true; }
-}
-
-class StubInstanceManager implements InstanceManager {
-    private final Map<String, InstanceFactory<MenuItem>> factories;
-
-    StubInstanceManager() {
-        factories = new HashMap<>();
-        factories.put("one", new MenuItemOneFactory());
-        factories.put("two", new MenuItemTwoFactory());
-        factories.put("three", new MenuItemThreeFactory());
-        factories.put("four", new MenuItemFourFactory());
-        factories.put("five", new MenuItemFiveFactory());
-    }
-
-    @Override public <T> List<T> getMany(Class<T> type, Scope scope) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override public <T> List<T> getMany(Class<T> type, String classifier, Scope scope) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override public <T> InstanceFactory<T> getOptionalFactory(Class<T> type, String classifier) {
-        //noinspection unchecked
-        return (InstanceFactory<T>) factories.get(classifier);
-    }
-}
-
-interface MenuItem {}
-
-class MenuItemOne implements MenuItem {}
-class MenuItemTwo implements MenuItem {}
-class MenuItemThree implements MenuItem {}
-class MenuItemFour implements MenuItem {}
-class MenuItemFive implements MenuItem {}
-
-class Dependency0 {}
-class Dependency1 {}
-class Dependency2 {}

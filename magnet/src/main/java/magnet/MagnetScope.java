@@ -16,12 +16,12 @@
 
 package magnet;
 
+import java.util.ArrayDeque;
+import java.util.Deque;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Queue;
 
 final class MagnetScope implements Scope {
 
@@ -103,6 +103,7 @@ final class MagnetScope implements Scope {
 
     private <T> T getObject(Class<T> type, String classifier, boolean required) {
         InstanceFactory<T> factory = instanceManager.getOptionalFactory(type, classifier);
+        AutoScope autoScope = this.autoScope.get();
         String key = key(type, classifier);
 
         if (factory == null) {
@@ -116,39 +117,40 @@ final class MagnetScope implements Scope {
                 }
                 return null;
             }
-
-            autoScope.get().onDependency(instance);
-            return instance.get();
+            autoScope.onMaybeDependencyInScope(instance.scopeDepth);
+            return instance.value;
         }
 
         if (factory.isScoped()) {
             Instance<T> instance = findInstanceDeep(key);
             if (instance != null) {
-                autoScope.get().onDependency(instance);
-                return instance.get();
+                autoScope.onMaybeDependencyInScope(instance.scopeDepth);
+                return instance.value;
             }
         }
 
-        autoScope.get().onBeforeInstanceCreated();
+        autoScope.onBeforeInstanceCreated();
         T object = factory.create(this);
-        int depth = autoScope.get().onAfterInstanceCreated();
+        int depth = autoScope.onAfterInstanceCreated();
+        autoScope.onMaybeDependencyInScope(depth);
 
-        Instance<T> instance = new Instance<>(object, depth);
-        registerInstance(key, instance);
-        autoScope.get().onDependency(instance);
+        if (factory.isScoped()) {
+            Instance<T> instance = new Instance<>(object, depth);
+            registerInstance(key, instance);
+        }
 
         return object;
     }
 
     private <T> void registerInstance(String key, Instance<T> instance) {
-        if (depth == instance.getScopeDepth()) {
+        if (depth == instance.scopeDepth) {
             instances.put(key, instance);
             return;
         }
         if (parent == null) {
             throw new IllegalStateException(
                     String.format(
-                            "Cannot register instance with depth %s", instance.getScopeDepth()));
+                            "Cannot register instance with depth %s", instance.scopeDepth));
         }
         parent.registerInstance(key, instance);
     }
@@ -162,10 +164,10 @@ final class MagnetScope implements Scope {
         return (Instance<T>) instance;
     }
 
-    /** Used for testing for objects registered in this scope. */
+    /** Used for testing the objects registered in this scope. */
     <T> T getScopeObject(Class<T> type, String classifier) {
         @SuppressWarnings("unchecked") Instance<T> instance = instances.get(key(type, classifier));
-        return instance == null ? null : instance.get();
+        return instance == null ? null : instance.value;
     }
 
     private static String key(Class<?> type, String classifier) {
@@ -175,66 +177,52 @@ final class MagnetScope implements Scope {
         return classifier + "@" + type.getName();
     }
 
-}
+    private static class Instance<T> {
+        final T value;
+        final int scopeDepth;
 
-class Instance<T> {
-
-    private final T value;
-    private final int scopeDepth;
-
-    Instance(T value, int scopeDepth) {
-        this.value = value;
-        this.scopeDepth = scopeDepth;
-    }
-
-    public int getScopeDepth() {
-        return scopeDepth;
-    }
-
-    public T get() {
-        return value;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Instance instance = (Instance) o;
-        return Objects.equals(value, instance.value);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(value);
-    }
-
-}
-
-class AutoScope {
-
-    private static final int NONE = -1;
-
-    private final Queue<Integer> depthStack = new LinkedList<>();
-    private int currentDepth = NONE;
-
-    public void onBeforeInstanceCreated() {
-        if (currentDepth > NONE) {
-            depthStack.add(currentDepth);
+        Instance(T value, int scopeDepth) {
+            this.value = value;
+            this.scopeDepth = scopeDepth;
         }
-        currentDepth = 0;
+
+        @Override public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+            Instance<?> instance = (Instance<?>) o;
+            return Objects.equals(value, instance.value);
+        }
+
+        @Override public int hashCode() {
+            return value.hashCode();
+        }
     }
 
-    public int onAfterInstanceCreated() {
-        int resultDepth = currentDepth;
-        currentDepth = depthStack.isEmpty() ? NONE : depthStack.poll();
-        return resultDepth;
-    }
+    private static class AutoScope {
+        private static final int NONE = -1;
+        private final Deque<Integer> depthStack = new ArrayDeque<>();
+        private int currentDepth = NONE;
 
-    public void onDependency(Instance instance) {
-        if (currentDepth == NONE) return;
-        if (instance.getScopeDepth() > currentDepth) {
-            currentDepth = instance.getScopeDepth();
+        void onBeforeInstanceCreated() {
+            if (currentDepth > NONE) {
+                depthStack.addFirst(currentDepth);
+            }
+            currentDepth = 0;
+        }
+
+        int onAfterInstanceCreated() {
+            int resultDepth = currentDepth;
+            currentDepth = depthStack.isEmpty() ? NONE : depthStack.pollFirst();
+            return resultDepth;
+        }
+
+        void onMaybeDependencyInScope(int instanceDepth) {
+            if (currentDepth == NONE) return;
+            if (instanceDepth > currentDepth) {
+                currentDepth = instanceDepth;
+            }
         }
     }
 
 }
+
