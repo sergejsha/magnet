@@ -16,25 +16,22 @@
 
 package magnet
 
-/**
- * Returns dependency of given type or null if none was found.
- *
- * @receiver Scope
- * @param T the type of dependency to search for.
- * @return  dependency found or `null` if none was found.
- */
-inline fun <reified T> Scope.get(classifier: String = Classifier.NONE): T? {
+inline fun <reified T> InstanceManager.getMany(classifier: String? = Classifier.NONE, scope: Scope): List<T> {
+    return this.getMany(T::class.java, classifier, scope)
+}
+
+inline fun <reified T> InstanceManager.getOptional(classifier: String? = Classifier.NONE, scope: Scope): T? {
+    return this.getOptional(T::class.java, classifier, scope)
+}
+
+inline fun <reified T> InstanceManager.getSingle(classifier: String? = Classifier.NONE, scope: Scope): T {
+    return this.getSingle(T::class.java, classifier, scope)
+}
+
+inline fun <reified T> Scope.getOptional(classifier: String = Classifier.NONE): T? {
     return this.getOptional(T::class.java, classifier)
 }
 
-/**
- * Returns dependency of given type or fails with [IllegalStateException]
- * if none was found.
- *
- * @receiver Scope
- * @param T the type of dependency to search for.
- * @return  dependency found.
- */
 inline fun <reified T> Scope.getSingle(classifier: String = Classifier.NONE): T {
     return this.getSingle(T::class.java, classifier)
 }
@@ -43,13 +40,6 @@ inline fun <reified T> Scope.getMany(classifier: String = Classifier.NONE): List
     return this.getMany(T::class.java, classifier)
 }
 
-/**
- * Registers a new dependency within this scope. If dependency
- * of given type already exists, then implementation will throw an
- * [IllegalStateException]. If you want to avoid issues with
- * overwriting dependencies, then create a new subscope and
- * add dependencies in there.
- */
 inline fun <reified T> Scope.register(component: T, classifier: String = Classifier.NONE) {
     this.register(T::class.java, component, classifier)
 }

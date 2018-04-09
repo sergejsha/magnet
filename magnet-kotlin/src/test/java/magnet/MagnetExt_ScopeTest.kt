@@ -24,7 +24,7 @@ import org.mockito.junit.MockitoJUnitRunner
 
 @Suppress("UNUSED_VARIABLE")
 @RunWith(MockitoJUnitRunner.StrictStubs::class)
-class ScopeTest {
+class MagnetExt_ScopeTest {
 
     @Mock
     lateinit var scope: Scope
@@ -32,7 +32,7 @@ class ScopeTest {
     @Test
     fun testGet() {
         // when
-        val value: String? = scope.get<String>()
+        val value: String? = scope.getOptional<String>()
 
         // then
         verify(scope).getOptional(String::class.java, Classifier.NONE)

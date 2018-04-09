@@ -24,10 +24,10 @@ import org.mockito.junit.MockitoJUnitRunner
 
 @Suppress("UNUSED_VARIABLE")
 @RunWith(MockitoJUnitRunner.StrictStubs::class)
-class MagnetTest {
+class MagnetExt_InstanceManagerTest {
 
     @Mock
-    lateinit var implManager: InstanceManager
+    lateinit var instanceManager: InstanceManager
 
     @Mock
     lateinit var scope: Scope
@@ -35,28 +35,28 @@ class MagnetTest {
     @Test
     fun testGetMany() {
         // when
-        val many: List<String> = implManager.getMany<String>("target", scope)
+        val many: List<String> = instanceManager.getMany<String>("target", scope)
 
         // then
-        verify(implManager).getMany(String::class.java, "target", scope)
+        verify(instanceManager).getMany(String::class.java, "target", scope)
+    }
+
+    @Test
+    fun testGetOptional() {
+        // when
+        val single: String? = instanceManager.getOptional<String>("target", scope)
+
+        // then
+        verify(instanceManager).getOptional(String::class.java, "target", scope)
     }
 
     @Test
     fun testGetSingle() {
         // when
-        val single: String? = implManager.getSingle<String>("target", scope)
+        val single: String = instanceManager.getSingle<String>("target", scope)
 
         // then
-        verify(implManager).getOptional(String::class.java, "target", scope)
-    }
-
-    @Test
-    fun testRequireSingle() {
-        // when
-        val single: String = implManager.requireSingle<String>("target", scope)
-
-        // then
-        verify(implManager).getSingle(String::class.java, "target", scope)
+        verify(instanceManager).getSingle(String::class.java, "target", scope)
     }
 
 }
