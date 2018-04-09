@@ -13,28 +13,16 @@ public class MagnetAutoScopeForUnscopedTest {
 
     private InstanceManager instanceManager;
 
-    private MagnetScope scope0;
     private MagnetScope scope1;
     private MagnetScope scope2;
+    private MagnetScope scope3;
 
     @Before
     public void before() {
         instanceManager = new StubInstanceManager();
-        scope0 = (MagnetScope) new MagnetScope(null, instanceManager).register(Dependency0.class, new Dependency0());
-        scope1 = (MagnetScope) scope0.subscope().register(Dependency1.class, new Dependency1());
+        scope1 = (MagnetScope) new MagnetScope(null, instanceManager).register(Dependency1.class, new Dependency1());
         scope2 = (MagnetScope) scope1.subscope().register(Dependency2.class, new Dependency2());
-    }
-
-    @Test
-    public void itemOne_requestedWithinScope0() {
-        // when
-        MenuItem menuItem = scope0.getSingle(MenuItem.class, "one");
-
-        // then
-        assertThat(menuItem).isNotNull();
-        assertThat(scope2.getScopeObject(MenuItem.class, "one")).isNull();
-        assertThat(scope1.getScopeObject(MenuItem.class, "one")).isNull();
-        assertThat(scope0.getScopeObject(MenuItem.class, "one")).isNull();
+        scope3 = (MagnetScope) scope2.subscope().register(Dependency3.class, new Dependency3());
     }
 
     @Test
@@ -44,9 +32,9 @@ public class MagnetAutoScopeForUnscopedTest {
 
         // then
         assertThat(menuItem).isNotNull();
+        assertThat(scope3.getScopeObject(MenuItem.class, "one")).isNull();
         assertThat(scope2.getScopeObject(MenuItem.class, "one")).isNull();
         assertThat(scope1.getScopeObject(MenuItem.class, "one")).isNull();
-        assertThat(scope0.getScopeObject(MenuItem.class, "one")).isNull();
     }
 
     @Test
@@ -56,31 +44,27 @@ public class MagnetAutoScopeForUnscopedTest {
 
         // then
         assertThat(menuItem).isNotNull();
+        assertThat(scope3.getScopeObject(MenuItem.class, "one")).isNull();
         assertThat(scope2.getScopeObject(MenuItem.class, "one")).isNull();
         assertThat(scope1.getScopeObject(MenuItem.class, "one")).isNull();
-        assertThat(scope0.getScopeObject(MenuItem.class, "one")).isNull();
-    }
-
-    @Test(expected = IllegalStateException.class)
-    public void itemTwo_requestedWithinScope0() {
-        // when
-        scope0.getSingle(MenuItem.class, "two");
     }
 
     @Test
-    public void itemTwo_requestedWithinScope1() {
+    public void itemOne_requestedWithinScope3() {
         // when
-        MenuItem menuItem = scope1.getSingle(MenuItem.class, "two");
+        MenuItem menuItem = scope3.getSingle(MenuItem.class, "one");
 
         // then
         assertThat(menuItem).isNotNull();
-        assertThat(scope2.getScopeObject(MenuItem.class, "two")).isNull();
-        assertThat(scope1.getScopeObject(MenuItem.class, "two")).isEqualTo(menuItem);
-        assertThat(scope0.getScopeObject(MenuItem.class, "two")).isNull();
-
+        assertThat(scope3.getScopeObject(MenuItem.class, "one")).isNull();
         assertThat(scope2.getScopeObject(MenuItem.class, "one")).isNull();
         assertThat(scope1.getScopeObject(MenuItem.class, "one")).isNull();
-        assertThat(scope0.getScopeObject(MenuItem.class, "one")).isNull();
+    }
+
+    @Test(expected = IllegalStateException.class)
+    public void itemTwo_requestedWithinScope1() {
+        // when
+        scope1.getSingle(MenuItem.class, "two");
     }
 
     @Test
@@ -90,19 +74,29 @@ public class MagnetAutoScopeForUnscopedTest {
 
         // then
         assertThat(menuItem).isNotNull();
-        assertThat(scope2.getScopeObject(MenuItem.class, "two")).isNull();
-        assertThat(scope1.getScopeObject(MenuItem.class, "two")).isEqualTo(menuItem);
-        assertThat(scope0.getScopeObject(MenuItem.class, "two")).isNull();
+        assertThat(scope3.getScopeObject(MenuItem.class, "two")).isNull();
+        assertThat(scope2.getScopeObject(MenuItem.class, "two")).isEqualTo(menuItem);
+        assertThat(scope1.getScopeObject(MenuItem.class, "two")).isNull();
 
+        assertThat(scope3.getScopeObject(MenuItem.class, "one")).isNull();
         assertThat(scope2.getScopeObject(MenuItem.class, "one")).isNull();
         assertThat(scope1.getScopeObject(MenuItem.class, "one")).isNull();
-        assertThat(scope0.getScopeObject(MenuItem.class, "one")).isNull();
     }
 
-    @Test(expected = IllegalStateException.class)
-    public void itemThree_requestedWithinScope0() {
+    @Test
+    public void itemTwo_requestedWithinScope3() {
         // when
-        scope0.getSingle(MenuItem.class, "three");
+        MenuItem menuItem = scope3.getSingle(MenuItem.class, "two");
+
+        // then
+        assertThat(menuItem).isNotNull();
+        assertThat(scope3.getScopeObject(MenuItem.class, "two")).isNull();
+        assertThat(scope2.getScopeObject(MenuItem.class, "two")).isEqualTo(menuItem);
+        assertThat(scope1.getScopeObject(MenuItem.class, "two")).isNull();
+
+        assertThat(scope3.getScopeObject(MenuItem.class, "one")).isNull();
+        assertThat(scope2.getScopeObject(MenuItem.class, "one")).isNull();
+        assertThat(scope1.getScopeObject(MenuItem.class, "one")).isNull();
     }
 
     @Test(expected = IllegalStateException.class)
@@ -111,25 +105,31 @@ public class MagnetAutoScopeForUnscopedTest {
         scope1.getSingle(MenuItem.class, "three");
     }
 
-    @Test
+    @Test(expected = IllegalStateException.class)
     public void itemThree_requestedWithinScope2() {
         // when
-        MenuItem menuItem = scope2.getSingle(MenuItem.class, "three");
+        scope2.getSingle(MenuItem.class, "three");
+    }
+
+    @Test
+    public void itemThree_requestedWithinScope3() {
+        // when
+        MenuItem menuItem = scope3.getSingle(MenuItem.class, "three");
 
         // then
         assertThat(menuItem).isNotNull();
-        assertThat(scope2.getScopeObject(MenuItem.class, "two")).isNull();
-        assertThat(scope1.getScopeObject(MenuItem.class, "two")).isNotNull();
-        assertThat(scope0.getScopeObject(MenuItem.class, "two")).isNull();
+        assertThat(scope3.getScopeObject(MenuItem.class, "two")).isNull();
+        assertThat(scope2.getScopeObject(MenuItem.class, "two")).isNotNull();
+        assertThat(scope1.getScopeObject(MenuItem.class, "two")).isNull();
 
+        assertThat(scope3.getScopeObject(MenuItem.class, "one")).isNull();
         assertThat(scope2.getScopeObject(MenuItem.class, "one")).isNull();
         assertThat(scope1.getScopeObject(MenuItem.class, "one")).isNull();
-        assertThat(scope0.getScopeObject(MenuItem.class, "one")).isNull();
     }
 
     private static class MenuItemOneFactory implements InstanceFactory<MenuItem> {
         @Override public MenuItem create(Scope scope) {
-            scope.getSingle(Dependency0.class);
+            scope.getSingle(Dependency1.class);
             return new MenuItemOne();
         }
         @Override public boolean isScoped() { return false; }
@@ -137,8 +137,8 @@ public class MagnetAutoScopeForUnscopedTest {
 
     private static class MenuItemTwoFactory implements InstanceFactory<MenuItem> {
         @Override public MenuItem create(Scope scope) {
-            scope.getSingle(Dependency0.class);
             scope.getSingle(Dependency1.class);
+            scope.getSingle(Dependency2.class);
             scope.getSingle(MenuItem.class, "one");
             return new MenuItemTwo();
         }
@@ -147,8 +147,8 @@ public class MagnetAutoScopeForUnscopedTest {
 
     private static class MenuItemThreeFactory implements InstanceFactory<MenuItem> {
         @Override public MenuItem create(Scope scope) {
-            scope.getSingle(Dependency0.class);
-            scope.getSingle(Dependency2.class);
+            scope.getSingle(Dependency1.class);
+            scope.getSingle(Dependency3.class);
             scope.getSingle(MenuItem.class, "one");
             scope.getSingle(MenuItem.class, "two");
             return new MenuItemThree();
@@ -185,7 +185,7 @@ public class MagnetAutoScopeForUnscopedTest {
     private static class MenuItemTwo implements MenuItem {}
     private static class MenuItemThree implements MenuItem {}
 
-    private static class Dependency0 {}
     private static class Dependency1 {}
     private static class Dependency2 {}
+    private static class Dependency3 {}
 }
