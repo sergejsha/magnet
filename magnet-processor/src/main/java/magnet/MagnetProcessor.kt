@@ -32,7 +32,6 @@ class MagnetProcessor : AbstractProcessor() {
     private val magnetIndexerGenerator: MagnetIndexerGenerator = MagnetIndexerGenerator()
 
     private lateinit var processEnvironment: ProcessingEnvironment
-    private var round = 0
 
     override fun init(processingEnvironment: ProcessingEnvironment) {
         super.init(processingEnvironment)
@@ -87,7 +86,7 @@ class MagnetProcessor : AbstractProcessor() {
     }
 
     override fun getSupportedAnnotationTypes(): MutableSet<String> {
-        return mutableSetOf<String>(
+        return mutableSetOf(
             Implementation::class.java.name,
             Magnetizer::class.java.name
         )

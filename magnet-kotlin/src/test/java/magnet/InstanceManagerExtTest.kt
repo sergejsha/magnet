@@ -24,7 +24,7 @@ import org.mockito.junit.MockitoJUnitRunner
 
 @Suppress("UNUSED_VARIABLE")
 @RunWith(MockitoJUnitRunner.StrictStubs::class)
-class MagnetExt_InstanceManagerTest {
+class InstanceManagerExtTest {
 
     @Mock
     lateinit var instanceManager: InstanceManager
@@ -35,7 +35,7 @@ class MagnetExt_InstanceManagerTest {
     @Test
     fun testGetMany() {
         // when
-        val many: List<String> = instanceManager.getMany<String>("target", scope)
+        val many: List<String> = instanceManager.getMany<String>(scope, "target")
 
         // then
         verify(instanceManager).getMany(String::class.java, "target", scope)
@@ -44,7 +44,7 @@ class MagnetExt_InstanceManagerTest {
     @Test
     fun testGetOptional() {
         // when
-        val single: String? = instanceManager.getOptional<String>("target", scope)
+        val single: String? = instanceManager.getOptional<String>(scope, "target")
 
         // then
         verify(instanceManager).getOptional(String::class.java, "target", scope)
@@ -53,7 +53,7 @@ class MagnetExt_InstanceManagerTest {
     @Test
     fun testGetSingle() {
         // when
-        val single: String = instanceManager.getSingle<String>("target", scope)
+        val single: String = instanceManager.getSingle<String>(scope, "target")
 
         // then
         verify(instanceManager).getSingle(String::class.java, "target", scope)

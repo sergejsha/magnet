@@ -24,7 +24,7 @@ import org.mockito.junit.MockitoJUnitRunner
 
 @Suppress("UNUSED_VARIABLE")
 @RunWith(MockitoJUnitRunner.StrictStubs::class)
-class MagnetExt_ScopeTest {
+class ScopeExtTest {
 
     @Mock
     lateinit var scope: Scope
