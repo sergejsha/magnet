@@ -84,38 +84,6 @@ final class MagnetInstanceManager implements InstanceManager {
         return Collections.emptyList();
     }
 
-    @Override
-    public <T> T getOptional(Class<T> type, Scope scope) {
-        return getOptional(type, Classifier.NONE, scope);
-    }
-
-    @Override
-    public <T> T getOptional(Class<T> type, String classifier, Scope scope) {
-        List<T> instances = getMany(type, classifier, scope);
-        if (instances.size() > 1) {
-            throw new IllegalStateException(
-                    String.format("Expect zero or one instance type: %s, classifier: %s, but found %s: %s",
-                            type, classifier, instances.size(), instances));
-        }
-        return instances.size() == 0 ? null : instances.get(0);
-    }
-
-    @Override
-    public <T> T getSingle(Class<T> type, Scope scope) {
-        return getSingle(type, Classifier.NONE, scope);
-    }
-
-    @Override
-    public <T> T getSingle(Class<T> type, String classifier, Scope scope) {
-        List<T> instances = getMany(type, classifier, scope);
-        if (instances.size() != 1) {
-            throw new IllegalStateException(
-                    String.format("Expect exactly one instance type: %s, classifier: %s, but found: %s: %s",
-                            type, classifier, instances.size(), instances));
-        }
-        return instances.get(0);
-    }
-
     @Override @SuppressWarnings("unchecked")
     public <T> InstanceFactory<T> getOptionalFactory(Class<T> type, String classifier) {
         Range range = getOptionalRange(type, classifier);

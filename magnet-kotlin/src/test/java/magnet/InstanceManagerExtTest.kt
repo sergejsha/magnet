@@ -41,22 +41,4 @@ class InstanceManagerExtTest {
         verify(instanceManager).getMany(String::class.java, "target", scope)
     }
 
-    @Test
-    fun testGetOptional() {
-        // when
-        val single: String? = instanceManager.getOptional<String>(scope, "target")
-
-        // then
-        verify(instanceManager).getOptional(String::class.java, "target", scope)
-    }
-
-    @Test
-    fun testGetSingle() {
-        // when
-        val single: String = instanceManager.getSingle<String>(scope, "target")
-
-        // then
-        verify(instanceManager).getSingle(String::class.java, "target", scope)
-    }
-
 }

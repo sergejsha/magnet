@@ -19,11 +19,3 @@ package magnet
 inline fun <reified T> InstanceManager.getMany(scope: Scope, classifier: String? = Classifier.NONE): List<T> {
     return this.getMany(T::class.java, classifier, scope)
 }
-
-inline fun <reified T> InstanceManager.getOptional(scope: Scope, classifier: String? = Classifier.NONE): T? {
-    return this.getOptional(T::class.java, classifier, scope)
-}
-
-inline fun <reified T> InstanceManager.getSingle(scope: Scope, classifier: String? = Classifier.NONE): T {
-    return this.getSingle(T::class.java, classifier, scope)
-}

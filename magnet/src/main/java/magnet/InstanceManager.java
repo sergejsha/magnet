@@ -20,12 +20,6 @@ import java.util.List;
 
 public interface InstanceManager {
 
-    <T> T getOptional(Class<T> type, Scope scope);
-    <T> T getOptional(Class<T> type, String classifier, Scope scope);
-
-    <T> T getSingle(Class<T> type, Scope scope);
-    <T> T getSingle(Class<T> type, String classifier, Scope scope);
-
     <T> List<T> getMany(Class<T> type, Scope scope);
     <T> List<T> getMany(Class<T> type, String classifier, Scope scope);
 
