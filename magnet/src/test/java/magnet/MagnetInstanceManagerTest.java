@@ -1,22 +1,16 @@
 package magnet;
 
-import static com.google.common.truth.Truth.assertThat;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import magnet.internal.Range;
 
-@RunWith(MockitoJUnitRunner.StrictStubs.class)
+//@RunWith(MockitoJUnitRunner.StrictStubs.class)
 public class MagnetInstanceManagerTest {
 
     @Mock
@@ -62,50 +56,6 @@ public class MagnetInstanceManagerTest {
         index.put(Type2.class, new Range(2, 2, ""));
 
         implManager.register(factories, index);
-    }
-
-    @Test
-    public void test_GetMany_UnknownType_NoTarget() {
-        // when
-        List<Object> impls = implManager.getMany(Object.class, scope);
-
-        // then
-        assertThat(impls).isEmpty();
-    }
-
-    @Test
-    public void test_GetMany_Type_Target_default() {
-        // when
-        List<Type2> impls = implManager.getMany(Type2.class, scope);
-
-        // then
-        verify(instanceFactoryType2Impl1).create(scope);
-        verify(instanceFactoryType2Impl2).create(scope);
-        assertThat(impls).hasSize(2);
-        assertThat(impls.get(0)).isNotNull();
-        assertThat(impls.get(1)).isNotNull();
-    }
-
-    @Test
-    public void test_GetMany_Type_Target_impl1() {
-        // when
-        List<Type1> impls = implManager.getMany(Type1.class, "impl1", scope);
-
-        // then
-        verify(instanceFactoryType1Impl1).create(scope);
-        assertThat(impls).hasSize(1);
-        assertThat(impls.get(0)).isNotNull();
-    }
-
-    @Test
-    public void test_GetMany_Type_Target_impl2() {
-        // when
-        List<Type1> impls = implManager.getMany(Type1.class, "impl2", scope);
-
-        // then
-        verify(instanceFactoryType1Impl2).create(scope);
-        assertThat(impls).hasSize(1);
-        assertThat(impls.get(0)).isNotNull();
     }
 
     interface Type1 {}

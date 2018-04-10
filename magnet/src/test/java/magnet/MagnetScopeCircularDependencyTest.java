@@ -79,20 +79,15 @@ public class MagnetScopeCircularDependencyTest {
             factories.put("two", new MenuItemTwoFactory());
             factories.put("three", new MenuItemThreeFactory());
             factories.put("four", new MenuItemFourFactory());
-            factories.put("five", new MenuItemFourFactory());
-        }
-
-        @Override public <T> List<T> getMany(Class<T> type, Scope scope) {
-            throw new UnsupportedOperationException();
-        }
-
-        @Override public <T> List<T> getMany(Class<T> type, String classifier, Scope scope) {
-            throw new UnsupportedOperationException();
+            factories.put("five", new MenuItemFiveFactory());
         }
 
         @Override public <T> InstanceFactory<T> getOptionalFactory(Class<T> type, String classifier) {
             //noinspection unchecked
             return (InstanceFactory<T>) factories.get(classifier);
+        }
+        @Override public <T> List<InstanceFactory<T>> getManyFactories(Class<T> type, String classifier) {
+            throw new UnsupportedOperationException();
         }
     }
 

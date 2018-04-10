@@ -20,9 +20,7 @@ import java.util.List;
 
 public interface InstanceManager {
 
-    <T> List<T> getMany(Class<T> type, Scope scope);
-    <T> List<T> getMany(Class<T> type, String classifier, Scope scope);
-
     <T> InstanceFactory<T> getOptionalFactory(Class<T> type, String classifier);
+    <T> List<InstanceFactory<T>> getManyFactories(Class<T> type, String classifier);
 
 }

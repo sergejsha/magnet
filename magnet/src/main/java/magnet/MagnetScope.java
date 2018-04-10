@@ -17,6 +17,8 @@
 package magnet;
 
 import java.util.ArrayDeque;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -42,34 +44,36 @@ final class MagnetScope implements Scope {
 
     @Override
     public <T> T getOptional(Class<T> type) {
-        return getObject(type, Classifier.NONE, false);
+        InstanceFactory<T> factory = instanceManager.getOptionalFactory(type, Classifier.NONE);
+        return getObject(type, Classifier.NONE, factory, false);
     }
 
     @Override
     public <T> T getOptional(Class<T> type, String classifier) {
-        return getObject(type, classifier, false);
+        InstanceFactory<T> factory = instanceManager.getOptionalFactory(type, classifier);
+        return getObject(type, classifier, factory, false);
     }
 
     @Override
     public <T> T getSingle(Class<T> type) {
-        return getObject(type, Classifier.NONE, true);
+        InstanceFactory<T> factory = instanceManager.getOptionalFactory(type, Classifier.NONE);
+        return getObject(type, Classifier.NONE, factory, true);
     }
 
     @Override
     public <T> T getSingle(Class<T> type, String classifier) {
-        return getObject(type, classifier, true);
+        InstanceFactory<T> factory = instanceManager.getOptionalFactory(type, classifier);
+        return getObject(type, classifier, factory, true);
     }
 
     @Override
     public <T> List<T> getMany(Class<T> type) {
-        // todo, reimplement with instanceManager.getManyFactories()
-        return instanceManager.getMany(type, this);
+        return getManyObjects(type, Classifier.NONE);
     }
 
     @Override
     public <T> List<T> getMany(Class<T> type, String classifier) {
-        // todo, reimplement with instanceManager.getManyFactories()
-        return instanceManager.getMany(type, classifier, this);
+        return getManyObjects(type, classifier);
     }
 
     @Override
@@ -99,8 +103,18 @@ final class MagnetScope implements Scope {
         }
     }
 
-    private <T> T getObject(Class<T> type, String classifier, boolean required) {
-        InstanceFactory<T> factory = instanceManager.getOptionalFactory(type, classifier);
+    private <T> List<T> getManyObjects(Class<T> type, String classifier) {
+        List<InstanceFactory<T>> factories = instanceManager.getManyFactories(type, classifier);
+        if (factories.size() == 0) return Collections.emptyList();
+
+        List<T> objects = new ArrayList<>(factories.size());
+        for (InstanceFactory<T> factory : factories) {
+            objects.add(getObject(type, Classifier.NONE, factory, false));
+        }
+        return objects;
+    }
+
+    private <T> T getObject(Class<T> type, String classifier, InstanceFactory<T> factory, boolean required) {
         AutoScope autoScope = this.autoScope.get();
         String key = key(type, classifier);
 
@@ -175,7 +189,7 @@ final class MagnetScope implements Scope {
         return classifier + "@" + type.getName();
     }
 
-    private static class Instance<T> {
+    private final static class Instance<T> {
         final T value;
         final int scopeDepth;
 
@@ -196,7 +210,7 @@ final class MagnetScope implements Scope {
         }
     }
 
-    private static class AutoScope {
+    private final static class AutoScope {
         private final ArrayDeque<InstanceCreation> creationStack = new ArrayDeque<>();
         private InstanceCreation instanceCreation;
 
@@ -224,11 +238,11 @@ final class MagnetScope implements Scope {
         }
     }
 
-    private static class InstanceCreation {
-        public final String key;
-        public int depth;
+    private final static class InstanceCreation {
+        final String key;
+        int depth;
 
-        private InstanceCreation(String key) {
+        InstanceCreation(String key) {
             this.key = key;
         }
 
@@ -245,4 +259,3 @@ final class MagnetScope implements Scope {
     }
 
 }
-

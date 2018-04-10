@@ -17,11 +17,11 @@
 package magnet;
 
 import java.lang.reflect.Method;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+import magnet.internal.ImmutableArrayList;
 import magnet.internal.Range;
 
 final class MagnetInstanceManager implements InstanceManager {
@@ -54,36 +54,6 @@ final class MagnetInstanceManager implements InstanceManager {
         this.index = index;
     }
 
-    @Override
-    public <T> List<T> getMany(Class<T> type, Scope scope) {
-        return getMany(type, Classifier.NONE, scope);
-    }
-
-    @Override
-    public <T> List<T> getMany(Class<T> type, String classifier, Scope scope) {
-        Object indexed = index.get(type);
-
-        if (indexed instanceof Range) {
-            Range range = (Range) indexed;
-            if (range.getClassifier().equals(classifier)) {
-                return createFromRange(range, scope);
-            }
-            return Collections.emptyList();
-        }
-
-        if (indexed instanceof Map) {
-            //noinspection unchecked
-            Map<String, Range> ranges = (Map<String, Range>) indexed;
-            Range range = ranges.get(classifier);
-            if (range != null) {
-                return createFromRange(range, scope);
-            }
-            return Collections.emptyList();
-        }
-
-        return Collections.emptyList();
-    }
-
     @Override @SuppressWarnings("unchecked")
     public <T> InstanceFactory<T> getOptionalFactory(Class<T> type, String classifier) {
         Range range = getOptionalRange(type, classifier);
@@ -94,9 +64,34 @@ final class MagnetInstanceManager implements InstanceManager {
             throw new IllegalStateException(
                     String.format(
                             "Multiple factories for type '%s' and classifier '%s' found," +
-                                    " while only one required", type, classifier));
+                                    " while only one was required", type, classifier));
         }
         return factories[range.getFrom()];
+    }
+
+    @Override
+    public <T> List<InstanceFactory<T>> getManyFactories(Class<T> type, String classifier) {
+        Object indexed = index.get(type);
+
+        if (indexed instanceof Range) {
+            Range range = (Range) indexed;
+            if (range.getClassifier().equals(classifier)) {
+                return factoriesFromRange(range);
+            }
+            return Collections.emptyList();
+        }
+
+        if (indexed instanceof Map) {
+            //noinspection unchecked
+            Map<String, Range> ranges = (Map<String, Range>) indexed;
+            Range range = ranges.get(classifier);
+            if (range != null) {
+                return factoriesFromRange(range);
+            }
+            return Collections.emptyList();
+        }
+
+        return Collections.emptyList();
     }
 
     @SuppressWarnings("unchecked")
@@ -124,13 +119,10 @@ final class MagnetInstanceManager implements InstanceManager {
                         "Unsupported index type: %s", indexed.getClass()));
     }
 
-    private <T> List<T> createFromRange(Range range, Scope scope) {
-        List<T> impls = new ArrayList<>();
-        for (int i = range.getFrom(), to = range.getFrom() + range.getCount(); i < to; i++) {
-            //noinspection unchecked
-            impls.add((T) factories[i].create(scope));
-        }
-        return impls;
+    private <T> List<InstanceFactory<T>> factoriesFromRange(Range range) {
+        @SuppressWarnings("unchecked") InstanceFactory<T>[] factories = new InstanceFactory[range.getCount()];
+        System.arraycopy(this.factories, range.getFrom(), factories, 0, range.getCount());
+        return new ImmutableArrayList<>(factories);
     }
 
 }
