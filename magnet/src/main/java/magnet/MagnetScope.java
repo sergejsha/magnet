@@ -23,6 +23,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import magnet.internal.Instance;
+
 final class MagnetScope implements Scope {
 
     private static byte CARDINALITY_OPTIONAL = 0;
@@ -49,25 +51,25 @@ final class MagnetScope implements Scope {
     @Override
     public <T> T getOptional(Class<T> type) {
         InstanceFactory<T> factory = instanceManager.getOptionalFactory(type, Classifier.NONE);
-        return getObject(type, Classifier.NONE, factory, CARDINALITY_OPTIONAL);
+        return getSingleObject(type, Classifier.NONE, factory, CARDINALITY_OPTIONAL);
     }
 
     @Override
     public <T> T getOptional(Class<T> type, String classifier) {
         InstanceFactory<T> factory = instanceManager.getOptionalFactory(type, classifier);
-        return getObject(type, classifier, factory, CARDINALITY_OPTIONAL);
+        return getSingleObject(type, classifier, factory, CARDINALITY_OPTIONAL);
     }
 
     @Override
     public <T> T getSingle(Class<T> type) {
         InstanceFactory<T> factory = instanceManager.getOptionalFactory(type, Classifier.NONE);
-        return getObject(type, Classifier.NONE, factory, CARDINALITY_SINGLE);
+        return getSingleObject(type, Classifier.NONE, factory, CARDINALITY_SINGLE);
     }
 
     @Override
     public <T> T getSingle(Class<T> type, String classifier) {
         InstanceFactory<T> factory = instanceManager.getOptionalFactory(type, classifier);
-        return getObject(type, classifier, factory, CARDINALITY_SINGLE);
+        return getSingleObject(type, classifier, factory, CARDINALITY_SINGLE);
     }
 
     @Override
@@ -98,11 +100,10 @@ final class MagnetScope implements Scope {
     }
 
     private void register(String key, Object object) {
-        Object existing = instances.put(key, new Instance(object, depth));
+        Object existing = instances.put(key, Instance.create(object, null, depth));
         if (existing != null) {
             throw new IllegalStateException(
-                    String.format("Instance of type %s already registered." +
-                                    " Existing instance %s, new instance %s",
+                    String.format("Instance of type %s already registered. Existing instance %s, new instance %s",
                             key, existing, object));
         }
     }
@@ -113,37 +114,44 @@ final class MagnetScope implements Scope {
 
         List<T> objects = new ArrayList<>(factories.size());
         for (InstanceFactory<T> factory : factories) {
-            objects.add(getObject(type, Classifier.NONE, factory, CARDINALITY_MANY));
+            objects.add(getSingleObject(type, classifier, factory, CARDINALITY_MANY));
         }
         return objects;
     }
 
-    private <T> T getObject(Class<T> type, String classifier, InstanceFactory<T> factory, byte cardinality) {
+    @SuppressWarnings("unchecked")
+    private <T> T getSingleObject(Class<T> type, String classifier, InstanceFactory<T> factory, byte cardinality) {
         AutoScope autoScope = this.autoScope.get();
         String key = key(type, classifier);
 
         if (factory == null) {
-            Instance instance = findInstanceDeep(key);
+            Instance<T> instance = findInstanceDeep(key);
             if (instance == null) {
                 if (cardinality == CARDINALITY_SINGLE) {
                     throw new IllegalStateException(
                             String.format(
-                                    "Instance of type '%s' and classifier '%s' was not found in scopes.",
+                                    "Instance of type: '%s' and classifier: '%s' was not found in scopes.",
                                     type.getName(), classifier));
                 }
                 return null;
             }
-            autoScope.onMaybeDependencyInScope(instance.scopeDepth);
-            //noinspection unchecked
-            return (T) instance.value;
+            autoScope.onMaybeDependencyInScope(instance.getScopeDepth());
+            return instance.getValue();
         }
 
+        Instance<T> instance = findInstanceDeep(key);
         if (factory.isScoped()) {
-            Instance instance = findInstanceDeep(key);
+
             if (instance != null) {
-                autoScope.onMaybeDependencyInScope(instance.scopeDepth);
-                //noinspection unchecked
-                return (T) instance.value;
+                if (cardinality != CARDINALITY_MANY) {
+                    autoScope.onMaybeDependencyInScope(instance.getScopeDepth());
+                    return instance.getValue();
+                }
+
+                T object = instance.getValue(factory);
+                if (object != null) {
+                    return object;
+                }
             }
         }
 
@@ -153,28 +161,43 @@ final class MagnetScope implements Scope {
         autoScope.onMaybeDependencyInScope(depth);
 
         if (factory.isScoped()) {
-            Instance instance = new Instance(object, depth);
-            registerInstance(key, instance);
+            if (instance != null && instance.getScopeDepth() != depth) {
+                instance = null;
+            }
+
+            if (instance == null) {
+                instance = Instance.create(object, factory, depth);
+                registerInstance(key, instance);
+                
+            } else {
+                instance.addValue(object, factory);
+            }
         }
 
         return object;
     }
 
     private void registerInstance(String key, Instance instance) {
-        if (depth == instance.scopeDepth) {
-            instances.put(key, instance);
+        if (depth == instance.getScopeDepth()) {
+            Instance existing = instances.put(key, instance);
+            if (existing != null) {
+                throw new IllegalStateException(
+                        String.format(
+                                "Instance %s with key %s already registered.", instance, key));
+            }
             return;
         }
         if (parent == null) {
             throw new IllegalStateException(
                     String.format(
-                            "Cannot register instance with depth %s", instance.scopeDepth));
+                            "Cannot register instance with depth %s", instance.getScopeDepth()));
         }
         parent.registerInstance(key, instance);
     }
 
-    private Instance findInstanceDeep(String key) {
-        Instance instance = instances.get(key);
+    @SuppressWarnings("unchecked")
+    private <T> Instance<T> findInstanceDeep(String key) {
+        Instance<T> instance = instances.get(key);
         if (instance == null && parent != null) {
             return parent.findInstanceDeep(key);
         }
@@ -182,10 +205,15 @@ final class MagnetScope implements Scope {
     }
 
     /** Used for testing the objects registered in this scope. */
-    <T> T getScopeObject(Class<T> type, String classifier) {
-        Instance instance = instances.get(key(type, classifier));
-        //noinspection unchecked
-        return instance == null ? null : (T) instance.value;
+    @SuppressWarnings("unchecked") <T> T getRegisteredSingle(Class<T> type, String classifier) {
+        Instance<T> instance = instances.get(key(type, classifier));
+        return instance == null ? null : (T) instance.getValue();
+    }
+
+    /** Used for testing the objects registered in this scope. */
+    @SuppressWarnings("unchecked") <T> List<T> getRegisteredMany(Class<T> type, String classifier) {
+        Instance<T> instance = instances.get(key(type, classifier));
+        return instance == null ? Collections.emptyList() : instance.getValues();
     }
 
     private static String key(Class<?> type, String classifier) {
@@ -195,67 +223,46 @@ final class MagnetScope implements Scope {
         return classifier + "@" + type.getName();
     }
 
-    private final static class Instance {
-        final Object value;
-        final int scopeDepth;
-
-        Instance(Object value, int scopeDepth) {
-            this.value = value;
-            this.scopeDepth = scopeDepth;
-        }
-
-        @Override public boolean equals(Object o) {
-            if (this == o) return true;
-            if (o == null || getClass() != o.getClass()) return false;
-            Instance instance = (Instance) o;
-            return value.equals(instance.value);
-        }
-
-        @Override public int hashCode() {
-            return value.hashCode();
-        }
-    }
-
     private final static class AutoScope {
-        private final ArrayDeque<InstanceCreation> creationStack = new ArrayDeque<>();
-        private InstanceCreation instanceCreation;
+        private final ArrayDeque<CreatingInstanceStep> creatingInstanceSteps = new ArrayDeque<>();
+        private CreatingInstanceStep creatingInstanceStep;
 
         void onBeforeInstanceCreated(String key) {
-            if (instanceCreation != null) {
-                creationStack.addFirst(instanceCreation);
+            if (creatingInstanceStep != null) {
+                creatingInstanceSteps.addFirst(creatingInstanceStep);
             }
-            instanceCreation = new InstanceCreation(key);
-            if (creationStack.contains(instanceCreation)) {
+            creatingInstanceStep = new CreatingInstanceStep(key);
+            if (creatingInstanceSteps.contains(creatingInstanceStep)) {
                 throw new IllegalStateException("Circular dependency detected");
             }
         }
 
         int onAfterInstanceCreated() {
-            int resultDepth = instanceCreation.depth;
-            instanceCreation = creationStack.isEmpty() ? null : creationStack.pollFirst();
+            int resultDepth = creatingInstanceStep.depth;
+            creatingInstanceStep = creatingInstanceSteps.isEmpty() ? null : creatingInstanceSteps.pollFirst();
             return resultDepth;
         }
 
         void onMaybeDependencyInScope(int instanceDepth) {
-            if (instanceCreation == null) return;
-            if (instanceDepth > instanceCreation.depth) {
-                instanceCreation.depth = instanceDepth;
+            if (creatingInstanceStep == null) return;
+            if (instanceDepth > creatingInstanceStep.depth) {
+                creatingInstanceStep.depth = instanceDepth;
             }
         }
     }
 
-    private final static class InstanceCreation {
+    private final static class CreatingInstanceStep {
         final String key;
         int depth;
 
-        InstanceCreation(String key) {
+        CreatingInstanceStep(String key) {
             this.key = key;
         }
 
         @Override public boolean equals(Object o) {
             if (this == o) return true;
             if (o == null || getClass() != o.getClass()) return false;
-            InstanceCreation that = (InstanceCreation) o;
+            CreatingInstanceStep that = (CreatingInstanceStep) o;
             return key.equals(that.key);
         }
 

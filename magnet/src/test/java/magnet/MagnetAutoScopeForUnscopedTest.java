@@ -32,9 +32,9 @@ public class MagnetAutoScopeForUnscopedTest {
 
         // then
         assertThat(menuItem).isNotNull();
-        assertThat(scope3.getScopeObject(MenuItem.class, "one")).isNull();
-        assertThat(scope2.getScopeObject(MenuItem.class, "one")).isNull();
-        assertThat(scope1.getScopeObject(MenuItem.class, "one")).isNull();
+        assertThat(scope3.getRegisteredSingle(MenuItem.class, "one")).isNull();
+        assertThat(scope2.getRegisteredSingle(MenuItem.class, "one")).isNull();
+        assertThat(scope1.getRegisteredSingle(MenuItem.class, "one")).isNull();
     }
 
     @Test
@@ -44,9 +44,9 @@ public class MagnetAutoScopeForUnscopedTest {
 
         // then
         assertThat(menuItem).isNotNull();
-        assertThat(scope3.getScopeObject(MenuItem.class, "one")).isNull();
-        assertThat(scope2.getScopeObject(MenuItem.class, "one")).isNull();
-        assertThat(scope1.getScopeObject(MenuItem.class, "one")).isNull();
+        assertThat(scope3.getRegisteredSingle(MenuItem.class, "one")).isNull();
+        assertThat(scope2.getRegisteredSingle(MenuItem.class, "one")).isNull();
+        assertThat(scope1.getRegisteredSingle(MenuItem.class, "one")).isNull();
     }
 
     @Test
@@ -56,9 +56,9 @@ public class MagnetAutoScopeForUnscopedTest {
 
         // then
         assertThat(menuItem).isNotNull();
-        assertThat(scope3.getScopeObject(MenuItem.class, "one")).isNull();
-        assertThat(scope2.getScopeObject(MenuItem.class, "one")).isNull();
-        assertThat(scope1.getScopeObject(MenuItem.class, "one")).isNull();
+        assertThat(scope3.getRegisteredSingle(MenuItem.class, "one")).isNull();
+        assertThat(scope2.getRegisteredSingle(MenuItem.class, "one")).isNull();
+        assertThat(scope1.getRegisteredSingle(MenuItem.class, "one")).isNull();
     }
 
     @Test(expected = IllegalStateException.class)
@@ -74,13 +74,13 @@ public class MagnetAutoScopeForUnscopedTest {
 
         // then
         assertThat(menuItem).isNotNull();
-        assertThat(scope3.getScopeObject(MenuItem.class, "two")).isNull();
-        assertThat(scope2.getScopeObject(MenuItem.class, "two")).isEqualTo(menuItem);
-        assertThat(scope1.getScopeObject(MenuItem.class, "two")).isNull();
+        assertThat(scope3.getRegisteredSingle(MenuItem.class, "two")).isNull();
+        assertThat(scope2.getRegisteredSingle(MenuItem.class, "two")).isEqualTo(menuItem);
+        assertThat(scope1.getRegisteredSingle(MenuItem.class, "two")).isNull();
 
-        assertThat(scope3.getScopeObject(MenuItem.class, "one")).isNull();
-        assertThat(scope2.getScopeObject(MenuItem.class, "one")).isNull();
-        assertThat(scope1.getScopeObject(MenuItem.class, "one")).isNull();
+        assertThat(scope3.getRegisteredSingle(MenuItem.class, "one")).isNull();
+        assertThat(scope2.getRegisteredSingle(MenuItem.class, "one")).isNull();
+        assertThat(scope1.getRegisteredSingle(MenuItem.class, "one")).isNull();
     }
 
     @Test
@@ -90,13 +90,13 @@ public class MagnetAutoScopeForUnscopedTest {
 
         // then
         assertThat(menuItem).isNotNull();
-        assertThat(scope3.getScopeObject(MenuItem.class, "two")).isNull();
-        assertThat(scope2.getScopeObject(MenuItem.class, "two")).isEqualTo(menuItem);
-        assertThat(scope1.getScopeObject(MenuItem.class, "two")).isNull();
+        assertThat(scope3.getRegisteredSingle(MenuItem.class, "two")).isNull();
+        assertThat(scope2.getRegisteredSingle(MenuItem.class, "two")).isEqualTo(menuItem);
+        assertThat(scope1.getRegisteredSingle(MenuItem.class, "two")).isNull();
 
-        assertThat(scope3.getScopeObject(MenuItem.class, "one")).isNull();
-        assertThat(scope2.getScopeObject(MenuItem.class, "one")).isNull();
-        assertThat(scope1.getScopeObject(MenuItem.class, "one")).isNull();
+        assertThat(scope3.getRegisteredSingle(MenuItem.class, "one")).isNull();
+        assertThat(scope2.getRegisteredSingle(MenuItem.class, "one")).isNull();
+        assertThat(scope1.getRegisteredSingle(MenuItem.class, "one")).isNull();
     }
 
     @Test(expected = IllegalStateException.class)
@@ -118,13 +118,13 @@ public class MagnetAutoScopeForUnscopedTest {
 
         // then
         assertThat(menuItem).isNotNull();
-        assertThat(scope3.getScopeObject(MenuItem.class, "two")).isNull();
-        assertThat(scope2.getScopeObject(MenuItem.class, "two")).isNotNull();
-        assertThat(scope1.getScopeObject(MenuItem.class, "two")).isNull();
+        assertThat(scope3.getRegisteredSingle(MenuItem.class, "two")).isNull();
+        assertThat(scope2.getRegisteredSingle(MenuItem.class, "two")).isNotNull();
+        assertThat(scope1.getRegisteredSingle(MenuItem.class, "two")).isNull();
 
-        assertThat(scope3.getScopeObject(MenuItem.class, "one")).isNull();
-        assertThat(scope2.getScopeObject(MenuItem.class, "one")).isNull();
-        assertThat(scope1.getScopeObject(MenuItem.class, "one")).isNull();
+        assertThat(scope3.getRegisteredSingle(MenuItem.class, "one")).isNull();
+        assertThat(scope2.getRegisteredSingle(MenuItem.class, "one")).isNull();
+        assertThat(scope1.getRegisteredSingle(MenuItem.class, "one")).isNull();
     }
 
     private static class MenuItemOneFactory implements InstanceFactory<MenuItem> {
