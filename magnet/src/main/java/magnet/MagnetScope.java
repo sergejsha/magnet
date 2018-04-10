@@ -25,6 +25,10 @@ import java.util.Map;
 
 final class MagnetScope implements Scope {
 
+    private static byte CARDINALITY_OPTIONAL = 0;
+    private static byte CARDINALITY_SINGLE = 1;
+    private static byte CARDINALITY_MANY = 2;
+
     private final int depth;
     private final MagnetScope parent;
     private final InstanceManager instanceManager;
@@ -45,25 +49,25 @@ final class MagnetScope implements Scope {
     @Override
     public <T> T getOptional(Class<T> type) {
         InstanceFactory<T> factory = instanceManager.getOptionalFactory(type, Classifier.NONE);
-        return getObject(type, Classifier.NONE, factory, false);
+        return getObject(type, Classifier.NONE, factory, CARDINALITY_OPTIONAL);
     }
 
     @Override
     public <T> T getOptional(Class<T> type, String classifier) {
         InstanceFactory<T> factory = instanceManager.getOptionalFactory(type, classifier);
-        return getObject(type, classifier, factory, false);
+        return getObject(type, classifier, factory, CARDINALITY_OPTIONAL);
     }
 
     @Override
     public <T> T getSingle(Class<T> type) {
         InstanceFactory<T> factory = instanceManager.getOptionalFactory(type, Classifier.NONE);
-        return getObject(type, Classifier.NONE, factory, true);
+        return getObject(type, Classifier.NONE, factory, CARDINALITY_SINGLE);
     }
 
     @Override
     public <T> T getSingle(Class<T> type, String classifier) {
         InstanceFactory<T> factory = instanceManager.getOptionalFactory(type, classifier);
-        return getObject(type, classifier, factory, true);
+        return getObject(type, classifier, factory, CARDINALITY_SINGLE);
     }
 
     @Override
@@ -109,19 +113,19 @@ final class MagnetScope implements Scope {
 
         List<T> objects = new ArrayList<>(factories.size());
         for (InstanceFactory<T> factory : factories) {
-            objects.add(getObject(type, Classifier.NONE, factory, false));
+            objects.add(getObject(type, Classifier.NONE, factory, CARDINALITY_MANY));
         }
         return objects;
     }
 
-    private <T> T getObject(Class<T> type, String classifier, InstanceFactory<T> factory, boolean required) {
+    private <T> T getObject(Class<T> type, String classifier, InstanceFactory<T> factory, byte cardinality) {
         AutoScope autoScope = this.autoScope.get();
         String key = key(type, classifier);
 
         if (factory == null) {
             Instance<T> instance = findInstanceDeep(key);
             if (instance == null) {
-                if (required) {
+                if (cardinality == CARDINALITY_SINGLE) {
                     throw new IllegalStateException(
                             String.format(
                                     "Instance of type '%s' and classifier '%s' was not found in scopes.",

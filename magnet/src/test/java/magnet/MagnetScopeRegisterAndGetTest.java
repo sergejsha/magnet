@@ -9,7 +9,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
 @RunWith(MockitoJUnitRunner.StrictStubs.class)
-public class MagnetScopeTest {
+public class MagnetScopeRegisterAndGetTest {
 
     @Mock
     InstanceManager instanceManager;
