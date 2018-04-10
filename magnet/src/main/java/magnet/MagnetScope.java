@@ -17,11 +17,9 @@
 package magnet;
 
 import java.util.ArrayDeque;
-import java.util.Deque;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 
 final class MagnetScope implements Scope {
 
@@ -129,7 +127,7 @@ final class MagnetScope implements Scope {
             }
         }
 
-        autoScope.onBeforeInstanceCreated();
+        autoScope.onBeforeInstanceCreated(key);
         T object = factory.create(this);
         int depth = autoScope.onAfterInstanceCreated();
         autoScope.onMaybeDependencyInScope(depth);
@@ -190,7 +188,7 @@ final class MagnetScope implements Scope {
             if (this == o) return true;
             if (o == null || getClass() != o.getClass()) return false;
             Instance<?> instance = (Instance<?>) o;
-            return Objects.equals(value, instance.value);
+            return value.equals(instance.value);
         }
 
         @Override public int hashCode() {
@@ -199,28 +197,50 @@ final class MagnetScope implements Scope {
     }
 
     private static class AutoScope {
-        private static final int NONE = -1;
-        private final Deque<Integer> depthStack = new ArrayDeque<>();
-        private int currentDepth = NONE;
+        private final ArrayDeque<InstanceCreation> creationStack = new ArrayDeque<>();
+        private InstanceCreation instanceCreation;
 
-        void onBeforeInstanceCreated() {
-            if (currentDepth > NONE) {
-                depthStack.addFirst(currentDepth);
+        void onBeforeInstanceCreated(String key) {
+            if (instanceCreation != null) {
+                creationStack.addFirst(instanceCreation);
             }
-            currentDepth = 0;
+            instanceCreation = new InstanceCreation(key);
+            if (creationStack.contains(instanceCreation)) {
+                throw new IllegalStateException("Circular dependency detected");
+            }
         }
 
         int onAfterInstanceCreated() {
-            int resultDepth = currentDepth;
-            currentDepth = depthStack.isEmpty() ? NONE : depthStack.pollFirst();
+            int resultDepth = instanceCreation.depth;
+            instanceCreation = creationStack.isEmpty() ? null : creationStack.pollFirst();
             return resultDepth;
         }
 
         void onMaybeDependencyInScope(int instanceDepth) {
-            if (currentDepth == NONE) return;
-            if (instanceDepth > currentDepth) {
-                currentDepth = instanceDepth;
+            if (instanceCreation == null) return;
+            if (instanceDepth > instanceCreation.depth) {
+                instanceCreation.depth = instanceDepth;
             }
+        }
+    }
+
+    private static class InstanceCreation {
+        public final String key;
+        public int depth;
+
+        private InstanceCreation(String key) {
+            this.key = key;
+        }
+
+        @Override public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+            InstanceCreation that = (InstanceCreation) o;
+            return key.equals(that.key);
+        }
+
+        @Override public int hashCode() {
+            return key.hashCode();
         }
     }
 
