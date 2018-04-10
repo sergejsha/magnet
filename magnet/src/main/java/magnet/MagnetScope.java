@@ -98,7 +98,7 @@ final class MagnetScope implements Scope {
     }
 
     private void register(String key, Object object) {
-        Object existing = instances.put(key, new Instance<>(object, depth));
+        Object existing = instances.put(key, new Instance(object, depth));
         if (existing != null) {
             throw new IllegalStateException(
                     String.format("Instance of type %s already registered." +
@@ -123,7 +123,7 @@ final class MagnetScope implements Scope {
         String key = key(type, classifier);
 
         if (factory == null) {
-            Instance<T> instance = findInstanceDeep(key);
+            Instance instance = findInstanceDeep(key);
             if (instance == null) {
                 if (cardinality == CARDINALITY_SINGLE) {
                     throw new IllegalStateException(
@@ -134,14 +134,16 @@ final class MagnetScope implements Scope {
                 return null;
             }
             autoScope.onMaybeDependencyInScope(instance.scopeDepth);
-            return instance.value;
+            //noinspection unchecked
+            return (T) instance.value;
         }
 
         if (factory.isScoped()) {
-            Instance<T> instance = findInstanceDeep(key);
+            Instance instance = findInstanceDeep(key);
             if (instance != null) {
                 autoScope.onMaybeDependencyInScope(instance.scopeDepth);
-                return instance.value;
+                //noinspection unchecked
+                return (T) instance.value;
             }
         }
 
@@ -151,14 +153,14 @@ final class MagnetScope implements Scope {
         autoScope.onMaybeDependencyInScope(depth);
 
         if (factory.isScoped()) {
-            Instance<T> instance = new Instance<>(object, depth);
+            Instance instance = new Instance(object, depth);
             registerInstance(key, instance);
         }
 
         return object;
     }
 
-    private <T> void registerInstance(String key, Instance<T> instance) {
+    private void registerInstance(String key, Instance instance) {
         if (depth == instance.scopeDepth) {
             instances.put(key, instance);
             return;
@@ -171,19 +173,19 @@ final class MagnetScope implements Scope {
         parent.registerInstance(key, instance);
     }
 
-    private <T> Instance<T> findInstanceDeep(String key) {
+    private Instance findInstanceDeep(String key) {
         Instance instance = instances.get(key);
         if (instance == null && parent != null) {
             return parent.findInstanceDeep(key);
         }
-        //noinspection unchecked
-        return (Instance<T>) instance;
+        return instance;
     }
 
     /** Used for testing the objects registered in this scope. */
     <T> T getScopeObject(Class<T> type, String classifier) {
-        @SuppressWarnings("unchecked") Instance<T> instance = instances.get(key(type, classifier));
-        return instance == null ? null : instance.value;
+        Instance instance = instances.get(key(type, classifier));
+        //noinspection unchecked
+        return instance == null ? null : (T) instance.value;
     }
 
     private static String key(Class<?> type, String classifier) {
@@ -193,11 +195,11 @@ final class MagnetScope implements Scope {
         return classifier + "@" + type.getName();
     }
 
-    private final static class Instance<T> {
-        final T value;
+    private final static class Instance {
+        final Object value;
         final int scopeDepth;
 
-        Instance(T value, int scopeDepth) {
+        Instance(Object value, int scopeDepth) {
             this.value = value;
             this.scopeDepth = scopeDepth;
         }
@@ -205,7 +207,7 @@ final class MagnetScope implements Scope {
         @Override public boolean equals(Object o) {
             if (this == o) return true;
             if (o == null || getClass() != o.getClass()) return false;
-            Instance<?> instance = (Instance<?>) o;
+            Instance instance = (Instance) o;
             return value.equals(instance.value);
         }
 
