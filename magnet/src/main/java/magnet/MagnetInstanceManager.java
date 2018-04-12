@@ -103,7 +103,8 @@ final class MagnetInstanceManager implements InstanceManager {
         }
 
         if (indexed instanceof Range) {
-            if (classifier.equals(Classifier.NONE)) {
+            Range range = (Range) indexed;
+            if (classifier.equals(range.getClassifier())) {
                 return (Range) indexed;
             }
             return null;
