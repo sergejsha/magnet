@@ -32,6 +32,7 @@ private const val CLASS_NULLABLE = ".Nullable"
 private const val PARAM_SCOPE = "scope"
 private const val METHOD_GET_OPTIONAL = "getOptional"
 private const val METHOD_GET_SINGLE = "getSingle"
+private const val METHOD_GET_MANY = "getMany"
 private const val INSTANCE_RETENTION = "instanceRetention"
 
 class FactoryGenerator {
@@ -171,7 +172,8 @@ class FactoryGenerator {
         val methodParamsBuilder = StringBuilder()
 
         parameters.forEach {
-            val type = it.asType()
+            var type = it.asType()
+
             if (type.kind == TypeKind.TYPEVAR) {
                 env.reportError(implTypeElement,
                     "Constructor parameter '${it.simpleName}' is specified using a generic type which" +
@@ -184,7 +186,24 @@ class FactoryGenerator {
             val paramName = if (isScopeParam) PARAM_SCOPE else it.simpleName.toString()
 
             if (!isScopeParam) {
-                val paramClassName = ClassName.get(type)
+                val paramType = ParameterSpec.get(it).type
+
+                // when
+                // List<ParameterClass> -> getMany(ParameterClass.class)
+                // else -> getOptional() / getSingle()
+
+                var getMethodName: String? = null
+                val paramClassName =
+                    if (paramType is ParameterizedTypeName) {
+                        if (paramType.rawType.reflectionName() == List::class.java.typeName) {
+                            getMethodName = METHOD_GET_MANY
+                            paramType.typeArguments[0]
+                        } else {
+                            paramType.rawType
+                        }
+                    } else {
+                        ClassName.get(type)
+                    }
 
                 var hasNullableAnnotation = false
                 var namedAnnotationValue: String? = null
@@ -199,26 +218,48 @@ class FactoryGenerator {
                         val annotationType = annotationMirror.annotationType.toString()
                         if (annotationType.endsWith(CLASS_NULLABLE)) {
                             hasNullableAnnotation = true
-
                         }
                     }
                 }
 
-                val getMethodName = if (hasNullableAnnotation) METHOD_GET_OPTIONAL else METHOD_GET_SINGLE
+                if (getMethodName == null) {
+                    getMethodName = if (hasNullableAnnotation) METHOD_GET_OPTIONAL else METHOD_GET_SINGLE
+                }
 
                 if (namedAnnotationValue != null) {
-                    codeBlockBuilder.addStatement(
-                        "\$T $paramName = scope.$getMethodName(\$T.class, \$S)",
-                        paramClassName,
-                        paramClassName,
-                        namedAnnotationValue
-                    )
+                    if (getMethodName == METHOD_GET_MANY) {
+                        codeBlockBuilder.addStatement(
+                            "\$T<\$T> $paramName = scope.$getMethodName(\$T.class, \$S)",
+                            List::class.java,
+                            paramClassName,
+                            paramClassName,
+                            namedAnnotationValue
+                        )
+
+                    } else {
+                        codeBlockBuilder.addStatement(
+                            "\$T $paramName = scope.$getMethodName(\$T.class, \$S)",
+                            paramClassName,
+                            paramClassName,
+                            namedAnnotationValue
+                        )
+                    }
                 } else {
-                    codeBlockBuilder.addStatement(
-                        "\$T $paramName = scope.$getMethodName(\$T.class)",
-                        paramClassName,
-                        paramClassName
-                    )
+                    if (getMethodName == METHOD_GET_MANY) {
+                        codeBlockBuilder.addStatement(
+                            "\$T<\$T> $paramName = scope.$getMethodName(\$T.class)",
+                            List::class.java,
+                            paramClassName,
+                            paramClassName
+                        )
+
+                    } else {
+                        codeBlockBuilder.addStatement(
+                            "\$T $paramName = scope.$getMethodName(\$T.class)",
+                            paramClassName,
+                            paramClassName
+                        )
+                    }
                 }
 
             }

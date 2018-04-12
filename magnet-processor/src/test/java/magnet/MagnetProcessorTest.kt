@@ -129,6 +129,25 @@ class MagnetProcessorTest {
     }
 
     @Test
+    fun generateFactory_WithManyParams() {
+
+        val compilation = Compiler.javac()
+            .withProcessors(MagnetProcessor())
+            .compile(
+                withResource("HomePageWithManyParams.java"),
+                withResource("Page.java"),
+                withResource("HomeRepository.java")
+            )
+
+        assertThat(compilation).succeededWithoutWarnings()
+
+        assertThat(compilation)
+            .generatedSourceFile("app/extension/MagnetHomePageWithManyParamsFactory")
+            .hasSourceEquivalentTo(withResource("generated/MagnetHomePageWithManyParamsFactory.java"))
+
+    }
+
+    @Test
     fun generateFactoryIndex_Target() {
 
         val compilation = Compiler.javac()
