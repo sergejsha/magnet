@@ -1,6 +1,7 @@
 package app.extension;
 
 import magnet.InstanceFactory;
+import magnet.InstanceRetention;
 import magnet.Scope;
 
 public final class MagnetUnknownTypeTabFactory implements InstanceFactory<Tab> {
@@ -10,8 +11,8 @@ public final class MagnetUnknownTypeTabFactory implements InstanceFactory<Tab> {
     }
 
     @Override
-    public boolean isScoped() {
-        return true;
+    public InstanceRetention getInstanceRetention() {
+        return InstanceRetention.SCOPE;
     }
 
     public static Class getType() {

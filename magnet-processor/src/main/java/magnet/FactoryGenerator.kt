@@ -22,7 +22,6 @@ import com.squareup.javapoet.JavaFile
 import com.squareup.javapoet.MethodSpec
 import com.squareup.javapoet.ParameterSpec
 import com.squareup.javapoet.ParameterizedTypeName
-import com.squareup.javapoet.TypeName
 import com.squareup.javapoet.TypeSpec
 import javax.lang.model.element.Modifier
 import javax.lang.model.element.TypeElement
@@ -33,6 +32,7 @@ private const val CLASS_NULLABLE = ".Nullable"
 private const val PARAM_SCOPE = "scope"
 private const val METHOD_GET_OPTIONAL = "getOptional"
 private const val METHOD_GET_SINGLE = "getSingle"
+private const val INSTANCE_RETENTION = "instanceRetention"
 
 class FactoryGenerator {
 
@@ -45,15 +45,17 @@ class FactoryGenerator {
         implTypeElement.annotationMirrors.forEach {
             if (it.mirrors<Implementation>()) {
                 var annotationValueType: String? = null
-                var implIsScoped = true
+                var instanceRetention = InstanceRetention.SCOPE.name
 
                 it.elementValues.entries.forEach {
                     val valueName = it.key.simpleName.toString()
                     val value = it.value.value.toString()
+
                     if (valueName == "type") {
                         annotationValueType = value
-                    } else if (valueName == "scoped") {
-                        implIsScoped = value.toBoolean()
+
+                    } else if (valueName == INSTANCE_RETENTION) {
+                        instanceRetention = value
                     }
                 }
 
@@ -72,7 +74,7 @@ class FactoryGenerator {
                     implClassName,
                     implTypeClassName,
                     implTypeElement,
-                    implIsScoped
+                    instanceRetention
                 )
 
                 val packageName = implClassName.packageName()
@@ -88,7 +90,7 @@ class FactoryGenerator {
         implClassName: ClassName,
         implTypeClassName: ClassName,
         implTypeElement: TypeElement,
-        implIsScoped: Boolean
+        instanceRetention: String
     ): TypeSpec {
 
         val factoryPackage = implClassName.packageName()
@@ -112,8 +114,8 @@ class FactoryGenerator {
                 )
             )
             .addMethod(
-                generateIsScopedMethod(
-                    implIsScoped
+                generateGetInstanceRetentionMethod(
+                    instanceRetention
                 )
             )
             .addMethod(
@@ -124,15 +126,15 @@ class FactoryGenerator {
             .build()
     }
 
-    private fun generateIsScopedMethod(
-        implIsScoped: Boolean
+    private fun generateGetInstanceRetentionMethod(
+        instanceRetention: String
     ): MethodSpec {
         return MethodSpec
-            .methodBuilder("isScoped")
+            .methodBuilder("getInstanceRetention")
             .addModifiers(Modifier.PUBLIC)
             .addAnnotation(Override::class.java)
-            .returns(TypeName.BOOLEAN)
-            .addStatement("return \$L", implIsScoped)
+            .returns(InstanceRetention::class.java)
+            .addStatement("return \$T.\$L", InstanceRetention::class.java, instanceRetention)
             .build()
     }
 

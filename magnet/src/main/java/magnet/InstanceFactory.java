@@ -19,6 +19,6 @@ package magnet;
 public interface InstanceFactory<T> {
 
     T create(Scope scope);
-    boolean isScoped();
+    InstanceRetention getInstanceRetention();
 
 }

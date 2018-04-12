@@ -4,6 +4,7 @@ import app.HomeRepository;
 import app.Page;
 import app.UserData;
 import magnet.InstanceFactory;
+import magnet.InstanceRetention;
 import magnet.Scope;
 
 public final class MagnetHomePageWithClassifierParamsFactory implements InstanceFactory<Page> {
@@ -16,8 +17,8 @@ public final class MagnetHomePageWithClassifierParamsFactory implements Instance
     }
 
     @Override
-    public boolean isScoped() {
-        return true;
+    public InstanceRetention getInstanceRetention() {
+        return InstanceRetention.SCOPE;
     }
 
     public static Class getType() {

@@ -140,7 +140,9 @@ final class MagnetScope implements Scope {
         }
 
         Instance<T> instance = findInstanceDeep(key);
-        if (factory.isScoped()) {
+        boolean scoped = factory.getInstanceRetention() == InstanceRetention.SCOPE;
+
+        if (scoped) {
 
             if (instance != null) {
                 if (cardinality != CARDINALITY_MANY) {
@@ -160,7 +162,7 @@ final class MagnetScope implements Scope {
         int depth = autoScope.onAfterInstanceCreated();
         autoScope.onMaybeDependencyInScope(depth);
 
-        if (factory.isScoped()) {
+        if (scoped) {
             if (instance != null && instance.getScopeDepth() != depth) {
                 instance = null;
             }
@@ -168,7 +170,7 @@ final class MagnetScope implements Scope {
             if (instance == null) {
                 instance = Instance.create(object, factory, depth);
                 registerInstance(key, instance);
-                
+
             } else {
                 instance.addValue(object, factory);
             }

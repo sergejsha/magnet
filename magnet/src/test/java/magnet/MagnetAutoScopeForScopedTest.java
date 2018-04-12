@@ -213,7 +213,7 @@ public class MagnetAutoScopeForScopedTest {
         @Override public MenuItem create(Scope scope) {
             return new MenuItemOne();
         }
-        @Override public boolean isScoped() { return true; }
+        @Override public InstanceRetention getInstanceRetention() { return InstanceRetention.SCOPE; }
     }
 
     private static class MenuItemTwoFactory implements InstanceFactory<MenuItem> {
@@ -221,7 +221,7 @@ public class MagnetAutoScopeForScopedTest {
             scope.getSingle(Dependency2.class);
             return new MenuItemTwo();
         }
-        @Override public boolean isScoped() { return true; }
+        @Override public InstanceRetention getInstanceRetention() { return InstanceRetention.SCOPE; }
     }
 
     private static class MenuItemThreeFactory implements InstanceFactory<MenuItem> {
@@ -230,7 +230,7 @@ public class MagnetAutoScopeForScopedTest {
             scope.getSingle(MenuItem.class, "one");
             return new MenuItemThree();
         }
-        @Override public boolean isScoped() { return true; }
+        @Override public InstanceRetention getInstanceRetention() { return InstanceRetention.SCOPE; }
     }
 
     private static class MenuItemFourFactory implements InstanceFactory<MenuItem> {
@@ -238,7 +238,7 @@ public class MagnetAutoScopeForScopedTest {
             scope.getSingle(Dependency3.class);
             return new MenuItemFour();
         }
-        @Override public boolean isScoped() { return true; }
+        @Override public InstanceRetention getInstanceRetention() { return InstanceRetention.SCOPE; }
     }
 
     private static class MenuItemFiveFactory implements InstanceFactory<MenuItem> {
@@ -247,7 +247,7 @@ public class MagnetAutoScopeForScopedTest {
             scope.getSingle(MenuItem.class, "two");
             return new MenuItemFive();
         }
-        @Override public boolean isScoped() { return true; }
+        @Override public InstanceRetention getInstanceRetention() { return InstanceRetention.SCOPE; }
     }
 
     private static class StubInstanceManager implements InstanceManager {

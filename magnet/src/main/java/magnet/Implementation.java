@@ -28,6 +28,6 @@ public @interface Implementation {
 
     Class<?> type();
     String classifier() default Classifier.NONE;
-    boolean scoped() default true;
+    InstanceRetention instanceRetention() default InstanceRetention.SCOPE;
 
 }

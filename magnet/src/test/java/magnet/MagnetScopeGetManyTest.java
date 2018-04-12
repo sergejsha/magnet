@@ -68,28 +68,28 @@ public class MagnetScopeGetManyTest {
         @Override public MenuItem create(Scope scope) {
             return new MenuItemOne1();
         }
-        @Override public boolean isScoped() { return true; }
+        @Override public InstanceRetention getInstanceRetention() { return InstanceRetention.SCOPE; }
     }
 
     private static class MenuItemOne2Factory implements InstanceFactory<MenuItem> {
         @Override public MenuItem create(Scope scope) {
             return new MenuItemOne2();
         }
-        @Override public boolean isScoped() { return true; }
+        @Override public InstanceRetention getInstanceRetention() { return InstanceRetention.SCOPE; }
     }
 
     private static class MenuItemOne3Factory implements InstanceFactory<MenuItem> {
         @Override public MenuItem create(Scope scope) {
             return new MenuItemOne3();
         }
-        @Override public boolean isScoped() { return true; }
+        @Override public InstanceRetention getInstanceRetention() { return InstanceRetention.SCOPE; }
     }
 
     private static class MenuItemTwo1Factory implements InstanceFactory<MenuItem> {
         @Override public MenuItem create(Scope scope) {
             return new MenuItemTwo1();
         }
-        @Override public boolean isScoped() { return true; }
+        @Override public InstanceRetention getInstanceRetention() { return InstanceRetention.SCOPE; }
     }
 
     private static class MenuItemTwo2Factory implements InstanceFactory<MenuItem> {
@@ -98,7 +98,7 @@ public class MagnetScopeGetManyTest {
             scope.getMany(MenuItem.class, "one");
             return new MenuItemTwo2();
         }
-        @Override public boolean isScoped() { return true; }
+        @Override public InstanceRetention getInstanceRetention() { return InstanceRetention.SCOPE; }
     }
 
     @SuppressWarnings("unchecked")
