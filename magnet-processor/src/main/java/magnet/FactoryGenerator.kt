@@ -23,6 +23,7 @@ import com.squareup.javapoet.MethodSpec
 import com.squareup.javapoet.ParameterSpec
 import com.squareup.javapoet.ParameterizedTypeName
 import com.squareup.javapoet.TypeSpec
+import com.squareup.javapoet.WildcardTypeName
 import javax.lang.model.element.Modifier
 import javax.lang.model.element.TypeElement
 import javax.lang.model.type.TypeKind
@@ -157,10 +158,6 @@ class FactoryGenerator {
     ): MethodSpec {
         val scopeClassName = ClassName.get(Scope::class.java)
 
-        // We have following cases:
-        // 1. No parameters -> empty constructor
-        // 2. One or many parameters -> Scope used "as is" others are required() from scope
-
         val constructors = ElementFilter.constructorsIn(implTypeElement.enclosedElements)
         if (constructors.size != 1) {
             env.reportError(implTypeElement, "Exactly one constructor is required for $implTypeElement")
@@ -172,7 +169,7 @@ class FactoryGenerator {
         val methodParamsBuilder = StringBuilder()
 
         parameters.forEach {
-            var type = it.asType()
+            val type = it.asType()
 
             if (type.kind == TypeKind.TYPEVAR) {
                 env.reportError(implTypeElement,
@@ -187,13 +184,8 @@ class FactoryGenerator {
 
             if (!isScopeParam) {
                 val paramType = ParameterSpec.get(it).type
-
-                // when
-                // List<ParameterClass> -> getMany(ParameterClass.class)
-                // else -> getOptional() / getSingle()
-
                 var getMethodName: String? = null
-                val paramClassName =
+                var paramClassName =
                     if (paramType is ParameterizedTypeName) {
                         if (paramType.rawType.reflectionName() == List::class.java.typeName) {
                             getMethodName = METHOD_GET_MANY
@@ -204,6 +196,26 @@ class FactoryGenerator {
                     } else {
                         ClassName.get(type)
                     }
+
+                if (paramClassName is WildcardTypeName) {
+
+                    if (paramClassName.lowerBounds.size > 0) {
+                        env.reportError(implTypeElement,
+                            "Only single upper bounds class parameter is supported," +
+                                " for example List<${paramClassName.lowerBounds[0]}>")
+                        throw BreakGenerationException()
+                    }
+
+                    val upperBounds = paramClassName.upperBounds
+                    if (upperBounds.size > 1) {
+                        env.reportError(implTypeElement,
+                            "Only single upper bounds class parameter is supported," +
+                                " for example List<${upperBounds[0]}>")
+                        throw BreakGenerationException()
+                    }
+
+                    paramClassName = upperBounds[0]
+                }
 
                 var hasNullableAnnotation = false
                 var namedAnnotationValue: String? = null
