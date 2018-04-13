@@ -16,6 +16,11 @@
 
 package magnet
 
+import magnet.processor.CodeWriter
+import magnet.processor.FactoryCodeGenerator
+import magnet.processor.FactoryFromClassAnnotationParser
+import magnet.processor.FactoryIndexCodeGenerator
+import magnet.processor.model.FactoryType
 import javax.annotation.processing.AbstractProcessor
 import javax.annotation.processing.ProcessingEnvironment
 import javax.annotation.processing.RoundEnvironment
@@ -27,15 +32,19 @@ import javax.lang.model.util.ElementFilter
 @SupportedSourceVersion(SourceVersion.RELEASE_8)
 class MagnetProcessor : AbstractProcessor() {
 
-    private val factoryGenerator: FactoryGenerator = FactoryGenerator()
-    private val factoryIndexGenerator: FactoryIndexGenerator = FactoryIndexGenerator()
     private val magnetIndexerGenerator: MagnetIndexerGenerator = MagnetIndexerGenerator()
 
-    private lateinit var processEnvironment: ProcessingEnvironment
+    private lateinit var env: MagnetProcessorEnv
+    private lateinit var factoryFromClassAnnotationParser: FactoryFromClassAnnotationParser
+    private lateinit var factoryCodeGenerator: FactoryCodeGenerator
+    private lateinit var factoryIndexCodeGenerator: FactoryIndexCodeGenerator
 
     override fun init(processingEnvironment: ProcessingEnvironment) {
         super.init(processingEnvironment)
-        this.processEnvironment = processingEnvironment
+        env = MagnetProcessorEnv(processingEnvironment)
+        factoryFromClassAnnotationParser = FactoryFromClassAnnotationParser(env)
+        factoryCodeGenerator = FactoryCodeGenerator()
+        factoryIndexCodeGenerator = FactoryIndexCodeGenerator()
     }
 
     override fun process(
@@ -43,10 +52,8 @@ class MagnetProcessor : AbstractProcessor() {
         roundEnv: RoundEnvironment
     ): Boolean {
 
-        val env = MagnetProcessorEnv(processEnvironment)
-
         return try {
-            val implementationProcessed = processImplementationAnnotation(env, roundEnv)
+            val implementationProcessed = processImplementationAnnotation(roundEnv)
             val indexCreated = processFactoryIndexAnnotation(env, roundEnv)
 
             implementationProcessed || indexCreated
@@ -56,33 +63,30 @@ class MagnetProcessor : AbstractProcessor() {
     }
 
     private fun processImplementationAnnotation(
-        env: MagnetProcessorEnv,
         roundEnv: RoundEnvironment
     ): Boolean {
+
         val annotatedElements = roundEnv.getElementsAnnotatedWith(Implementation::class.java)
         if (annotatedElements.isEmpty()) {
             return false
         }
 
-        var processed = false
-
-        val annotatedTypes = ElementFilter.typesIn(annotatedElements)
-        annotatedTypes.forEach {
-            factoryGenerator.generate(it, env)
-            factoryIndexGenerator.generate(it, env)
-            processed = true
+        val factoryTypes = mutableListOf<FactoryType>()
+        ElementFilter.typesIn(annotatedElements).forEach { typeElement ->
+            factoryTypes.add(factoryFromClassAnnotationParser.parse(typeElement))
         }
 
-        /*
-        val annotatedMethods = ElementFilter.methodsIn(annotatedElements)
-        annotatedMethods.forEach {
-            factoryGenerator.generate(it, env)
-            factoryIndexGenerator.generate(it, env)
-            processed = true
+        val codeWriters = mutableListOf<CodeWriter>()
+        factoryTypes.forEach { factoryType ->
+            codeWriters.add(factoryCodeGenerator.generateFrom(factoryType))
+            codeWriters.add(factoryIndexCodeGenerator.generateFrom(factoryType))
         }
-        */
 
-        return processed
+        codeWriters.forEach { codeWriter ->
+            codeWriter.writeInto(env.filer)
+        }
+
+        return true
     }
 
     private fun processFactoryIndexAnnotation(

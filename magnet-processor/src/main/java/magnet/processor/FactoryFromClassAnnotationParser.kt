@@ -1,4 +1,20 @@
-package magnet.processor.model
+/*
+ * Copyright (C) 2018 Sergej Shafarenka, www.halfbit.de
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package magnet.processor
 
 import com.squareup.javapoet.ClassName
 import com.squareup.javapoet.ParameterSpec
@@ -11,6 +27,12 @@ import magnet.InstanceRetention
 import magnet.MagnetProcessorEnv
 import magnet.Scope
 import magnet.mirrors
+import magnet.processor.model.CreateMethod
+import magnet.processor.model.FactoryType
+import magnet.processor.model.GetRetentionMethod
+import magnet.processor.model.GetterMethod
+import magnet.processor.model.MethodParameter
+import magnet.processor.model.PARAM_SCOPE_NAME
 import javax.lang.model.element.TypeElement
 import javax.lang.model.element.VariableElement
 import javax.lang.model.type.TypeKind
@@ -18,9 +40,10 @@ import javax.lang.model.util.ElementFilter
 
 private const val ATTR_TYPE = "type"
 private const val ATTR_INSTANCE_RETENTION = "instanceRetention"
+private const val ATTR_CLASSIFIER = "classifier"
 private const val CLASS_NULLABLE = ".Nullable"
 
-class FactoryFromTypeParser(
+class FactoryFromClassAnnotationParser(
     private val env: MagnetProcessorEnv
 ) {
 
@@ -31,9 +54,9 @@ class FactoryFromTypeParser(
         val instanceName = instanceType.simpleName()
         val factoryType = ClassName.bestGuess("${instancePackage}.Magnet${instanceName}Factory")
 
-        //var interfaceType: ClassName? = null
         var interfaceTypeElement: TypeElement? = null
         var instanceRetention = InstanceRetention.SCOPE.name
+        var classifier = Classifier.NONE
 
         element.annotationMirrors.forEach { annotationMirror ->
             if (annotationMirror.mirrors<Implementation>()) {
@@ -55,6 +78,9 @@ class FactoryFromTypeParser(
                         ATTR_INSTANCE_RETENTION -> {
                             instanceRetention = entryValue
                         }
+                        ATTR_CLASSIFIER -> {
+                            classifier = entryValue
+                        }
                     }
                 }
             }
@@ -73,6 +99,7 @@ class FactoryFromTypeParser(
         return FactoryType(
             element,
             factoryType,
+            classifier,
             interfaceType,
             instanceType,
             createMethod,
