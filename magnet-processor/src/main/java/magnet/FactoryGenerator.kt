@@ -24,6 +24,9 @@ import com.squareup.javapoet.ParameterSpec
 import com.squareup.javapoet.ParameterizedTypeName
 import com.squareup.javapoet.TypeSpec
 import com.squareup.javapoet.WildcardTypeName
+import magnet.processor.model.FactoryCodeGenerator
+import magnet.processor.model.FactoryFromTypeParser
+import javax.lang.model.element.ExecutableElement
 import javax.lang.model.element.Modifier
 import javax.lang.model.element.TypeElement
 import javax.lang.model.type.TypeKind
@@ -40,7 +43,23 @@ class FactoryGenerator {
 
     private lateinit var env: MagnetProcessorEnv
 
-    fun generate(implTypeElement: TypeElement, env: MagnetProcessorEnv) {
+    fun generate(element: ExecutableElement, env: MagnetProcessorEnv) {
+        // todo
+    }
+
+    fun generate(element: TypeElement, env: MagnetProcessorEnv) {
+        val parser = FactoryFromTypeParser(env)
+        val factoryType = parser.parse(element)
+        val generator = FactoryCodeGenerator()
+        factoryType.accept(generator)
+
+        JavaFile.builder(factoryType.factoryType.packageName(), generator.getTypeSpec())
+            .skipJavaLangImports(true)
+            .build()
+            .writeTo(env.filer)
+    }
+
+    fun generate2(implTypeElement: TypeElement, env: MagnetProcessorEnv) {
         this.env = env
         val implClassName = ClassName.get(implTypeElement)
 

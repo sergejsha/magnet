@@ -46,16 +46,16 @@ class MagnetProcessor : AbstractProcessor() {
         val env = MagnetProcessorEnv(processEnvironment)
 
         return try {
-            val extensionsProcessed = processExtensionAnnotation(env, roundEnv)
-            val registryCreated = processExtensionRegistryAnnotation(env, roundEnv)
+            val implementationProcessed = processImplementationAnnotation(env, roundEnv)
+            val indexCreated = processFactoryIndexAnnotation(env, roundEnv)
 
-            extensionsProcessed || registryCreated
+            implementationProcessed || indexCreated
         } catch (e: BreakGenerationException) {
             true
         }
     }
 
-    private fun processExtensionAnnotation(
+    private fun processImplementationAnnotation(
         env: MagnetProcessorEnv,
         roundEnv: RoundEnvironment
     ): Boolean {
@@ -65,6 +65,7 @@ class MagnetProcessor : AbstractProcessor() {
         }
 
         var processed = false
+
         val annotatedTypes = ElementFilter.typesIn(annotatedElements)
         annotatedTypes.forEach {
             factoryGenerator.generate(it, env)
@@ -72,10 +73,19 @@ class MagnetProcessor : AbstractProcessor() {
             processed = true
         }
 
+        /*
+        val annotatedMethods = ElementFilter.methodsIn(annotatedElements)
+        annotatedMethods.forEach {
+            factoryGenerator.generate(it, env)
+            factoryIndexGenerator.generate(it, env)
+            processed = true
+        }
+        */
+
         return processed
     }
 
-    private fun processExtensionRegistryAnnotation(
+    private fun processFactoryIndexAnnotation(
         env: MagnetProcessorEnv,
         roundEnv: RoundEnvironment
     ): Boolean {

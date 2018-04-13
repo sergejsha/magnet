@@ -28,6 +28,10 @@ import javax.lang.model.element.TypeElement
 
 class FactoryIndexGenerator {
 
+    fun generate(element: ExecutableElement, env: MagnetProcessorEnv) {
+        // todo
+    }
+
     fun generate(implTypeElement: TypeElement, env: MagnetProcessorEnv) {
         val implClassName = ClassName.get(implTypeElement)
         val annotationsClassName = ClassName.get(Implementation::class.java)
