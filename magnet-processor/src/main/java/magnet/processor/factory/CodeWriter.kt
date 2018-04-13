@@ -1,4 +1,4 @@
-package magnet.processor
+package magnet.processor.factory
 
 import com.squareup.javapoet.JavaFile
 import com.squareup.javapoet.TypeSpec

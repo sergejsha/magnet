@@ -1,6 +1,4 @@
-package magnet.processor
-
-import magnet.processor.model.FactoryType
+package magnet.processor.factory
 
 interface CodeGenerator {
 

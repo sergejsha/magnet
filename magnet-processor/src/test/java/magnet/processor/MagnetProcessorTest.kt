@@ -1,4 +1,4 @@
-package magnet
+package magnet.processor
 
 import com.google.testing.compile.CompilationSubject.assertThat
 import com.google.testing.compile.Compiler

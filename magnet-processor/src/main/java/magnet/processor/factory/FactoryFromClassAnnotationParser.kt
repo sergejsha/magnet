@@ -14,25 +14,19 @@
  * limitations under the License.
  */
 
-package magnet.processor
+package magnet.processor.factory
 
 import com.squareup.javapoet.ClassName
 import com.squareup.javapoet.ParameterSpec
 import com.squareup.javapoet.ParameterizedTypeName
 import com.squareup.javapoet.WildcardTypeName
-import magnet.BreakGenerationException
 import magnet.Classifier
 import magnet.Implementation
 import magnet.InstanceRetention
-import magnet.MagnetProcessorEnv
 import magnet.Scope
-import magnet.mirrors
-import magnet.processor.model.CreateMethod
-import magnet.processor.model.FactoryType
-import magnet.processor.model.GetRetentionMethod
-import magnet.processor.model.GetterMethod
-import magnet.processor.model.MethodParameter
-import magnet.processor.model.PARAM_SCOPE_NAME
+import magnet.processor.BreakGenerationException
+import magnet.processor.MagnetProcessorEnv
+import magnet.processor.mirrors
 import javax.lang.model.element.TypeElement
 import javax.lang.model.element.VariableElement
 import javax.lang.model.type.TypeKind

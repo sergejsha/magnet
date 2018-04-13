@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package magnet.processor
+package magnet.processor.factory
 
 import com.squareup.javapoet.ClassName
 import com.squareup.javapoet.CodeBlock
@@ -27,13 +27,6 @@ import magnet.Classifier
 import magnet.InstanceFactory
 import magnet.InstanceRetention
 import magnet.Scope
-import magnet.processor.model.CreateMethod
-import magnet.processor.model.FactoryType
-import magnet.processor.model.FactoryTypeVisitor
-import magnet.processor.model.GetRetentionMethod
-import magnet.processor.model.GetterMethod
-import magnet.processor.model.MethodParameter
-import magnet.processor.model.PARAM_SCOPE_NAME
 import javax.lang.model.element.Modifier
 
 class FactoryCodeGenerator : FactoryTypeVisitor, CodeGenerator {

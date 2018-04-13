@@ -27,6 +27,7 @@ import magnet.indexer.Indexer
 import magnet.indexer.model.Impl
 import magnet.indexer.model.Index
 import magnet.internal.FactoryIndex
+import magnet.processor.MagnetProcessorEnv
 import javax.lang.model.element.Element
 import javax.lang.model.element.ExecutableElement
 import javax.lang.model.element.Modifier

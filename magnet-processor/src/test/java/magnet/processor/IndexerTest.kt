@@ -1,4 +1,4 @@
-package magnet
+package magnet.processor
 
 import com.google.common.truth.Truth.assertThat
 import magnet.indexer.Indexer

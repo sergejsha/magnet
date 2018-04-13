@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package magnet
+package magnet.processor
 
 import javax.annotation.processing.Filer
 import javax.annotation.processing.ProcessingEnvironment

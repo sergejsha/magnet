@@ -14,6 +14,6 @@
  * limitations under the License.
  */
 
-package magnet
+package magnet.processor
 
 class BreakGenerationException : Exception()

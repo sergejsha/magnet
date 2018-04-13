@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package magnet.processor.model
+package magnet.processor.factory
 
 import com.squareup.javapoet.ClassName
 import com.squareup.javapoet.TypeName

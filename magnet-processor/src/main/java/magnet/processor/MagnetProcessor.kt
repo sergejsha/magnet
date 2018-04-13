@@ -14,13 +14,16 @@
  * limitations under the License.
  */
 
-package magnet
+package magnet.processor
 
-import magnet.processor.CodeWriter
-import magnet.processor.FactoryCodeGenerator
-import magnet.processor.FactoryFromClassAnnotationParser
-import magnet.processor.FactoryIndexCodeGenerator
-import magnet.processor.model.FactoryType
+import magnet.Implementation
+import magnet.MagnetIndexerGenerator
+import magnet.Magnetizer
+import magnet.processor.factory.CodeWriter
+import magnet.processor.factory.FactoryCodeGenerator
+import magnet.processor.factory.FactoryFromClassAnnotationParser
+import magnet.processor.factory.FactoryIndexCodeGenerator
+import magnet.processor.factory.FactoryType
 import javax.annotation.processing.AbstractProcessor
 import javax.annotation.processing.ProcessingEnvironment
 import javax.annotation.processing.RoundEnvironment
@@ -32,7 +35,7 @@ import javax.lang.model.util.ElementFilter
 @SupportedSourceVersion(SourceVersion.RELEASE_8)
 class MagnetProcessor : AbstractProcessor() {
 
-    private val magnetIndexerGenerator: MagnetIndexerGenerator = MagnetIndexerGenerator()
+    private val magnetIndexerGenerator = MagnetIndexerGenerator()
 
     private lateinit var env: MagnetProcessorEnv
     private lateinit var factoryFromClassAnnotationParser: FactoryFromClassAnnotationParser

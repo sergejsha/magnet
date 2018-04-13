@@ -14,17 +14,12 @@
  * limitations under the License.
  */
 
-package magnet.processor
+package magnet.processor.factory
 
 import com.squareup.javapoet.AnnotationSpec
 import com.squareup.javapoet.ClassName
 import com.squareup.javapoet.TypeSpec
 import magnet.internal.FactoryIndex
-import magnet.processor.model.CreateMethod
-import magnet.processor.model.FactoryType
-import magnet.processor.model.FactoryTypeVisitor
-import magnet.processor.model.GetRetentionMethod
-import magnet.processor.model.MethodParameter
 import javax.lang.model.element.Modifier
 
 class FactoryIndexCodeGenerator : FactoryTypeVisitor, CodeGenerator {

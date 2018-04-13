@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package magnet
+package magnet.processor
 
 import javax.lang.model.element.AnnotationMirror
 
