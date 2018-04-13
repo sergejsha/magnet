@@ -1,8 +1,8 @@
 package magnet.processor
 
 import com.google.common.truth.Truth.assertThat
-import magnet.indexer.Indexer
-import magnet.indexer.model.Impl
+import magnet.processor.index.Indexer
+import magnet.processor.index.model.Impl
 import org.junit.Test
 
 class IndexerTest {

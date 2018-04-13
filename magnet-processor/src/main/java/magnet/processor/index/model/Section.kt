@@ -14,8 +14,19 @@
  * limitations under the License.
  */
 
-package magnet.indexer.model
+package magnet.processor.index.model
 
-interface ImplVisitor {
-    fun visit(impl: Impl)
+data class Section(
+    val type: String
+) {
+    val ranges = mutableMapOf<String, Range>()
+    val firstFactory
+        get() = ranges.values.elementAt(0).firstFactory
+
+    fun accept(visitor: IndexVisitor) {
+        visitor.visit(this)
+        ranges.forEach {
+            it.value.accept(visitor)
+        }
+    }
 }

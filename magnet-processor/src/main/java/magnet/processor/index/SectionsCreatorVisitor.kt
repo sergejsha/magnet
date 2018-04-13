@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-package magnet.indexer
+package magnet.processor.index
 
-import magnet.indexer.model.Impl
-import magnet.indexer.model.ImplVisitor
-import magnet.indexer.model.Range
-import magnet.indexer.model.Section
+import magnet.processor.index.model.Impl
+import magnet.processor.index.model.ImplVisitor
+import magnet.processor.index.model.Range
+import magnet.processor.index.model.Section
 
 class SectionsCreatorVisitor : ImplVisitor {
 

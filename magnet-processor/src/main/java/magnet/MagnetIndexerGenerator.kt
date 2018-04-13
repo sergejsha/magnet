@@ -22,10 +22,10 @@ import com.squareup.javapoet.JavaFile
 import com.squareup.javapoet.MethodSpec
 import com.squareup.javapoet.ParameterSpec
 import com.squareup.javapoet.TypeSpec
-import magnet.indexer.IndexGeneratorVisitor
-import magnet.indexer.Indexer
-import magnet.indexer.model.Impl
-import magnet.indexer.model.Index
+import magnet.processor.index.IndexGeneratorVisitor
+import magnet.processor.index.Indexer
+import magnet.processor.index.model.Impl
+import magnet.processor.index.model.Index
 import magnet.internal.FactoryIndex
 import magnet.processor.MagnetProcessorEnv
 import javax.lang.model.element.Element

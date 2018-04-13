@@ -14,18 +14,14 @@
  * limitations under the License.
  */
 
-package magnet.indexer.model
+package magnet.processor.index.model
 
-class ImplComparator() : Comparator<Impl> {
-    override fun compare(left: Impl, right: Impl): Int {
-        val c1 = left.type.compareTo(right.type)
-        if (c1 != 0) {
-            return c1
-        }
-        val c2 = left.classifier.compareTo(right.classifier)
-        if (c2 != 0) {
-            return c2
-        }
-        return left.factory.compareTo(right.factory)
+data class Impl(
+    val type: String,
+    val classifier: String,
+    val factory: String
+) {
+    fun accept(visitor: ImplVisitor) {
+        visitor.visit(this)
     }
 }

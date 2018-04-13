@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 
-package magnet.indexer
+package magnet.processor.index
 
 import com.squareup.javapoet.ClassName
 import com.squareup.javapoet.CodeBlock
-import magnet.indexer.model.Impl
-import magnet.indexer.model.Index
-import magnet.indexer.model.IndexVisitor
-import magnet.indexer.model.Range
-import magnet.indexer.model.Section
+import magnet.processor.index.model.Impl
+import magnet.processor.index.model.Index
+import magnet.processor.index.model.IndexVisitor
+import magnet.processor.index.model.Range
+import magnet.processor.index.model.Section
 
 class IndexGeneratorVisitor : IndexVisitor {
 

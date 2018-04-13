@@ -14,26 +14,10 @@
  * limitations under the License.
  */
 
-package magnet.indexer.model
+package magnet.processor.index.model
 
-data class Range(
-    val type: String,
-    val classifier: String,
-    private val impl: Impl,
-    val from: Int
-) {
-    val impls = mutableListOf<Impl>()
-    val firstFactory
-        get() = impls[0].factory
-
-    init {
-        impls.add(impl)
-    }
-
-    fun accept(visitor: IndexVisitor) {
-        visitor.visit(this)
-        impls.forEach {
-            it.accept(visitor)
-        }
-    }
+interface IndexVisitor : ImplVisitor {
+    fun visit(index: Index)
+    fun visit(section: Section)
+    fun visit(range: Range)
 }

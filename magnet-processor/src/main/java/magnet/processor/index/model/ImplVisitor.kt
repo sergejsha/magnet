@@ -14,18 +14,8 @@
  * limitations under the License.
  */
 
-package magnet.indexer.model
+package magnet.processor.index.model
 
-data class Index(
-    val implementations: List<Impl>,
-    val sections: List<Section>
-) {
-
-    fun accept(visitor: IndexVisitor) {
-        visitor.visit(this)
-        sections.forEach {
-            it.accept(visitor)
-        }
-    }
-
+interface ImplVisitor {
+    fun visit(impl: Impl)
 }

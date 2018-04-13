@@ -14,27 +14,26 @@
  * limitations under the License.
  */
 
-package magnet.indexer
+package magnet.processor.index.model
 
-import magnet.indexer.model.Impl
-import magnet.indexer.model.ImplComparator
-import magnet.indexer.model.Index
-
-class Indexer(
-    private val comparator: Comparator<Impl> = ImplComparator()
+data class Range(
+    val type: String,
+    val classifier: String,
+    private val impl: Impl,
+    val from: Int
 ) {
+    val impls = mutableListOf<Impl>()
+    val firstFactory
+        get() = impls[0].factory
 
-    fun index(impls: List<Impl>): Index {
-        val sorted = impls.sortedWith(comparator)
-
-        val indexer = SectionsCreatorVisitor()
-        sorted.forEach {
-            it.accept(indexer)
-        }
-
-        return Index(sorted, indexer.sections)
+    init {
+        impls.add(impl)
     }
 
+    fun accept(visitor: IndexVisitor) {
+        visitor.visit(this)
+        impls.forEach {
+            it.accept(visitor)
+        }
+    }
 }
-
-
