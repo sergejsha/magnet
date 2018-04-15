@@ -115,7 +115,7 @@ internal open class AnnotationParser(
         )
     }
 
-    protected fun parseAnnotation(element: Element): Annotation {
+    protected fun parseAnnotation(element: Element, checkInheritance: Boolean = false): Annotation {
 
         var interfaceTypeElement: TypeElement? = null
         var retention = InstanceRetention.SCOPE.name
@@ -129,17 +129,16 @@ internal open class AnnotationParser(
                     when (entryName) {
                         ATTR_TYPE -> {
                             interfaceTypeElement = env.elements.getTypeElement(entryValue)
-                            // todo, move to factory parser classes
-                            /*
-                            val isTypeImplemented = env.types.isAssignable(
-                                element.asType(),
-                                env.types.getDeclaredType(interfaceTypeElement) // erase generic type
-                            )
-                            if (!isTypeImplemented) {
-                                env.reportError(element, "$element must implement $interfaceTypeElement")
-                                throw CompilationException()
+                            if (checkInheritance) {
+                                val isTypeImplemented = env.types.isAssignable(
+                                    element.asType(),
+                                    env.types.getDeclaredType(interfaceTypeElement) // erase generic type
+                                )
+                                if (!isTypeImplemented) {
+                                    throw env.compilationError(element,
+                                        "$element must implement $interfaceTypeElement")
+                                }
                             }
-                            */
                         }
                         ATTR_INSTANCE_RETENTION -> {
                             retention = entryValue
@@ -153,8 +152,7 @@ internal open class AnnotationParser(
         }
 
         val interfaceType = if (interfaceTypeElement == null) {
-            env.reportError(element, "${Implementation::class.java} must declare 'type' property.")
-            throw CompilationException()
+            throw env.compilationError(element, "${Implementation::class.java} must declare 'type' property.")
         } else {
             ClassName.get(interfaceTypeElement)
         }

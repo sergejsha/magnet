@@ -17,7 +17,7 @@
 package magnet.processor.factory
 
 import com.squareup.javapoet.ClassName
-import magnet.processor.CompilationException
+import magnet.Implementation
 import magnet.processor.MagnetProcessorEnv
 import javax.lang.model.element.TypeElement
 import javax.lang.model.util.ElementFilter
@@ -28,33 +28,29 @@ internal class FactoryFromClassAnnotationParser(
 
     fun parse(element: TypeElement): FactoryType {
 
+        val annotation = parseAnnotation(element, checkInheritance = true)
+
         val instanceType = ClassName.get(element)
         val instancePackage = instanceType.packageName()
         val instanceName = instanceType.simpleName()
-        val factoryType = ClassName.bestGuess("${instancePackage}.Magnet${instanceName}Factory")
-
-        val annotation = parseAnnotation(element)
-        val createMethod = parseConstructor(element)
-        val retentionMethod = GetRetentionMethod(annotation.retention)
-        val createStatement = TypeCreateStatement(instanceType)
 
         return FactoryType(
             element,
-            factoryType,
+            ClassName.bestGuess("${instancePackage}.Magnet${instanceName}Factory"),
             annotation.classifier,
             annotation.type,
-            createStatement,
-            createMethod,
-            retentionMethod
+            TypeCreateStatement(instanceType),
+            parseCreateMethod(element),
+            GetRetentionMethod(annotation.retention)
         )
     }
 
-    private fun parseConstructor(element: TypeElement): CreateMethod {
+    private fun parseCreateMethod(element: TypeElement): CreateMethod {
 
         val constructors = ElementFilter.constructorsIn(element.enclosedElements)
         if (constructors.size != 1) {
-            env.reportError(element, "Exactly one constructor is required for $element")
-            throw CompilationException()
+            throw env.compilationError(element, "Classes annotated with ${Implementation::class.java}"
+                + " must have exactly one constructor.")
         }
 
         val methodParameters = mutableListOf<MethodParameter>()
