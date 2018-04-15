@@ -122,7 +122,7 @@ class FactoryCodeGenerator : FactoryTypeVisitor, CodeGenerator {
     }
 
     private fun generateCreateMethod(factoryType: FactoryType): MethodSpec {
-        return MethodSpec
+        val builder = MethodSpec
             .methodBuilder("create")
             .addAnnotation(Override::class.java)
             .addModifiers(Modifier.PUBLIC)
@@ -133,8 +133,25 @@ class FactoryCodeGenerator : FactoryTypeVisitor, CodeGenerator {
             )
             .returns(factoryType.interfaceType)
             .addCode(createMethodCodeBuilder!!.build())
-            .addStatement("return new \$T($constructorParametersBuilder)", factoryType.instanceType)
-            .build()
+
+        val createStatement = factoryType.createStatement
+        when (createStatement) {
+            is TypeCreateStatement -> {
+                builder.addStatement(
+                    "return new \$T($constructorParametersBuilder)",
+                    createStatement.instanceType
+                )
+            }
+            is MethodCreateStatement -> {
+                builder.addStatement(
+                    "return \$T.\$L($constructorParametersBuilder)",
+                    createStatement.staticMethodClassName,
+                    createStatement.staticMethodName
+                )
+            }
+        }
+
+        return builder.build()
     }
 
     private fun generateGetInstanceRetentionMethod(): MethodSpec {

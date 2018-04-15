@@ -35,8 +35,12 @@ class MagnetProcessorEnv(private val processEnvironment: ProcessingEnvironment) 
         get() = processEnvironment.typeUtils
 
     fun reportError(element: Element, message: String) {
-        processEnvironment.messager
-            .printMessage(Diagnostic.Kind.ERROR, message, element)
+        processEnvironment.messager.printMessage(Diagnostic.Kind.ERROR, message, element)
+    }
+
+    fun compilationError(element: Element, message: String): CompilationException {
+        processEnvironment.messager.printMessage(Diagnostic.Kind.ERROR, message, element)
+        return CompilationException()
     }
 
 }

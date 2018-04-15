@@ -16,4 +16,4 @@
 
 package magnet.processor
 
-class BreakGenerationException : Exception()
+class CompilationException : Exception()

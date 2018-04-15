@@ -36,7 +36,7 @@ data class FactoryType(
     val factoryType: ClassName,
     val classifier: String,
     val interfaceType: ClassName,
-    val instanceType: ClassName,
+    val createStatement: CreateStatement,
     val createMethod: CreateMethod,
     val getRetentionMethod: GetRetentionMethod
 ) {
@@ -47,6 +47,17 @@ data class FactoryType(
         visitor.visitExit(this)
     }
 }
+
+sealed class CreateStatement
+
+data class TypeCreateStatement(
+    val instanceType: ClassName
+) : CreateStatement()
+
+data class MethodCreateStatement(
+    val staticMethodClassName: ClassName,
+    val staticMethodName: String
+) : CreateStatement()
 
 data class CreateMethod(
     val methodParameter: List<MethodParameter>

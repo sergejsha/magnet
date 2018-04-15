@@ -166,7 +166,6 @@ class MagnetProcessorTest {
 
     }
 
-    /*
     @Test
     fun generateFactory_UsingStaticMethod() {
 
@@ -174,6 +173,7 @@ class MagnetProcessorTest {
             .withProcessors(MagnetProcessor())
             .compile(
                 withResource("HomePageWithStaticConstructor.java"),
+                withResource("HomePageWithStaticConstructorSingle.java"),
                 withResource("Page.java"),
                 withResource("HomeRepository.java")
             )
@@ -181,11 +181,10 @@ class MagnetProcessorTest {
         assertThat(compilation).succeededWithoutWarnings()
 
         assertThat(compilation)
-            .generatedSourceFile("app/extension/MagnetHomePageWithStaticConstructorFactory")
-            .hasSourceEquivalentTo(withResource("generated/MagnetHomePageWithStaticConstructorFactory.java"))
+            .generatedSourceFile("app/extension/utils/MagnetHomePageWithStaticConstructorSingleCreateRepositoriesFactory")
+            .hasSourceEquivalentTo(withResource("generated/MagnetHomePageWithStaticConstructorSingleCreateRepositoriesFactory.java"))
 
     }
-    */
 
     @Test
     fun generateFactoryIndex_Target() {

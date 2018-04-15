@@ -22,6 +22,7 @@ import magnet.Magnetizer
 import magnet.processor.factory.CodeWriter
 import magnet.processor.factory.FactoryCodeGenerator
 import magnet.processor.factory.FactoryFromClassAnnotationParser
+import magnet.processor.factory.FactoryFromMethodAnnotationParser
 import magnet.processor.factory.FactoryIndexCodeGenerator
 import magnet.processor.factory.FactoryType
 import javax.annotation.processing.AbstractProcessor
@@ -39,6 +40,7 @@ class MagnetProcessor : AbstractProcessor() {
 
     private lateinit var env: MagnetProcessorEnv
     private lateinit var factoryFromClassAnnotationParser: FactoryFromClassAnnotationParser
+    private lateinit var factoryFromMethodAnnotationParser: FactoryFromMethodAnnotationParser
     private lateinit var factoryCodeGenerator: FactoryCodeGenerator
     private lateinit var factoryIndexCodeGenerator: FactoryIndexCodeGenerator
 
@@ -46,6 +48,7 @@ class MagnetProcessor : AbstractProcessor() {
         super.init(processingEnvironment)
         env = MagnetProcessorEnv(processingEnvironment)
         factoryFromClassAnnotationParser = FactoryFromClassAnnotationParser(env)
+        factoryFromMethodAnnotationParser = FactoryFromMethodAnnotationParser(env)
         factoryCodeGenerator = FactoryCodeGenerator()
         factoryIndexCodeGenerator = FactoryIndexCodeGenerator()
     }
@@ -54,13 +57,12 @@ class MagnetProcessor : AbstractProcessor() {
         annotations: MutableSet<out TypeElement>,
         roundEnv: RoundEnvironment
     ): Boolean {
-
         return try {
             val implementationProcessed = processImplementationAnnotation(roundEnv)
             val indexCreated = processFactoryIndexAnnotation(env, roundEnv)
 
             implementationProcessed || indexCreated
-        } catch (e: BreakGenerationException) {
+        } catch (e: CompilationException) {
             true
         }
     }
@@ -75,8 +77,11 @@ class MagnetProcessor : AbstractProcessor() {
         }
 
         val factoryTypes = mutableListOf<FactoryType>()
-        ElementFilter.typesIn(annotatedElements).forEach { typeElement ->
-            factoryTypes.add(factoryFromClassAnnotationParser.parse(typeElement))
+        ElementFilter.typesIn(annotatedElements).forEach { element ->
+            factoryTypes.add(factoryFromClassAnnotationParser.parse(element))
+        }
+        ElementFilter.methodsIn(annotatedElements).forEach { element ->
+            factoryTypes.add(factoryFromMethodAnnotationParser.parse(element))
         }
 
         val codeWriters = mutableListOf<CodeWriter>()
