@@ -38,7 +38,7 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
         // create dependency scope for this activity
-        activityScope = App.appScope.subscope().apply {
+        activityScope = App.appScope.createSubscope().apply {
             register(resources)
         }
 

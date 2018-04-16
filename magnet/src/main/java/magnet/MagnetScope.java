@@ -95,7 +95,7 @@ final class MagnetScope implements Scope {
     }
 
     @Override
-    public Scope subscope() {
+    public Scope createSubscope() {
         return new MagnetScope(this, instanceManager);
     }
 

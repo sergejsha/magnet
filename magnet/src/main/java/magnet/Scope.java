@@ -32,6 +32,6 @@ public interface Scope {
     <T> Scope register(Class<T> type, T instance);
     <T> Scope register(Class<T> type, T instance, String classifier);
 
-    Scope subscope();
+    Scope createSubscope();
 
 }

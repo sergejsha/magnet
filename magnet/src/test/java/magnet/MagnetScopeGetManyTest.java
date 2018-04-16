@@ -18,7 +18,7 @@ public class MagnetScopeGetManyTest {
     @Before
     public void before() {
         scope1 = new MagnetScope(null, new StubInstanceManager());
-        scope2 = (MagnetScope) scope1.subscope().register(Dependency2.class, new Dependency2());
+        scope2 = (MagnetScope) scope1.createSubscope().register(Dependency2.class, new Dependency2());
     }
 
     @Test
