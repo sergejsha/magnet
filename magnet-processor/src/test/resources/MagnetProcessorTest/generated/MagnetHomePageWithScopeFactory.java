@@ -14,7 +14,7 @@ public final class MagnetHomePageWithScopeFactory implements InstanceFactory<Pag
 
     @Override
     public Scoping getScoping() {
-        return Scoping.SCOPE;
+        return Scoping.TOPMOST;
     }
 
     public static Class getType() {

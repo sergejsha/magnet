@@ -20,7 +20,7 @@ public final class MagnetHomePageWithManyParamsFactory implements InstanceFactor
 
     @Override
     public Scoping getScoping() {
-        return Scoping.SCOPE;
+        return Scoping.TOPMOST;
     }
 
     public static Class getType() {

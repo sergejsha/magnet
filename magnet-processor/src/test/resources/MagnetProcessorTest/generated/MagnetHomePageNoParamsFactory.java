@@ -14,7 +14,7 @@ public final class MagnetHomePageNoParamsFactory implements InstanceFactory<Page
 
     @Override
     public Scoping getScoping() {
-        return Scoping.SCOPE;
+        return Scoping.TOPMOST;
     }
 
     public static Class getType() {

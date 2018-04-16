@@ -118,7 +118,7 @@ internal open class AnnotationParser(
     protected fun parseAnnotation(element: Element, checkInheritance: Boolean = false): Annotation {
 
         var interfaceTypeElement: TypeElement? = null
-        var scoping = Scoping.SCOPE.name
+        var scoping = Scoping.TOPMOST.name
         var classifier = Classifier.NONE
 
         element.annotationMirrors.forEach { annotationMirror ->

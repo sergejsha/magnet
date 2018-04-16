@@ -17,7 +17,7 @@ public final class MagnetHomePageWithManyWildcardParamsFactory implements Instan
 
     @Override
     public Scoping getScoping() {
-        return Scoping.SCOPE;
+        return Scoping.TOPMOST;
     }
 
     public static Class getType() {

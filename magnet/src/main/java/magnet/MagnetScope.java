@@ -140,7 +140,7 @@ final class MagnetScope implements Scope {
         }
 
         Instance<T> instance = findInstanceDeep(key);
-        boolean scoped = factory.getScoping() == Scoping.SCOPE;
+        boolean scoped = factory.getScoping() == Scoping.TOPMOST;
 
         if (scoped) {
 

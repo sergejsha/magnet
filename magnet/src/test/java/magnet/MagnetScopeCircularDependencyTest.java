@@ -36,7 +36,7 @@ public class MagnetScopeCircularDependencyTest {
             scope.getSingle(MenuItem.class, "two");
             return new MenuItemOne();
         }
-        @Override public Scoping getScoping() { return Scoping.SCOPE; }
+        @Override public Scoping getScoping() { return Scoping.TOPMOST; }
     }
 
     private static class MenuItemTwoFactory implements InstanceFactory<MenuItem> {
@@ -44,7 +44,7 @@ public class MagnetScopeCircularDependencyTest {
             scope.getSingle(MenuItem.class, "three");
             return new MenuItemTwo();
         }
-        @Override public Scoping getScoping() { return Scoping.SCOPE; }
+        @Override public Scoping getScoping() { return Scoping.TOPMOST; }
     }
 
     private static class MenuItemThreeFactory implements InstanceFactory<MenuItem> {
@@ -52,7 +52,7 @@ public class MagnetScopeCircularDependencyTest {
             scope.getSingle(MenuItem.class, "one");
             return new MenuItemThree();
         }
-        @Override public Scoping getScoping() { return Scoping.SCOPE; }
+        @Override public Scoping getScoping() { return Scoping.TOPMOST; }
     }
 
     private static class MenuItemFourFactory implements InstanceFactory<MenuItem> {
@@ -60,14 +60,14 @@ public class MagnetScopeCircularDependencyTest {
             scope.getSingle(MenuItem.class, "four");
             return new MenuItemFour();
         }
-        @Override public Scoping getScoping() { return Scoping.SCOPE; }
+        @Override public Scoping getScoping() { return Scoping.TOPMOST; }
     }
 
     private static class MenuItemFiveFactory implements InstanceFactory<MenuItem> {
         @Override public MenuItem create(Scope scope) {
             return new MenuItemFive(scope);
         }
-        @Override public Scoping getScoping() { return Scoping.SCOPE; }
+        @Override public Scoping getScoping() { return Scoping.TOPMOST; }
     }
 
     private static class StubInstanceManager implements InstanceManager {

@@ -142,7 +142,7 @@ public class MagnetAutoScopeForUnscopedTest {
             scope.getSingle(MenuItem.class, "one");
             return new MenuItemTwo();
         }
-        @Override public Scoping getScoping() { return Scoping.SCOPE; }
+        @Override public Scoping getScoping() { return Scoping.TOPMOST; }
     }
 
     private static class MenuItemThreeFactory implements InstanceFactory<MenuItem> {
