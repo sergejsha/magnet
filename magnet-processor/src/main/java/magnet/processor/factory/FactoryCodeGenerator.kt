@@ -25,8 +25,8 @@ import com.squareup.javapoet.TypeName
 import com.squareup.javapoet.TypeSpec
 import magnet.Classifier
 import magnet.InstanceFactory
-import magnet.InstanceRetention
 import magnet.Scope
+import magnet.Scoping
 import javax.lang.model.element.Modifier
 
 class FactoryCodeGenerator : FactoryTypeVisitor, CodeGenerator {
@@ -36,7 +36,7 @@ class FactoryCodeGenerator : FactoryTypeVisitor, CodeGenerator {
 
     private var createMethodCodeBuilder: CodeBlock.Builder? = null
     private var constructorParametersBuilder = StringBuilder()
-    private var getInstanceRetention: MethodSpec? = null
+    private var getScoping: MethodSpec? = null
 
     override fun visitEnter(factoryType: FactoryType) {
         // nop
@@ -44,7 +44,7 @@ class FactoryCodeGenerator : FactoryTypeVisitor, CodeGenerator {
 
     override fun visitEnter(createMethod: CreateMethod) {
         factoryTypeSpec = null
-        getInstanceRetention = null
+        getScoping = null
         createMethodCodeBuilder = CodeBlock.builder()
         constructorParametersBuilder.setLength(0)
     }
@@ -99,13 +99,13 @@ class FactoryCodeGenerator : FactoryTypeVisitor, CodeGenerator {
         }
     }
 
-    override fun visit(method: GetRetentionMethod) {
-        getInstanceRetention = MethodSpec
-            .methodBuilder("getInstanceRetention")
+    override fun visit(method: GetScopingMethod) {
+        getScoping = MethodSpec
+            .methodBuilder("getScoping")
             .addModifiers(Modifier.PUBLIC)
             .addAnnotation(Override::class.java)
-            .returns(InstanceRetention::class.java)
-            .addStatement("return \$T.\$L", InstanceRetention::class.java, method.instanceRetention)
+            .returns(Scoping::class.java)
+            .addStatement("return \$T.\$L", Scoping::class.java, method.scoping)
             .build()
     }
 
@@ -116,7 +116,7 @@ class FactoryCodeGenerator : FactoryTypeVisitor, CodeGenerator {
             .addModifiers(Modifier.PUBLIC, Modifier.FINAL)
             .addSuperinterface(generateFactorySuperInterface(factory))
             .addMethod(generateCreateMethod(factory))
-            .addMethod(generateGetInstanceRetentionMethod())
+            .addMethod(generateGetScopingMethod())
             .addMethod(generateGetTypeMethod(factory))
             .build()
     }
@@ -154,8 +154,8 @@ class FactoryCodeGenerator : FactoryTypeVisitor, CodeGenerator {
         return builder.build()
     }
 
-    private fun generateGetInstanceRetentionMethod(): MethodSpec {
-        return getInstanceRetention!!
+    private fun generateGetScopingMethod(): MethodSpec {
+        return getScoping!!
     }
 
     private fun generateGetTypeMethod(factoryType: FactoryType): MethodSpec {

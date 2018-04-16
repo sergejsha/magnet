@@ -6,8 +6,8 @@ import com.squareup.javapoet.ParameterizedTypeName
 import com.squareup.javapoet.WildcardTypeName
 import magnet.Classifier
 import magnet.Implementation
-import magnet.InstanceRetention
 import magnet.Scope
+import magnet.Scoping
 import magnet.processor.CompilationException
 import magnet.processor.MagnetProcessorEnv
 import magnet.processor.mirrors
@@ -18,7 +18,7 @@ import javax.lang.model.type.TypeKind
 
 private const val CLASS_NULLABLE = ".Nullable"
 private const val ATTR_TYPE = "type"
-private const val ATTR_INSTANCE_RETENTION = "instanceRetention"
+private const val ATTR_SCOPING = "scoping"
 private const val ATTR_CLASSIFIER = "classifier"
 
 internal open class AnnotationParser(
@@ -118,7 +118,7 @@ internal open class AnnotationParser(
     protected fun parseAnnotation(element: Element, checkInheritance: Boolean = false): Annotation {
 
         var interfaceTypeElement: TypeElement? = null
-        var retention = InstanceRetention.SCOPE.name
+        var scoping = Scoping.SCOPE.name
         var classifier = Classifier.NONE
 
         element.annotationMirrors.forEach { annotationMirror ->
@@ -140,8 +140,8 @@ internal open class AnnotationParser(
                                 }
                             }
                         }
-                        ATTR_INSTANCE_RETENTION -> {
-                            retention = entryValue
+                        ATTR_SCOPING -> {
+                            scoping = entryValue
                         }
                         ATTR_CLASSIFIER -> {
                             classifier = entryValue
@@ -160,7 +160,7 @@ internal open class AnnotationParser(
         return Annotation(
             interfaceType,
             classifier,
-            retention
+            scoping
         )
     }
 
@@ -169,5 +169,5 @@ internal open class AnnotationParser(
 internal data class Annotation(
     val type: ClassName,
     val classifier: String,
-    val retention: String
+    val scoping: String
 )

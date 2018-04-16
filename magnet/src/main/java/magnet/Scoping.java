@@ -1,5 +1,5 @@
 package magnet;
 
-public enum InstanceRetention {
+public enum Scoping {
     NONE, SCOPE
 }

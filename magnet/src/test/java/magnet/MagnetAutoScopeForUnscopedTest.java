@@ -132,7 +132,7 @@ public class MagnetAutoScopeForUnscopedTest {
             scope.getSingle(Dependency1.class);
             return new MenuItemOne();
         }
-        @Override public InstanceRetention getInstanceRetention() { return InstanceRetention.NONE; }
+        @Override public Scoping getScoping() { return Scoping.NONE; }
     }
 
     private static class MenuItemTwoFactory implements InstanceFactory<MenuItem> {
@@ -142,7 +142,7 @@ public class MagnetAutoScopeForUnscopedTest {
             scope.getSingle(MenuItem.class, "one");
             return new MenuItemTwo();
         }
-        @Override public InstanceRetention getInstanceRetention() { return InstanceRetention.SCOPE; }
+        @Override public Scoping getScoping() { return Scoping.SCOPE; }
     }
 
     private static class MenuItemThreeFactory implements InstanceFactory<MenuItem> {
@@ -153,7 +153,7 @@ public class MagnetAutoScopeForUnscopedTest {
             scope.getSingle(MenuItem.class, "two");
             return new MenuItemThree();
         }
-        @Override public InstanceRetention getInstanceRetention() { return InstanceRetention.NONE; }
+        @Override public Scoping getScoping() { return Scoping.NONE; }
     }
 
     private static class StubInstanceManager implements InstanceManager {

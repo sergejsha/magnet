@@ -43,7 +43,7 @@ class FactoryIndexCodeGenerator : FactoryTypeVisitor, CodeGenerator {
         // nop
     }
 
-    override fun visit(method: GetRetentionMethod) {
+    override fun visit(method: GetScopingMethod) {
         // nop
     }
 

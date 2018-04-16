@@ -8,9 +8,6 @@ import java.util.List;
 
 import magnet.Classifier;
 import magnet.Implementation;
-import magnet.InstanceFactory;
-import magnet.InstanceRetention;
-import magnet.Scope;
 
 
 @Implementation(type = Page.class)

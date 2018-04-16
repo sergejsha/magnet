@@ -6,13 +6,13 @@ import app.HomeRepository;
 import app.Page;
 import app.extension.HomePageWithStaticConstructor;
 import magnet.Implementation;
-import magnet.InstanceRetention;
+import magnet.Scoping;
 
 public class HomePageWithStaticConstructorSingle {
 
     @Implementation(
             type = app.Page.class,
-            instanceRetention = InstanceRetention.NONE
+            scoping = Scoping.NONE
     )
     public static Page create(List<? extends HomeRepository> repositories) {
         return new HomePageWithStaticConstructor(repositories);

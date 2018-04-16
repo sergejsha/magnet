@@ -4,8 +4,8 @@ import app.HomeRepository;
 import app.Page;
 import java.util.List;
 import magnet.InstanceFactory;
-import magnet.InstanceRetention;
 import magnet.Scope;
+import magnet.Scoping;
 
 public final class MagnetHomePageWithManyWildcardParamsFactory implements InstanceFactory<Page> {
 
@@ -16,8 +16,8 @@ public final class MagnetHomePageWithManyWildcardParamsFactory implements Instan
     }
 
     @Override
-    public InstanceRetention getInstanceRetention() {
-        return InstanceRetention.SCOPE;
+    public Scoping getScoping() {
+        return Scoping.SCOPE;
     }
 
     public static Class getType() {

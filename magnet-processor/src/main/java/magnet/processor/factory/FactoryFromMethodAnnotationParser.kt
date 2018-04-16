@@ -58,7 +58,7 @@ internal class FactoryFromMethodAnnotationParser(
             annotation.type,
             MethodCreateStatement(staticMethodClassName, staticMethodName),
             CreateMethod(methodParameters),
-            GetRetentionMethod(annotation.retention)
+            GetScopingMethod(annotation.scoping)
         )
     }
 

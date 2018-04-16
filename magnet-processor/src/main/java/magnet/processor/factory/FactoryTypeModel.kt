@@ -27,7 +27,7 @@ interface FactoryTypeVisitor {
     fun visitEnter(createMethod: CreateMethod)
     fun visit(parameter: MethodParameter)
     fun visitExit(createMethod: CreateMethod)
-    fun visit(method: GetRetentionMethod)
+    fun visit(method: GetScopingMethod)
     fun visitExit(factory: FactoryType)
 }
 
@@ -38,12 +38,12 @@ data class FactoryType(
     val interfaceType: ClassName,
     val createStatement: CreateStatement,
     val createMethod: CreateMethod,
-    val getRetentionMethod: GetRetentionMethod
+    val getScopingMethod: GetScopingMethod
 ) {
     fun accept(visitor: FactoryTypeVisitor) {
         visitor.visitEnter(this)
         createMethod.accept(visitor)
-        getRetentionMethod.accept(visitor)
+        getScopingMethod.accept(visitor)
         visitor.visitExit(this)
     }
 }
@@ -82,8 +82,8 @@ data class MethodParameter(
     }
 }
 
-data class GetRetentionMethod(
-    val instanceRetention: String
+data class GetScopingMethod(
+    val scoping: String
 ) {
     fun accept(visitor: FactoryTypeVisitor) {
         visitor.visit(this)
