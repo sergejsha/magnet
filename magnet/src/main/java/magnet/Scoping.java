@@ -17,5 +17,5 @@
 package magnet;
 
 public enum Scoping {
-    NONE, TOPMOST
+    NONE, TOPMOST, DIRECT
 }

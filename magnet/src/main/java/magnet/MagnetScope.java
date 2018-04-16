@@ -37,8 +37,8 @@ final class MagnetScope implements Scope {
     private final Map<String, Instance> instances;
 
     @SuppressWarnings("AnonymousHasLambdaAlternative")
-    private ThreadLocal<AutoScope> autoScope = new ThreadLocal<AutoScope>() {
-        @Override protected AutoScope initialValue() { return new AutoScope(); }
+    private ThreadLocal<InstantiationContext> instantiationContext = new ThreadLocal<InstantiationContext>() {
+        @Override protected InstantiationContext initialValue() { return new InstantiationContext(); }
     };
 
     MagnetScope(MagnetScope parent, InstanceManager instanceManager) {
@@ -121,7 +121,7 @@ final class MagnetScope implements Scope {
 
     @SuppressWarnings("unchecked")
     private <T> T getSingleObject(Class<T> type, String classifier, InstanceFactory<T> factory, byte cardinality) {
-        AutoScope autoScope = this.autoScope.get();
+        InstantiationContext instantiationContext = this.instantiationContext.get();
         String key = key(type, classifier);
 
         if (factory == null) {
@@ -135,18 +135,18 @@ final class MagnetScope implements Scope {
                 }
                 return null;
             }
-            autoScope.onMaybeDependencyInScope(instance.getScopeDepth());
+            instantiationContext.onDependencyFoundInScope(instance.getScopeDepth());
             return instance.getValue();
         }
 
         Instance<T> instance = findInstanceDeep(key);
-        boolean scoped = factory.getScoping() == Scoping.TOPMOST;
+        boolean keepInScope = factory.getScoping() != Scoping.NONE;
 
-        if (scoped) {
+        if (keepInScope) {
 
             if (instance != null) {
                 if (cardinality != CARDINALITY_MANY) {
-                    autoScope.onMaybeDependencyInScope(instance.getScopeDepth());
+                    instantiationContext.onDependencyFoundInScope(instance.getScopeDepth());
                     return instance.getValue();
                 }
 
@@ -157,19 +157,19 @@ final class MagnetScope implements Scope {
             }
         }
 
-        autoScope.onBeforeInstanceCreated(key);
+        instantiationContext.onBeforeInstanceCreated(key);
         T object = factory.create(this);
-        int depth = autoScope.onAfterInstanceCreated();
-        autoScope.onMaybeDependencyInScope(depth);
+        int depth = instantiationContext.onAfterInstanceCreated();
+        instantiationContext.onDependencyFoundInScope(depth);
 
-        if (scoped) {
+        if (keepInScope) {
             if (instance != null && instance.getScopeDepth() != depth) {
                 instance = null;
             }
 
             if (instance == null) {
                 instance = Instance.create(object, factory, depth);
-                registerInstance(key, instance);
+                registerInstanceInScope(key, instance, factory.getScoping());
 
             } else {
                 instance.addValue(object, factory);
@@ -179,8 +179,8 @@ final class MagnetScope implements Scope {
         return object;
     }
 
-    private void registerInstance(String key, Instance instance) {
-        if (depth == instance.getScopeDepth()) {
+    private void registerInstanceInScope(String key, Instance instance, Scoping scoping) {
+        if (scoping == Scoping.DIRECT || depth == instance.getScopeDepth()) {
             Instance existing = instances.put(key, instance);
             if (existing != null) {
                 throw new IllegalStateException(
@@ -194,7 +194,7 @@ final class MagnetScope implements Scope {
                     String.format(
                             "Cannot register instance with depth %s", instance.getScopeDepth()));
         }
-        parent.registerInstance(key, instance);
+        parent.registerInstanceInScope(key, instance, scoping);
     }
 
     @SuppressWarnings("unchecked")
@@ -225,7 +225,7 @@ final class MagnetScope implements Scope {
         return classifier + "@" + type.getName();
     }
 
-    private final static class AutoScope {
+    private final static class InstantiationContext {
         private final ArrayDeque<CreatingInstanceStep> creatingInstanceSteps = new ArrayDeque<>();
         private CreatingInstanceStep creatingInstanceStep;
 
@@ -245,7 +245,7 @@ final class MagnetScope implements Scope {
             return resultDepth;
         }
 
-        void onMaybeDependencyInScope(int instanceDepth) {
+        void onDependencyFoundInScope(int instanceDepth) {
             if (creatingInstanceStep == null) return;
             if (instanceDepth > creatingInstanceStep.depth) {
                 creatingInstanceStep.depth = instanceDepth;
