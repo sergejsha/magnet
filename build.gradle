@@ -26,7 +26,6 @@ allprojects {
             resolutionStrategy {
                 force deps.appcompat
                 force deps.design
-                force deps.constraintLayout
                 force deps.kotlinjdk7
             }
         }
