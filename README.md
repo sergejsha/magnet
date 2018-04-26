@@ -2,12 +2,8 @@
 [![Kotlin version badge](https://img.shields.io/badge/kotlin-1.2.40-blue.svg)](http://kotlinlang.org/)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](http://www.apache.org/licenses/LICENSE-2.0)
 
-# Magnet
+# Magnet 2.0 (candidate)
 <img src="docs/images/logo.png" width="100" />
-
-[Dependency inversion principle][3] helps to decouple high-level modules from the low-level module implementation details and completes [SOLID object-oriented design][4]. If you are about to modularize your Android application and apply dependency inversion principle, then Magnet library would be a good fit for your project as it makes dependency inversion a fun task.
-
-# Release 2.0 (candidate)
 
 Magnet 2.0 adds new advanced injection capabilities. If you are mainly interested in dependency inversion feature, use version 1.0.0 of the library. Here is a short description of how version 2.0 can be used with Android.
 
@@ -111,6 +107,9 @@ dependencies {
 ```
 
 # Why depenedncy inversion?
+
+[Dependency inversion principle][3] helps to decouple high-level modules from the low-level module implementation details and completes [SOLID object-oriented design][4]. If you are about to modularize your Android application and apply dependency inversion principle, then Magnet library would be a good fit for your project as it makes dependency inversion a fun task.
+
 Let's compare traditional layered design to the design based on dependency inversion principle. As an example we take an application consisting of a navigation bar with three tabbed pages.
 ![Why diagram][1]
 
