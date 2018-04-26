@@ -32,7 +32,9 @@ inline fun <reified T> Scope.bind(component: T, classifier: String = Classifier.
     this.bind(T::class.java, component, classifier)
 }
 
-/** Create a sub scope in actual scope. */
+/**
+ * Create a sub scope in actual scope.
+ */
 inline fun Scope.createSubscope(init: Scope.() -> Unit): Scope {
     return this.createSubscope().apply(init)
 }

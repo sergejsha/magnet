@@ -38,8 +38,9 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        // create dependency scope for this activity
+        // create activity subscope
         activityScope = App.appScope.createSubscope {
+            // and bind instances into it
             bind(resources)
         }
 

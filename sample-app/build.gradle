@@ -27,13 +27,13 @@ android {
 
 dependencies {
 
+    // mandatory modules
+    implementation project(':sample-app-main')
+
     // optional modules: you can comment anyone out them to remove respective feature from the app
     implementation project(':sample-app-main-home')
     implementation project(':sample-app-main-dashboard')
     implementation project(':sample-app-main-notifications')
-
-    // mandatory modules
-    implementation project(':sample-app-main')
 
     api project(':magnet-kotlin')
     kapt project(':magnet-processor')

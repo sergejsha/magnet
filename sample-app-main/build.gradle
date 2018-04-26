@@ -30,9 +30,9 @@ dependencies {
     api project(':magnet-kotlin')
     kapt project(':magnet-processor')
 
+    api deps.design
     api deps.appcompat
     api deps.constraintLayout
-    api deps.design
 
     implementation deps.kotlinjdk7
 }
