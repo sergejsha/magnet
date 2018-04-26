@@ -84,6 +84,8 @@ class MagnetProcessor : AbstractProcessor() {
             factoryTypes.add(factoryFromMethodAnnotationParser.parse(element))
         }
 
+        factoryTypes.sortBy { factoryName(it) }
+
         val codeWriters = mutableListOf<CodeWriter>()
         factoryTypes.forEach { factoryType ->
             codeWriters.add(factoryCodeGenerator.generateFrom(factoryType))
@@ -115,3 +117,5 @@ class MagnetProcessor : AbstractProcessor() {
     }
 
 }
+
+private fun factoryName(factoryType: FactoryType): String = factoryType.factoryType.simpleName()
