@@ -24,8 +24,9 @@ import android.widget.TextView
 import kotlinx.android.synthetic.main.activity_main.message
 import kotlinx.android.synthetic.main.activity_main.navigation
 import magnet.Scope
-import magnet.getMany
 import magnet.bind
+import magnet.createSubscope
+import magnet.getMany
 import magnet.sample.app.App
 
 class MainActivity : AppCompatActivity() {
@@ -38,7 +39,7 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
         // create dependency scope for this activity
-        activityScope = App.appScope.createSubscope().apply {
+        activityScope = App.appScope.createSubscope {
             bind(resources)
         }
 

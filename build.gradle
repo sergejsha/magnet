@@ -1,13 +1,15 @@
 buildscript {
     ext.kotlin_version = '1.2.40'
+    ext.gradle_plugin_version = '3.1.2'
     ext.compatlib_version = '27.1.0'
 
     repositories {
         google()
         jcenter()
     }
+
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.1.2'
+        classpath "com.android.tools.build:gradle:$gradle_plugin_version"
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
     }
 }
@@ -17,6 +19,17 @@ allprojects {
         google()
         jcenter()
         mavenCentral()
+    }
+
+    configurations {
+        all {
+            resolutionStrategy {
+                force deps.appcompat
+                force deps.design
+                force deps.constraintLayout
+                force deps.kotlinjdk7
+            }
+        }
     }
 }
 
