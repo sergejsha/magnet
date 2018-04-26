@@ -3,16 +3,16 @@ package app.extension;
 import app.HomeRepository;
 import app.Page;
 import app.UserData;
-import magnet.DependencyScope;
+import magnet.Scope;
 import magnet.Implementation;
 
-@Implementation(forType = Page.class)
+@Implementation(type = Page.class)
 class HomePage implements Page {
 
     HomePage(
             HomeRepository homeRepository,
             UserData userData,
-            DependencyScope dependencyScope
+            Scope scope
     ) { }
 
     @Override

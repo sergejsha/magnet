@@ -1,16 +1,16 @@
 package app.extension;
 
 import app.MenuItem;
-import magnet.DependencyScope;
+import magnet.Scope;
 import magnet.Implementation;
 
 @Implementation(
-        forType = MenuItem.class,
-        forTarget = "extended-menu"
+        type = MenuItem.class,
+        classifier = "extended-menu"
 )
 class UserPageMenuItem implements MenuItem {
 
-    UserPageMenuItem(DependencyScope registry) {
+    UserPageMenuItem(Scope registry) {
     }
 
     @Override

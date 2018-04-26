@@ -1,16 +1,16 @@
 package app.extension;
 
 import app.MenuItem;
-import magnet.DependencyScope;
+import magnet.Scope;
 import magnet.Implementation;
 
 @Implementation(
-        forType = MenuItem.class,
-        forTarget = "main-menu"
+        type = MenuItem.class,
+        classifier = "main-menu"
 )
 class HomePageMenuItem implements MenuItem {
 
-    HomePageMenuItem(DependencyScope dependencyScope) {
+    HomePageMenuItem(Scope scope) {
     }
 
     @Override

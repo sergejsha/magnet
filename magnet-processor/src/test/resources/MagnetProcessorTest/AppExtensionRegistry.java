@@ -1,8 +1,8 @@
 package app;
 
-import magnet.MagnetizeImplementations;
+import magnet.Magnetizer;
 
-@MagnetizeImplementations
+@Magnetizer
 public interface AppExtensionRegistry {
 
 }

@@ -16,7 +16,7 @@ Dependency inversion principle requires us to design our application for extensi
 Another advantage of structuring the application in such a modular way is the ability to repackage the app according to new requirements. For instance we want to create a new companion app which uses some of the already existing modules or we want to create an Android Instant app. If we did everything right, we will be able to repackage some of existing modules into the new app and write missing ones.
 
 # How?
-As the name of the principle says we need to invert dependencies. If we simply invert dependencies then our library modules will depend on the application module. At the same time application module has to dependend on the library modules because it has to include them into the apk. We run into a circular dependencies situation which is not allowed in gradle builds. To resolve this circular dependency we have to avoid any dependency onto the application module. It means none of the library modules may depend on the application module. This would be only possible if our application module would have no code or resources the other modules need. This brings us to the design depicted below.
+As the name of the principle says we need to invert dependencies. If we simply invert dependencies then our library modules will depend on the application module. At the same time application module has to dependent on the library modules because it has to include them into the apk. We run into a circular dependencies situation which is not allowed in gradle builds. To resolve this circular dependency we have to avoid any dependency onto the application module. It means none of the library modules may depend on the application module. This would be only possible if our application module would have no code or resources the other modules need. This brings us to the design depicted below.
 
 ![How diagram][2]
 
@@ -27,7 +27,7 @@ Our sample application defines `app-main` library module which can host tabbed p
 Now we can ask Magnet to put all these pieces together.
 1. We add `@Implementation` annotation to the implementations of `Page` interface. This will allow Magnet to find those implementations at build-time.
 2. In `MainActivity.onCreate()` method in `app-main` module we ask Magnet to instantiate all available implementations of the `Page` interface at runtime.
-3. Last but not least, we create an empty marker interface inside the `app` module and annotate it with `@MagnetizeImplementations`. This will force Magnet to collect and index all implementations registred in the app.
+3. Last but not least, we create an empty marker interface inside the `app` module and annotate it with `@MagnetizeImplementations`. This will force Magnet to collect and index all implementations registered in the app.
 
 Sample application located in this repo implements exactly the logic described above. You can build, run and debug it. The fun part is, that now you can remove any of the implementation modules from the build by simply commenting out respective `implementation` dependency inside the `build.gradle` file of the `sample-app` module. Just rerun the app and commented out page will disappear. Have fun and happy coding!
 

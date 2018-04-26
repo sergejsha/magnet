@@ -22,35 +22,12 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
-/**
- * Annotation to be used on implementation classes. Magnet will generate factories
- * for those classes and allow to query those implementations using
- * {@link ImplementationManager}.
- */
 @Retention(SOURCE)
-@Target({ ElementType.TYPE })
+@Target({ ElementType.TYPE, ElementType.METHOD })
 public @interface Implementation {
 
-    /**
-     * Defines the interface this implementation implements. Same type is used
-     * when implementations are queried by means of {@link ImplementationManager}.
-     *
-     * @see ImplementationManager#getMany(Class, DependencyScope)
-     * @see ImplementationManager#getSingle(Class, DependencyScope)
-     * @see ImplementationManager#requireSingle(Class, DependencyScope)
-     */
-    Class<?> forType();
+    Class<?> type();
+    String classifier() default Classifier.NONE;
+    Scoping scoping() default Scoping.TOPMOST;
 
-    /**
-     * Defines an optional string used for querying an implementation associated
-     * with a certain target. For instance same interface {@code MenuItem} is
-     * used in main and debug menus. Implementations can dedicate themselves to
-     * one of those menus by declaring "main" or "debug" as the target. Main
-     * and debug menus will correspondingly query their menu items.
-     *
-     * @see ImplementationManager#getMany(Class, String, DependencyScope)
-     * @see ImplementationManager#getSingle(Class, String, DependencyScope)
-     * @see ImplementationManager#requireSingle(Class, String, DependencyScope)
-     */
-    String forTarget() default ImplementationManager.DEFAULT_TARGET;
 }

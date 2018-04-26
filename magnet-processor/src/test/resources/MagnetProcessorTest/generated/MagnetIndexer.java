@@ -1,22 +1,22 @@
 package magnet;
 
-import app.extension.MagnetHomePageFactory;
-import app.extension.MagnetHomePageMenuItemFactory;
-import app.extension.MagnetUserPageFactory;
-import app.extension.MagnetUserPageMenuItemFactory;
+import app.extension.HomePageMagnetFactory;
+import app.extension.HomePageMenuItemMagnetFactory;
+import app.extension.UserPageMagnetFactory;
+import app.extension.UserPageMenuItemMagnetFactory;
 import java.util.HashMap;
 import java.util.Map;
-import magnet.internal.Factory;
+
 import magnet.internal.Range;
 
 public final class MagnetIndexer {
 
-    public static void register(MagnetImplementationManager implementationManager) {
-        Factory[] factories = new Factory[] {
-                new MagnetUserPageMenuItemFactory(),
-                new MagnetHomePageMenuItemFactory(),
-                new MagnetHomePageFactory(),
-                new MagnetUserPageFactory(),
+    public static void register(MagnetInstanceManager instanceManager) {
+        InstanceFactory[] factories = new InstanceFactory[] {
+                new UserPageMenuItemMagnetFactory(),
+                new HomePageMenuItemMagnetFactory(),
+                new HomePageMagnetFactory(),
+                new UserPageMagnetFactory(),
         };
 
         Map<Class, Object> index = new HashMap<>();
@@ -25,10 +25,10 @@ public final class MagnetIndexer {
         ranges1.put("extended-menu", new Range(0, 1, "extended-menu"));
         ranges1.put("main-menu", new Range(1, 1, "main-menu"));
 
-        index.put(MagnetUserPageMenuItemFactory.getType(), ranges1);
-        index.put(MagnetHomePageFactory.getType(), new Range(2, 2, ""));
+        index.put(UserPageMenuItemMagnetFactory.getType(), ranges1);
+        index.put(HomePageMagnetFactory.getType(), new Range(2, 2, ""));
 
-        implementationManager.register(factories, index);
+        instanceManager.register(factories, index);
     }
 
 }

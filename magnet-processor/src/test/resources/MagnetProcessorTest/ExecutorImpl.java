@@ -3,7 +3,7 @@ package app.extension;
 import magnet.Implementation;
 
 @Implementation(
-        forType = Executor.class
+        type = Executor.class
 )
 class ExecutorImpl implements Executor<Runnable> {
 

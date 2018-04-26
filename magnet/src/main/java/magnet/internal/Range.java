@@ -21,12 +21,12 @@ public final class Range {
 
     private final int from;
     private final int count;
-    private final String target;
+    private final String classifier;
 
-    public Range(int from, int count, String target) {
+    public Range(int from, int count, String classifier) {
         this.from = from;
         this.count = count;
-        this.target = target;
+        this.classifier = classifier;
     }
 
     public int getFrom() {
@@ -37,7 +37,7 @@ public final class Range {
         return count;
     }
 
-    public String getTarget() {
-        return target;
+    public String getClassifier() {
+        return classifier;
     }
 }

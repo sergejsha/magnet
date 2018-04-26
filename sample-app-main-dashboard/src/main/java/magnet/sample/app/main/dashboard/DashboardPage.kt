@@ -19,7 +19,7 @@ package magnet.sample.app.main.dashboard
 import magnet.Implementation
 import magnet.sample.app.main.Page
 
-@Implementation(forType = Page::class)
+@Implementation(type = Page::class)
 class DashboardPage : Page {
 
     override fun id(): Int {

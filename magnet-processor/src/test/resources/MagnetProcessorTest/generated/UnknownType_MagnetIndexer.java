@@ -1,18 +1,18 @@
 package magnet;
 
-import app.extension.MagnetUnknownTypeTabFactory;
+import app.extension.UnknownTypeTabMagnetFactory;
 import java.util.HashMap;
 import java.util.Map;
-import magnet.internal.Factory;
+
 import magnet.internal.Range;
 
 public final class MagnetIndexer {
-    public static void register(MagnetImplementationManager implementationManager) {
-        Factory[] factories = new Factory[] {
-                new MagnetUnknownTypeTabFactory(),
+    public static void register(MagnetInstanceManager instanceManager) {
+        InstanceFactory[] factories = new InstanceFactory[] {
+                new UnknownTypeTabMagnetFactory(),
         };
         Map<Class, Object> index = new HashMap<>();
-        index.put(MagnetUnknownTypeTabFactory.getType(), new Range(0, 1, ""));
-        implementationManager.register(factories, index);
+        index.put(UnknownTypeTabMagnetFactory.getType(), new Range(0, 1, ""));
+        instanceManager.register(factories, index);
     }
 }

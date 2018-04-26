@@ -16,7 +16,6 @@
 
 package magnet.sample.app.main
 
-import android.content.res.Resources
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.util.SparseArray
@@ -24,34 +23,32 @@ import android.view.Menu
 import android.widget.TextView
 import kotlinx.android.synthetic.main.activity_main.message
 import kotlinx.android.synthetic.main.activity_main.navigation
-import magnet.DependencyScope
+import magnet.Scope
+import magnet.bind
+import magnet.createSubscope
 import magnet.getMany
 import magnet.sample.app.App
 
 class MainActivity : AppCompatActivity() {
 
     private val pageBinders = SparseArray<PageBinder>()
-    private lateinit var activityScope: DependencyScope
+    private lateinit var activityScope: Scope
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
         // create dependency scope for this activity
-        activityScope = App.appScope.subscope()
-
-        // registered Resources.class making it available to the pages down below
-        activityScope.register(Resources::class.java, resources)
+        activityScope = App.appScope.createSubscope {
+            bind(resources)
+        }
 
         // query registered implementations of Page type
-        val pages = App.implManager.getMany<Page>(
-                // each page receives its own dependency scope that it cannot override values in activity scope
-                dependencyScope = activityScope.subscope()
-        )
+        val pages = activityScope.getMany<Page>()
 
-        // add queried pages to the menu and register listeners
-        pages.forEach {
-            PageBinder(it).register(navigation.menu, message, pageBinders)
+        // use pages for creating ui
+        pages.forEach { page ->
+            PageBinder(page).register(navigation.menu, message, pageBinders)
         }
 
         // select initial message
@@ -63,23 +60,23 @@ class MainActivity : AppCompatActivity() {
 
     override fun onRestoreInstanceState(savedInstanceState: Bundle?) {
         super.onRestoreInstanceState(savedInstanceState)
-        // restore message according to selected page
+        // restore message for selected page
         pageBinders[navigation.selectedItemId].updateMessage(message)
     }
 
 }
 
 class PageBinder(
-        private val page: Page
+    private val page: Page
 ) {
 
     fun register(menu: Menu, message: TextView, pageBinders: SparseArray<PageBinder>) {
         menu.add(0, page.id(), page.order(), page.menuTitleId())
-                .setIcon(page.menuIconId())
-                .setOnMenuItemClickListener {
-                    updateMessage(message)
-                    false
-                }
+            .setIcon(page.menuIconId())
+            .setOnMenuItemClickListener {
+                updateMessage(message)
+                false
+            }
 
         pageBinders.put(page.id(), this)
     }
