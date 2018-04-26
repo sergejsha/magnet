@@ -18,9 +18,9 @@ public class MagnetScopingDirectTest {
     @Before
     public void before() {
         InstanceManager instanceManager = new StubInstanceManager();
-        scope1 = (MagnetScope) new MagnetScope(null, instanceManager).register(Dependency1.class, new Dependency1());
-        scope2 = (MagnetScope) scope1.createSubscope().register(Dependency2.class, new Dependency2());
-        scope3 = (MagnetScope) scope2.createSubscope().register(Dependency3.class, new Dependency3());
+        scope1 = (MagnetScope) new MagnetScope(null, instanceManager).bind(Dependency1.class, new Dependency1());
+        scope2 = (MagnetScope) scope1.createSubscope().bind(Dependency2.class, new Dependency2());
+        scope3 = (MagnetScope) scope2.createSubscope().bind(Dependency3.class, new Dependency3());
     }
 
     @Test

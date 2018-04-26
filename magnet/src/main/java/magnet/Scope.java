@@ -29,8 +29,8 @@ public interface Scope {
     <T> List<T> getMany(Class<T> type);
     <T> List<T> getMany(Class<T> type, String classifier);
 
-    <T> Scope register(Class<T> type, T instance);
-    <T> Scope register(Class<T> type, T instance, String classifier);
+    <T> Scope bind(Class<T> type, T instance);
+    <T> Scope bind(Class<T> type, T instance, String classifier);
 
     Scope createSubscope();
 

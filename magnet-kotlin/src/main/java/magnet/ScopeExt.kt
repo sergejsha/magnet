@@ -28,6 +28,6 @@ inline fun <reified T> Scope.getMany(classifier: String = Classifier.NONE): List
     return this.getMany(T::class.java, classifier)
 }
 
-inline fun <reified T> Scope.register(component: T, classifier: String = Classifier.NONE) {
-    this.register(T::class.java, component, classifier)
+inline fun <reified T> Scope.bind(component: T, classifier: String = Classifier.NONE) {
+    this.bind(T::class.java, component, classifier)
 }

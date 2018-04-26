@@ -83,14 +83,14 @@ final class MagnetScope implements Scope {
     }
 
     @Override
-    public <T> Scope register(Class<T> type, T object) {
-        register(key(type, Classifier.NONE), object);
+    public <T> Scope bind(Class<T> type, T object) {
+        bind(key(type, Classifier.NONE), object);
         return this;
     }
 
     @Override
-    public <T> Scope register(Class<T> type, T object, String classifier) {
-        register(key(type, classifier), object);
+    public <T> Scope bind(Class<T> type, T object, String classifier) {
+        bind(key(type, classifier), object);
         return this;
     }
 
@@ -99,7 +99,7 @@ final class MagnetScope implements Scope {
         return new MagnetScope(this, instanceManager);
     }
 
-    private void register(String key, Object object) {
+    private void bind(String key, Object object) {
         Object existing = instances.put(key, Instance.create(object, null, depth));
         if (existing != null) {
             throw new IllegalStateException(

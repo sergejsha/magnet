@@ -33,7 +33,7 @@ public class MagnetScopeRegisterAndGetTest {
     @Test
     public void noClassifier_GetOptionalRegistered() {
         // given
-        scope.register(Integer.class, 100);
+        scope.bind(Integer.class, 100);
 
         // when
         Integer dependency = scope.getOptional(Integer.class);
@@ -50,7 +50,7 @@ public class MagnetScopeRegisterAndGetTest {
     @Test
     public void noClassifier_GetSingleRegistered() {
         // given
-        scope.register(Integer.class, 100);
+        scope.bind(Integer.class, 100);
 
         // when
         Integer dependency = scope.getSingle(Integer.class);
@@ -61,8 +61,8 @@ public class MagnetScopeRegisterAndGetTest {
 
     @Test(expected = IllegalStateException.class)
     public void noClassifier_RegisterOverwrite() {
-        scope.register(Integer.class, 100);
-        scope.register(Integer.class, 200);
+        scope.bind(Integer.class, 100);
+        scope.bind(Integer.class, 200);
     }
 
     @Test
@@ -77,7 +77,7 @@ public class MagnetScopeRegisterAndGetTest {
     @Test
     public void classifier_GetOptionalRegisteredNoClassifier() {
         // given
-        scope.register(Integer.class, 100, "common");
+        scope.bind(Integer.class, 100, "common");
 
         // when
         Integer dependency = scope.getOptional(Integer.class);
@@ -89,7 +89,7 @@ public class MagnetScopeRegisterAndGetTest {
     @Test
     public void classifier_GetOptionalRegisteredWrongClassifier() {
         // given
-        scope.register(Integer.class, 100, "common");
+        scope.bind(Integer.class, 100, "common");
 
         // when
         Integer dependency = scope.getOptional(Integer.class, "wrong");
@@ -106,7 +106,7 @@ public class MagnetScopeRegisterAndGetTest {
     @Test
     public void classifier_GetSingleRegistered() {
         // given
-        scope.register(Integer.class, 100, "common");
+        scope.bind(Integer.class, 100, "common");
 
         // when
         Integer dependency = scope.getSingle(Integer.class, "common");
@@ -117,8 +117,8 @@ public class MagnetScopeRegisterAndGetTest {
 
     @Test(expected = IllegalStateException.class)
     public void classifier_RegisterOverwrite() {
-        scope.register(Integer.class, 100, "common");
-        scope.register(Integer.class, 200, "common");
+        scope.bind(Integer.class, 100, "common");
+        scope.bind(Integer.class, 200, "common");
     }
 
 }

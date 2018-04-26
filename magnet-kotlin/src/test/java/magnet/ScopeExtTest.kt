@@ -50,10 +50,10 @@ class ScopeExtTest {
     @Test
     fun testRegister() {
         // when
-        scope.register("component")
+        scope.bind("component")
 
         // then
-        verify(scope).register("component", Classifier.NONE)
+        verify(scope).bind("component", Classifier.NONE)
     }
 
 }

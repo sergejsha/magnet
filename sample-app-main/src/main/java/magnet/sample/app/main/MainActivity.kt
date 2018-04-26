@@ -25,7 +25,7 @@ import kotlinx.android.synthetic.main.activity_main.message
 import kotlinx.android.synthetic.main.activity_main.navigation
 import magnet.Scope
 import magnet.getMany
-import magnet.register
+import magnet.bind
 import magnet.sample.app.App
 
 class MainActivity : AppCompatActivity() {
@@ -39,7 +39,7 @@ class MainActivity : AppCompatActivity() {
 
         // create dependency scope for this activity
         activityScope = App.appScope.createSubscope().apply {
-            register(resources)
+            bind(resources)
         }
 
         // query registered implementations of Page type
