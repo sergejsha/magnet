@@ -7,7 +7,7 @@ import magnet.InstanceFactory;
 import magnet.Scope;
 import magnet.Scoping;
 
-public final class MagnetHomePageWithManyParamsFactory implements InstanceFactory<Page> {
+public final class HomePageWithManyParamsMagnetFactory implements InstanceFactory<Page> {
 
     @Override
     public Page create(Scope scope) {

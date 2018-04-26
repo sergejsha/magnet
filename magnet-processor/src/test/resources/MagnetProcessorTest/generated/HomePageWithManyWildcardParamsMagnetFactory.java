@@ -1,15 +1,18 @@
 package app.extension;
 
+import app.HomeRepository;
 import app.Page;
+import java.util.List;
 import magnet.InstanceFactory;
 import magnet.Scope;
 import magnet.Scoping;
 
-public final class MagnetHomePageNoParamsFactory implements InstanceFactory<Page> {
+public final class HomePageWithManyWildcardParamsMagnetFactory implements InstanceFactory<Page> {
 
     @Override
     public Page create(Scope scope) {
-        return new HomePageNoParams();
+        List<HomeRepository> repositories = scope.getMany(HomeRepository.class);
+        return new HomePageWithManyWildcardParams(repositories);
     }
 
     @Override

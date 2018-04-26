@@ -36,7 +36,7 @@ internal class FactoryFromClassAnnotationParser(
 
         return FactoryType(
             element,
-            ClassName.bestGuess("${instancePackage}.Magnet${instanceName}Factory"),
+            ClassName.bestGuess("${instancePackage}.${instanceName}MagnetFactory"),
             annotation.classifier,
             annotation.type,
             TypeCreateStatement(instanceType),

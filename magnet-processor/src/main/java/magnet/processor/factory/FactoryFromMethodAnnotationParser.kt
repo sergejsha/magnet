@@ -38,7 +38,6 @@ internal class FactoryFromMethodAnnotationParser(
         val uniqueFactoryNameBuilder = StringBuilder()
             .append(staticMethodClassName.packageName())
             .append('.')
-            .append("Magnet")
             .append(staticMethodClassName.simpleName().capitalize())
             .append(staticMethodName.capitalize())
 
@@ -49,7 +48,7 @@ internal class FactoryFromMethodAnnotationParser(
             uniqueFactoryNameBuilder.append(methodParameter.name.capitalize())
         }
 
-        uniqueFactoryNameBuilder.append("Factory")
+        uniqueFactoryNameBuilder.append("MagnetFactory")
 
         return FactoryType(
             element,

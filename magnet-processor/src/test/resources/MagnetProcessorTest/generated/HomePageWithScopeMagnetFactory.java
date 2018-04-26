@@ -1,13 +1,15 @@
 package app.extension;
 
+import app.Page;
 import magnet.InstanceFactory;
 import magnet.Scope;
 import magnet.Scoping;
 
-public final class MagnetUnknownTypeTab2Factory implements InstanceFactory<Tab> {
+public final class HomePageWithScopeMagnetFactory implements InstanceFactory<Page> {
+
     @Override
-    public Tab create(Scope scope) {
-        return new UnknownTypeTab2();
+    public Page create(Scope scope) {
+        return new HomePageWithScope(scope);
     }
 
     @Override
@@ -16,6 +18,6 @@ public final class MagnetUnknownTypeTab2Factory implements InstanceFactory<Tab> 
     }
 
     public static Class getType() {
-        return Tab.class;
+        return Page.class;
     }
 }

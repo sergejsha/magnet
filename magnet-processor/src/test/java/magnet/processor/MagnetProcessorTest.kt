@@ -21,8 +21,8 @@ class MagnetProcessorTest {
         assertThat(compilation).succeededWithoutWarnings()
 
         assertThat(compilation)
-            .generatedSourceFile("app/extension/MagnetHomePageNoParamsFactory")
-            .hasSourceEquivalentTo(withResource("generated/MagnetHomePageNoParamsFactory.java"))
+            .generatedSourceFile("app/extension/HomePageNoParamsMagnetFactory")
+            .hasSourceEquivalentTo(withResource("generated/HomePageNoParamsMagnetFactory.java"))
     }
 
     @Test
@@ -38,8 +38,8 @@ class MagnetProcessorTest {
         assertThat(compilation).succeededWithoutWarnings()
 
         assertThat(compilation)
-            .generatedSourceFile("app/extension/MagnetHomePageWithScopeFactory")
-            .hasSourceEquivalentTo(withResource("generated/MagnetHomePageWithScopeFactory.java"))
+            .generatedSourceFile("app/extension/HomePageWithScopeMagnetFactory")
+            .hasSourceEquivalentTo(withResource("generated/HomePageWithScopeMagnetFactory.java"))
     }
 
     @Test
@@ -57,8 +57,8 @@ class MagnetProcessorTest {
         assertThat(compilation).succeededWithoutWarnings()
 
         assertThat(compilation)
-            .generatedSourceFile("app/extension/MagnetHomePageWithParamsFactory")
-            .hasSourceEquivalentTo(withResource("generated/MagnetHomePageWithParamsFactory.java"))
+            .generatedSourceFile("app/extension/HomePageWithParamsMagnetFactory")
+            .hasSourceEquivalentTo(withResource("generated/HomePageWithParamsMagnetFactory.java"))
     }
 
     @Test
@@ -76,8 +76,8 @@ class MagnetProcessorTest {
         assertThat(compilation).succeededWithoutWarnings()
 
         assertThat(compilation)
-            .generatedSourceFile("app/extension/MagnetHomePageFactory")
-            .hasSourceEquivalentTo(withResource("generated/MagnetHomePageFactory.java"))
+            .generatedSourceFile("app/extension/HomePageMagnetFactory")
+            .hasSourceEquivalentTo(withResource("generated/HomePageMagnetFactory.java"))
     }
 
     @Test
@@ -123,8 +123,8 @@ class MagnetProcessorTest {
         assertThat(compilation).succeededWithoutWarnings()
 
         assertThat(compilation)
-            .generatedSourceFile("app/extension/MagnetHomePageWithClassifierParamsFactory")
-            .hasSourceEquivalentTo(withResource("generated/MagnetHomePageWithClassifierParamsFactory.java"))
+            .generatedSourceFile("app/extension/HomePageWithClassifierParamsMagnetFactory")
+            .hasSourceEquivalentTo(withResource("generated/HomePageWithClassifierParamsMagnetFactory.java"))
 
     }
 
@@ -142,8 +142,8 @@ class MagnetProcessorTest {
         assertThat(compilation).succeededWithoutWarnings()
 
         assertThat(compilation)
-            .generatedSourceFile("app/extension/MagnetHomePageWithManyParamsFactory")
-            .hasSourceEquivalentTo(withResource("generated/MagnetHomePageWithManyParamsFactory.java"))
+            .generatedSourceFile("app/extension/HomePageWithManyParamsMagnetFactory")
+            .hasSourceEquivalentTo(withResource("generated/HomePageWithManyParamsMagnetFactory.java"))
 
     }
 
@@ -161,8 +161,8 @@ class MagnetProcessorTest {
         assertThat(compilation).succeededWithoutWarnings()
 
         assertThat(compilation)
-            .generatedSourceFile("app/extension/MagnetHomePageWithManyWildcardParamsFactory")
-            .hasSourceEquivalentTo(withResource("generated/MagnetHomePageWithManyWildcardParamsFactory.java"))
+            .generatedSourceFile("app/extension/HomePageWithManyWildcardParamsMagnetFactory")
+            .hasSourceEquivalentTo(withResource("generated/HomePageWithManyWildcardParamsMagnetFactory.java"))
 
     }
 
@@ -181,8 +181,8 @@ class MagnetProcessorTest {
         assertThat(compilation).succeededWithoutWarnings()
 
         assertThat(compilation)
-            .generatedSourceFile("app/extension/utils/MagnetHomePageWithStaticConstructorSingleCreateRepositoriesFactory")
-            .hasSourceEquivalentTo(withResource("generated/MagnetHomePageWithStaticConstructorSingleCreateRepositoriesFactory.java"))
+            .generatedSourceFile("app/extension/utils/HomePageWithStaticConstructorSingleCreateRepositoriesMagnetFactory")
+            .hasSourceEquivalentTo(withResource("generated/HomePageWithStaticConstructorSingleCreateRepositoriesMagnetFactory.java"))
 
     }
 
@@ -199,8 +199,8 @@ class MagnetProcessorTest {
         assertThat(compilation).succeededWithoutWarnings()
 
         assertThat(compilation)
-            .generatedSourceFile("magnet/index/app_extension_MagnetUserPageMenuItemFactory")
-            .hasSourceEquivalentTo(withResource("generated/app_extension_MagnetUserPageMenuItemFactory.java"))
+            .generatedSourceFile("magnet/index/app_extension_UserPageMenuItemMagnetFactory")
+            .hasSourceEquivalentTo(withResource("generated/app_extension_UserPageMenuItemMagnetFactory.java"))
     }
 
     @Test
@@ -218,8 +218,8 @@ class MagnetProcessorTest {
         assertThat(compilation).succeededWithoutWarnings()
 
         assertThat(compilation)
-            .generatedSourceFile("magnet/index/app_extension_MagnetHomePageFactory")
-            .hasSourceEquivalentTo(withResource("generated/app_extension_MagnetHomePageFactory.java"))
+            .generatedSourceFile("magnet/index/app_extension_HomePageMagnetFactory")
+            .hasSourceEquivalentTo(withResource("generated/app_extension_HomePageMagnetFactory.java"))
     }
 
     @Test
@@ -236,8 +236,8 @@ class MagnetProcessorTest {
         assertThat(compilation).succeededWithoutWarnings()
 
         assertThat(compilation)
-            .generatedSourceFile("app/extension/MagnetUnknownTypeTabFactory")
-            .hasSourceEquivalentTo(withResource("generated/UnknownType_MagnetUnknownTypeTabFactory.java"))
+            .generatedSourceFile("app/extension/UnknownTypeTabMagnetFactory")
+            .hasSourceEquivalentTo(withResource("generated/UnknownType_UnknownTypeTabMagnetFactory.java"))
 
         assertThat(compilation)
             .generatedSourceFile("magnet/MagnetIndexer")
@@ -259,12 +259,12 @@ class MagnetProcessorTest {
         assertThat(compilation).succeededWithoutWarnings()
 
         assertThat(compilation)
-            .generatedSourceFile("app/extension/MagnetUnknownTypeTabFactory")
-            .hasSourceEquivalentTo(withResource("generated/UnknownType_MagnetUnknownTypeTabFactory.java"))
+            .generatedSourceFile("app/extension/UnknownTypeTabMagnetFactory")
+            .hasSourceEquivalentTo(withResource("generated/UnknownType_UnknownTypeTabMagnetFactory.java"))
 
         assertThat(compilation)
-            .generatedSourceFile("app/extension/MagnetUnknownTypeTab2Factory")
-            .hasSourceEquivalentTo(withResource("generated/UnknownType_MagnetUnknownTypeTab2Factory.java"))
+            .generatedSourceFile("app/extension/UnknownTypeTab2MagnetFactory")
+            .hasSourceEquivalentTo(withResource("generated/UnknownType_UnknownTypeTab2MagnetFactory.java"))
 
         assertThat(compilation)
             .generatedSourceFile("magnet/MagnetIndexer")
