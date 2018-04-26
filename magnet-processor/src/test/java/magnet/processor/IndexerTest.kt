@@ -31,7 +31,7 @@ class IndexerTest {
         assertThat(index.sections[2].ranges.size).isEqualTo(4)
     }
 
-    fun unsortedNodes(): List<Impl> {
+    private fun unsortedNodes(): List<Impl> {
         return listOf(
             Impl("CType", "four", "Factory"),
             Impl("CType", "two", "Factory"),
@@ -51,7 +51,7 @@ class IndexerTest {
         )
     }
 
-    fun sortedNodes(): List<Impl> {
+    private fun sortedNodes(): List<Impl> {
         return listOf(
             Impl("AType", "", "Factory"),
             Impl("AType", "", "Factory"),

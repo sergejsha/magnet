@@ -28,7 +28,7 @@ import magnet.InstanceFactory;
 /* Subject to change. For internal use only. */
 public final class Instance<T> {
 
-    private int scopeDepth;
+    private final int scopeDepth;
     private Object value;
 
     private Instance(int scopeDepth) {

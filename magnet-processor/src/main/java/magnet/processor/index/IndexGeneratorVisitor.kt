@@ -26,8 +26,8 @@ import magnet.processor.index.model.Section
 
 class IndexGeneratorVisitor : IndexVisitor {
 
-    val indexBuilder = CodeBlock.builder()
-    val targetsBuilder = CodeBlock.builder()
+    val indexBuilder: CodeBlock.Builder = CodeBlock.builder()
+    val targetsBuilder: CodeBlock.Builder = CodeBlock.builder()
 
     private var generateSingleRange = false
     private var currentSection: Section? = null
@@ -47,7 +47,7 @@ class IndexGeneratorVisitor : IndexVisitor {
         currentSection = section
 
         if (generateSingleRange) {
-            return;
+            return
         }
 
         val targetsName = "ranges${++sectionIndex}"

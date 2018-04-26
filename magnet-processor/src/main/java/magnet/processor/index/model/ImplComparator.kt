@@ -16,7 +16,7 @@
 
 package magnet.processor.index.model
 
-class ImplComparator() : Comparator<Impl> {
+class ImplComparator : Comparator<Impl> {
     override fun compare(left: Impl, right: Impl): Int {
         val c1 = left.type.compareTo(right.type)
         if (c1 != 0) {

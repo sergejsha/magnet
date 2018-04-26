@@ -27,9 +27,9 @@ import magnet.internal.Instance;
 
 final class MagnetScope implements Scope {
 
-    private static byte CARDINALITY_OPTIONAL = 0;
-    private static byte CARDINALITY_SINGLE = 1;
-    private static byte CARDINALITY_MANY = 2;
+    private static final byte CARDINALITY_OPTIONAL = 0;
+    private static final byte CARDINALITY_SINGLE = 1;
+    private static final byte CARDINALITY_MANY = 2;
 
     private final int depth;
     private final MagnetScope parent;
@@ -37,7 +37,7 @@ final class MagnetScope implements Scope {
     private final Map<String, Instance> instances;
 
     @SuppressWarnings("AnonymousHasLambdaAlternative")
-    private ThreadLocal<InstantiationContext> instantiationContext = new ThreadLocal<InstantiationContext>() {
+    private final ThreadLocal<InstantiationContext> instantiationContext = new ThreadLocal<InstantiationContext>() {
         @Override protected InstantiationContext initialValue() { return new InstantiationContext(); }
     };
 
@@ -209,7 +209,7 @@ final class MagnetScope implements Scope {
     /** Used for testing the objects registered in this scope. */
     @SuppressWarnings("unchecked") <T> T getRegisteredSingle(Class<T> type, String classifier) {
         Instance<T> instance = instances.get(key(type, classifier));
-        return instance == null ? null : (T) instance.getValue();
+        return instance == null ? null : instance.getValue();
     }
 
     /** Used for testing the objects registered in this scope. */

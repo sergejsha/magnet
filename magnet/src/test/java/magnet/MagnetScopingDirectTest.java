@@ -11,15 +11,13 @@ import java.util.Map;
 
 public class MagnetScopingDirectTest {
 
-    private InstanceManager instanceManager;
-
     private MagnetScope scope1;
     private MagnetScope scope2;
     private MagnetScope scope3;
 
     @Before
     public void before() {
-        instanceManager = new StubInstanceManager();
+        InstanceManager instanceManager = new StubInstanceManager();
         scope1 = (MagnetScope) new MagnetScope(null, instanceManager).register(Dependency1.class, new Dependency1());
         scope2 = (MagnetScope) scope1.createSubscope().register(Dependency2.class, new Dependency2());
         scope3 = (MagnetScope) scope2.createSubscope().register(Dependency3.class, new Dependency3());

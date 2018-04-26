@@ -24,6 +24,7 @@ import java.util.Map;
 import magnet.internal.ImmutableArrayList;
 import magnet.internal.Range;
 
+@SuppressWarnings("unchecked")
 final class MagnetInstanceManager implements InstanceManager {
 
     private InstanceFactory[] factories;
@@ -54,7 +55,7 @@ final class MagnetInstanceManager implements InstanceManager {
         this.index = index;
     }
 
-    @Override @SuppressWarnings("unchecked")
+    @Override
     public <T> InstanceFactory<T> getOptionalFactory(Class<T> type, String classifier) {
         Range range = getOptionalRange(type, classifier);
         if (range == null) {
@@ -82,7 +83,6 @@ final class MagnetInstanceManager implements InstanceManager {
         }
 
         if (indexed instanceof Map) {
-            //noinspection unchecked
             Map<String, Range> ranges = (Map<String, Range>) indexed;
             Range range = ranges.get(classifier);
             if (range != null) {
@@ -94,7 +94,6 @@ final class MagnetInstanceManager implements InstanceManager {
         return Collections.emptyList();
     }
 
-    @SuppressWarnings("unchecked")
     private Range getOptionalRange(Class<?> type, String classifier) {
         Object indexed = index.get(type);
 
@@ -121,7 +120,7 @@ final class MagnetInstanceManager implements InstanceManager {
     }
 
     private <T> List<InstanceFactory<T>> factoriesFromRange(Range range) {
-        @SuppressWarnings("unchecked") InstanceFactory<T>[] factories = new InstanceFactory[range.getCount()];
+        InstanceFactory<T>[] factories = new InstanceFactory[range.getCount()];
         System.arraycopy(this.factories, range.getFrom(), factories, 0, range.getCount());
         return new ImmutableArrayList<>(factories);
     }
