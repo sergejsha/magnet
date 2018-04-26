@@ -17,7 +17,6 @@
 package magnet.processor
 
 import magnet.Implementation
-import magnet.MagnetIndexerGenerator
 import magnet.Magnetizer
 import magnet.processor.factory.CodeWriter
 import magnet.processor.factory.FactoryCodeGenerator
@@ -25,6 +24,7 @@ import magnet.processor.factory.FactoryFromClassAnnotationParser
 import magnet.processor.factory.FactoryFromMethodAnnotationParser
 import magnet.processor.factory.FactoryIndexCodeGenerator
 import magnet.processor.factory.FactoryType
+import magnet.processor.index.MagnetIndexerGenerator
 import javax.annotation.processing.AbstractProcessor
 import javax.annotation.processing.ProcessingEnvironment
 import javax.annotation.processing.RoundEnvironment

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package magnet
+package magnet.processor.index
 
 import com.squareup.javapoet.ClassName
 import com.squareup.javapoet.CodeBlock
@@ -22,17 +22,17 @@ import com.squareup.javapoet.JavaFile
 import com.squareup.javapoet.MethodSpec
 import com.squareup.javapoet.ParameterSpec
 import com.squareup.javapoet.TypeSpec
-import magnet.processor.index.IndexGeneratorVisitor
-import magnet.processor.index.Indexer
-import magnet.processor.index.model.Impl
-import magnet.processor.index.model.Index
+import magnet.InstanceFactory
 import magnet.internal.FactoryIndex
 import magnet.processor.MagnetProcessorEnv
+import magnet.processor.index.model.Impl
+import magnet.processor.index.model.Index
 import javax.lang.model.element.Element
 import javax.lang.model.element.ExecutableElement
 import javax.lang.model.element.Modifier
 
 private const val INSTANCE_MANAGER = "instanceManager"
+private const val MAGNET_INDEXER_CLASS = "magnet.MagnetIndexer"
 
 class MagnetIndexerGenerator {
 
@@ -42,7 +42,7 @@ class MagnetIndexerGenerator {
         annotatedElements: MutableSet<out Any>,
         env: MagnetProcessorEnv
     ): Boolean {
-        val alreadyGeneratedMagnetRegistry = env.elements.getTypeElement("magnet.MagnetIndexer")
+        val alreadyGeneratedMagnetRegistry = env.elements.getTypeElement(MAGNET_INDEXER_CLASS)
         if (alreadyGeneratedMagnetRegistry != null) {
             return false
         }
@@ -52,7 +52,7 @@ class MagnetIndexerGenerator {
             return false // wait for next round even if we should generate
         }
 
-        val registryClassName = ClassName.get("magnet", "MagnetIndexer")
+        val registryClassName = ClassName.bestGuess(MAGNET_INDEXER_CLASS)
         val indexElements = env.elements.getPackageElement("magnet.index")?.enclosedElements ?: listOf()
         val magnetRegistryTypeSpec = generateMagnetRegistry(indexElements, registryClassName)
 
@@ -78,7 +78,7 @@ class MagnetIndexerGenerator {
 
     private fun generateRegisterFactoriesMethod(indexElements: MutableList<out Element>): MethodSpec {
 
-        val factoryRegistryClassName = ClassName.get(MagnetInstanceManager::class.java)
+        val factoryRegistryClassName = ClassName.get("magnet", "MagnetInstanceManager")
         val factoryIndexClassName = ClassName.get(FactoryIndex::class.java)
 
         val impls = mutableListOf<Impl>()
