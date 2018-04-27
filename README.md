@@ -23,13 +23,13 @@ val activityScope = App.appScope.createSubscope {
 
 Created scope holds a reference to its parent scope which is `appScope`.
 
-3. Lets create a thirt empty scope with a `Fragment` lifespan.
+3. Lets create a third empty scope with a `Fragment` lifespan.
 
 ```kotlin
 val fragmentScope = activityScope.createSubscope()
 ```
 
-`fragmentScope` holds reference to `activityScop`. Any object created in `fragmentScope` can depend on the objects registered in the same scope or any parent scope up to the root scope, meaning in either `activityScope` or `appScope`.
+`fragmentScope` holds reference to `activityScope`. Any object created in `fragmentScope` can depend on the objects registered in the same scope or in any parent scope up to the root scope, meaning in either `activityScope` or `appScope`.
 
 Our scope setup look like this 
 ```
@@ -69,7 +69,7 @@ class ItemDataSource(
 )
 ```
 
-Magnet parses constructors of annotated classes and detects dependencies between them.
+Magnet parses constructors of annotated classes, generates class factories and handles dependencies between them.
 
 5. Now we can ask Magnet to provide instance of `FragmentPresenter` class from `fragmentScope` like following.
 
@@ -77,7 +77,7 @@ Magnet parses constructors of annotated classes and detects dependencies between
 val fragmentPresenter = fragmentScope.getSingle<FragmentPresenter>()
 ```
 
-Magnet will resolve dependencies, create objects and bind them into our scopes automatically.
+Magnet will resolve dependencies, create objects and bind them into our scopes automatically as following.
 
 ```
 appScope ()
@@ -91,13 +91,13 @@ fragmentScope (fragmentPresenter)
 
 Here is the explanation of how Magnet managed auto-scoping of objects.
 
-a) `fragmentPresenter` was bound to `fragmentScope` because of `scoping = Scoping.DIRECT` directive forcing Magnet to register objects in the same scope, in which they were created. Magnet did it because we called `getSingle()` at `fragmentScope`.
+a) `fragmentPresenter` was bound to `fragmentScope` because of `scoping = Scoping.DIRECT` directive forcing Magnet to register objects in the same scope, in which they were requested. Magnet did it because we called `getSingle()` at `fragmentScope`.
 
-b) `itemDataSource` was bound to `activityScope` because this is the top most scope where its dependency (`resources`) is viaible. This is controlled by `scoping = Scoping.TOPMOST` directive, which is default scoping value. If `resources` would reside inside `appScope`, then Magnet would put `itemDataSource` into `appScope` too.
+b) `itemDataSource` was bound to `activityScope` because this is the top most scope where its dependency (`resources`) is available. This is controlled by `scoping = Scoping.TOPMOST` directive, which is default scoping value. If `resources` would reside inside `appScope`, then Magnet would put `itemDataSource` into `appScope` too.
 
-c) `itemRepository` was bound to `activityScope` because its dependency `itemDataSource` resides inside `activityScope`. Same as case (b).
+c) `itemRepository` was bound to `activityScope` because its dependency `itemDataSource` resides inside `activityScope`. Same as the case (b).
 
-Auto-scoping and dependency inversion (see description below) are some of the concepts differentiating Magnet from the other injection frameworks. Those concepts are new and they have to be validated by using them in smaller projects first. Feel free to check Magnet 2.0 and share your opinion.
+Auto-scoping and dependency inversion (see description below) are some of the concepts differentiating Magnet from the other injection frameworks out there. Those concepts are new and they have to be validated by using them in smaller projects first. Feel free to check Magnet 2.0 and share your opinion and ideas.
 
 ```gradle
 dependencies {
