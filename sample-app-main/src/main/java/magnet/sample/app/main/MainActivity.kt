@@ -16,8 +16,10 @@
 
 package magnet.sample.app.main
 
+import android.arch.lifecycle.LifecycleOwner
+import android.content.res.Resources
 import android.os.Bundle
-import android.support.v7.app.AppCompatActivity
+import android.support.v4.app.FragmentActivity
 import android.util.SparseArray
 import android.view.Menu
 import android.widget.TextView
@@ -29,23 +31,24 @@ import magnet.createSubscope
 import magnet.getMany
 import magnet.sample.app.App
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : FragmentActivity() {
+
+    private lateinit var scope: Scope
 
     private val pageBinders = SparseArray<PageBinder>()
-    private lateinit var activityScope: Scope
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        // create activity subscope
-        activityScope = App.appScope.createSubscope {
-            // and bind instances into it
-            bind(resources)
+        // create activity subscope and bind some instances into it
+        scope = App.scope.createSubscope {
+            bind<Resources>(resources)
+            bind<LifecycleOwner>(this@MainActivity)
         }
 
-        // query registered implementations of Page type
-        val pages = activityScope.getMany<Page>()
+        // query all implementations of Page interface
+        val pages = scope.getMany<Page>()
 
         // use pages for creating ui
         pages.forEach { page ->
@@ -67,7 +70,7 @@ class MainActivity : AppCompatActivity() {
 
 }
 
-class PageBinder(
+internal class PageBinder(
     private val page: Page
 ) {
 
