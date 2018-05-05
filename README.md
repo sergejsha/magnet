@@ -1,5 +1,5 @@
 [![Build Status](https://travis-ci.org/beworker/magnet.svg?branch=master)](https://travis-ci.org/beworker/magnet)
-[![Kotlin version badge](https://img.shields.io/badge/kotlin-1.2.40-blue.svg)](http://kotlinlang.org/)
+[![Kotlin version badge](https://img.shields.io/badge/kotlin-1.2.41-blue.svg)](http://kotlinlang.org/)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](http://www.apache.org/licenses/LICENSE-2.0)
 
 # Magnet 2.0 (candidate)
@@ -101,8 +101,8 @@ Auto-scoping and dependency inversion (see description below) are some of the co
 
 ```gradle
 dependencies {
-    api "de.halfbit:magnet-kotlin:2.0-RC1"
-    kapt "de.halfbit:magnet-processor:2.0-RC1"
+    api "de.halfbit:magnet-kotlin:2.0-RC2"
+    kapt "de.halfbit:magnet-processor:2.0-RC2"
 }
 ```
 
