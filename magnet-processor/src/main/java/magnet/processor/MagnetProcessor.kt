@@ -78,10 +78,16 @@ class MagnetProcessor : AbstractProcessor() {
 
         val factoryTypes = mutableListOf<FactoryType>()
         ElementFilter.typesIn(annotatedElements).forEach { element ->
-            factoryTypes.add(factoryFromClassAnnotationParser.parse(element))
+            val factoryType = factoryFromClassAnnotationParser.parse(element)
+            if (!factoryType.annotation.disabled) {
+                factoryTypes.add(factoryType)
+            }
         }
         ElementFilter.methodsIn(annotatedElements).forEach { element ->
-            factoryTypes.add(factoryFromMethodAnnotationParser.parse(element))
+            val factoryType = factoryFromMethodAnnotationParser.parse(element)
+            if (!factoryType.annotation.disabled) {
+                factoryTypes.add(factoryType)
+            }
         }
 
         factoryTypes.sortBy { factoryName(it) }

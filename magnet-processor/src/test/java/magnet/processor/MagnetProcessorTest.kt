@@ -109,6 +109,21 @@ class MagnetProcessorTest {
     }
 
     @Test
+    fun generateFactory_DisabledAnnotation() {
+
+        val compilation = Compiler.javac()
+            .withProcessors(MagnetProcessor())
+            .compile(
+                withResource("Tab.java"),
+                withResource("DisabledTab.java")
+            )
+
+        assertThat(compilation).succeeded()
+        com.google.common.truth.Truth.assertThat(compilation.generatedFiles().size).isEqualTo(2)
+
+    }
+
+    @Test
     fun generateFactory_WithClassifierParams() {
 
         val compilation = Compiler.javac()
@@ -183,6 +198,23 @@ class MagnetProcessorTest {
         assertThat(compilation)
             .generatedSourceFile("app/extension/utils/HomePageWithStaticConstructorSingleCreateRepositoriesMagnetFactory")
             .hasSourceEquivalentTo(withResource("generated/HomePageWithStaticConstructorSingleCreateRepositoriesMagnetFactory.java"))
+
+    }
+
+    @Test
+    fun generateFactory_DisabledAnnotation_UsingStaticMethod() {
+
+        val compilation = Compiler.javac()
+            .withProcessors(MagnetProcessor())
+            .compile(
+                withResource("HomePageWithStaticConstructor.java"),
+                withResource("HomePageWithStaticConstructorDisabled.java"),
+                withResource("Page.java"),
+                withResource("HomeRepository.java")
+            )
+
+        assertThat(compilation).succeededWithoutWarnings()
+        com.google.common.truth.Truth.assertThat(compilation.generatedFiles().size).isEqualTo(4)
 
     }
 

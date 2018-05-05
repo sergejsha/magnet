@@ -31,11 +31,17 @@ interface FactoryTypeVisitor {
     fun visitExit(factory: FactoryType)
 }
 
+data class Annotation(
+    val type: ClassName,
+    val classifier: String,
+    val scoping: String,
+    val disabled: Boolean
+)
+
 data class FactoryType(
     val element: Element,
+    val annotation: Annotation,
     val factoryType: ClassName,
-    val classifier: String,
-    val interfaceType: ClassName,
     val createStatement: CreateStatement,
     val createMethod: CreateMethod,
     val getScopingMethod: GetScopingMethod

@@ -131,7 +131,7 @@ class FactoryCodeGenerator : FactoryTypeVisitor, CodeGenerator {
                     .builder(Scope::class.java, PARAM_SCOPE_NAME)
                     .build()
             )
-            .returns(factoryType.interfaceType)
+            .returns(factoryType.annotation.type)
             .addCode(createMethodCodeBuilder!!.build())
 
         val createStatement = factoryType.createStatement
@@ -163,14 +163,14 @@ class FactoryCodeGenerator : FactoryTypeVisitor, CodeGenerator {
             .methodBuilder("getType")
             .addModifiers(Modifier.PUBLIC, Modifier.STATIC)
             .returns(Class::class.java)
-            .addStatement("return \$T.class", factoryType.interfaceType)
+            .addStatement("return \$T.class", factoryType.annotation.type)
             .build()
     }
 
     private fun generateFactorySuperInterface(factoryType: FactoryType): TypeName {
         return ParameterizedTypeName.get(
             ClassName.get(InstanceFactory::class.java),
-            factoryType.interfaceType
+            factoryType.annotation.type
         )
     }
 

@@ -29,5 +29,6 @@ public @interface Implementation {
     Class<?> type();
     String classifier() default Classifier.NONE;
     Scoping scoping() default Scoping.TOPMOST;
+    boolean disabled() default false;
 
 }

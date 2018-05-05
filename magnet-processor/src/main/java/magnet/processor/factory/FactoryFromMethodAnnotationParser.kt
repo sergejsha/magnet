@@ -52,9 +52,8 @@ internal class FactoryFromMethodAnnotationParser(
 
         return FactoryType(
             element,
+            annotation,
             ClassName.bestGuess(uniqueFactoryNameBuilder.toString()),
-            annotation.classifier,
-            annotation.type,
             MethodCreateStatement(staticMethodClassName, staticMethodName),
             CreateMethod(methodParameters),
             GetScopingMethod(annotation.scoping)
