@@ -17,19 +17,22 @@
 package magnet.sample.app
 
 import android.app.Application
+import android.content.Context
 import magnet.Magnet
 import magnet.Scope
+import magnet.bind
+
+const val APPLICATION_CONTEXT = "application-context"
 
 class App : Application() {
 
     override fun onCreate() {
         super.onCreate()
-        appScope = Magnet.createScope()
+        scope.bind<Context>(this, APPLICATION_CONTEXT)
     }
 
     companion object {
-        lateinit var appScope: Scope
-            private set
+        val scope: Scope = Magnet.createScope()
     }
 
 }

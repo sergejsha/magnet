@@ -1,5 +1,5 @@
 buildscript {
-    ext.kotlin_version = '1.2.40'
+    ext.kotlin_version = '1.2.41'
     ext.gradle_plugin_version = '3.1.2'
     ext.compatlib_version = '27.1.0'
 

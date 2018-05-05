@@ -22,7 +22,6 @@ import magnet.sample.app.main.Page
 
 @Implementation(type = Page::class)
 class HomePage(
-    // mandatory dependency available through Scope (see MainActivity.kt)
     private val resources: Resources
 ) : Page {
 
