@@ -22,6 +22,29 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
+/**
+ * Magnet can bind multiple instances of the same type into a scope. Use classifier
+ * with a unique value to differentiate between those instances.
+ *
+ * <pre>
+ *      // bind instances
+ *      scope.bind(Context.class, application, "app-context");
+ *      scope.bind(Context.class, activity, "activity-context");
+ *
+ *      // get instances directly
+ *      Context app = scope.getSingle(Context.class, "app-context");
+ *      Context activity = scope.getSingle(Context.class, "activity-context");
+ *
+ *      // get instances via constructor injection
+ *      &#64;Implementation(type = MyImplementation.class)
+ *      public MyImplementation(
+ *          &#64;Classifier("app-context") Context app,
+ *          &#64;Classifier("activity-context") Context activity,
+ *      ) {
+ *          ...
+ *      }
+ * </pre>
+ */
 @Retention(SOURCE)
 @Target({ ElementType.PARAMETER })
 public @interface Classifier {
