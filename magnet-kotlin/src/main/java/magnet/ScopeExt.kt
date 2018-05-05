@@ -16,25 +16,27 @@
 
 package magnet
 
+/** Returns an object from the scope or `null`, if object was not found. */
 inline fun <reified T> Scope.getOptional(classifier: String = Classifier.NONE): T? {
     return this.getOptional(T::class.java, classifier)
 }
 
+/** Returns an object from the scope or throws exception, if object was not found. */
 inline fun <reified T> Scope.getSingle(classifier: String = Classifier.NONE): T {
     return this.getSingle(T::class.java, classifier)
 }
 
+/** Returns a list of objects or empty list, if no objects were found. */
 inline fun <reified T> Scope.getMany(classifier: String = Classifier.NONE): List<T> {
     return this.getMany(T::class.java, classifier)
 }
 
-inline fun <reified T> Scope.bind(component: T, classifier: String = Classifier.NONE) {
-    this.bind(T::class.java, component, classifier)
+/** Bind given instance into this scope. */
+inline fun <reified T> Scope.bind(instance: T, classifier: String = Classifier.NONE) {
+    this.bind(T::class.java, instance, classifier)
 }
 
-/**
- * Create a sub scope in actual scope.
- */
+/** Creates a subscope of the current scope. */
 inline fun Scope.createSubscope(init: Scope.() -> Unit): Scope {
     return this.createSubscope().apply(init)
 }
