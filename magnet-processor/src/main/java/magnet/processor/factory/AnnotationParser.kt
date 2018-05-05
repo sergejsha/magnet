@@ -20,6 +20,7 @@ private const val CLASS_NULLABLE = ".Nullable"
 private const val ATTR_TYPE = "type"
 private const val ATTR_SCOPING = "scoping"
 private const val ATTR_CLASSIFIER = "classifier"
+private const val ATTR_DISABLED = "disabled"
 
 internal open class AnnotationParser(
     protected val env: MagnetProcessorEnv
@@ -120,6 +121,7 @@ internal open class AnnotationParser(
         var interfaceTypeElement: TypeElement? = null
         var scoping = Scoping.TOPMOST.name
         var classifier = Classifier.NONE
+        var disabled = false
 
         element.annotationMirrors.forEach { annotationMirror ->
             if (annotationMirror.mirrors<Implementation>()) {
@@ -140,12 +142,9 @@ internal open class AnnotationParser(
                                 }
                             }
                         }
-                        ATTR_SCOPING -> {
-                            scoping = entryValue
-                        }
-                        ATTR_CLASSIFIER -> {
-                            classifier = entryValue
-                        }
+                        ATTR_SCOPING -> scoping = entryValue
+                        ATTR_CLASSIFIER -> classifier = entryValue
+                        ATTR_DISABLED -> disabled = entryValue.toBoolean()
                     }
                 }
             }
@@ -160,14 +159,9 @@ internal open class AnnotationParser(
         return Annotation(
             interfaceType,
             classifier,
-            scoping
+            scoping,
+            disabled
         )
     }
 
 }
-
-internal data class Annotation(
-    val type: ClassName,
-    val classifier: String,
-    val scoping: String
-)
