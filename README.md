@@ -40,11 +40,9 @@ Presenter.kt
 
 @Implementation(type = Presenter::class)
 class Presenter(private val repository: Repository) {
-
     fun presentHelloMessage() {
         println(repository.getHelloMessage())
     }
-    
 }
 ```
 
