@@ -6,7 +6,7 @@ Magnet is a minimalistic dependency injection and dependency inversion framework
 
 Magnet implements annotation processor which analyses your code and generates easy-to-read and easy-to-debug factories for your implementation classes. At the same time Magnet allows building modular applications, where dependencies can be injected dynamically at runtime (see dependency inversion). This dynamic behavior comes with its costs - Magnet cannot fully ensure consistency of the dependency-graph of your application at compile time. Nevertheless it does as much as possible at compile time and only the rest gets checked at runtime. If you prefer fully statical graph binding at compile time and you can resign on dynamic modularization and dependency inversion, you should rather go for Dagger2. You will also loose Magnet's simplicity, but the choice is yours.
 
-Magnet does not use reflection for creating objects. It generates and uses factories instead. By doing this Magnet stays fast and easy to debug. It also provides a very simple DSL when used with Kotlin. Magnet classes are well documented and covered with unit tests.
+Magnet does not use reflection for creating objects. It generates and uses factories instead. By doing this Magnet stays fast and easy to debug. It also provides a very simple DSL when used with Kotlin. Magnet classes are well documented and covered by unit tests.
 
 # Design
 Magnet has a very minimalistic, almost naive, design. It deals with `scopes` and `implementations`. The whole design can be described by just three simple rules:
@@ -52,6 +52,10 @@ val presenter = root.getSingle<Presenter>()
 
 presenter.presentHelloMessage()
 ```
+
+Magnet will create `Presenter` and  `Repository` objects for you. 
+
+# Documentation
 
 Additional information and examples can be found in Javadoc.
 
