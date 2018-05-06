@@ -20,7 +20,15 @@ Magnet has a very minimalistic, almost naive, design. It deals with two concepts
 <img src="documentation/images/design-diagram.png" width="480" />
 
 # Getting started
-1. Write and annotate your implementation classes.
+
+1. Initializing Magnet. This step has to be done once for the main application module only. It allows Magnet to find all implementations located in library modules if any. This initialization also makes dependency inversion between modules possible.
+
+```kotlin
+@Magnetizer
+interface AppMagnetizer
+```
+
+2. Write and annotate your implementation classes.
 
 ```kotlin
 Repository.kt
@@ -46,7 +54,7 @@ class Presenter(private val repository: Repository) {
 }
 ```
 
-2. Create scope and inject objects.
+3. Create scope and inject objects.
 
 ```kotlin
 val root = Magnet.createScope()
