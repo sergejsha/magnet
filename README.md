@@ -2,103 +2,70 @@
 [![Kotlin version badge](https://img.shields.io/badge/kotlin-1.2.41-blue.svg)](http://kotlinlang.org/)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](http://www.apache.org/licenses/LICENSE-2.0)
 
-# Magnet 2.0 (candidate)
-<img src="docs/images/logo.png" width="100" />
+# Magnet
 
-Magnet 2.0 adds new advanced injection capabilities. If you are mainly interested in dependency inversion feature, use version 1.0.0 of the library. Here is a short description of how version 2.0 can be used with Android.
+Magnet is a minimalistic dependency injection and dependency inversion framework for Android and Java. If you like the idea of grouping objects into hierarchical scopes, automatic transitive dependency injection and simple declarative configuration, then Magnet can be a good choice for you.
 
-1. Create the root scope for your objects inside of you `Application`. Created scope has same lifespan as your application.
+Magnet implements annotation processor which analyses your code and generates easy-to-read and easy-to-debug factories for your implementation classes. At the same time Magnet allows building modular applications, where dependencies can be injected dynamically at runtime (see [dependency inversion][1]). This dynamic behavior comes with its costs - Magnet cannot fully ensure consistency of the dependency-graph of your application at compile time. Nevertheless it does as much as possible at compile time and only the rest gets checked at runtime. If you prefer fully statical graph binding at compile time and you can resign on dynamic modularization and dependency inversion, you should rather go for Dagger2. You will also loose Magnet's simplicity, but the choice is yours.
+
+Magnet does not use reflection for objects creation. It generates and uses factories instead. By doing this Magnet stays fast and easy to debug. It also provides a very simple DSL when used with Kotlin. Magnet classes are well documented and covered by unit tests.
+
+# Design
+Magnet has a very minimalistic, almost naive, design. It deals with two concepts - `scopes` and `implementations`. The whole design can be described by just three simple rules:
+
+1. `Scopes` are containers for `implementation` instances.
+2. `Scopes` can build up hierarchies.
+3. `Implementations` can depend on each other.
+
+<img src="documentation/images/design-diagram.png" width="480" />
+
+# Getting started
+1. Write and annotate your implementation classes.
 
 ```kotlin
-val appScope = Magnet.createScope()
-```
+Repository.kt
 
-2. Inside of your `Activity` create another scope with a shorter lifespan, corresponding to the lifespan of your activity. Lets create and initialize it with an instance of `Resources` which will reside inside this scope.
+interface Repository {
+    fun getHelloMessage(): String
+}
 
-```kotlin
-val activityScope = App.appScope.createSubscope {
-    bind(resources)
+@Implementation(type = Repository::class)
+inner class DefaultRepository(): Repository {
+    override fun getHelloMessage() = "Hello Magnet!"
 }
 ```
 
-Created scope holds a reference to its parent scope which is `appScope`.
+```kotlin
+Presenter.kt
 
-3. Lets create a third empty scope with a `Fragment` lifespan.
+@Implementation(type = Presenter::class)
+class Presenter(private val repository: Repository) {
+    fun presentHelloMessage() {
+        println(repository.getHelloMessage())
+    }
+}
+```
+
+2. Create scope and inject objects.
 
 ```kotlin
-val fragmentScope = activityScope.createSubscope()
+val root = Magnet.createScope()
+val presenter = root.getSingle<Presenter>()
+
+presenter.presentHelloMessage()
 ```
 
-`fragmentScope` holds reference to `activityScope`. Any object created in `fragmentScope` can depend on the objects registered in the same scope or in any parent scope up to the root scope, meaning in either `activityScope` or `appScope`.
+Magnet will create `Presenter` and `Repository` objects for you. 
 
-Our scope setup look like this 
-```
-appScope ()
-     ^
-     |
-activityScope (resources)
-     ^
-     |
-fragmentScope ()
-```
+# Documentation
 
-`appScope` and `fragmentScope` are empty and `activityScope` has a single `Resources` object in it.
+1. Additional documentation and examples can be found in Javadoc.
+2. [Dependency inversion][1]
+3. [Dependency auto-scoping][2]
 
-4. Let's imagine we need to create following instances with dependencies between them.
+# Gradle
 
-```
-FragmentPresenter -> ItemRepository -> ItemDataSource -> Resources
-```
-
-First we need to declare them using `@Implementation` annotation.
-
-```kotlin
-@Implementation(type = FragmentPresenter::class, scoping = Scoping.DIRECT)
-class FragmentPresenter(
-    private val itemRepository: ItemRepository
-)
-
-@Implementation(type = ItemRepository::class)
-class ItemRepository(
-    private val dataSource: ItemsDataSource
-)
-
-@Implementation(type = ItemDataSource::class)
-class ItemDataSource(
-    private val resources: Resources
-)
-```
-
-Magnet parses constructors of annotated classes, generates class factories and handles dependencies between them.
-
-5. Now we can ask Magnet to provide instance of `FragmentPresenter` class from `fragmentScope` like following.
-
-```kotlin
-val fragmentPresenter = fragmentScope.getSingle<FragmentPresenter>()
-```
-
-Magnet will resolve dependencies, create objects and bind them into our scopes automatically as following.
-
-```
-appScope ()
-     ^
-     |
-activityScope (itemRepository, itemDataSource, resources)
-     ^
-     |
-fragmentScope (fragmentPresenter)
-```
-
-Here is the explanation of how Magnet managed auto-scoping of objects.
-
-a) `fragmentPresenter` was bound to `fragmentScope` because of `scoping = Scoping.DIRECT` directive forcing Magnet to register objects in the same scope, in which they were requested. Magnet did it because we called `getSingle()` at `fragmentScope`.
-
-b) `itemDataSource` was bound to `activityScope` because this is the top most scope where its dependency (`resources`) is available. This is controlled by `scoping = Scoping.TOPMOST` directive, which is default scoping value. If `resources` would reside inside `appScope`, then Magnet would put `itemDataSource` into `appScope` too.
-
-c) `itemRepository` was bound to `activityScope` because its dependency `itemDataSource` resides inside `activityScope`. Same as the case (b).
-
-Auto-scoping and dependency inversion (see description below) are some of the concepts differentiating Magnet from the other injection frameworks out there. Those concepts are new and they have to be validated by using them in smaller projects first. Feel free to check Magnet 2.0 and share your opinion and ideas.
-
+Kotlin
 ```gradle
 dependencies {
     api "de.halfbit:magnet-kotlin:2.0-RC2"
@@ -106,48 +73,11 @@ dependencies {
 }
 ```
 
-# Why depenedncy inversion?
-
-[Dependency inversion principle][3] helps to decouple high-level modules from the low-level module implementation details and completes [SOLID object-oriented design][4]. If you are about to modularize your Android application and apply dependency inversion principle, then Magnet library would be a good fit for your project as it makes dependency inversion a fun task.
-
-Let's compare traditional layered design to the design based on dependency inversion principle. As an example we take an application consisting of a navigation bar with three tabbed pages.
-![Why diagram][1]
-
-Dependency inversion principle requires us to design our application for extension right away instead of adding feature-specific code here and there uncontrolled, by spreading it all over the application as the application grows. Needless to say how more extensible, testable and maintainable our application becomes when it is designed for extension.
-
-Another advantage of structuring the application in such a modular way is the ability to repackage the app according to new requirements. For instance we want to create a new companion app which uses some of the already existing modules or we want to create an Android Instant app. If we did everything right, we will be able to repackage some of existing modules into the new app and write missing ones.
-
-# How?
-As the name of the principle says we need to invert dependencies. If we simply invert dependencies then our library modules will depend on the application module. At the same time application module has to dependent on the library modules because it has to include them into the apk. We run into a circular dependencies situation which is not allowed in gradle builds. To resolve this circular dependency we have to avoid any dependency onto the application module. It means none of the library modules may depend on the application module. This would be only possible if our application module would have no code or resources the other modules need. This brings us to the design depicted below.
-
-![How diagram][2]
-
-Application module becomes nearly empty and has the single role - it assembles all modules together into a single apk. Any features our application has, have to be moved to the library modules. 
-
-Our sample application defines `app-main` library module which can host tabbed pages. We make it extensible by exposing `Page` interface to its extension. Then we create thee more library modules which extend `app-main` module by providing `HomePage`, `DashboardPage` and `NotificationsPage` implementations of `Page` interface. 
-
-Now we can ask Magnet to put all these pieces together.
-1. We add `@Implementation` annotation to the implementations of `Page` interface. This will allow Magnet to find those implementations at build-time.
-2. In `MainActivity.onCreate()` method in `app-main` module we ask Magnet to instantiate all available implementations of the `Page` interface at runtime.
-3. Last but not least, we create an empty marker interface inside the `app` module and annotate it with `@MagnetizeImplementations`. This will force Magnet to collect and index all implementations registered in the app.
-
-Sample application located in this repo implements exactly the logic described above. You can build, run and debug it. The fun part is, that now you can remove any of the implementation modules from the build by simply commenting out respective `implementation` dependency inside the `build.gradle` file of the `sample-app` module. Just rerun the app and commented out page will disappear. Have fun and happy coding!
-
-# Version 1.0
-
-Kotlin:
+Java
 ```gradle
 dependencies {
-    api "de.halfbit:magnet-kotlin:1.0.0"
-    kapt "de.halfbit:magnet-processor:1.0.0"
-}
-```
-
-Java:
-```gradle
-dependencies {
-    api 'de.halfbit:magnet:1.0.0'
-    annotationProcessor 'de.halfbit:magnet-processor:1.0.0'
+    api 'de.halfbit:magnet:2.0-RC2'
+    annotationProcessor 'de.halfbit:magnet-processor:2.0-RC2'
 }
 ```
 
@@ -168,7 +98,5 @@ See the License for the specific language governing permissions and
 limitations under the License.
 ```
 
-[1]: docs/images/why-diagram.png
-[2]: docs/images/how-diagram.png
-[3]: https://en.wikipedia.org/wiki/Dependency_inversion_principle
-[4]: https://en.wikipedia.org/wiki/SOLID_(object-oriented_design)
+[1]: https://github.com/beworker/magnet/wiki/Dependency-inversion
+[2]: https://github.com/beworker/magnet/wiki/Dependency-auto-scoping
