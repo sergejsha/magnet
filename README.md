@@ -14,7 +14,7 @@ Magnet does not use reflection for creating objects. It generates and uses facto
 # Design
 Magnet has a very minimalistic, almost naive, design. It deals with `scopes` and `implementations`. The whole design can be described by just three simple rules:
 
-1. `Scopes` are containers for`implementation` instances.
+1. `Scopes` are containers for `implementation` instances.
 2. `Scopes` can build up hierarchies.
 3. `Implementations` can depend on each other.
 
