@@ -60,7 +60,7 @@ Additional information and examples can be found in Javadoc.
 
 # Gradle
 
-Kotlin:
+Kotlin
 ```gradle
 dependencies {
     api "de.halfbit:magnet-kotlin:2.0-RC2"
@@ -68,7 +68,7 @@ dependencies {
 }
 ```
 
-Java:
+Java
 ```gradle
 dependencies {
     api 'de.halfbit:magnet:2.0-RC2'
