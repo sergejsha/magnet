@@ -17,7 +17,7 @@ Magnet has a very minimalistic, almost naive, design. It deals with two concepts
 2. `Scopes` can build up hierarchies.
 3. `Implementations` can depend on each other.
 
-![Design class diagram][5]
+<img src="documentation/images/design-diagram.png" width="480" />
 
 # Getting started
 1. Write and annotate your implementation classes.
@@ -57,7 +57,7 @@ val presenter = root.getSingle<Presenter>()
 presenter.presentHelloMessage()
 ```
 
-Magnet will create `Presenter` and  `Repository` objects for you. 
+Magnet will create `Presenter` and `Repository` objects for you. 
 
 # Documentation
 
