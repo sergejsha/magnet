@@ -6,7 +6,7 @@
 
 Magnet is a minimalistic dependency injection and dependency inversion framework for Android and Java. If you like the idea of grouping objects into hierarchical scopes, automatic transitive dependency injection and simple declarative configuration, then Magnet can be a good choice for you.
 
-Magnet implements annotation processor which analyses your code and generates easy-to-read and easy-to-debug factories for your implementation classes. At the same time Magnet allows building modular applications, where dependencies can be injected dynamically at runtime (see dependency inversion). This dynamic behavior comes with its costs - Magnet cannot fully ensure consistency of the dependency-graph of your application at compile time. Nevertheless it does as much as possible at compile time and only the rest gets checked at runtime. If you prefer fully statical graph binding at compile time and you can resign on dynamic modularization and dependency inversion, you should rather go for Dagger2. You will also loose Magnet's simplicity, but the choice is yours.
+Magnet implements annotation processor which analyses your code and generates easy-to-read and easy-to-debug factories for your implementation classes. At the same time Magnet allows building modular applications, where dependencies can be injected dynamically at runtime (see [dependency inversion][1]). This dynamic behavior comes with its costs - Magnet cannot fully ensure consistency of the dependency-graph of your application at compile time. Nevertheless it does as much as possible at compile time and only the rest gets checked at runtime. If you prefer fully statical graph binding at compile time and you can resign on dynamic modularization and dependency inversion, you should rather go for Dagger2. You will also loose Magnet's simplicity, but the choice is yours.
 
 Magnet does not use reflection for objects creation. It generates and uses factories instead. By doing this Magnet stays fast and easy to debug. It also provides a very simple DSL when used with Kotlin. Magnet classes are well documented and covered by unit tests.
 
@@ -96,7 +96,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 ```
 
-[1]: docs/images/why-diagram.png
+[1]: https://github.com/beworker/magnet/wiki/Dependency-inversion
 [2]: docs/images/how-diagram.png
 [3]: https://en.wikipedia.org/wiki/Dependency_inversion_principle
 [4]: https://en.wikipedia.org/wiki/SOLID_(object-oriented_design)
