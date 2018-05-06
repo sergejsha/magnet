@@ -59,7 +59,9 @@ Magnet will create `Presenter` and `Repository` objects for you.
 
 # Documentation
 
-Additional information and examples can be found in Javadoc.
+1. Additional documentation and examples can be found in Javadoc.
+2. [Dependency inversion][1]
+3. [Dependency auto-scoping][2]
 
 # Gradle
 
@@ -97,7 +99,4 @@ limitations under the License.
 ```
 
 [1]: https://github.com/beworker/magnet/wiki/Dependency-inversion
-[2]: docs/images/how-diagram.png
-[3]: https://en.wikipedia.org/wiki/Dependency_inversion_principle
-[4]: https://en.wikipedia.org/wiki/SOLID_(object-oriented_design)
-[5]: documentation/images/design-diagram.png
+[2]: https://github.com/beworker/magnet/wiki/Dependency-auto-scoping
