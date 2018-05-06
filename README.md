@@ -1,4 +1,6 @@
-[![Build Status](https://travis-ci.org/beworker/magnet.svg?branch=master)](https://travis-ci.org/beworker/magnet)[![Kotlin version badge](https://img.shields.io/badge/kotlin-1.2.41-blue.svg)](http://kotlinlang.org/)[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](http://www.apache.org/licenses/LICENSE-2.0)
+[![Build Status](https://travis-ci.org/beworker/magnet.svg?branch=master)](https://travis-ci.org/beworker/magnet)
+[![Kotlin version badge](https://img.shields.io/badge/kotlin-1.2.41-blue.svg)](http://kotlinlang.org/)
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](http://www.apache.org/licenses/LICENSE-2.0)
 
 # Magnet
 
@@ -14,6 +16,8 @@ Magnet has a very minimalistic, almost naive, design. It deals with two concepts
 1. `Scopes` are containers for `implementation` instances.
 2. `Scopes` can build up hierarchies.
 3. `Implementations` can depend on each other.
+
+![Design class diagram][5]
 
 # Getting started
 1. Write and annotate your implementation classes.
@@ -98,3 +102,4 @@ limitations under the License.
 [2]: docs/images/how-diagram.png
 [3]: https://en.wikipedia.org/wiki/Dependency_inversion_principle
 [4]: https://en.wikipedia.org/wiki/SOLID_(object-oriented_design)
+[5]: documentation/images/design-diagram.png
