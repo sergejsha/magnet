@@ -3,7 +3,6 @@
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](http://www.apache.org/licenses/LICENSE-2.0)
 
 # Magnet
-<img src="docs/images/logo.png" width="100" />
 
 Magnet is a minimalistic dependency injection and dependency inversion framework for Android and Java. If you like the idea of grouping objects in hierarchical scopes, automatic transitive dependency injection and declarative configuration, then Magnet can be a good choice for you.
 
@@ -75,6 +74,8 @@ dependencies {
     annotationProcessor 'de.halfbit:magnet-processor:2.0-RC2'
 }
 ```
+
+<img src="docs/images/logo.png" width="100" />
 
 # License
 ```
