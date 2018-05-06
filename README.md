@@ -2,6 +2,8 @@
 [![Kotlin version badge](https://img.shields.io/badge/kotlin-1.2.41-blue.svg)](http://kotlinlang.org/)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](http://www.apache.org/licenses/LICENSE-2.0)
 
+<img src="docs/images/logo.png" width="80" />
+
 # Magnet
 
 Magnet is a minimalistic dependency injection and dependency inversion framework for Android and Java. If you like the idea of grouping objects in hierarchical scopes, automatic transitive dependency injection and declarative configuration, then Magnet can be a good choice for you.
@@ -74,8 +76,6 @@ dependencies {
     annotationProcessor 'de.halfbit:magnet-processor:2.0-RC2'
 }
 ```
-
-<img src="docs/images/logo.png" width="100" />
 
 # License
 ```
