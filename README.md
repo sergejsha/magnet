@@ -11,17 +11,18 @@ Magnet implements annotation processor which analyses your code and generates ea
 Magnet does not use reflection for objects creation. It generates and uses factories instead. By doing this Magnet stays fast and easy to debug. It also provides a very simple DSL when used with Kotlin. Magnet classes are well documented and covered by unit tests.
 
 # Design
-Magnet has a very minimalistic, almost naive, design. It deals with two concepts - `scopes` and `implementations`. The whole design can be described by just three simple rules:
+Magnet has a very minimalistic, almost naive, design. It deals with two concepts - `Scopes` and `Objects`. The whole design can be described by just four simple statements:
 
-1. `Scopes` are containers for `implementation` instances.
+1. `Scopes` are containers for `Objects`.
 2. `Scopes` can build up hierarchies.
-3. `Implementations` can depend on each other.
+2. `Objects` can be put into (bound) and taken from `Scopes`.
+3. `Objects` can depend on each other.
 
 <img src="documentation/images/design-diagram.png" width="480" />
 
 # Getting started
 
-1. Initializing Magnet. This step has to be done once for the main application module only. It allows Magnet to find all implementations located in main and library modules, which makes dependency inversion between modules possible.
+1. Initializing Magnet - create an empty marker interface in your main application module and annotate it. This allows Magnet to find all implementations located in either main or library modules, which makes [dependency inversion][1] between modules possible.
 
 ```kotlin
 @Magnetizer
@@ -54,7 +55,7 @@ class Presenter(private val repository: Repository) {
 }
 ```
 
-3. Create scope and inject objects.
+3. Create root scope and create objects.
 
 ```kotlin
 val root = Magnet.createScope()
@@ -63,13 +64,14 @@ val presenter = root.getSingle<Presenter>()
 presenter.presentHelloMessage()
 ```
 
-Magnet will create `Presenter` and `Repository` objects for you. 
+Magnet will create `Presenter` and `Repository` objects for you. `Repository` instance will be injected into `Presenter`'s constructor automatically.
 
 # Documentation
 
-1. Additional documentation and examples can be found in Javadoc.
-2. [Dependency inversion][1]
-3. [Dependency auto-scoping][2]
+1. Check out sample application to see Magnet in action.
+2. Additional documentation and examples can be found in Javadoc.
+3. [Dependency inversion][1]
+4. [Dependency auto-scoping][2]
 
 # Gradle
 
