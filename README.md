@@ -55,7 +55,7 @@ class Presenter(private val repository: Repository) {
 }
 ```
 
-3. Create scope and inject objects.
+3. Create root scope and create objects.
 
 ```kotlin
 val root = Magnet.createScope()
@@ -64,13 +64,14 @@ val presenter = root.getSingle<Presenter>()
 presenter.presentHelloMessage()
 ```
 
-Magnet will create `Presenter` and `Repository` objects for you. 
+Magnet will create `Presenter` and `Repository` objects for you. `Repository` instance will be injected into `Presenter`'s constructor automatically.
 
 # Documentation
 
-1. Additional documentation and examples can be found in Javadoc.
-2. [Dependency inversion][1]
-3. [Dependency auto-scoping][2]
+1. Check out sample application to see Magnet in action.
+2. Additional documentation and examples can be found in Javadoc.
+3. [Dependency inversion][1]
+4. [Dependency auto-scoping][2]
 
 # Gradle
 
