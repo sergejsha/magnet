@@ -22,7 +22,7 @@ Magnet has a very minimalistic, almost naive, design. It deals with two concepts
 
 # Getting started
 
-1. Initializing Magnet. This step has to be done once for the main application module only. It allows Magnet to find all implementations located in main and library modules, which makes dependency inversion between modules possible.
+1. Initializing Magnet - create an empty marker interface in your main application module and annotate it. This allows Magnet to find all implementations located in either main or library modules, which makes [dependency inversion][1] between modules possible.
 
 ```kotlin
 @Magnetizer
