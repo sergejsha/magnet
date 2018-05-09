@@ -39,7 +39,7 @@ interface Repository {
 }
 
 @Implementation(type = Repository::class)
-inner class DefaultRepository(): Repository {
+internal class DefaultRepository(): Repository {
     override fun getHelloMessage() = "Hello Magnet!"
 }
 ```
