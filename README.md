@@ -4,7 +4,7 @@
 
 # Magnet
 
-Magnet is a minimalistic dependency injection and dependency inversion framework for Android and Java. If you like the idea of grouping objects into hierarchical scopes, automatic transitive dependency injection and simple declarative configuration, then Magnet can be a good choice for you.
+Magnet is a minimalistic dependency injection and dependency inversion framework for Android and Java helping to write truly modular applications. If you like the idea of grouping objects into hierarchical scopes, automatic transitive dependency injection and simple declarative configuration, then Magnet can be a good choice for you.
 
 Magnet implements annotation processor which analyses your code and generates easy-to-read and easy-to-debug factories for your implementation classes. At the same time Magnet allows building modular applications, where dependencies can be injected dynamically at runtime (see [dependency inversion][1]). This dynamic behavior comes with its costs - Magnet cannot fully ensure consistency of the dependency-graph of your application at compile time. Nevertheless it does as much as possible at compile time and only the rest gets checked at runtime. If you prefer fully statical graph binding at compile time and you can resign on dynamic modularization and dependency inversion Magnet offers, you should rather go for Dagger2. You will also loose Magnet's configuration simplicity, but the choice is yours.
 
