@@ -17,7 +17,7 @@ public final class HomePageWithStaticConstructorSingleCreateRepositoriesMagnetFa
 
     @Override
     public Scoping getScoping() {
-        return Scoping.NONE;
+        return Scoping.UNSCOPED;
     }
 
     public static Class getType() {

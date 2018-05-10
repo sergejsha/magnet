@@ -34,12 +34,12 @@ public enum Scoping {
      *
      * <pre>
      *
-     * &#64;Implementation(type = TypeA.class, scoping = Scoping.NONE)
+     * &#64;Implementation(type = TypeA.class, scoping = Scoping.UNSCOPED)
      * class TypeA {
      *     TypeA() {}
      * }
      *
-     * &#64;Implementation(type = TypeB.class, scoping = Scoping.NONE)
+     * &#64;Implementation(type = TypeB.class, scoping = Scoping.UNSCOPED)
      * class TypeB {
      *     final TypeA typeA;
      *     TypeB(@NonNull TypeA dependency) {
@@ -58,7 +58,7 @@ public enum Scoping {
      *
      * </pre>
      */
-    NONE,
+    UNSCOPED,
 
     /**
      * Magnet will bind created instance into the most top scope in the chain of scopes,

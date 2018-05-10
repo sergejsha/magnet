@@ -9,7 +9,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class MagnetScopingTopmostDependsOnDirectTest {
+public class MagnetScopingTopmostDependsOnUnscopedTest {
 
     private MagnetScope scope1;
     private MagnetScope scope2;
@@ -35,14 +35,14 @@ public class MagnetScopingTopmostDependsOnDirectTest {
         @Override public MenuItem create(Scope scope) {
             return new MenuItemZero();
         }
-        @Override public Scoping getScoping() { return Scoping.DIRECT; }
+        @Override public Scoping getScoping() { return Scoping.UNSCOPED; }
     }
 
     private static class MenuItemOneFactory implements InstanceFactory<MenuItem> {
         @Override public MenuItem create(Scope scope) {
             return new MenuItemOne();
         }
-        @Override public Scoping getScoping() { return Scoping.DIRECT; }
+        @Override public Scoping getScoping() { return Scoping.UNSCOPED; }
     }
 
     private static class MenuItemTwoFactory implements InstanceFactory<MenuItem> {
@@ -50,7 +50,7 @@ public class MagnetScopingTopmostDependsOnDirectTest {
             scope.getSingle(MenuItem.class, "one");
             return new MenuItemTwo();
         }
-        @Override public Scoping getScoping() { return Scoping.DIRECT; }
+        @Override public Scoping getScoping() { return Scoping.UNSCOPED; }
     }
 
     private static class MenuItemThreeFactory implements InstanceFactory<MenuItem> {
@@ -68,9 +68,9 @@ public class MagnetScopingTopmostDependsOnDirectTest {
 
         // then
         assertThat(item).isNotNull();
-        assertThat(scope3.getRegisteredSingle(MenuItem.class, "three")).isEqualTo(item);
+        assertThat(scope3.getRegisteredSingle(MenuItem.class, "three")).isNull();
         assertThat(scope2.getRegisteredSingle(MenuItem.class, "three")).isNull();
-        assertThat(scope1.getRegisteredSingle(MenuItem.class, "three")).isNull();
+        assertThat(scope1.getRegisteredSingle(MenuItem.class, "three")).isEqualTo(item);
     }
 
     @Test
@@ -81,8 +81,8 @@ public class MagnetScopingTopmostDependsOnDirectTest {
         // then
         assertThat(item).isNotNull();
         assertThat(scope3.getRegisteredSingle(MenuItem.class, "three")).isNull();
-        assertThat(scope2.getRegisteredSingle(MenuItem.class, "three")).isEqualTo(item);
-        assertThat(scope1.getRegisteredSingle(MenuItem.class, "three")).isNull();
+        assertThat(scope2.getRegisteredSingle(MenuItem.class, "three")).isNull();
+        assertThat(scope1.getRegisteredSingle(MenuItem.class, "three")).isEqualTo(item);
     }
 
     @Test

@@ -140,7 +140,7 @@ final class MagnetScope implements Scope {
         }
 
         Instance<T> deepInstance = findInstanceDeep(key);
-        boolean keepInScope = factory.getScoping() != Scoping.NONE;
+        boolean keepInScope = factory.getScoping() != Scoping.UNSCOPED;
 
         if (keepInScope) {
             if (deepInstance != null) {
