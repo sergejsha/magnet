@@ -12,7 +12,7 @@ public class HomePageWithStaticConstructorDisabled {
 
     @Implementation(
             type = app.Page.class,
-            scoping = Scoping.NONE,
+            scoping = Scoping.UNSCOPED,
             disabled = true
     )
     public static Page create(List<? extends HomeRepository> repositories) {

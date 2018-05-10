@@ -135,44 +135,47 @@ final class MagnetScope implements Scope {
                 }
                 return null;
             }
-            instantiationContext.onDependencyFoundInScope(instance.getScopeDepth());
+            instantiationContext.onDependencyFound(instance.getScopeDepth());
             return instance.getValue();
         }
 
-        Instance<T> instance = findInstanceDeep(key);
-        boolean keepInScope = factory.getScoping() != Scoping.NONE;
+        Instance<T> deepInstance = findInstanceDeep(key);
+        boolean keepInScope = factory.getScoping() != Scoping.UNSCOPED;
 
         if (keepInScope) {
+            if (deepInstance != null) {
+                boolean isSingleOrOptional = cardinality != CARDINALITY_MANY;
 
-            if (instance != null) {
-                if (cardinality != CARDINALITY_MANY) {
-                    instantiationContext.onDependencyFoundInScope(instance.getScopeDepth());
-                    return instance.getValue();
+                if (isSingleOrOptional) {
+                    instantiationContext.onDependencyFound(deepInstance.getScopeDepth());
+                    return deepInstance.getValue();
                 }
 
-                T object = instance.getValue(factory);
+                T object = deepInstance.getValue(factory);
                 if (object != null) {
                     return object;
                 }
             }
         }
 
-        instantiationContext.onBeforeInstanceCreated(key);
+        instantiationContext.onBeginInstantiation(key);
+
         T object = factory.create(this);
-        int depth = instantiationContext.onAfterInstanceCreated();
-        instantiationContext.onDependencyFoundInScope(depth);
+
+        int objectDepth = instantiationContext.onEndInstantiation();
+        if (factory.getScoping() == Scoping.DIRECT) objectDepth = this.depth;
+        instantiationContext.onDependencyFound(objectDepth);
 
         if (keepInScope) {
-            if (instance != null && instance.getScopeDepth() != depth) {
-                instance = null;
-            }
 
-            if (instance == null) {
-                instance = Instance.create(object, factory, depth);
-                registerInstanceInScope(key, instance, factory.getScoping());
+            boolean canUseDeepInstance = deepInstance != null
+                    && deepInstance.getScopeDepth() == objectDepth;
+
+            if (canUseDeepInstance) {
+                deepInstance.addValue(object, factory);
 
             } else {
-                instance.addValue(object, factory);
+                registerInstanceInScope(key, Instance.create(object, factory, objectDepth), factory.getScoping());
             }
         }
 
@@ -180,7 +183,7 @@ final class MagnetScope implements Scope {
     }
 
     private void registerInstanceInScope(String key, Instance instance, Scoping scoping) {
-        if (scoping == Scoping.DIRECT || depth == instance.getScopeDepth()) {
+        if (depth == instance.getScopeDepth()) {
             Instance existing = instances.put(key, instance);
             if (existing != null) {
                 throw new IllegalStateException(
@@ -226,45 +229,58 @@ final class MagnetScope implements Scope {
     }
 
     private final static class InstantiationContext {
-        private final ArrayDeque<CreatingInstanceStep> creatingInstanceSteps = new ArrayDeque<>();
-        private CreatingInstanceStep creatingInstanceStep;
+        private final ArrayDeque<Instantiation> instantiations = new ArrayDeque<>();
+        private Instantiation currentInstantiation;
 
-        void onBeforeInstanceCreated(String key) {
-            if (creatingInstanceStep != null) {
-                creatingInstanceSteps.addFirst(creatingInstanceStep);
+        void onBeginInstantiation(String key) {
+            if (currentInstantiation != null) {
+                instantiations.addFirst(currentInstantiation);
             }
-            creatingInstanceStep = new CreatingInstanceStep(key);
-            if (creatingInstanceSteps.contains(creatingInstanceStep)) {
-                throw new IllegalStateException("Circular dependency detected");
+            currentInstantiation = new Instantiation(key);
+            if (instantiations.contains(currentInstantiation)) {
+                throw createCircularDependencyException();
             }
         }
 
-        int onAfterInstanceCreated() {
-            int resultDepth = creatingInstanceStep.depth;
-            creatingInstanceStep = creatingInstanceSteps.isEmpty() ? null : creatingInstanceSteps.pollFirst();
+        int onEndInstantiation() {
+            int resultDepth = currentInstantiation.depth;
+            currentInstantiation = instantiations.isEmpty() ? null : instantiations.pollFirst();
             return resultDepth;
         }
 
-        void onDependencyFoundInScope(int instanceDepth) {
-            if (creatingInstanceStep == null) return;
-            if (instanceDepth > creatingInstanceStep.depth) {
-                creatingInstanceStep.depth = instanceDepth;
+        void onDependencyFound(int dependencyDepth) {
+            if (currentInstantiation == null) return;
+            if (dependencyDepth > currentInstantiation.depth) {
+                currentInstantiation.depth = dependencyDepth;
             }
+        }
+
+        private IllegalStateException createCircularDependencyException() {
+
+            Instantiation[] objects = instantiations.toArray(new Instantiation[0]);
+            StringBuilder builder = new StringBuilder()
+                    .append("Magnet failed because of unresolved circular dependency between implementations: ");
+            for (int i = objects.length; i-- > 0; ) {
+                builder.append(objects[i].key).append(" --> ");
+            }
+            builder.append(currentInstantiation.key);
+
+            return new IllegalStateException(builder.toString());
         }
     }
 
-    private final static class CreatingInstanceStep {
+    private final static class Instantiation {
         final String key;
         int depth;
 
-        CreatingInstanceStep(String key) {
+        Instantiation(String key) {
             this.key = key;
         }
 
         @Override public boolean equals(Object o) {
             if (this == o) return true;
             if (o == null || getClass() != o.getClass()) return false;
-            CreatingInstanceStep that = (CreatingInstanceStep) o;
+            Instantiation that = (Instantiation) o;
             return key.equals(that.key);
         }
 

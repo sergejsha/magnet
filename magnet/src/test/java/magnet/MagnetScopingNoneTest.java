@@ -130,7 +130,7 @@ public class MagnetScopingNoneTest {
             scope.getSingle(Dependency1.class);
             return new MenuItemOne();
         }
-        @Override public Scoping getScoping() { return Scoping.NONE; }
+        @Override public Scoping getScoping() { return Scoping.UNSCOPED; }
     }
 
     private static class MenuItemTwoFactory implements InstanceFactory<MenuItem> {
@@ -151,7 +151,7 @@ public class MagnetScopingNoneTest {
             scope.getSingle(MenuItem.class, "two");
             return new MenuItemThree();
         }
-        @Override public Scoping getScoping() { return Scoping.NONE; }
+        @Override public Scoping getScoping() { return Scoping.UNSCOPED; }
     }
 
     private static class StubInstanceManager implements InstanceManager {

@@ -12,7 +12,7 @@ public class HomePageWithStaticConstructorSingle {
 
     @Implementation(
             type = app.Page.class,
-            scoping = Scoping.NONE
+            scoping = Scoping.UNSCOPED
     )
     public static Page create(List<? extends HomeRepository> repositories) {
         return new HomePageWithStaticConstructor(repositories);
