@@ -168,10 +168,10 @@ final class MagnetScope implements Scope {
 
         if (keepInScope) {
 
-            boolean deepInstanceBelongToThisScope = deepInstance != null
+            boolean canUseDeepInstance = deepInstance != null
                     && deepInstance.getScopeDepth() == objectDepth;
 
-            if (deepInstanceBelongToThisScope) {
+            if (canUseDeepInstance) {
                 deepInstance.addValue(object, factory);
 
             } else {
@@ -238,7 +238,7 @@ final class MagnetScope implements Scope {
             }
             currentInstantiation = new Instantiation(key);
             if (instantiations.contains(currentInstantiation)) {
-                throw new IllegalStateException("Circular dependency detected");
+                throw createCircularDependencyException();
             }
         }
 
@@ -253,6 +253,19 @@ final class MagnetScope implements Scope {
             if (dependencyDepth > currentInstantiation.depth) {
                 currentInstantiation.depth = dependencyDepth;
             }
+        }
+
+        private IllegalStateException createCircularDependencyException() {
+
+            Instantiation[] objects = instantiations.toArray(new Instantiation[0]);
+            StringBuilder builder = new StringBuilder()
+                    .append("Magnet failed because of unresolved circular dependency between implementations: ");
+            for (int i = objects.length; i-- > 0; ) {
+                builder.append(objects[i].key).append(" --> ");
+            }
+            builder.append(currentInstantiation.key);
+
+            return new IllegalStateException(builder.toString());
         }
     }
 
