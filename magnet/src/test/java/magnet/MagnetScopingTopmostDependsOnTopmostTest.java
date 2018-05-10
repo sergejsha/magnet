@@ -9,7 +9,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class MagnetScopingTopmostTest {
+public class MagnetScopingTopmostDependsOnTopmostTest {
 
     private MagnetScope scope1;
     private MagnetScope scope2;

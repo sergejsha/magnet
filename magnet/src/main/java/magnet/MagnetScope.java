@@ -160,6 +160,9 @@ final class MagnetScope implements Scope {
         instantiationContext.onBeforeInstanceCreated(key);
         T object = factory.create(this);
         int depth = instantiationContext.onAfterInstanceCreated();
+        if (factory.getScoping() == Scoping.DIRECT) {
+            depth = this.depth;
+        }
         instantiationContext.onDependencyFoundInScope(depth);
 
         if (keepInScope) {
@@ -180,7 +183,7 @@ final class MagnetScope implements Scope {
     }
 
     private void registerInstanceInScope(String key, Instance instance, Scoping scoping) {
-        if (scoping == Scoping.DIRECT || depth == instance.getScopeDepth()) {
+        if (depth == instance.getScopeDepth()) {
             Instance existing = instances.put(key, instance);
             if (existing != null) {
                 throw new IllegalStateException(
