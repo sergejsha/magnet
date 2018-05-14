@@ -36,7 +36,7 @@ final class MagnetInstanceManager implements InstanceManager {
 
     private void registerInstanceFactories() {
         try {
-            Class<?> magnetClass = Class.forName("magnet.MagnetIndexer");
+            Class<?> magnetClass = Class.forName("magnet.internal.MagnetIndexer");
             Method registerFactories = magnetClass.getMethod("register", MagnetInstanceManager.class);
             registerFactories.invoke(magnetClass, this);
         } catch (Exception e) {
