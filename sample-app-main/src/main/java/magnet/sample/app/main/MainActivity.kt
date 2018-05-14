@@ -47,7 +47,7 @@ class MainActivity : FragmentActivity() {
             bind<LifecycleOwner>(this@MainActivity)
         }
 
-        // query all implementations of Page interface
+        // query all instances of Page interface
         val pages = scope.getMany<Page>()
 
         // use pages for creating ui

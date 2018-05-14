@@ -16,12 +16,6 @@
 
 package magnet.processor.index.model
 
-data class Impl(
-    val type: String,
-    val classifier: String,
-    val factory: String
-) {
-    fun accept(visitor: ImplVisitor) {
-        visitor.visit(this)
-    }
+interface InstVisitor {
+    fun visit(inst: Inst)
 }

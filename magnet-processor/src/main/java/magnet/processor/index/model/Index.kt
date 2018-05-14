@@ -17,7 +17,7 @@
 package magnet.processor.index.model
 
 data class Index(
-    val implementations: List<Impl>,
+    val instances: List<Inst>,
     val sections: List<Section>
 ) {
 

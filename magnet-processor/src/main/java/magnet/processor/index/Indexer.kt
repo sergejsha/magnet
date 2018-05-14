@@ -16,16 +16,16 @@
 
 package magnet.processor.index
 
-import magnet.processor.index.model.Impl
-import magnet.processor.index.model.ImplComparator
 import magnet.processor.index.model.Index
+import magnet.processor.index.model.Inst
+import magnet.processor.index.model.InstComparator
 
 class Indexer(
-    private val comparator: Comparator<Impl> = ImplComparator()
+    private val comparator: Comparator<Inst> = InstComparator()
 ) {
 
-    fun index(impls: List<Impl>): Index {
-        val sorted = impls.sortedWith(comparator)
+    fun index(instances: List<Inst>): Index {
+        val sorted = instances.sortedWith(comparator)
 
         val indexer = SectionsCreatorVisitor()
         sorted.forEach {

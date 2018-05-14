@@ -18,7 +18,7 @@ package magnet.processor.index
 
 import com.squareup.javapoet.ClassName
 import com.squareup.javapoet.CodeBlock
-import magnet.processor.index.model.Impl
+import magnet.processor.index.model.Inst
 import magnet.processor.index.model.Index
 import magnet.processor.index.model.IndexVisitor
 import magnet.processor.index.model.Range
@@ -34,7 +34,7 @@ class IndexGeneratorVisitor : IndexVisitor {
     private var currentSection: Section? = null
     private var sectionIndex = 0
 
-    override fun visit(impl: Impl) {
+    override fun visit(inst: Inst) {
         // nop
     }
 

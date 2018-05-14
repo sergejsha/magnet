@@ -25,7 +25,7 @@ import com.squareup.javapoet.TypeSpec
 import magnet.internal.FactoryIndex
 import magnet.internal.InstanceFactory
 import magnet.processor.MagnetProcessorEnv
-import magnet.processor.index.model.Impl
+import magnet.processor.index.model.Inst
 import magnet.processor.index.model.Index
 import javax.lang.model.element.Element
 import javax.lang.model.element.ExecutableElement
@@ -81,10 +81,10 @@ class MagnetIndexerGenerator {
         val factoryRegistryClassName = ClassName.get("magnet.internal", "MagnetInstanceManager")
         val factoryIndexClassName = ClassName.get(FactoryIndex::class.java)
 
-        val impls = mutableListOf<Impl>()
+        val impls = mutableListOf<Inst>()
         indexElements.forEach {
             parseFactoryIndexAnnotation(it, factoryIndexClassName) { implTypeName, implFactoryName, implTargetName ->
-                impls.add(Impl(implTypeName, implTargetName, implFactoryName))
+                impls.add(Inst(implTypeName, implTargetName, implFactoryName))
             }
         }
 
@@ -119,7 +119,7 @@ class MagnetIndexerGenerator {
     }
 
     private fun generateArrayOfFactoriesCodeBlock(index: Index): CodeBlock {
-        if (index.implementations.isEmpty()) {
+        if (index.instances.isEmpty()) {
             return CodeBlock.builder()
                 .addStatement("\$T[] factories = new \$T[0]", InstanceFactory::class.java, InstanceFactory::class.java)
                 .build()
@@ -129,7 +129,7 @@ class MagnetIndexerGenerator {
                 .add("\$T[] factories = new \$T[] {", InstanceFactory::class.java, InstanceFactory::class.java)
                 .indent()
 
-            index.implementations.forEach {
+            index.instances.forEach {
                 builder.add("\nnew \$T(),", ClassName.bestGuess(it.factory))
             }
 

@@ -19,15 +19,15 @@ package magnet.processor.index.model
 data class Range(
     val type: String,
     val classifier: String,
-    private val impl: Impl,
+    private val inst: Inst,
     val from: Int
 ) {
-    val impls = mutableListOf<Impl>()
+    val impls = mutableListOf<Inst>()
     val firstFactory
         get() = impls[0].factory
 
     init {
-        impls.add(impl)
+        impls.add(inst)
     }
 
     fun accept(visitor: IndexVisitor) {

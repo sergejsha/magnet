@@ -16,12 +16,12 @@
 
 package magnet.processor.index
 
-import magnet.processor.index.model.Impl
-import magnet.processor.index.model.ImplVisitor
+import magnet.processor.index.model.Inst
+import magnet.processor.index.model.InstVisitor
 import magnet.processor.index.model.Range
 import magnet.processor.index.model.Section
 
-class SectionsCreatorVisitor : ImplVisitor {
+class SectionsCreatorVisitor : InstVisitor {
 
     val sections: List<Section>
         get() {
@@ -33,32 +33,32 @@ class SectionsCreatorVisitor : ImplVisitor {
     private val sectionsByType = mutableMapOf<String, Section>()
     private var currentRange: Range? = null
 
-    override fun visit(impl: Impl) {
+    override fun visit(inst: Inst) {
 
         if (currentRange == null) {
-            addRange(impl)
+            addRange(inst)
             return
         }
 
         currentRange?.let {
-            if (it.type == impl.type
-                && it.classifier == impl.classifier) {
-                it.impls.add(impl)
+            if (it.type == inst.type
+                && it.classifier == inst.classifier) {
+                it.impls.add(inst)
                 return
             }
-            addRange(impl)
+            addRange(inst)
             return
         }
     }
 
-    private fun addRange(impl: Impl) {
+    private fun addRange(inst: Inst) {
 
-        val section = sectionsByType.getOrPut(impl.type) {
-            Section(impl.type)
+        val section = sectionsByType.getOrPut(inst.type) {
+            Section(inst.type)
         }
 
         val rangeIndex = calculateIndex()
-        val range = Range(impl.type, impl.classifier, impl, rangeIndex)
+        val range = Range(inst.type, inst.classifier, inst, rangeIndex)
         section.ranges[range.classifier] = range
 
         currentRange = range

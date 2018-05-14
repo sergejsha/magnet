@@ -38,7 +38,7 @@ interface Repository {
     fun getHelloMessage(): String
 }
 
-@Implementation(type = Repository::class)
+@Instance(type = Repository::class)
 internal class DefaultRepository(): Repository {
     override fun getHelloMessage() = "Hello Magnet!"
 }
@@ -47,7 +47,7 @@ internal class DefaultRepository(): Repository {
 ```kotlin
 Presenter.kt
 
-@Implementation(type = Presenter::class)
+@Instance(type = Presenter::class)
 class Presenter(private val repository: Repository) {
     fun presentHelloMessage() {
         println(repository.getHelloMessage())

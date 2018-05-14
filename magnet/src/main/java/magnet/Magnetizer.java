@@ -24,8 +24,8 @@ import java.lang.annotation.Target;
 
 /**
  * This is the marker-annotation used by Magnet to identify the top level project,
- * where all registered implementations come together and get indexed. There must
- * be a single class in the whole project annotated with this annotation.
+ * where all registered @Instance-annotated classes come together and get indexed.
+ * There must be a single class in the whole project annotated with this annotation.
  */
 @Retention(SOURCE)
 @Target({ ElementType.TYPE })

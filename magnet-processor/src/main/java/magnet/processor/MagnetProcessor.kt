@@ -58,16 +58,16 @@ class MagnetProcessor : AbstractProcessor() {
         roundEnv: RoundEnvironment
     ): Boolean {
         return try {
-            val implementationProcessed = processImplementationAnnotation(roundEnv)
+            val instanceProcessed = processInstanceAnnotation(roundEnv)
             val indexCreated = processFactoryIndexAnnotation(env, roundEnv)
 
-            implementationProcessed || indexCreated
+            instanceProcessed || indexCreated
         } catch (e: CompilationException) {
             true
         }
     }
 
-    private fun processImplementationAnnotation(
+    private fun processInstanceAnnotation(
         roundEnv: RoundEnvironment
     ): Boolean {
 

@@ -263,7 +263,7 @@ final class MagnetScope implements Scope {
 
             Instantiation[] objects = instantiations.toArray(new Instantiation[0]);
             StringBuilder builder = new StringBuilder()
-                    .append("Magnet failed because of unresolved circular dependency between implementations: ");
+                    .append("Magnet failed because of unresolved circular dependency: ");
             for (int i = objects.length; i-- > 0; ) {
                 builder.append(objects[i].key).append(" -> ");
             }

@@ -31,10 +31,10 @@ final class MagnetInstanceManager implements InstanceManager {
     private Map<Class, Object> index;
 
     MagnetInstanceManager() {
-        registerImplementations();
+        registerInstanceFactories();
     }
 
-    private void registerImplementations() {
+    private void registerInstanceFactories() {
         try {
             Class<?> magnetClass = Class.forName("magnet.MagnetIndexer");
             Method registerFactories = magnetClass.getMethod("register", MagnetInstanceManager.class);
