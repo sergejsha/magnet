@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package magnet.internal;
+package magnet;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -23,20 +23,18 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-import magnet.InstanceFactory;
-
-/* Subject to change. For internal use only. */
-public final class Instance<T> {
+/* For internal use only. Subject to change. */
+final class RuntimeInstance<T> {
 
     private final int scopeDepth;
     private Object value;
 
-    private Instance(int scopeDepth) {
+    private RuntimeInstance(int scopeDepth) {
         this.scopeDepth = scopeDepth;
     }
 
-    public static <V> Instance<V> create(V object, InstanceFactory<V> factory, int scopeDepth) {
-        Instance<V> instance = new Instance<>(scopeDepth);
+    public static <V> RuntimeInstance<V> create(V object, InstanceFactory<V> factory, int scopeDepth) {
+        RuntimeInstance<V> instance = new RuntimeInstance<>(scopeDepth);
         instance.addValue(object, factory);
         return instance;
     }
