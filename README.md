@@ -11,12 +11,12 @@ Magnet implements annotation processor which analyses your code and generates ea
 Magnet does not use reflection for objects creation. It generates and uses factories instead. By doing this Magnet stays fast and easy to debug. It also provides a very simple DSL when used with Kotlin. Magnet classes are well documented and covered by unit tests.
 
 # Design
-Magnet has a very minimalistic, almost naive, design. It deals with two concepts - `Scopes` and `Objects`. The whole design can be described by just four simple statements:
+Magnet has a very minimalistic, almost naive, design. It deals with two concepts - `Scopes` and `Instances`. The whole design can be described by just four simple statements:
 
-1. `Scopes` are containers for `Objects`.
+1. `Scopes` are containers for object `Instances`.
 2. `Scopes` can build up hierarchies.
-2. `Objects` can be put into (bound) and taken from `Scopes`.
-3. `Objects` can depend on each other.
+2. `Instances` can be put into (bound) and taken from `Scopes`.
+3. `Instances` can depend on each other.
 
 <img src="documentation/images/design-diagram.png" width="480" />
 
