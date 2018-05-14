@@ -1,10 +1,8 @@
-package magnet;
+package magnet.internal;
 
 import app.extension.UnknownTypeTabMagnetFactory;
 import java.util.HashMap;
 import java.util.Map;
-
-import magnet.internal.Range;
 
 public final class MagnetIndexer {
     public static void register(MagnetInstanceManager instanceManager) {

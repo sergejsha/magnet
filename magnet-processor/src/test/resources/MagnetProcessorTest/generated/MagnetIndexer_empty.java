@@ -1,4 +1,4 @@
-package magnet;
+package magnet.internal;
 
 import java.util.HashMap;
 import java.util.Map;

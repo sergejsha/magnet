@@ -16,7 +16,7 @@
 
 package magnet.processor
 
-import magnet.Implementation
+import magnet.Instance
 import magnet.Magnetizer
 import magnet.processor.factory.CodeWriter
 import magnet.processor.factory.FactoryCodeGenerator
@@ -58,20 +58,20 @@ class MagnetProcessor : AbstractProcessor() {
         roundEnv: RoundEnvironment
     ): Boolean {
         return try {
-            val implementationProcessed = processImplementationAnnotation(roundEnv)
+            val instanceProcessed = processInstanceAnnotation(roundEnv)
             val indexCreated = processFactoryIndexAnnotation(env, roundEnv)
 
-            implementationProcessed || indexCreated
+            instanceProcessed || indexCreated
         } catch (e: CompilationException) {
             true
         }
     }
 
-    private fun processImplementationAnnotation(
+    private fun processInstanceAnnotation(
         roundEnv: RoundEnvironment
     ): Boolean {
 
-        val annotatedElements = roundEnv.getElementsAnnotatedWith(Implementation::class.java)
+        val annotatedElements = roundEnv.getElementsAnnotatedWith(Instance::class.java)
         if (annotatedElements.isEmpty()) {
             return false
         }
@@ -117,7 +117,7 @@ class MagnetProcessor : AbstractProcessor() {
 
     override fun getSupportedAnnotationTypes(): MutableSet<String> {
         return mutableSetOf(
-            Implementation::class.java.name,
+            Instance::class.java.name,
             Magnetizer::class.java.name
         )
     }

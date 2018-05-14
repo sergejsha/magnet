@@ -14,11 +14,19 @@
  * limitations under the License.
  */
 
-package magnet;
+package magnet.internal;
 
-public interface InstanceFactory<T> {
+import magnet.Scope;
 
-    T create(Scope scope);
-    Scoping getScoping();
+/* Subject to change. For internal use only. */
+public final class InternalFactory {
+
+    private static final InstanceManager INSTANCE_MANAGER = new MagnetInstanceManager();
+
+    private InternalFactory() {}
+
+    public static Scope createRootScope() {
+        return new MagnetScope(null, INSTANCE_MANAGER);
+    }
 
 }

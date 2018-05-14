@@ -1,4 +1,4 @@
-package magnet;
+package magnet.internal;
 
 import static com.google.common.truth.Truth.assertThat;
 import static org.mockito.Mockito.when;
@@ -13,7 +13,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import magnet.internal.Range;
+import magnet.Classifier;
+import magnet.Scope;
 
 @RunWith(MockitoJUnitRunner.Silent.class)
 public class MagnetInstanceManagerTest {
@@ -38,11 +39,11 @@ public class MagnetInstanceManagerTest {
     @Mock
     Scope scope;
 
-    private MagnetInstanceManager implManager;
+    private MagnetInstanceManager instManager;
 
     @Before
     public void before() {
-        implManager = new MagnetInstanceManager();
+        instManager = new MagnetInstanceManager();
 
         when(instanceFactoryType1Impl1.create(scope)).thenReturn(new Type1Impl());
         when(instanceFactoryType1Impl2.create(scope)).thenReturn(new Type1Impl());
@@ -68,13 +69,13 @@ public class MagnetInstanceManagerTest {
         index.put(Type2.class, new Range(2, 2, Classifier.NONE));
         index.put(Type3.class, new Range(4, 1, CLASSIFIER_LOCAL));
 
-        implManager.register(factories, index);
+        instManager.register(factories, index);
     }
 
     @Test
     public void getOptionalFactory_Classified_Existing_SingleTypeInstance() {
         // when
-        InstanceFactory<Type3> factory = implManager.getOptionalFactory(Type3.class, CLASSIFIER_LOCAL);
+        InstanceFactory<Type3> factory = instManager.getOptionalFactory(Type3.class, CLASSIFIER_LOCAL);
 
         // then
         assertThat(factory).isNotNull();
@@ -83,7 +84,7 @@ public class MagnetInstanceManagerTest {
     @Test
     public void getOptionalFactory_Classified_Existing_ManyTypeInstances() {
         // when
-        InstanceFactory<Type1> factory = implManager.getOptionalFactory(Type1.class, CLASSIFIER_LOCAL);
+        InstanceFactory<Type1> factory = instManager.getOptionalFactory(Type1.class, CLASSIFIER_LOCAL);
 
         // then
         assertThat(factory).isNotNull();
@@ -92,7 +93,7 @@ public class MagnetInstanceManagerTest {
     @Test
     public void getOptionalFactory_NotClassified_Existing() {
         // when
-        InstanceFactory<Type1> factory = implManager.getOptionalFactory(Type1.class, Classifier.NONE);
+        InstanceFactory<Type1> factory = instManager.getOptionalFactory(Type1.class, Classifier.NONE);
 
         // then
         assertThat(factory).isNotNull();
@@ -101,7 +102,7 @@ public class MagnetInstanceManagerTest {
     @Test
     public void getOptionalFactory_Classified_NotExisting() {
         // when
-        InstanceFactory<String> factory = implManager.getOptionalFactory(String.class, CLASSIFIER_LOCAL);
+        InstanceFactory<String> factory = instManager.getOptionalFactory(String.class, CLASSIFIER_LOCAL);
 
         // then
         assertThat(factory).isNull();
@@ -110,7 +111,7 @@ public class MagnetInstanceManagerTest {
     @Test
     public void getOptionalFactory_NotClassified_NotExisting() {
         // when
-        InstanceFactory<String> factory = implManager.getOptionalFactory(String.class, Classifier.NONE);
+        InstanceFactory<String> factory = instManager.getOptionalFactory(String.class, Classifier.NONE);
 
         // then
         assertThat(factory).isNull();
@@ -119,7 +120,7 @@ public class MagnetInstanceManagerTest {
     @Test
     public void getManyFactories_NotClassified_ManyTypeInstances() {
         // when
-        List<InstanceFactory<Type1>> factories = implManager.getManyFactories(Type1.class, Classifier.NONE);
+        List<InstanceFactory<Type1>> factories = instManager.getManyFactories(Type1.class, Classifier.NONE);
 
         // then
         assertThat(factories).hasSize(1);
@@ -129,7 +130,7 @@ public class MagnetInstanceManagerTest {
     @Test
     public void getManyFactories_Classified_ManyTypeInstances() {
         // when
-        List<InstanceFactory<Type1>> factories = implManager.getManyFactories(Type1.class, CLASSIFIER_LOCAL);
+        List<InstanceFactory<Type1>> factories = instManager.getManyFactories(Type1.class, CLASSIFIER_LOCAL);
 
         // then
         assertThat(factories).hasSize(1);
@@ -139,7 +140,7 @@ public class MagnetInstanceManagerTest {
     @Test
     public void getManyFactories_NotClassified_SingleTypeInstances() {
         // when
-        List<InstanceFactory<Type2>> factories = implManager.getManyFactories(Type2.class, Classifier.NONE);
+        List<InstanceFactory<Type2>> factories = instManager.getManyFactories(Type2.class, Classifier.NONE);
 
         // then
         assertThat(factories).hasSize(2);
@@ -149,7 +150,7 @@ public class MagnetInstanceManagerTest {
     @Test
     public void getManyFactories_Classified_SingleTypeInstances() {
         // when
-        List<InstanceFactory<Type3>> factories = implManager.getManyFactories(Type3.class, CLASSIFIER_LOCAL);
+        List<InstanceFactory<Type3>> factories = instManager.getManyFactories(Type3.class, CLASSIFIER_LOCAL);
 
         // then
         assertThat(factories).hasSize(1);

@@ -5,12 +5,12 @@ import java.util.List;
 import app.HomeRepository;
 import app.Page;
 import app.extension.HomePageWithStaticConstructor;
-import magnet.Implementation;
+import magnet.Instance;
 import magnet.Scoping;
 
 public class HomePageWithStaticConstructorSingle {
 
-    @Implementation(
+    @Instance(
             type = app.Page.class,
             scoping = Scoping.UNSCOPED
     )

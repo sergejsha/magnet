@@ -18,7 +18,7 @@ package magnet.processor.index
 
 import com.squareup.javapoet.ClassName
 import com.squareup.javapoet.CodeBlock
-import magnet.processor.index.model.Impl
+import magnet.processor.index.model.Inst
 import magnet.processor.index.model.Index
 import magnet.processor.index.model.IndexVisitor
 import magnet.processor.index.model.Range
@@ -29,11 +29,12 @@ class IndexGeneratorVisitor : IndexVisitor {
     val indexBuilder: CodeBlock.Builder = CodeBlock.builder()
     val targetsBuilder: CodeBlock.Builder = CodeBlock.builder()
 
+    private val rangeClassName: ClassName = ClassName.bestGuess("magnet.internal.Range")
     private var generateSingleRange = false
     private var currentSection: Section? = null
     private var sectionIndex = 0
 
-    override fun visit(impl: Impl) {
+    override fun visit(inst: Inst) {
         // nop
     }
 
@@ -62,7 +63,7 @@ class IndexGeneratorVisitor : IndexVisitor {
             "\$T<\$T, \$T> \$L = new \$T<>()",
             Map::class.java,
             String::class.java,
-            magnet.internal.Range::class.java,
+            rangeClassName,
             targetsName,
             HashMap::class.java
         )
@@ -75,7 +76,7 @@ class IndexGeneratorVisitor : IndexVisitor {
                 indexBuilder.addStatement(
                     "index.put(\$T.getType(), new \$T(\$L, \$L, \$S))",
                     ClassName.bestGuess(range.firstFactory),
-                    magnet.internal.Range::class.java,
+                    rangeClassName,
                     range.from,
                     range.impls.size,
                     range.classifier
@@ -90,7 +91,7 @@ class IndexGeneratorVisitor : IndexVisitor {
             "\$L.put(\$S, new \$T(\$L, \$L, \$S))",
             targetsName,
             range.classifier,
-            magnet.internal.Range::class.java,
+            rangeClassName,
             range.from,
             range.impls.size,
             range.classifier

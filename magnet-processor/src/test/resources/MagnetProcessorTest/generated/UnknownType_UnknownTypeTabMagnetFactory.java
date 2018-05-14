@@ -1,8 +1,8 @@
 package app.extension;
 
-import magnet.InstanceFactory;
 import magnet.Scope;
 import magnet.Scoping;
+import magnet.internal.InstanceFactory;
 
 public final class UnknownTypeTabMagnetFactory implements InstanceFactory<Tab> {
     @Override

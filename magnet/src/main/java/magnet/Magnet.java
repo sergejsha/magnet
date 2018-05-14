@@ -16,21 +16,16 @@
 
 package magnet;
 
-/** Main class serving as a factory for {@link InstanceManager} and the root {@link Scope}. */
-public final class Magnet {
+import magnet.internal.InternalFactory;
 
-    private static final InstanceManager INSTANCE_MANAGER = new MagnetInstanceManager();
+/** Main class serving as the factory for root {@link Scope}. */
+public final class Magnet {
 
     private Magnet() { }
 
-    /** Returns singleton instance of the {@link InstanceManager}. */
-    public static InstanceManager getInstanceManager() {
-        return INSTANCE_MANAGER;
-    }
-
-    /** Creates a new root {@link Scope} instance. */
-    public static Scope createScope() {
-        return new MagnetScope(null, INSTANCE_MANAGER);
+    /** Creates and returns new root {@link Scope} instance. */
+    public static Scope createRootScope() {
+        return InternalFactory.createRootScope();
     }
 
 }

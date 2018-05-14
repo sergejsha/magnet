@@ -17,10 +17,10 @@
 package magnet.sample.app.main.home
 
 import android.content.res.Resources
-import magnet.Implementation
+import magnet.Instance
 import magnet.sample.app.main.Page
 
-@Implementation(type = Page::class)
+@Instance(type = Page::class)
 class HomePage(
     private val resources: Resources
 ) : Page {

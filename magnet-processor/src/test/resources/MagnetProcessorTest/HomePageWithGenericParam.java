@@ -1,9 +1,9 @@
 package app.extension;
 
 import app.Page;
-import magnet.Implementation;
+import magnet.Instance;
 
-@Implementation(type = Page.class)
+@Instance(type = Page.class)
 class HomePageWithGenericParam<T extends Object> implements Page {
 
     HomePageWithGenericParam(

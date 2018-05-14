@@ -17,10 +17,10 @@
 package magnet.sample.app.main.notifications
 
 import android.content.res.Resources
-import magnet.Implementation
+import magnet.Instance
 import magnet.sample.app.main.Page
 
-@Implementation(type = Page::class)
+@Instance(type = Page::class)
 class NotificationPage(
     private val resource: Resources?
 ) : Page {

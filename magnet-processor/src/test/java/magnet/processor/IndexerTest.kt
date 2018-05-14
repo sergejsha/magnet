@@ -2,7 +2,7 @@ package magnet.processor
 
 import com.google.common.truth.Truth.assertThat
 import magnet.processor.index.Indexer
-import magnet.processor.index.model.Impl
+import magnet.processor.index.model.Inst
 import org.junit.Test
 
 class IndexerTest {
@@ -11,7 +11,7 @@ class IndexerTest {
     fun test_IndexNodes() {
         val index = Indexer().index(unsortedNodes())
 
-        assertThat(index.implementations.toTypedArray()
+        assertThat(index.instances.toTypedArray()
             contentDeepEquals sortedNodes().toTypedArray())
     }
 
@@ -31,41 +31,41 @@ class IndexerTest {
         assertThat(index.sections[2].ranges.size).isEqualTo(4)
     }
 
-    private fun unsortedNodes(): List<Impl> {
+    private fun unsortedNodes(): List<Inst> {
         return listOf(
-            Impl("CType", "four", "Factory"),
-            Impl("CType", "two", "Factory"),
-            Impl("CType", "one", "Factory"),
-            Impl("CType", "three", "Factory"),
-            Impl("CType", "four", "Factory"),
+            Inst("CType", "four", "Factory"),
+            Inst("CType", "two", "Factory"),
+            Inst("CType", "one", "Factory"),
+            Inst("CType", "three", "Factory"),
+            Inst("CType", "four", "Factory"),
 
-            Impl("BType", "", "Factory"),
-            Impl("BType", "", "Factory"),
-            Impl("BType", "", "Factory"),
+            Inst("BType", "", "Factory"),
+            Inst("BType", "", "Factory"),
+            Inst("BType", "", "Factory"),
 
-            Impl("AType", "", "Factory"),
-            Impl("AType", "one", "Factory"),
-            Impl("AType", "", "Factory"),
-            Impl("AType", "two", "Factory"),
-            Impl("AType", "one", "Factory")
+            Inst("AType", "", "Factory"),
+            Inst("AType", "one", "Factory"),
+            Inst("AType", "", "Factory"),
+            Inst("AType", "two", "Factory"),
+            Inst("AType", "one", "Factory")
         )
     }
 
-    private fun sortedNodes(): List<Impl> {
+    private fun sortedNodes(): List<Inst> {
         return listOf(
-            Impl("AType", "", "Factory"),
-            Impl("AType", "", "Factory"),
-            Impl("AType", "one", "Factory"),
-            Impl("AType", "one", "Factory"),
-            Impl("AType", "two", "Factory"),
-            Impl("BType", "", "Factory"),
-            Impl("BType", "", "Factory"),
-            Impl("BType", "", "Factory"),
-            Impl("CType", "four", "Factory"),
-            Impl("CType", "four", "Factory"),
-            Impl("CType", "one", "Factory"),
-            Impl("CType", "three", "Factory"),
-            Impl("CType", "two", "Factory")
+            Inst("AType", "", "Factory"),
+            Inst("AType", "", "Factory"),
+            Inst("AType", "one", "Factory"),
+            Inst("AType", "one", "Factory"),
+            Inst("AType", "two", "Factory"),
+            Inst("BType", "", "Factory"),
+            Inst("BType", "", "Factory"),
+            Inst("BType", "", "Factory"),
+            Inst("CType", "four", "Factory"),
+            Inst("CType", "four", "Factory"),
+            Inst("CType", "one", "Factory"),
+            Inst("CType", "three", "Factory"),
+            Inst("CType", "two", "Factory")
         )
     }
 

@@ -14,16 +14,16 @@
  * limitations under the License.
  */
 
-package magnet;
+package magnet.internal;
 
 import java.lang.reflect.Method;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import magnet.internal.ImmutableArrayList;
-import magnet.internal.Range;
+import magnet.Magnetizer;
 
+/* Subject to change. For internal use only. */
 @SuppressWarnings("unchecked")
 final class MagnetInstanceManager implements InstanceManager {
 
@@ -31,10 +31,10 @@ final class MagnetInstanceManager implements InstanceManager {
     private Map<Class, Object> index;
 
     MagnetInstanceManager() {
-        registerImplementations();
+        registerInstanceFactories();
     }
 
-    private void registerImplementations() {
+    private void registerInstanceFactories() {
         try {
             Class<?> magnetClass = Class.forName("magnet.MagnetIndexer");
             Method registerFactories = magnetClass.getMethod("register", MagnetInstanceManager.class);

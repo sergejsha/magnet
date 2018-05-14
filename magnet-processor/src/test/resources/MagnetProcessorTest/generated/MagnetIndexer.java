@@ -1,4 +1,4 @@
-package magnet;
+package magnet.internal;
 
 import app.extension.HomePageMagnetFactory;
 import app.extension.HomePageMenuItemMagnetFactory;
@@ -6,8 +6,6 @@ import app.extension.UserPageMagnetFactory;
 import app.extension.UserPageMenuItemMagnetFactory;
 import java.util.HashMap;
 import java.util.Map;
-
-import magnet.internal.Range;
 
 public final class MagnetIndexer {
 

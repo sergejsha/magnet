@@ -18,12 +18,12 @@ package magnet.internal;
 
 import java.util.AbstractList;
 
-/** Subject to change. For internal use only. */
-public class ImmutableArrayList<E> extends AbstractList<E> {
+/* Subject to change. For internal use only. */
+class ImmutableArrayList<E> extends AbstractList<E> {
 
     private final E[] elements;
 
-    public ImmutableArrayList(E[] elements) {
+    ImmutableArrayList(E[] elements) {
         this.elements = elements;
     }
 

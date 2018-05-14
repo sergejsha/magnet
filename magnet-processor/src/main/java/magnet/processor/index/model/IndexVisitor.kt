@@ -16,7 +16,7 @@
 
 package magnet.processor.index.model
 
-interface IndexVisitor : ImplVisitor {
+interface IndexVisitor : InstVisitor {
     fun visit(index: Index)
     fun visit(section: Section)
     fun visit(range: Range)

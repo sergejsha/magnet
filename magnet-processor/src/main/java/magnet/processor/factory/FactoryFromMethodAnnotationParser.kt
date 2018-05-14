@@ -1,7 +1,7 @@
 package magnet.processor.factory
 
 import com.squareup.javapoet.ClassName
-import magnet.Implementation
+import magnet.Instance
 import magnet.processor.MagnetProcessorEnv
 import javax.lang.model.element.ExecutableElement
 import javax.lang.model.element.Modifier
@@ -16,12 +16,12 @@ internal class FactoryFromMethodAnnotationParser(
 
         if (!element.modifiers.contains(Modifier.STATIC)) {
             throw env.compilationError(element, "Method annotated"
-                + " by ${Implementation::class.java} must be 'static'")
+                + " by ${Instance::class.java} must be 'static'")
         }
 
         if (element.modifiers.contains(Modifier.PRIVATE)) {
             throw env.compilationError(element, "Method annotated"
-                + " by ${Implementation::class.java} must not be 'private'")
+                + " by ${Instance::class.java} must not be 'private'")
         }
 
         val annotation = parseAnnotation(element)
@@ -30,7 +30,7 @@ internal class FactoryFromMethodAnnotationParser(
         if (annotation.type.reflectionName() != staticMethodReturnType.toString()) {
             throw env.compilationError(element, "Method must return instance"
                 + " of ${annotation.type.reflectionName()} as declared"
-                + " by ${Implementation::class.java}")
+                + " by ${Instance::class.java}")
         }
 
         val staticMethodClassName = ClassName.get(element.enclosingElement as TypeElement)

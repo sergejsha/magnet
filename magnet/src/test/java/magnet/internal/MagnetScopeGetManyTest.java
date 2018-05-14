@@ -1,4 +1,4 @@
-package magnet;
+package magnet.internal;
 
 import static com.google.common.truth.Truth.assertThat;
 
@@ -9,6 +9,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import magnet.Scope;
+import magnet.Scoping;
 
 public class MagnetScopeGetManyTest {
 

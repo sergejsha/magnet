@@ -14,27 +14,8 @@
  * limitations under the License.
  */
 
-package magnet.processor.index
+package magnet.processor.index.model
 
-import magnet.processor.index.model.Index
-import magnet.processor.index.model.Inst
-import magnet.processor.index.model.InstComparator
-
-class Indexer(
-    private val comparator: Comparator<Inst> = InstComparator()
-) {
-
-    fun index(instances: List<Inst>): Index {
-        val sorted = instances.sortedWith(comparator)
-
-        val indexer = SectionsCreatorVisitor()
-        sorted.forEach {
-            it.accept(indexer)
-        }
-
-        return Index(sorted, indexer.sections)
-    }
-
+interface InstVisitor {
+    fun visit(inst: Inst)
 }
-
-
