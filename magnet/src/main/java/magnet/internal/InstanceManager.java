@@ -14,11 +14,14 @@
  * limitations under the License.
  */
 
-package magnet;
+package magnet.internal;
 
-public interface InstanceFactory<T> {
+import java.util.List;
 
-    T create(Scope scope);
-    Scoping getScoping();
+/* Subject to change. For internal use only. */
+interface InstanceManager {
+
+    <T> InstanceFactory<T> getOptionalFactory(Class<T> type, String classifier);
+    <T> List<InstanceFactory<T>> getManyFactories(Class<T> type, String classifier);
 
 }

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package magnet;
+package magnet.internal;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;
@@ -23,6 +23,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import magnet.Classifier;
+import magnet.Scope;
+import magnet.Scoping;
+
+/* Subject to change. For internal use only. */
 final class MagnetScope implements Scope {
 
     private static final byte CARDINALITY_OPTIONAL = 0;
@@ -260,7 +265,7 @@ final class MagnetScope implements Scope {
             StringBuilder builder = new StringBuilder()
                     .append("Magnet failed because of unresolved circular dependency between implementations: ");
             for (int i = objects.length; i-- > 0; ) {
-                builder.append(objects[i].key).append(" --> ");
+                builder.append(objects[i].key).append(" -> ");
             }
             builder.append(currentInstantiation.key);
 

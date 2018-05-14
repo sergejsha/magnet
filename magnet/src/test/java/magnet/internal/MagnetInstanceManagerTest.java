@@ -1,4 +1,4 @@
-package magnet;
+package magnet.internal;
 
 import static com.google.common.truth.Truth.assertThat;
 import static org.mockito.Mockito.when;
@@ -13,7 +13,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import magnet.internal.Range;
+import magnet.Classifier;
+import magnet.Scope;
 
 @RunWith(MockitoJUnitRunner.Silent.class)
 public class MagnetInstanceManagerTest {

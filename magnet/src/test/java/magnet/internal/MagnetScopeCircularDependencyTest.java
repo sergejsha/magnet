@@ -1,4 +1,4 @@
-package magnet;
+package magnet.internal;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -6,6 +6,9 @@ import org.junit.Test;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import magnet.Scope;
+import magnet.Scoping;
 
 public class MagnetScopeCircularDependencyTest {
 

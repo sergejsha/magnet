@@ -1,9 +1,9 @@
 package app.extension;
 
 import app.Page;
-import magnet.InstanceFactory;
 import magnet.Scope;
 import magnet.Scoping;
+import magnet.internal.InstanceFactory;
 
 public final class HomePageNoParamsMagnetFactory implements InstanceFactory<Page> {
 

@@ -19,9 +19,7 @@ package magnet.internal;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Target;
 
-import magnet.InstanceFactory;
-
-/** For internal use only. Subject to change. */
+/** Subject to change. For internal use only. */
 @Target({ ElementType.TYPE })
 public @interface FactoryIndex {
     Class<? extends InstanceFactory<?>> factory();

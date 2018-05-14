@@ -14,13 +14,19 @@
  * limitations under the License.
  */
 
-package magnet;
+package magnet.internal;
 
-import java.util.List;
+import magnet.Scope;
 
-public interface InstanceManager {
+/* Subject to change. For internal use only. */
+public final class InternalFactory {
 
-    <T> InstanceFactory<T> getOptionalFactory(Class<T> type, String classifier);
-    <T> List<InstanceFactory<T>> getManyFactories(Class<T> type, String classifier);
+    private static final InstanceManager INSTANCE_MANAGER = new MagnetInstanceManager();
+
+    private InternalFactory() {}
+
+    public static Scope createRootScope() {
+        return new MagnetScope(null, INSTANCE_MANAGER);
+    }
 
 }

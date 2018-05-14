@@ -24,9 +24,9 @@ import com.squareup.javapoet.ParameterizedTypeName
 import com.squareup.javapoet.TypeName
 import com.squareup.javapoet.TypeSpec
 import magnet.Classifier
-import magnet.InstanceFactory
 import magnet.Scope
 import magnet.Scoping
+import magnet.internal.InstanceFactory
 import javax.lang.model.element.Modifier
 
 class FactoryCodeGenerator : FactoryTypeVisitor, CodeGenerator {

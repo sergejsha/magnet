@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package magnet;
+package magnet.internal;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -23,7 +23,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-/* For internal use only. Subject to change. */
+/* Subject to change. For internal use only. */
 final class RuntimeInstance<T> {
 
     private final int scopeDepth;

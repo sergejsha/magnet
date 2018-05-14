@@ -272,7 +272,7 @@ class MagnetProcessorTest {
             .hasSourceEquivalentTo(withResource("generated/UnknownType_UnknownTypeTabMagnetFactory.java"))
 
         assertThat(compilation)
-            .generatedSourceFile("magnet/MagnetIndexer")
+            .generatedSourceFile("magnet/internal/MagnetIndexer")
             .hasSourceEquivalentTo(withResource("generated/UnknownType_MagnetIndexer.java"))
     }
 
@@ -299,7 +299,7 @@ class MagnetProcessorTest {
             .hasSourceEquivalentTo(withResource("generated/UnknownType_UnknownTypeTab2MagnetFactory.java"))
 
         assertThat(compilation)
-            .generatedSourceFile("magnet/MagnetIndexer")
+            .generatedSourceFile("magnet/internal/MagnetIndexer")
             .hasSourceEquivalentTo(withResource("generated/UnknownType_MultipleImpls_MagnetIndexer.java"))
     }
 
@@ -337,7 +337,7 @@ class MagnetProcessorTest {
         assertThat(compilation).succeeded()
 
         assertThat(compilation)
-            .generatedSourceFile("magnet/MagnetIndexer")
+            .generatedSourceFile("magnet/internal/MagnetIndexer")
             .hasSourceEquivalentTo(withResource("generated/MagnetIndexer.java"))
 
     }
@@ -355,7 +355,7 @@ class MagnetProcessorTest {
         assertThat(compilation).succeeded()
 
         assertThat(compilation)
-            .generatedSourceFile("magnet/MagnetIndexer")
+            .generatedSourceFile("magnet/internal/MagnetIndexer")
             .hasSourceEquivalentTo(withResource("generated/MagnetIndexer_empty.java"))
 
     }

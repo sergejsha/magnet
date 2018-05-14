@@ -32,7 +32,7 @@ class App : Application() {
     }
 
     companion object {
-        val scope: Scope = Magnet.createScope()
+        val scope: Scope = Magnet.createRootScope()
     }
 
 }

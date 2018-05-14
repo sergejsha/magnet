@@ -14,16 +14,16 @@
  * limitations under the License.
  */
 
-package magnet;
+package magnet.internal;
 
 import java.lang.reflect.Method;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import magnet.internal.ImmutableArrayList;
-import magnet.internal.Range;
+import magnet.Magnetizer;
 
+/* Subject to change. For internal use only. */
 @SuppressWarnings("unchecked")
 final class MagnetInstanceManager implements InstanceManager {
 
