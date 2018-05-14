@@ -1,8 +1,8 @@
 package app.extension;
 
-import magnet.Implementation;
+import magnet.Instance;
 
-@Implementation(
+@Instance(
         type = Tab.class,
         classifier = "2"
 )

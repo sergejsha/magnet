@@ -28,8 +28,8 @@ class IndexGeneratorVisitor : IndexVisitor {
 
     val indexBuilder: CodeBlock.Builder = CodeBlock.builder()
     val targetsBuilder: CodeBlock.Builder = CodeBlock.builder()
-    val rangeClassName = ClassName.bestGuess("magnet.internal.Range")
 
+    private val rangeClassName: ClassName = ClassName.bestGuess("magnet.internal.Range")
     private var generateSingleRange = false
     private var currentSection: Section? = null
     private var sectionIndex = 0

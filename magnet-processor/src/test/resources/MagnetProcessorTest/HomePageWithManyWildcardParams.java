@@ -4,9 +4,9 @@ import java.util.List;
 
 import app.HomeRepository;
 import app.Page;
-import magnet.Implementation;
+import magnet.Instance;
 
-@Implementation(type = Page.class)
+@Instance(type = Page.class)
 class HomePageWithManyWildcardParams implements Page {
 
     HomePageWithManyWildcardParams(

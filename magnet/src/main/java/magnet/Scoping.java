@@ -17,7 +17,7 @@
 package magnet;
 
 /**
- * Declares the way Magnet binds instances of &#64;Implementation</code>-annotated
+ * Declares the way Magnet binds instances of &#64;Instance</code>-annotated
  * classes into scopes. See each separate setting for more detail.
  */
 public enum Scoping {
@@ -34,12 +34,12 @@ public enum Scoping {
      *
      * <pre>
      *
-     * &#64;Implementation(type = TypeA.class, scoping = Scoping.UNSCOPED)
+     * &#64;Instance(type = TypeA.class, scoping = Scoping.UNSCOPED)
      * class TypeA {
      *     TypeA() {}
      * }
      *
-     * &#64;Implementation(type = TypeB.class, scoping = Scoping.UNSCOPED)
+     * &#64;Instance(type = TypeB.class, scoping = Scoping.UNSCOPED)
      * class TypeB {
      *     final TypeA typeA;
      *     TypeB(@NonNull TypeA dependency) {
@@ -77,12 +77,12 @@ public enum Scoping {
      *
      * <pre>
      *
-     * &#64;Implementation(type = TypeA.class, scoping = Scoping.TOPMOST)
+     * &#64;Instance(type = TypeA.class, scoping = Scoping.TOPMOST)
      * class TypeA {
      *     TypeA() {}
      * }
      *
-     * &#64;Implementation(type = TypeB.class)
+     * &#64;Instance(type = TypeB.class)
      * class TypeB {
      *     final TypeA typeA;
      *     TypeB(@NonNull TypeA dependency) {
@@ -117,12 +117,12 @@ public enum Scoping {
      *
      * <pre>
      *
-     * &#64;Implementation(type = TypeA.class, scoping = Scoping.TOPMOST)
+     * &#64;Instance(type = TypeA.class, scoping = Scoping.TOPMOST)
      * class TypeA {
      *     TypeA() {}
      * }
      *
-     * &#64;Implementation(type = TypeB.class, scoping = Scoping.TOPMOST)
+     * &#64;Instance(type = TypeB.class, scoping = Scoping.TOPMOST)
      * class TypeB {
      *     final TypeA typeA;
      *     TypeB(@NonNull TypeA dependency) {
@@ -164,12 +164,12 @@ public enum Scoping {
      *
      * <pre>
      *
-     * &#64;Implementation(type = TypeA.class, scoping = Scoping.DIRECT)
+     * &#64;Instance(type = TypeA.class, scoping = Scoping.DIRECT)
      * class TypeA {
      *     TypeA() {}
      * }
      *
-     * &#64;Implementation(type = TypeB.class, scoping = Scoping.DIRECT)
+     * &#64;Instance(type = TypeB.class, scoping = Scoping.DIRECT)
      * class TypeB {
      *     final TypeA typeA;
      *     TypeB(@NonNull TypeA dependency) {

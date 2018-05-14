@@ -1,8 +1,8 @@
 package app.extension;
 
-import magnet.Implementation;
+import magnet.Instance;
 
-@Implementation(
+@Instance(
         type = Executor.class
 )
 class ExecutorImpl implements Executor<Runnable> {

@@ -5,12 +5,10 @@ import javax.annotation.Nullable;
 import app.HomeRepository;
 import app.Page;
 import app.UserData;
-import magnet.internal.InstanceFactory;
-import magnet.Implementation;
+import magnet.Instance;
 import magnet.Classifier;
-import magnet.Scope;
 
-@Implementation(type = Page.class)
+@Instance(type = Page.class)
 class HomePageWithClassifierParams implements Page {
 
     private static final String LOCAL = "local";

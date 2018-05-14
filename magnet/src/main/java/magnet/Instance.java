@@ -26,22 +26,22 @@ import java.lang.annotation.Target;
  * Magnet instantiates classes marked with this annotation automatically. Annotated
  * classes must have a single, none private constructor. Constructor is allowed to have
  * parameters which are dependencies for this instance. Magnet checks constructor
- * parameters and tries to resolve corresponding dependencies by looking into the
+ * parameters and tries to resolve corresponding dependencies by looking into accessible
  * scopes. If no suitable instances were found in scopes, Magnet searches for
- * {@code Implementation}-annotated classes and tried to instantiate them.
- * If constructor dependencies cannot be fulfilled, Magnet will fail at runtime with
- * corresponding error message.
+ * {@code Instance}-annotated classes and tried to instantiate them. If constructor's
+ * dependencies cannot be fulfilled, Magnet will fail at runtime with corresponding
+ * error message.
  *
  * <p>
  * In the example below we declare two dependent types and instantiate them in scope.
  *
  * <pre>
- *     &#64;Implementation(type=TypeA.class)
+ *     &#64;Instance(type=TypeA.class)
  *     class TypeA {
  *         TypeA() {}
  *     }
  *
- *     &#64;Implementation(type=TypeB.class)
+ *     &#64;Instance(type=TypeB.class)
  *     class TypeB {
  *         final TypeA typeA;
  *         TypeB(@NonNull TypeA dependency) {
@@ -69,13 +69,13 @@ import java.lang.annotation.Target;
  * to differentiate between those implementations. See {@link Classifier} for more detail.
  *
  * <p>
- * <b>Scoping.</b> Magnet can bind created instances into scope for reuse. Implementation can
+ * <b>Scoping.</b> Magnet can bind created instances into scope for reuse. Instance can
  * specify whether and how its instances should be bound into the scope. See {@link Scoping}
  * for more detail.
  */
 @Retention(SOURCE)
 @Target({ ElementType.TYPE, ElementType.METHOD })
-public @interface Implementation {
+public @interface Instance {
 
     /**
      * Type to use when annotated instance gets registered in scope. Annotated class must

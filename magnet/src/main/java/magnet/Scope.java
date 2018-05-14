@@ -66,7 +66,7 @@ import java.util.List;
  *
  * <p>
  * <b>Automatic binding (injection).</b>
- * Magnet can instantiate {@link Implementation}-annotated classes and bind their instances
+ * Magnet can instantiate {@link Instance}-annotated classes and bind their instances
  * into respective scopes automatically. If instantiated classes have dependencies, Magnet
  * will resolve those dependencies too. In this respect Magnet works as dependency injection
  * library.
@@ -75,7 +75,7 @@ import java.util.List;
  * dependencies from the scopes.
  *
  * <pre>
- * &#64;Implementation(type = Toaster.class)
+ * &#64;Instance(type = Toaster.class)
  * class Toaster {
  *     Toaster(
  *         Application app,

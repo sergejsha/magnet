@@ -7,9 +7,9 @@ import javax.annotation.Nullable;
 import app.HomeRepository;
 import app.Page;
 import app.UserData;
-import magnet.Implementation;
+import magnet.Instance;
 
-@Implementation(type = Page.class)
+@Instance(type = Page.class)
 class HomePageWithParams implements Page {
 
     HomePageWithParams(

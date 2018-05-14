@@ -1,10 +1,10 @@
 package app.extension;
 
 import app.Page;
+import magnet.Instance;
 import magnet.Scope;
-import magnet.Implementation;
 
-@Implementation(type = Page.class)
+@Instance(type = Page.class)
 class UserPage implements Page {
 
     UserPage(Scope registry) {

@@ -1,10 +1,10 @@
 package app.extension;
 
 import app.Page;
-import magnet.Implementation;
+import magnet.Instance;
 import magnet.Scope;
 
-@Implementation(type = Page.class)
+@Instance(type = Page.class)
 class HomePageWithScope implements Page {
 
     HomePageWithScope(Scope scope) { }

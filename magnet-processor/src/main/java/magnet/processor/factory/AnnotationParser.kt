@@ -5,7 +5,7 @@ import com.squareup.javapoet.ParameterSpec
 import com.squareup.javapoet.ParameterizedTypeName
 import com.squareup.javapoet.WildcardTypeName
 import magnet.Classifier
-import magnet.Implementation
+import magnet.Instance
 import magnet.Scope
 import magnet.Scoping
 import magnet.processor.CompilationException
@@ -124,7 +124,7 @@ internal open class AnnotationParser(
         var disabled = false
 
         element.annotationMirrors.forEach { annotationMirror ->
-            if (annotationMirror.mirrors<Implementation>()) {
+            if (annotationMirror.mirrors<Instance>()) {
                 annotationMirror.elementValues.entries.forEach { entry ->
                     val entryName = entry.key.simpleName.toString()
                     val entryValue = entry.value.value.toString()
@@ -151,7 +151,7 @@ internal open class AnnotationParser(
         }
 
         val interfaceType = if (interfaceTypeElement == null) {
-            throw env.compilationError(element, "${Implementation::class.java} must declare 'type' property.")
+            throw env.compilationError(element, "${Instance::class.java} must declare 'type' property.")
         } else {
             ClassName.get(interfaceTypeElement)
         }

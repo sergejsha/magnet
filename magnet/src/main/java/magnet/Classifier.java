@@ -36,7 +36,7 @@ import java.lang.annotation.Target;
  *      Context activity = scope.getSingle(Context.class, "activity-context");
  *
  *      // get instances via constructor injection
- *      &#64;Implementation(type = MyImplementation.class)
+ *      &#64;Instance(type = MyImplementation.class)
  *      public MyImplementation(
  *          &#64;Classifier("app-context") Context app,
  *          &#64;Classifier("activity-context") Context activity,

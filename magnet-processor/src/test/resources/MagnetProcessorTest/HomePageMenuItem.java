@@ -1,10 +1,10 @@
 package app.extension;
 
 import app.MenuItem;
+import magnet.Instance;
 import magnet.Scope;
-import magnet.Implementation;
 
-@Implementation(
+@Instance(
         type = MenuItem.class,
         classifier = "main-menu"
 )

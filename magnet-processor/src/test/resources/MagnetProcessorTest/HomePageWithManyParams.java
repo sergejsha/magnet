@@ -7,10 +7,10 @@ import app.Page;
 import java.util.List;
 
 import magnet.Classifier;
-import magnet.Implementation;
+import magnet.Instance;
 
 
-@Implementation(type = Page.class)
+@Instance(type = Page.class)
 class HomePageWithManyParams implements Page {
 
     HomePageWithManyParams(
