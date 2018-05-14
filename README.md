@@ -4,25 +4,25 @@
 
 # Magnet
 
-Magnet is a minimalistic dependency injection and dependency inversion framework for Android helping to write truly modular applications. If you like the idea of grouping objects into hierarchical scopes, automatic transitive dependency injection and simple declarative configuration, then Magnet can be a good choice for you.
+Magnet is a minimalistic dependency injection and dependency inversion library for Android helping to write truly modular applications. If you want a fast, stable, non intrusive, easy to configure dependency injection framework supporting automatic transitive dependency injection, then Magnet is a good choice for you.
 
-Magnet implements annotation processor which analyses your code and generates easy-to-read and easy-to-debug factories for your implementation classes. At the same time Magnet allows building modular applications, where dependencies can be injected dynamically at runtime (see [dependency inversion][1]). This dynamic behavior comes with its costs - Magnet cannot fully ensure consistency of the dependency-graph of your application at compile time. Nevertheless it does as much as possible at compile time and only the rest gets checked at runtime. If you prefer fully statical graph binding at compile time and you can resign on dynamic modularization and dependency inversion Magnet offers, you should rather go for Dagger2. You will also loose Magnet's configuration simplicity, but the choice is yours.
+Magnet implements annotation processor which analyses your code and generates easy-to-read and easy-to-debug factories for your classes. At the same time Magnet allows building modular applications where dependencies can be injected dynamically at runtime (see [dependency inversion][1]). This dynamic behavior comes with its costs - Magnet cannot fully ensure consistency of the dependency-graph of your application at compile time. Nevertheless it checks as much as possible at compile time and only the rest gets checked at runtime. If you prefer fully statical graph binding at compile time and you can resign on dynamic modularization and dependency inversion Magnet offers, you can go with Dagger2 instead. You will also loose Magnet's configuration simplicity, but the choice is yours.
 
-Magnet does not use reflection for objects creation. It generates and uses factories instead. By doing this Magnet stays fast and easy to debug. It also provides a very simple DSL when used with Kotlin. Magnet classes are well documented and covered by unit tests.
+Magnet does *not* use reflection for objects creation. It generates and uses factoriy classes instead. By doing this Magnet stays fast and easy to debug. It also provides a very simple DSL when used with Kotlin. Magnet classes are well documented and covered by unit tests.
 
 # Design
 Magnet has a very minimalistic, almost naive, design. It deals with two concepts - `Scopes` and `Instances`. The whole design can be described by just four simple statements:
 
 1. `Scopes` are containers for object `Instances`.
 2. `Scopes` can build up hierarchies.
-2. `Instances` can be put into (bound) and taken from `Scopes`.
-3. `Instances` can depend on each other.
+3. `Instances` can be put into (bound) and taken from `Scopes`.
+4. `Instances` can depend on each other.
 
 <img src="documentation/images/design-diagram.png" width="480" />
 
 # Getting started
 
-1. Initializing Magnet - create an empty marker interface in your main application module and annotate it. This allows Magnet to find all implementations located in either main or library modules, which makes [dependency inversion][1] between modules possible.
+1. Initialize Magnet - create an empty marker interface in your main application module and annotate it. This allows Magnet to find all `@Instance`-annotated classes located in either main or library modules, which makes [dependency inversion][1] between modules possible.
 
 ```kotlin
 @Magnetizer
@@ -58,13 +58,13 @@ class Presenter(private val repository: Repository) {
 3. Create root scope and create objects.
 
 ```kotlin
-val root = Magnet.createScope()
+val root = Magnet.createRootScope()
 val presenter = root.getSingle<Presenter>()
 
 presenter.presentHelloMessage()
 ```
 
-Magnet will create `Presenter` and `Repository` objects for you. `Repository` instance will be injected into `Presenter`'s constructor automatically.
+Magnet will create instance of `Presenter` and `Repository` for you. `Repository` instance will be injected into `Presenter`'s constructor automatically.
 
 # Documentation
 
