@@ -78,16 +78,16 @@ Magnet will create instance of `Presenter` and `Repository` for you. `Repository
 Kotlin
 ```gradle
 dependencies {
-    api "de.halfbit:magnet-kotlin:2.0-RC4"
-    kapt "de.halfbit:magnet-processor:2.0-RC4"
+    api "de.halfbit:magnet-kotlin:2.0-RC5"
+    kapt "de.halfbit:magnet-processor:2.0-RC5"
 }
 ```
 
 Java
 ```gradle
 dependencies {
-    api 'de.halfbit:magnet:2.0-RC4'
-    annotationProcessor 'de.halfbit:magnet-processor:2.0-RC4'
+    api 'de.halfbit:magnet:2.0-RC5'
+    annotationProcessor 'de.halfbit:magnet-processor:2.0-RC5'
 }
 ```
 
