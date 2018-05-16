@@ -73,6 +73,10 @@ Magnet will create instance of `Presenter` and `Repository` for you. `Repository
 3. [Dependency inversion][1]
 4. [Dependency auto-scoping][2]
 
+# Support
+
+Although Magnet is provided for free without any support, you can <a href="mailto:info@halfbit.de?subject=Magnet, technical support">request</a> additional technical support or training if you need help.
+
 # Gradle
 
 Kotlin
@@ -90,10 +94,6 @@ dependencies {
     annotationProcessor 'de.halfbit:magnet-processor:2.0-RC5'
 }
 ```
-
-# Support
-
-Although Magnet is provided for free without any support, you can <a href="mailto:info@halfbit.de?subject=Magnet, technical support">request</a> additional technical support or training if you need help.
 
 # License
 ```
