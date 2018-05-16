@@ -75,7 +75,7 @@ Magnet will create instance of `Presenter` and `Repository` for you. `Repository
 
 # Support
 
-Magnet is provided for free, without any support. If you consider using Magnet and need support or training, feel free to <a href="mailto:info@halfbit.de?subject=Magnet, technical support">contact me</a>.
+Magnet is provided for free, without any support. If you consider using Magnet in your commercial product and need support or training, feel free to <a href="mailto:info@halfbit.de?subject=Magnet, technical support">contact me</a>.
 
 # Gradle
 
