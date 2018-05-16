@@ -91,7 +91,7 @@ dependencies {
 }
 ```
 
-# Technical support
+# Support
 
 Although Magnet is provided for free without any support, you can <a href="mailto:info@halfbit.de?subject=Magnet, technical support">request</a> additional technical support or training if you need help.
 
