@@ -18,9 +18,9 @@ package magnet.processor.index
 
 import com.squareup.javapoet.ClassName
 import com.squareup.javapoet.CodeBlock
-import magnet.processor.index.model.Inst
 import magnet.processor.index.model.Index
 import magnet.processor.index.model.IndexVisitor
+import magnet.processor.index.model.Inst
 import magnet.processor.index.model.Range
 import magnet.processor.index.model.Section
 
@@ -59,8 +59,9 @@ class IndexGeneratorVisitor : IndexVisitor {
             targetsName
         )
 
+        val mapSize = Math.max(Math.round(section.ranges.size / .75f), 8)
         targetsBuilder.addStatement(
-            "\$T<\$T, \$T> \$L = new \$T<>()",
+            "\$T<\$T, \$T> \$L = new \$T<>($mapSize)",
             Map::class.java,
             String::class.java,
             rangeClassName,
