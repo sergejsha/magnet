@@ -9,7 +9,7 @@ public final class MagnetIndexer {
         InstanceFactory[] factories = new InstanceFactory[] {
                 new UnknownTypeTabMagnetFactory(),
         };
-        Map<Class, Object> index = new HashMap<>();
+        Map<Class, Object> index = new HashMap<>(16);
         index.put(UnknownTypeTabMagnetFactory.getType(), new Range(0, 1, ""));
         instanceManager.register(factories, index);
     }

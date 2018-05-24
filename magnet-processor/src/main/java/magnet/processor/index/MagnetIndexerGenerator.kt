@@ -25,8 +25,8 @@ import com.squareup.javapoet.TypeSpec
 import magnet.internal.FactoryIndex
 import magnet.internal.InstanceFactory
 import magnet.processor.MagnetProcessorEnv
-import magnet.processor.index.model.Inst
 import magnet.processor.index.model.Index
+import magnet.processor.index.model.Inst
 import javax.lang.model.element.Element
 import javax.lang.model.element.ExecutableElement
 import javax.lang.model.element.Modifier
@@ -105,9 +105,11 @@ class MagnetIndexerGenerator {
     private fun generateIndexCodeBlock(index: Index): CodeBlock {
         val indexGenerator = IndexGeneratorVisitor()
         index.accept(indexGenerator)
+
+        val mapSize = Math.max(Math.round(index.instances.size / 0.75f), 16)
         return CodeBlock.builder()
             .addStatement(
-                "\$T<\$T, \$T> index = new \$T<>()",
+                "\$T<\$T, \$T> index = new \$T<>($mapSize)",
                 Map::class.java,
                 Class::class.java,
                 Object::class.java,

@@ -17,9 +17,9 @@ public final class MagnetIndexer {
                 new UserPageMagnetFactory(),
         };
 
-        Map<Class, Object> index = new HashMap<>();
+        Map<Class, Object> index = new HashMap<>(16);
 
-        Map<String, Range> ranges1 = new HashMap<>();
+        Map<String, Range> ranges1 = new HashMap<>(8);
         ranges1.put("extended-menu", new Range(0, 1, "extended-menu"));
         ranges1.put("main-menu", new Range(1, 1, "main-menu"));
 

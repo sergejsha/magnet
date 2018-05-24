@@ -343,6 +343,23 @@ class MagnetProcessorTest {
     }
 
     @Test
+    fun generateMagnetRegistryWithManyTypes() {
+
+        val compilation = Compiler.javac()
+            .withProcessors(MagnetProcessor())
+            .compile(
+                withResource("ManyTypes.java")
+            )
+
+        assertThat(compilation).succeeded()
+
+        assertThat(compilation)
+            .generatedSourceFile("magnet/internal/MagnetIndexer")
+            .hasSourceEquivalentTo(withResource("generated/MagnetIndexer_ManyTypes.java"))
+
+    }
+
+    @Test
     fun generateMagnetRegistry_Empty() {
 
         val compilation = Compiler.javac()
