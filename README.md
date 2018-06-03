@@ -95,6 +95,11 @@ dependencies {
 }
 ```
 
+# Proguard
+```proguard 
+-keep class magnet.internal.MagnetIndexer { *; }
+```
+
 # License
 ```
 Copyright 2018 Sergej Shafarenka, www.halfbit.de
