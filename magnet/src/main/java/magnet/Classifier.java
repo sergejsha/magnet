@@ -16,7 +16,7 @@
 
 package magnet;
 
-import static java.lang.annotation.RetentionPolicy.SOURCE;
+import static java.lang.annotation.RetentionPolicy.CLASS;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -45,7 +45,7 @@ import java.lang.annotation.Target;
  *      }
  * </pre>
  */
-@Retention(SOURCE)
+@Retention(CLASS)
 @Target({ ElementType.PARAMETER })
 public @interface Classifier {
 

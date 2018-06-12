@@ -16,7 +16,7 @@
 
 package magnet;
 
-import static java.lang.annotation.RetentionPolicy.SOURCE;
+import static java.lang.annotation.RetentionPolicy.CLASS;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -27,6 +27,6 @@ import java.lang.annotation.Target;
  * where all registered @Instance-annotated classes come together and get indexed.
  * There must be a single class in the whole project annotated with this annotation.
  */
-@Retention(SOURCE)
+@Retention(CLASS)
 @Target({ ElementType.TYPE })
 public @interface Magnetizer {}
