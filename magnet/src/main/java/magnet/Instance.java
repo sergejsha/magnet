@@ -16,7 +16,7 @@
 
 package magnet;
 
-import static java.lang.annotation.RetentionPolicy.SOURCE;
+import static java.lang.annotation.RetentionPolicy.CLASS;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -73,7 +73,7 @@ import java.lang.annotation.Target;
  * specify whether and how its instances should be bound into the scope. See {@link Scoping}
  * for more detail.
  */
-@Retention(SOURCE)
+@Retention(CLASS)
 @Target({ ElementType.TYPE, ElementType.METHOD })
 public @interface Instance {
 

@@ -16,10 +16,14 @@
 
 package magnet.internal;
 
+import static java.lang.annotation.RetentionPolicy.CLASS;
+
 import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
 /** Subject to change. For internal use only. */
+@Retention(CLASS)
 @Target({ ElementType.TYPE })
 public @interface FactoryIndex {
     Class<? extends InstanceFactory<?>> factory();
