@@ -1,5 +1,5 @@
 [![Build Status](https://travis-ci.org/beworker/magnet.svg?branch=master)](https://travis-ci.org/beworker/magnet)
-[![Kotlin version badge](https://img.shields.io/badge/kotlin-1.2.41-blue.svg)](http://kotlinlang.org/)
+[![Kotlin version badge](https://img.shields.io/badge/kotlin-1.2.50-blue.svg)](http://kotlinlang.org/)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](http://www.apache.org/licenses/LICENSE-2.0)
 
 # Magnet
@@ -82,16 +82,16 @@ Magnet is provided for free, without any support. If you consider using Magnet i
 Kotlin
 ```gradle
 dependencies {
-    api "de.halfbit:magnet-kotlin:2.0-RC7"
-    kapt "de.halfbit:magnet-processor:2.0-RC7"
+    api "de.halfbit:magnet-kotlin:2.0-RC8"
+    kapt "de.halfbit:magnet-processor:2.0-RC8"
 }
 ```
 
 Java
 ```gradle
 dependencies {
-    api 'de.halfbit:magnet:2.0-RC6'
-    annotationProcessor 'de.halfbit:magnet-processor:2.0-RC7'
+    api 'de.halfbit:magnet:2.0-RC8'
+    annotationProcessor 'de.halfbit:magnet-processor:2.0-RC8'
 }
 ```
 
