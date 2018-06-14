@@ -16,6 +16,7 @@
 
 package magnet.processor.factory
 
+import com.squareup.javapoet.AnnotationSpec
 import com.squareup.javapoet.ClassName
 import com.squareup.javapoet.CodeBlock
 import com.squareup.javapoet.MethodSpec
@@ -34,7 +35,8 @@ class FactoryCodeGenerator : FactoryTypeVisitor, CodeGenerator {
     private var factoryTypeSpec: TypeSpec? = null
     private var factoryClassName: ClassName? = null
 
-    private var createMethodCodeBuilder: CodeBlock.Builder? = null
+    private lateinit var createMethodCodeBuilder: CodeBlock.Builder
+    private var shouldSuppressUncheckedWarning = false
     private var constructorParametersBuilder = StringBuilder()
     private var getScoping: MethodSpec? = null
 
@@ -43,6 +45,7 @@ class FactoryCodeGenerator : FactoryTypeVisitor, CodeGenerator {
     }
 
     override fun visitEnter(createMethod: CreateMethod) {
+        shouldSuppressUncheckedWarning = false
         factoryTypeSpec = null
         getScoping = null
         createMethodCodeBuilder = CodeBlock.builder()
@@ -55,7 +58,7 @@ class FactoryCodeGenerator : FactoryTypeVisitor, CodeGenerator {
         if (!isScopeParameter) {
             if (parameter.classifier == Classifier.NONE) {
                 if (parameter.method == GetterMethod.GET_MANY) {
-                    createMethodCodeBuilder!!.addStatement(
+                    createMethodCodeBuilder.addStatement(
                         "\$T<\$T> ${parameter.name} = scope.${parameter.method.code}(\$T.class)",
                         List::class.java,
                         parameter.type,
@@ -63,7 +66,7 @@ class FactoryCodeGenerator : FactoryTypeVisitor, CodeGenerator {
                     )
 
                 } else {
-                    createMethodCodeBuilder!!.addStatement(
+                    createMethodCodeBuilder.addStatement(
                         "\$T ${parameter.name} = scope.${parameter.method.code}(\$T.class)",
                         parameter.type,
                         parameter.type
@@ -72,7 +75,7 @@ class FactoryCodeGenerator : FactoryTypeVisitor, CodeGenerator {
 
             } else {
                 if (parameter.method == GetterMethod.GET_MANY) {
-                    createMethodCodeBuilder!!.addStatement(
+                    createMethodCodeBuilder.addStatement(
                         "\$T<\$T> ${parameter.name} = scope.${parameter.method.code}(\$T.class, \$S)",
                         List::class.java,
                         parameter.type,
@@ -80,7 +83,7 @@ class FactoryCodeGenerator : FactoryTypeVisitor, CodeGenerator {
                         parameter.classifier
                     )
                 } else {
-                    createMethodCodeBuilder!!.addStatement(
+                    createMethodCodeBuilder.addStatement(
                         "\$T ${parameter.name} = scope.${parameter.method.code}(\$T.class, \$S)",
                         parameter.type,
                         parameter.type,
@@ -88,6 +91,10 @@ class FactoryCodeGenerator : FactoryTypeVisitor, CodeGenerator {
                     )
                 }
             }
+        }
+
+        if (parameter.typeErased) {
+            shouldSuppressUncheckedWarning = true
         }
 
         constructorParametersBuilder.append(parameter.name).append(", ")
@@ -122,7 +129,7 @@ class FactoryCodeGenerator : FactoryTypeVisitor, CodeGenerator {
     }
 
     private fun generateCreateMethod(factoryType: FactoryType): MethodSpec {
-        val builder = MethodSpec
+        var builder = MethodSpec
             .methodBuilder("create")
             .addAnnotation(Override::class.java)
             .addModifiers(Modifier.PUBLIC)
@@ -132,7 +139,16 @@ class FactoryCodeGenerator : FactoryTypeVisitor, CodeGenerator {
                     .build()
             )
             .returns(factoryType.annotation.type)
-            .addCode(createMethodCodeBuilder!!.build())
+            .addCode(createMethodCodeBuilder.build())
+
+        if (shouldSuppressUncheckedWarning) {
+            builder = builder.addAnnotation(
+                AnnotationSpec
+                    .builder(SuppressWarnings::class.java)
+                    .addMember("value", "\"unchecked\"")
+                    .build()
+            )
+        }
 
         val createStatement = factoryType.createStatement
         when (createStatement) {

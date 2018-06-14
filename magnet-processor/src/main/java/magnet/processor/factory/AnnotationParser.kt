@@ -48,6 +48,7 @@ internal open class AnnotationParser(
             return MethodParameter(
                 PARAM_SCOPE_NAME,
                 ClassName.get(Scope::class.java),
+                false,
                 Classifier.NONE,
                 GetterMethod.GET_SCOPE
             )
@@ -56,11 +57,15 @@ internal open class AnnotationParser(
         var paramTypeName = paramSpec.type
         var getterMethod: GetterMethod? = null
 
+        var paramTypeErased = false
         paramTypeName = if (paramTypeName is ParameterizedTypeName) {
             if (paramTypeName.rawType.reflectionName() == List::class.java.typeName) {
                 getterMethod = GetterMethod.GET_MANY
                 paramTypeName.typeArguments[0]
             } else {
+                if (!paramTypeName.typeArguments.isEmpty()) {
+                    paramTypeErased = true
+                }
                 paramTypeName.rawType
             }
         } else {
@@ -111,6 +116,7 @@ internal open class AnnotationParser(
         return MethodParameter(
             paramName,
             paramTypeName,
+            paramTypeErased,
             classifier,
             getterMethod
         )

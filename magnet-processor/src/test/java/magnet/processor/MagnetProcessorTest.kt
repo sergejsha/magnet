@@ -310,10 +310,31 @@ class MagnetProcessorTest {
             .withProcessors(MagnetProcessor())
             .compile(
                 withResource("Executor.java"),
-                withResource("ExecutorImpl.java")
+                withResource("ExecutorImpl.java"),
+                withResource("AppExtensionRegistry.java")
             )
 
-        assertThat(compilation).succeededWithoutWarnings()
+        assertThat(compilation)
+            .generatedSourceFile("app/extension/ExecutorImplMagnetFactory")
+            .hasSourceEquivalentTo(withResource("generated/ForInterfaceWithGenericType_ExecutorMagnetFactory.java"))
+
+    }
+
+    @Test
+    fun generateFactoryIndex_DependentOnInterfaceWithGenericType() {
+
+        val compilation = Compiler.javac()
+            .withProcessors(MagnetProcessor())
+            .compile(
+                withResource("Executor.java"),
+                withResource("ExecutorImpl.java"),
+                withResource("ExecutorMaster.java"),
+                withResource("AppExtensionRegistry.java")
+            )
+
+        assertThat(compilation)
+            .generatedSourceFile("app/extension/ExecutorMasterMagnetFactory")
+            .hasSourceEquivalentTo(withResource("generated/DependentOnInterfaceWithGenericType_ExecutorMagnetFactory.java"))
 
     }
 

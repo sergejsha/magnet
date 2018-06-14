@@ -80,6 +80,7 @@ data class CreateMethod(
 data class MethodParameter(
     val name: String,
     val type: TypeName,
+    val typeErased: Boolean,
     val classifier: String,
     val method: GetterMethod
 ) {
