@@ -18,9 +18,9 @@ package magnet.sample.app
 
 import android.app.Application
 import android.content.Context
-import magnet.Magnet
 import magnet.Scope
 import magnet.bind
+import magnet.createRootScope
 
 const val APPLICATION_CONTEXT = "application-context"
 
@@ -32,7 +32,7 @@ class App : Application() {
     }
 
     companion object {
-        val scope: Scope = Magnet.createRootScope()
+        val scope: Scope = createRootScope()
     }
 
 }
