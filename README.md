@@ -4,14 +4,14 @@
 
 # Magnet
 
-Magnet is a minimalistic dependency injection and dependency inversion library for Android helping to write truly modular applications. If you want a fast, stable, non intrusive and easy to configure dependency injection framework supporting automatic transitive dependency injection, then Magnet is a good choice for you.
+Magnet is a minimalist dependency injection and dependency inversion library for Android helping to write truly modular applications. If you want a fast, stable, non intrusive and easy to configure dependency injection framework supporting automatic transitive dependency injection, then Magnet is a good choice for you.
 
 Magnet implements annotation processor which analyses your code and generates easy-to-read and easy-to-debug factories for your classes. At the same time Magnet allows building modular applications where dependencies can be injected dynamically at runtime (see [dependency inversion][1]). This dynamic behavior comes with its costs - Magnet cannot ensure full consistency of the dependency-graph of your application at compile time like Dagger2 does. Nevertheless it checks as much as possible at compile time and only the rest gets checked at runtime. This gives some good balance between fully statical and fully dynamical dependency injection.
 
 Magnet does *not* use reflection for objects creation. It generates and uses factory classes instead. By doing this Magnet stays fast and easy to debug. It also provides a very simple DSL when used with Kotlin. Magnet classes are well documented and covered by unit tests.
 
 # Design
-Magnet has a very minimalistic, almost naive, design. It deals with just two concepts - `Scopes` and `Instances`. The whole design can be described by four simple statements:
+Magnet has a very minimalist, almost naive, design. It deals with just two concepts - `Scopes` and `Instances`. The whole design can be described by four simple statements:
 
 1. `Scopes` are containers for object `Instances`.
 2. `Scopes` can build up hierarchies.
@@ -82,16 +82,16 @@ Magnet is provided for free, without any support. If you consider using Magnet i
 Kotlin
 ```gradle
 dependencies {
-    api "de.halfbit:magnet-kotlin:2.0-RC8"
-    kapt "de.halfbit:magnet-processor:2.0-RC8"
+    api "de.halfbit:magnet-kotlin:2.0"
+    kapt "de.halfbit:magnet-processor:2.0"
 }
 ```
 
 Java
 ```gradle
 dependencies {
-    api 'de.halfbit:magnet:2.0-RC8'
-    annotationProcessor 'de.halfbit:magnet-processor:2.0-RC8'
+    api 'de.halfbit:magnet:2.0'
+    annotationProcessor 'de.halfbit:magnet-processor:2.0'
 }
 ```
 
