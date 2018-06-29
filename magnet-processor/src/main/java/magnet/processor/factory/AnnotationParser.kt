@@ -3,12 +3,12 @@ package magnet.processor.factory
 import com.squareup.javapoet.ClassName
 import com.squareup.javapoet.ParameterSpec
 import com.squareup.javapoet.ParameterizedTypeName
+import com.squareup.javapoet.TypeName
 import com.squareup.javapoet.WildcardTypeName
 import magnet.Classifier
 import magnet.Instance
 import magnet.Scope
 import magnet.Scoping
-import magnet.processor.CompilationException
 import magnet.processor.MagnetProcessorEnv
 import magnet.processor.mirrors
 import javax.lang.model.element.Element
@@ -33,11 +33,10 @@ internal open class AnnotationParser(
 
         val variableType = variable.asType()
         if (variableType.kind == TypeKind.TYPEVAR) {
-            env.reportError(element,
+            throw env.compilationError(element,
                 "Constructor parameter '${variable.simpleName}' is specified using a generic" +
                     " type which is not supported by Magnet. Use a non-parameterized class or interface" +
                     " type instead. To inject current scope instance, use 'Scope' parameter type.")
-            throw CompilationException()
         }
 
         val paramSpec = ParameterSpec.get(variable)
@@ -59,43 +58,34 @@ internal open class AnnotationParser(
 
         var paramTypeErased = false
         paramTypeName = if (paramTypeName is ParameterizedTypeName) {
+
             if (paramTypeName.rawType.reflectionName() == List::class.java.typeName) {
                 getterMethod = GetterMethod.GET_MANY
+
                 var listParamTypeName = paramTypeName.typeArguments[0]
-                if (listParamTypeName is ParameterizedTypeName
-                    && !listParamTypeName.typeArguments.isEmpty()) {
-                    paramTypeErased = true
-                    listParamTypeName = listParamTypeName.rawType
+                listParamTypeName = resolveWildcardParameterType(listParamTypeName, element)
+
+                if (listParamTypeName is ParameterizedTypeName) {
+                    if (!listParamTypeName.typeArguments.isEmpty()) {
+                        paramTypeErased = true
+                        listParamTypeName = listParamTypeName.rawType
+                    }
                 }
+
                 listParamTypeName
+
             } else {
                 if (!paramTypeName.typeArguments.isEmpty()) {
                     paramTypeErased = true
                 }
                 paramTypeName.rawType
             }
+
         } else {
             ClassName.get(variableType)
         }
 
-        if (paramTypeName is WildcardTypeName) {
-            if (paramTypeName.lowerBounds.size > 0) {
-                env.reportError(element,
-                    "Only single upper bounds class parameter is supported," +
-                        " for example List<${paramTypeName.lowerBounds[0]}>")
-                throw CompilationException()
-            }
-
-            val upperBounds = paramTypeName.upperBounds
-            if (upperBounds.size > 1) {
-                env.reportError(element,
-                    "Only single upper bounds class parameter is supported," +
-                        " for example List<${upperBounds[0]}>")
-                throw CompilationException()
-            }
-
-            paramTypeName = upperBounds[0]
-        }
+        paramTypeName = resolveWildcardParameterType(paramTypeName, element)
 
         var hasNullableAnnotation = false
         var classifier: String = Classifier.NONE
@@ -174,6 +164,26 @@ internal open class AnnotationParser(
             scoping,
             disabled
         )
+    }
+
+    private fun resolveWildcardParameterType(paramTypeName: TypeName, element: Element): TypeName {
+        if (paramTypeName is WildcardTypeName) {
+            if (paramTypeName.lowerBounds.size > 0) {
+                throw env.compilationError(element,
+                    "Magnet supports single upper bounds class parameter only," +
+                        " while lower bounds class parameter was found.")
+            }
+
+            val upperBounds = paramTypeName.upperBounds
+            if (upperBounds.size > 1) {
+                throw env.compilationError(element,
+                    "Magnet supports single upper bounds class parameter only," +
+                        " for example List<${upperBounds[0]}>")
+            }
+
+            return upperBounds[0]
+        }
+        return paramTypeName
     }
 
 }
