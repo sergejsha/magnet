@@ -61,7 +61,13 @@ internal open class AnnotationParser(
         paramTypeName = if (paramTypeName is ParameterizedTypeName) {
             if (paramTypeName.rawType.reflectionName() == List::class.java.typeName) {
                 getterMethod = GetterMethod.GET_MANY
-                paramTypeName.typeArguments[0]
+                var listParamTypeName = paramTypeName.typeArguments[0]
+                if (listParamTypeName is ParameterizedTypeName
+                    && !listParamTypeName.typeArguments.isEmpty()) {
+                    paramTypeErased = true
+                    listParamTypeName = listParamTypeName.rawType
+                }
+                listParamTypeName
             } else {
                 if (!paramTypeName.typeArguments.isEmpty()) {
                     paramTypeErased = true
