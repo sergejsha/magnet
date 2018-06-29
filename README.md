@@ -82,16 +82,16 @@ Magnet is provided for free, without any support. If you consider using Magnet i
 Kotlin
 ```gradle
 dependencies {
-    api "de.halfbit:magnet-kotlin:2.1"
-    kapt "de.halfbit:magnet-processor:2.1"
+    api "de.halfbit:magnet-kotlin:2.2"
+    kapt "de.halfbit:magnet-processor:2.2"
 }
 ```
 
 Java
 ```gradle
 dependencies {
-    api 'de.halfbit:magnet:2.1'
-    annotationProcessor 'de.halfbit:magnet-processor:2.1'
+    api 'de.halfbit:magnet:2.2'
+    annotationProcessor 'de.halfbit:magnet-processor:2.2'
 }
 ```
 
