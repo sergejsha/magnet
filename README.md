@@ -2,7 +2,8 @@
 [![Kotlin version badge](https://img.shields.io/badge/kotlin-1.2.50-blue.svg)](http://kotlinlang.org/)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](http://www.apache.org/licenses/LICENSE-2.0)
 
-# Magnet
+<img src="https://www.halfbit.de/images/magnet/magnet-logo.png" width="80" />
+<hr1> 
 
 Magnet is a minimalist dependency injection and dependency inversion library for Android helping to write truly modular applications. If you want a fast, stable, non intrusive and easy to configure dependency injection framework supporting automatic transitive dependency injection, then Magnet is a good choice for you.
 
