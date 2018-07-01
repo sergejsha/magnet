@@ -20,58 +20,11 @@ Magnet has a very minimalist, almost naive, design. It deals with just two conce
 
 <img src="documentation/images/design-diagram.png" width="480" />
 
-# Getting started
-
-1. Initialize Magnet - create an empty marker interface in your main application module and annotate it. This allows Magnet to find all `@Instance`-annotated classes located in either main or library modules, which makes [dependency inversion][1] between modules possible.
-
-```kotlin
-@Magnetizer
-interface AppMagnetizer
-```
-
-2. Write and annotate your implementation classes.
-
-```kotlin
-Repository.kt
-
-interface Repository {
-    fun getHelloMessage(): String
-}
-
-@Instance(type = Repository::class)
-internal class DefaultRepository(): Repository {
-    override fun getHelloMessage() = "Hello Magnet!"
-}
-```
-
-```kotlin
-Presenter.kt
-
-@Instance(type = Presenter::class)
-class Presenter(private val repository: Repository) {
-    fun presentHelloMessage() {
-        println(repository.getHelloMessage())
-    }
-}
-```
-
-3. Create root scope and create objects.
-
-```kotlin
-val root = Magnet.createRootScope()
-val presenter = root.getSingle<Presenter>()
-
-presenter.presentHelloMessage()
-```
-
-Magnet will create instance of `Presenter` and `Repository` for you. `Repository` instance will be injected into `Presenter`'s constructor automatically.
-
 # Documentation
 
-1. Check out sample application to see Magnet in action.
-2. Additional documentation and examples can be found in Javadoc.
-3. [Dependency inversion][1]
-4. [Dependency auto-scoping][2]
+1. [Developer Guide](https://www.halfbit.de/magnet/developer-guide/)
+2. [Dependency inversion][1]
+3. [Dependency auto-scoping][2]
 
 # Support
 
