@@ -7,7 +7,7 @@
 
 Magnet is a minimalist dependency injection and [dependency inversion][1] library for Android helping to write modular applications. If you want a fast, stable, non-intrusive and easy-to-configure dependency injection framework, then Magnet is a good choice for you.
 
-Magnet does **not** use reflection for object creation. It is based on annotation processor which prepares and partly validates dependency graph of your application at build-time. Final creation and validation of the dependency graph happens at runtime. This deliberate design decision esures a fair balance between fully statical and fully dynamic dependency injection. Properly designed Magnet-application allows adding and removing application functionality by adding and removing modules in application's build script whithout any additional programming effort. In that respect Magnet enforces modular design and helps keeping modules be developed and tested in isolation.
+Magnet does **not** use reflection for object creation. It is based on annotation processor which prepares and partly validates dependency graph of your application at build-time. Final creation and validation of the dependency graph happens at runtime. This deliberate design decision esures a fair balance between fully statical and fully dynamic dependency injection. Properly designed Magnet-application allows adding and removing application functionality by adding and removing modules in application's build script whithout any additional programming effort. In that respect Magnet enforces modular design and helps modules be developed and tested in isolation.
 
 Magnet is well documented and covered by unit tests.
 
