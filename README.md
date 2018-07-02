@@ -24,12 +24,8 @@ Magnet has a very minimalist, almost naive, design. It deals with just two conce
 # Documentation
 
 1. [Developer Guide](https://www.halfbit.de/magnet/developer-guide/)
-2. [Dependency inversion][1]
-3. [Dependency auto-scoping][2]
-
-# Support
-
-Magnet is provided for free, without any support. If you consider using Magnet in your commercial product and you need support or training, feel free to <a href="mailto:info@halfbit.de?subject=Magnet, technical support">contact me</a>.
+2. [Dependency Inversion][1]
+3. [Hierarchical Scopes][2]
 
 # Gradle
 
@@ -53,6 +49,10 @@ dependencies {
 ```proguard 
 -keep class magnet.internal.MagnetIndexer { *; }
 ```
+
+# Support
+
+Magnet is provided for free, without any support. If you consider using Magnet in your commercial product and you need support or training, feel free to <a href="mailto:info@halfbit.de?subject=Magnet,%20Technical%20support">contact me</a>.
 
 # License
 ```
