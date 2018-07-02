@@ -5,11 +5,11 @@
 <img src="https://halfbit.de/images/magnet/magnet-logo.png" width="80" />
 <hr1> 
 
-Magnet is a minimalist dependency injection and dependency inversion library for Android helping to write truly modular applications. If you want a fast, stable, non intrusive and easy to configure dependency injection framework supporting automatic transitive dependency injection, then Magnet is a good choice for you.
+Magnet is a minimalist dependency injection and [dependency inversion][1] library for Android helping to write modular applications. If you want a fast, stable, non-intrusive and easy-to-configure dependency injection framework, then Magnet is a good choice for you.
 
-Magnet implements annotation processor which analyses your code and generates easy-to-read and easy-to-debug factories for your classes. At the same time Magnet allows building modular applications where dependencies can be injected dynamically at runtime (see [dependency inversion][1]). This dynamic behavior comes with its costs - Magnet cannot ensure full consistency of the dependency-graph of your application at compile time like Dagger2 does. Nevertheless it checks as much as possible at compile time and only the rest gets checked at runtime. This gives some good balance between fully statical and fully dynamical dependency injection.
+Magnet does **not** use reflection for object creation. It is based on annotation processor which prepares and partly validates dependency graph of your application at build-time. Final creation and validation of the dependency graph happens at runtime. This deliberate design decision esures a fair balance between fully statical and fully dynamic dependency injection. Properly designed Magnet-application allows adding and removing application functionality by adding and removing modules in application's build script whithout any additional programming effort. In that respect Magnet enforces modular design and helps keeping modules be developed and tested in isolation.
 
-Magnet does *not* use reflection for objects creation. It generates and uses factory classes instead. By doing this Magnet stays fast and easy to debug. It also provides a very simple DSL when used with Kotlin. Magnet classes are well documented and covered by unit tests.
+Magnet is well documented and covered by unit tests.
 
 # Design
 Magnet has a very minimalist, almost naive, design. It deals with just two concepts - `Scopes` and `Instances`. The whole design can be described by four simple statements:
