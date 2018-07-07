@@ -58,12 +58,20 @@ class FactoryCodeGenerator : FactoryTypeVisitor, CodeGenerator {
         if (!isScopeParameter) {
             if (parameter.classifier == Classifier.NONE) {
                 if (parameter.method == GetterMethod.GET_MANY) {
-                    createMethodCodeBuilder.addStatement(
-                        "\$T<\$T> ${parameter.name} = scope.${parameter.method.code}(\$T.class)",
-                        List::class.java,
-                        parameter.type,
-                        parameter.type
-                    )
+                    if (parameter.typeErased) {
+                        createMethodCodeBuilder.addStatement(
+                            "\$T ${parameter.name} = scope.${parameter.method.code}(\$T.class)",
+                            List::class.java,
+                            parameter.type
+                        )
+                    } else {
+                        createMethodCodeBuilder.addStatement(
+                            "\$T<\$T> ${parameter.name} = scope.${parameter.method.code}(\$T.class)",
+                            List::class.java,
+                            parameter.type,
+                            parameter.type
+                        )
+                    }
 
                 } else {
                     createMethodCodeBuilder.addStatement(
@@ -75,13 +83,22 @@ class FactoryCodeGenerator : FactoryTypeVisitor, CodeGenerator {
 
             } else {
                 if (parameter.method == GetterMethod.GET_MANY) {
-                    createMethodCodeBuilder.addStatement(
-                        "\$T<\$T> ${parameter.name} = scope.${parameter.method.code}(\$T.class, \$S)",
-                        List::class.java,
-                        parameter.type,
-                        parameter.type,
-                        parameter.classifier
-                    )
+                    if (parameter.typeErased) {
+                        createMethodCodeBuilder.addStatement(
+                            "\$T ${parameter.name} = scope.${parameter.method.code}(\$T.class, \$S)",
+                            List::class.java,
+                            parameter.type,
+                            parameter.classifier
+                        )
+                    } else {
+                        createMethodCodeBuilder.addStatement(
+                            "\$T<\$T> ${parameter.name} = scope.${parameter.method.code}(\$T.class, \$S)",
+                            List::class.java,
+                            parameter.type,
+                            parameter.type,
+                            parameter.classifier
+                        )
+                    }
                 } else {
                     createMethodCodeBuilder.addStatement(
                         "\$T ${parameter.name} = scope.${parameter.method.code}(\$T.class, \$S)",

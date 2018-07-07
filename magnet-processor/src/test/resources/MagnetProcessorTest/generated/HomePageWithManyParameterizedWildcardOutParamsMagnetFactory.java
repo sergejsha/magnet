@@ -7,7 +7,7 @@ import magnet.Scope;
 import magnet.Scoping;
 import magnet.internal.InstanceFactory;
 
-public final class HomePageWithManyParameterizedParamsMagnetFactory implements InstanceFactory<Page> {
+public final class HomePageWithManyParameterizedWildcardOutParamsMagnetFactory implements InstanceFactory<Page> {
     @Override
     @SuppressWarnings("unchecked")
     public Page create(Scope scope) {
@@ -15,7 +15,7 @@ public final class HomePageWithManyParameterizedParamsMagnetFactory implements I
         List variant2 = scope.getMany(WorkProcessor.class, "global");
         List variant3 = scope.getMany(WorkProcessor.class);
         List variant4 = scope.getMany(WorkProcessor.class, "global");
-        return new HomePageWithManyParameterizedParams(variant1, variant2, variant3, variant4);
+        return new HomePageWithManyParameterizedWildcardOutParams(variant1, variant2, variant3, variant4);
     }
 
     @Override
