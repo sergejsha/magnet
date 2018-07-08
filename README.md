@@ -32,16 +32,16 @@ Magnet has a very minimalist, almost naive, design. It deals with just two conce
 Kotlin
 ```gradle
 dependencies {
-    api "de.halfbit:magnet-kotlin:2.2"
-    kapt "de.halfbit:magnet-processor:2.2"
+    api 'de.halfbit:magnet-kotlin:2.3'
+    kapt 'de.halfbit:magnet-processor:2.3'
 }
 ```
 
 Java
 ```gradle
 dependencies {
-    api 'de.halfbit:magnet:2.2'
-    annotationProcessor 'de.halfbit:magnet-processor:2.2'
+    api 'de.halfbit:magnet:2.3'
+    annotationProcessor 'de.halfbit:magnet-processor:2.3'
 }
 ```
 
