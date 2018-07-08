@@ -182,14 +182,12 @@ class MagnetProcessorTest {
     }
 
     @Test
-    fun generateFactory_WithManyParameterizedWildcardParams() {
-
-        // This is what Kotlin provides to annotation processor, when Kotlin generics are used as parameters
+    fun generateFactory_WithManyParameterizedWildcardOutParams() {
 
         val compilation = Compiler.javac()
             .withProcessors(MagnetProcessor())
             .compile(
-                withResource("HomePageWithManyParameterizedWildcardParams.java"),
+                withResource("HomePageWithManyParameterizedWildcardOutParams.java"),
                 withResource("Page.java"),
                 withResource("WorkProcessor.java")
             )
@@ -197,8 +195,48 @@ class MagnetProcessorTest {
         assertThat(compilation).succeededWithoutWarnings()
 
         assertThat(compilation)
-            .generatedSourceFile("app/extension/HomePageWithManyParameterizedWildcardParamsMagnetFactory")
-            .hasSourceEquivalentTo(withResource("generated/HomePageWithManyParameterizedWildcardParamsMagnetFactory.java"))
+            .generatedSourceFile("app/extension/HomePageWithManyParameterizedWildcardOutParamsMagnetFactory")
+            .hasSourceEquivalentTo(withResource("generated/HomePageWithManyParameterizedWildcardOutParamsMagnetFactory.java"))
+
+    }
+
+    @Test
+    fun generateFactory_WithManyParameterizedWildcardInParams() {
+
+        val compilation = Compiler.javac()
+            .withProcessors(MagnetProcessor())
+            .compile(
+                withResource("HomePageWithManyParameterizedWildcardInParams.java"),
+                withResource("Page.java"),
+                withResource("WorkProcessor.java")
+            )
+
+        assertThat(compilation).succeededWithoutWarnings()
+
+        assertThat(compilation)
+            .generatedSourceFile("app/extension/HomePageWithManyParameterizedWildcardInParamsMagnetFactory")
+            .hasSourceEquivalentTo(withResource("generated/HomePageWithManyParameterizedWildcardInParamsMagnetFactory.java"))
+
+    }
+
+    @Test
+    fun generateFactory_WithManyParameterizedWildcardKnownParams() {
+
+        // This is what Kotlin provides to annotation processor, when Kotlin generics are used as parameters
+
+        val compilation = Compiler.javac()
+            .withProcessors(MagnetProcessor())
+            .compile(
+                withResource("HomePageWithManyParameterizedWildcardKnownParams.java"),
+                withResource("Page.java"),
+                withResource("WorkProcessor.java")
+            )
+
+        assertThat(compilation).succeededWithoutWarnings()
+
+        assertThat(compilation)
+            .generatedSourceFile("app/extension/HomePageWithManyParameterizedWildcardKnownParamsMagnetFactory")
+            .hasSourceEquivalentTo(withResource("generated/HomePageWithManyParameterizedWildcardKnownParamsMagnetFactory.java"))
 
     }
 
