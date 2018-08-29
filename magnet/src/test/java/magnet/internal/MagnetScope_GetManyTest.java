@@ -1,3 +1,19 @@
+/*
+ * Copyright (C) 2018 Sergej Shafarenka, www.halfbit.de
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package magnet.internal;
 
 import static com.google.common.truth.Truth.assertThat;
@@ -13,15 +29,19 @@ import java.util.Map;
 import magnet.Scope;
 import magnet.Scoping;
 
-public class MagnetScopeGetManyTest {
+public class MagnetScope_GetManyTest {
 
-    private MagnetScope scope1;
-    private MagnetScope scope2;
+    private InstrumentedScope scope1;
+    private InstrumentedScope scope2;
 
     @Before
     public void before() {
-        scope1 = new MagnetScope(null, new StubInstanceManager());
-        scope2 = (MagnetScope) scope1.createSubscope().bind(Dependency2.class, new Dependency2());
+        scope1 = new InstrumentedScope(
+                new MagnetScope(null, new StubInstanceManager()));
+
+        scope2 = (InstrumentedScope) scope1
+                .createSubscope()
+                .bind(Dependency2.class, new Dependency2());
     }
 
     @Test
@@ -33,7 +53,7 @@ public class MagnetScopeGetManyTest {
         assertThat(oneList).hasSize(3);
         assertThat(oneList).containsNoDuplicates();
 
-        List<MenuItem> onesInScope = scope1.getRegisteredMany(MenuItem.class, "one");
+        List<MenuItem> onesInScope = scope1.getManyInScope(MenuItem.class, "one");
         assertThat(onesInScope).hasSize(3);
         assertThat(onesInScope).containsNoDuplicates();
         assertThat(onesInScope).containsAllIn(oneList);
@@ -53,10 +73,10 @@ public class MagnetScopeGetManyTest {
         assertThat(twoList).hasSize(2);
         assertThat(twoList).containsNoDuplicates();
 
-        List<MenuItem> oneScope1 = scope1.getRegisteredMany(MenuItem.class, "one");
-        List<MenuItem> twoScope1 = scope1.getRegisteredMany(MenuItem.class, "two");
-        List<MenuItem> oneScope2 = scope2.getRegisteredMany(MenuItem.class, "one");
-        List<MenuItem> twoScope2 = scope2.getRegisteredMany(MenuItem.class, "two");
+        List<MenuItem> oneScope1 = scope1.getManyInScope(MenuItem.class, "one");
+        List<MenuItem> twoScope1 = scope1.getManyInScope(MenuItem.class, "two");
+        List<MenuItem> oneScope2 = scope2.getManyInScope(MenuItem.class, "one");
+        List<MenuItem> twoScope2 = scope2.getManyInScope(MenuItem.class, "two");
 
         assertThat(oneScope1).hasSize(3);
         assertThat(twoScope1).hasSize(1);

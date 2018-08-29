@@ -1,3 +1,19 @@
+/*
+ * Copyright (C) 2018 Sergej Shafarenka, www.halfbit.de
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package magnet.internal;
 
 import static com.google.common.truth.Truth.assertThat;
@@ -14,17 +30,17 @@ import magnet.Scoping;
 
 public class MagnetScopingTopmostDependsOnDirectTest {
 
-    private MagnetScope scope1;
-    private MagnetScope scope2;
-    private MagnetScope scope3;
+    private InstrumentedScope scope1;
+    private InstrumentedScope scope2;
+    private InstrumentedScope scope3;
 
     @Before
     public void before() {
         InstanceManager instanceManager = new StubInstanceManager();
 
-        scope1 = new MagnetScope(null, instanceManager);
-        scope2 = (MagnetScope) scope1.createSubscope();
-        scope3 = (MagnetScope) scope2.createSubscope();
+        scope1 = new InstrumentedScope(new MagnetScope(null, instanceManager));
+        scope2 = (InstrumentedScope) scope1.createSubscope();
+        scope3 = (InstrumentedScope) scope2.createSubscope();
     }
 
     private interface MenuItem {}
@@ -71,9 +87,9 @@ public class MagnetScopingTopmostDependsOnDirectTest {
 
         // then
         assertThat(item).isNotNull();
-        assertThat(scope3.getRegisteredSingle(MenuItem.class, "three")).isEqualTo(item);
-        assertThat(scope2.getRegisteredSingle(MenuItem.class, "three")).isNull();
-        assertThat(scope1.getRegisteredSingle(MenuItem.class, "three")).isNull();
+        assertThat(scope3.getOptionalInScope(MenuItem.class, "three")).isEqualTo(item);
+        assertThat(scope2.getOptionalInScope(MenuItem.class, "three")).isNull();
+        assertThat(scope1.getOptionalInScope(MenuItem.class, "three")).isNull();
     }
 
     @Test
@@ -83,9 +99,9 @@ public class MagnetScopingTopmostDependsOnDirectTest {
 
         // then
         assertThat(item).isNotNull();
-        assertThat(scope3.getRegisteredSingle(MenuItem.class, "three")).isNull();
-        assertThat(scope2.getRegisteredSingle(MenuItem.class, "three")).isEqualTo(item);
-        assertThat(scope1.getRegisteredSingle(MenuItem.class, "three")).isNull();
+        assertThat(scope3.getOptionalInScope(MenuItem.class, "three")).isNull();
+        assertThat(scope2.getOptionalInScope(MenuItem.class, "three")).isEqualTo(item);
+        assertThat(scope1.getOptionalInScope(MenuItem.class, "three")).isNull();
     }
 
     @Test
@@ -95,9 +111,9 @@ public class MagnetScopingTopmostDependsOnDirectTest {
 
         // then
         assertThat(item).isNotNull();
-        assertThat(scope3.getRegisteredSingle(MenuItem.class, "three")).isNull();
-        assertThat(scope2.getRegisteredSingle(MenuItem.class, "three")).isNull();
-        assertThat(scope1.getRegisteredSingle(MenuItem.class, "three")).isEqualTo(item);
+        assertThat(scope3.getOptionalInScope(MenuItem.class, "three")).isNull();
+        assertThat(scope2.getOptionalInScope(MenuItem.class, "three")).isNull();
+        assertThat(scope1.getOptionalInScope(MenuItem.class, "three")).isEqualTo(item);
     }
 
     private static class StubInstanceManager implements InstanceManager {

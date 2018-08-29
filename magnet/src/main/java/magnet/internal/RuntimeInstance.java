@@ -60,6 +60,17 @@ final class RuntimeInstance<T> {
         values.put(factory, object);
     }
 
+    public void addInstance(RuntimeInstance instance) {
+        if (instance.value instanceof SingleValue) {
+            @SuppressWarnings("unchecked") SingleValue<T> sv = (SingleValue<T>) instance.value;
+            addValue(sv.value, sv.factory);
+        } else {
+            throw new IllegalStateException(
+                    String.format("Cannot add instance: %s",
+                            instance));
+        }
+    }
+
     @SuppressWarnings("unchecked")
     public T getValue() {
         if (value instanceof SingleValue) {
