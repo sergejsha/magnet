@@ -1,3 +1,19 @@
+/*
+ * Copyright (C) 2018 Sergej Shafarenka, www.halfbit.de
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package magnet.internal;
 
 import static com.google.common.truth.Truth.assertThat;
@@ -11,21 +27,27 @@ import java.util.Map;
 
 import magnet.Scope;
 import magnet.Scoping;
-import magnet.internal.InstanceManager;
-import magnet.internal.MagnetScope;
 
 public class MagnetScopingDirectTest {
 
-    private MagnetScope scope1;
-    private MagnetScope scope2;
-    private MagnetScope scope3;
+    private InstrumentedScope scope1;
+    private InstrumentedScope scope2;
+    private InstrumentedScope scope3;
 
     @Before
     public void before() {
         InstanceManager instanceManager = new StubInstanceManager();
-        scope1 = (MagnetScope) new MagnetScope(null, instanceManager).bind(Dependency1.class, new Dependency1());
-        scope2 = (MagnetScope) scope1.createSubscope().bind(Dependency2.class, new Dependency2());
-        scope3 = (MagnetScope) scope2.createSubscope().bind(Dependency3.class, new Dependency3());
+        scope1 = (InstrumentedScope) new InstrumentedScope(
+                new MagnetScope(null, instanceManager))
+                .bind(Dependency1.class, new Dependency1());
+
+        scope2 = (InstrumentedScope) scope1
+                .createSubscope()
+                .bind(Dependency2.class, new Dependency2());
+
+        scope3 = (InstrumentedScope) scope2
+                .createSubscope()
+                .bind(Dependency3.class, new Dependency3());
     }
 
     @Test
@@ -35,7 +57,7 @@ public class MagnetScopingDirectTest {
 
         // then
         assertThat(menuItem).isNotNull();
-        assertThat(scope1.getRegisteredSingle(MenuItem.class, "one")).isNotNull();
+        assertThat(scope1.getOptionalInScope(MenuItem.class, "one")).isNotNull();
     }
 
     @Test
@@ -45,8 +67,8 @@ public class MagnetScopingDirectTest {
 
         // then
         assertThat(menuItem).isNotNull();
-        assertThat(scope2.getRegisteredSingle(MenuItem.class, "one")).isNotNull();
-        assertThat(scope1.getRegisteredSingle(MenuItem.class, "one")).isNull();
+        assertThat(scope2.getOptionalInScope(MenuItem.class, "one")).isNotNull();
+        assertThat(scope1.getOptionalInScope(MenuItem.class, "one")).isNull();
     }
 
     @Test
@@ -56,9 +78,9 @@ public class MagnetScopingDirectTest {
 
         // then
         assertThat(menuItem).isNotNull();
-        assertThat(scope3.getRegisteredSingle(MenuItem.class, "one")).isNotNull();
-        assertThat(scope2.getRegisteredSingle(MenuItem.class, "one")).isNull();
-        assertThat(scope1.getRegisteredSingle(MenuItem.class, "one")).isNull();
+        assertThat(scope3.getOptionalInScope(MenuItem.class, "one")).isNotNull();
+        assertThat(scope2.getOptionalInScope(MenuItem.class, "one")).isNull();
+        assertThat(scope1.getOptionalInScope(MenuItem.class, "one")).isNull();
     }
 
     @Test(expected = IllegalStateException.class)
@@ -74,8 +96,8 @@ public class MagnetScopingDirectTest {
 
         // then
         assertThat(menuItem).isNotNull();
-        assertThat(scope2.getRegisteredSingle(MenuItem.class, "two")).isNotNull();
-        assertThat(scope1.getRegisteredSingle(MenuItem.class, "two")).isNull();
+        assertThat(scope2.getOptionalInScope(MenuItem.class, "two")).isNotNull();
+        assertThat(scope1.getOptionalInScope(MenuItem.class, "two")).isNull();
     }
 
     @Test
@@ -85,9 +107,9 @@ public class MagnetScopingDirectTest {
 
         // then
         assertThat(menuItem).isNotNull();
-        assertThat(scope3.getRegisteredSingle(MenuItem.class, "two")).isNotNull();
-        assertThat(scope2.getRegisteredSingle(MenuItem.class, "two")).isNull();
-        assertThat(scope1.getRegisteredSingle(MenuItem.class, "two")).isNull();
+        assertThat(scope3.getOptionalInScope(MenuItem.class, "two")).isNotNull();
+        assertThat(scope2.getOptionalInScope(MenuItem.class, "two")).isNull();
+        assertThat(scope1.getOptionalInScope(MenuItem.class, "two")).isNull();
     }
 
     @Test(expected = IllegalStateException.class)
@@ -109,9 +131,9 @@ public class MagnetScopingDirectTest {
 
         // then
         assertThat(menuItem).isNotNull();
-        assertThat(scope3.getRegisteredSingle(MenuItem.class, "three")).isNotNull();
-        assertThat(scope2.getRegisteredSingle(MenuItem.class, "three")).isNull();
-        assertThat(scope1.getRegisteredSingle(MenuItem.class, "three")).isNull();
+        assertThat(scope3.getOptionalInScope(MenuItem.class, "three")).isNotNull();
+        assertThat(scope2.getOptionalInScope(MenuItem.class, "three")).isNull();
+        assertThat(scope1.getOptionalInScope(MenuItem.class, "three")).isNull();
     }
 
     private static class MenuItemOneFactory implements InstanceFactory<MenuItem> {

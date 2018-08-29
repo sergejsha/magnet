@@ -34,10 +34,14 @@ final class MagnetScope implements Scope {
     private static final byte CARDINALITY_SINGLE = 1;
     private static final byte CARDINALITY_MANY = 2;
 
-    private final int depth;
     private final MagnetScope parent;
     private final InstanceManager instanceManager;
-    private final Map<String, RuntimeInstance> instances;
+
+    /** Visible for testing */
+    final int depth;
+
+    /** Visible for testing */
+    final Map<String, RuntimeInstance> instances;
 
     @SuppressWarnings("AnonymousHasLambdaAlternative")
     private final ThreadLocal<InstantiationContext> instantiationContext = new ThreadLocal<InstantiationContext>() {
@@ -178,8 +182,9 @@ final class MagnetScope implements Scope {
                 deepInstance.addValue(object, factory);
 
             } else {
-                registerInstanceInScope(key, RuntimeInstance.create(object, factory, objectDepth), factory.getScoping
-                        ());
+                registerInstanceInScope(
+                        key, RuntimeInstance.create(object, factory, objectDepth), factory.getScoping()
+                );
             }
         }
 
@@ -190,9 +195,8 @@ final class MagnetScope implements Scope {
         if (depth == instance.getScopeDepth()) {
             RuntimeInstance existing = instances.put(key, instance);
             if (existing != null) {
-                throw new IllegalStateException(
-                        String.format(
-                                "Instance %s with key %s already registered.", instance, key));
+                existing.addInstance(instance);
+                instances.put(key, existing);
             }
             return;
         }
@@ -213,19 +217,8 @@ final class MagnetScope implements Scope {
         return instance;
     }
 
-    /** Used for testing the objects registered in this scope. */
-    @SuppressWarnings("unchecked") <T> T getRegisteredSingle(Class<T> type, String classifier) {
-        RuntimeInstance<T> instance = instances.get(key(type, classifier));
-        return instance == null ? null : instance.getValue();
-    }
-
-    /** Used for testing the objects registered in this scope. */
-    @SuppressWarnings("unchecked") <T> List<T> getRegisteredMany(Class<T> type, String classifier) {
-        RuntimeInstance<T> instance = instances.get(key(type, classifier));
-        return instance == null ? Collections.emptyList() : instance.getValues();
-    }
-
-    private static String key(Class<?> type, String classifier) {
+    /** Visible for testing */
+    static String key(Class<?> type, String classifier) {
         if (classifier == null || classifier.length() == 0) {
             return type.getName();
         }
