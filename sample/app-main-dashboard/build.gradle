@@ -27,7 +27,7 @@ android {
 }
 
 dependencies {
-    implementation project(':sample-app-main')
+    implementation project(':sample:app-main')
     kapt project(':magnet-processor')
     implementation deps.kotlinjdk7
 }

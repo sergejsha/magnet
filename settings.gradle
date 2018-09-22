@@ -1,8 +1,8 @@
 include ':magnet',
         ':magnet-kotlin',
         ':magnet-processor',
-        ':sample-app',
-        ':sample-app-main',
-        ':sample-app-main-home',
-        ':sample-app-main-dashboard',
-        ':sample-app-main-notifications'
+        ':sample:app',
+        ':sample:app-main',
+        ':sample:app-main-home',
+        ':sample:app-main-dashboard',
+        ':sample:app-main-notifications'

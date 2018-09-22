@@ -1,4 +1,4 @@
-apply plugin: 'com.android.library'
+apply plugin: 'com.android.application'
 
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
@@ -9,11 +9,11 @@ android {
     buildToolsVersion "27.0.3"
 
     defaultConfig {
+        applicationId "de.halfbit.magnet.sample"
         minSdkVersion 21
         targetSdkVersion 27
         versionCode 1
         versionName "1.0"
-
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
 
@@ -23,11 +23,20 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
-
 }
 
 dependencies {
-    implementation project(':sample-app-main')
+
+    // mandatory modules
+    implementation project(':sample:app-main')
+
+    // optional modules: you can comment anyone out of them to remove respective feature from the app
+    implementation project(':sample:app-main-home')
+    implementation project(':sample:app-main-dashboard')
+    implementation project(':sample:app-main-notifications')
+
+    api project(':magnet-kotlin')
     kapt project(':magnet-processor')
+
     implementation deps.kotlinjdk7
 }
