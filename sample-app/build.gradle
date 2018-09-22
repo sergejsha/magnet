@@ -30,7 +30,7 @@ dependencies {
     // mandatory modules
     implementation project(':sample-app-main')
 
-    // optional modules: you can comment anyone out them to remove respective feature from the app
+    // optional modules: you can comment anyone out of them to remove respective feature from the app
     implementation project(':sample-app-main-home')
     implementation project(':sample-app-main-dashboard')
     implementation project(':sample-app-main-notifications')
