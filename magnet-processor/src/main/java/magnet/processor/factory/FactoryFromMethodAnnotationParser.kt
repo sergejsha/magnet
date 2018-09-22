@@ -27,7 +27,7 @@ internal class FactoryFromMethodAnnotationParser(
         val annotation = parseAnnotation(element)
         val staticMethodReturnType = element.returnType
 
-        if (annotation.type.reflectionName() != staticMethodReturnType.toString()) {
+        if (annotation.type.toString() != staticMethodReturnType.toString()) {
             throw env.compilationError(element, "Method must return instance"
                 + " of ${annotation.type.reflectionName()} as declared"
                 + " by ${Instance::class.java}")
