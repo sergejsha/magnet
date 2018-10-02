@@ -1,0 +1,3 @@
+include ':magnet',
+        ':magnet-kotlin',
+        ':magnet-processor'

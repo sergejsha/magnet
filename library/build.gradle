@@ -1,22 +1,17 @@
 buildscript {
-    ext.kotlin_version = '1.2.70'
-    ext.gradle_plugin_version = '3.1.4'
-    ext.compatlib_version = '27.1.1'
+    ext.kotlin_version = '1.2.71'
 
     repositories {
-        google()
         jcenter()
     }
 
     dependencies {
-        classpath "com.android.tools.build:gradle:$gradle_plugin_version"
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
     }
 }
 
 allprojects {
     repositories {
-        google()
         jcenter()
         mavenCentral()
     }
@@ -24,16 +19,10 @@ allprojects {
     configurations {
         all {
             resolutionStrategy {
-                force deps.appcompat
-                force deps.design
                 force deps.kotlinjdk7
             }
         }
     }
-}
-
-task clean(type: Delete) {
-    delete rootProject.buildDir
 }
 
 ext {
@@ -44,13 +33,8 @@ ext {
 
 ext.deps = [:]
 
-// android
-ext.deps.appcompat = "com.android.support:appcompat-v7:$compatlib_version"
-ext.deps.design = "com.android.support:design:$compatlib_version"
-ext.deps.constraintLayout = 'com.android.support.constraint:constraint-layout:1.0.2'
-
 // open source
-ext.deps.javapoet = 'com.squareup:javapoet:1.10.0'
+ext.deps.javapoet = 'com.squareup:javapoet:1.11.1'
 ext.deps.jsr305 = 'com.google.code.findbugs:jsr305:3.0.2'
 ext.deps.kotlinjdk8 = "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
 ext.deps.kotlinjdk7 = "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
