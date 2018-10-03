@@ -1,0 +1,46 @@
+buildscript {
+    ext.kotlin_version = '1.2.71'
+
+    repositories {
+        jcenter()
+    }
+
+    dependencies {
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+    }
+}
+
+allprojects {
+    repositories {
+        jcenter()
+        mavenCentral()
+    }
+
+    configurations {
+        all {
+            resolutionStrategy {
+                force deps.kotlinjdk7
+            }
+        }
+    }
+}
+
+ext {
+    appJavaVersion = JavaVersion.VERSION_1_8
+    toolsJavaVersion = JavaVersion.VERSION_1_8
+    kotlinExtJavaVersion = JavaVersion.VERSION_1_6
+}
+
+ext.deps = [:]
+
+// open source
+ext.deps.javapoet = 'com.squareup:javapoet:1.11.1'
+ext.deps.jsr305 = 'com.google.code.findbugs:jsr305:3.0.2'
+ext.deps.kotlinjdk8 = "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
+ext.deps.kotlinjdk7 = "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+
+// testing
+ext.deps.junit = 'junit:junit:4.12'
+ext.deps.mockito = 'org.mockito:mockito-core:2.11.0'
+ext.deps.truth = 'com.google.truth:truth:0.37'
+ext.deps.compileTesting = 'com.google.testing.compile:compile-testing:0.15'
