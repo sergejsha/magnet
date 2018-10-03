@@ -1,3 +1,5 @@
 include ':magnet',
         ':magnet-kotlin',
         ':magnet-processor'
+
+rootProject.name = 'magnet-library'
