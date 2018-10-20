@@ -67,17 +67,17 @@ public class MagnetScope_ManyInstancesInMultipleScopesTest {
         assertThat(instancesInScope1).hasSize(2);
     }
 
-    private static class InstanceImpl1Factory implements InstanceFactory<InstanceType> {
+    private static class InstanceImpl1Factory extends InstanceFactory<InstanceType> {
         @Override public InstanceType create(Scope scope) { return new InstanceImpl1(); }
         @Override public Scoping getScoping() { return Scoping.TOPMOST; }
     }
 
-    private static class InstanceImpl2Factory implements InstanceFactory<InstanceType> {
+    private static class InstanceImpl2Factory extends InstanceFactory<InstanceType> {
         @Override public InstanceType create(Scope scope) { return new InstanceImpl2(); }
         @Override public Scoping getScoping() { return Scoping.TOPMOST; }
     }
 
-    private static class InstanceImpl3Factory implements InstanceFactory<InstanceType> {
+    private static class InstanceImpl3Factory extends InstanceFactory<InstanceType> {
         @Override public InstanceType create(Scope scope) { return new InstanceImpl3(); }
         @Override public Scoping getScoping() { return Scoping.TOPMOST; }
     }

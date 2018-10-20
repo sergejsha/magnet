@@ -1,22 +1,19 @@
 apply plugin: 'com.android.application'
 
 apply plugin: 'kotlin-android'
+
 apply plugin: 'kotlin-android-extensions'
-apply plugin: 'kotlin-kapt'
 
 android {
-    compileSdkVersion 27
-    buildToolsVersion "27.0.3"
-
+    compileSdkVersion 28
     defaultConfig {
-        applicationId "de.halfbit.magnet.sample"
+        applicationId "magnet.app"
         minSdkVersion 21
-        targetSdkVersion 27
+        targetSdkVersion 28
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
-
     buildTypes {
         release {
             minifyEnabled false
@@ -26,17 +23,12 @@ android {
 }
 
 dependencies {
-
-    // mandatory modules
-    implementation project(':sample:app-main')
-
-    // optional modules: you can comment anyone out of them to remove respective feature from the app
-    implementation project(':sample:app-main-home')
-    implementation project(':sample:app-main-dashboard')
-    implementation project(':sample:app-main-notifications')
-
-    api project(':magnet-kotlin')
-    kapt project(':magnet-processor')
-
-    implementation deps.kotlinjdk7
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation"org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+    implementation 'com.android.support:appcompat-v7:28.0.0-alpha1'
+    implementation 'com.android.support:design:28.0.0-alpha1'
+    implementation 'com.android.support.constraint:constraint-layout:1.1.0'
+    testImplementation 'junit:junit:4.12'
+    androidTestImplementation 'com.android.support.test:runner:1.0.2'
+    androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
 }

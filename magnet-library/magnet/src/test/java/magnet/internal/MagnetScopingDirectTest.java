@@ -136,7 +136,7 @@ public class MagnetScopingDirectTest {
         assertThat(scope1.getOptionalInScope(MenuItem.class, "three")).isNull();
     }
 
-    private static class MenuItemOneFactory implements InstanceFactory<MenuItem> {
+    private static class MenuItemOneFactory extends InstanceFactory<MenuItem> {
         @Override public MenuItem create(Scope scope) {
             scope.getSingle(Dependency1.class);
             return new MenuItemOne();
@@ -144,7 +144,7 @@ public class MagnetScopingDirectTest {
         @Override public Scoping getScoping() { return Scoping.DIRECT; }
     }
 
-    private static class MenuItemTwoFactory implements InstanceFactory<MenuItem> {
+    private static class MenuItemTwoFactory extends InstanceFactory<MenuItem> {
         @Override public MenuItem create(Scope scope) {
             scope.getSingle(MenuItem.class, "one");
             scope.getSingle(Dependency2.class);
@@ -153,7 +153,7 @@ public class MagnetScopingDirectTest {
         @Override public Scoping getScoping() { return Scoping.DIRECT; }
     }
 
-    private static class MenuItemThreeFactory implements InstanceFactory<MenuItem> {
+    private static class MenuItemThreeFactory extends InstanceFactory<MenuItem> {
         @Override public MenuItem create(Scope scope) {
             scope.getSingle(MenuItem.class, "two");
             scope.getSingle(Dependency3.class);

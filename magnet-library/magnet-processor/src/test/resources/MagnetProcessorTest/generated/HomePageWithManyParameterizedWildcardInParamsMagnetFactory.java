@@ -7,7 +7,7 @@ import magnet.Scope;
 import magnet.Scoping;
 import magnet.internal.InstanceFactory;
 
-public final class HomePageWithManyParameterizedWildcardInParamsMagnetFactory implements InstanceFactory<Page> {
+public final class HomePageWithManyParameterizedWildcardInParamsMagnetFactory extends InstanceFactory<Page> {
     @Override
     @SuppressWarnings("unchecked")
     public Page create(Scope scope) {

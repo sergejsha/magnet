@@ -16,14 +16,7 @@
 
 package magnet.processor.factory
 
-import com.squareup.javapoet.AnnotationSpec
-import com.squareup.javapoet.ClassName
-import com.squareup.javapoet.CodeBlock
-import com.squareup.javapoet.MethodSpec
-import com.squareup.javapoet.ParameterSpec
-import com.squareup.javapoet.ParameterizedTypeName
-import com.squareup.javapoet.TypeName
-import com.squareup.javapoet.TypeSpec
+import com.squareup.javapoet.*
 import magnet.Classifier
 import magnet.Scope
 import magnet.Scoping
@@ -39,6 +32,7 @@ class FactoryCodeGenerator : FactoryTypeVisitor, CodeGenerator {
     private var shouldSuppressUncheckedWarning = false
     private var constructorParametersBuilder = StringBuilder()
     private var getScoping: MethodSpec? = null
+    private var getSiblingTypes: MethodSpec? = null
 
     override fun visitEnter(factoryType: FactoryType) {
         // nop
@@ -48,6 +42,7 @@ class FactoryCodeGenerator : FactoryTypeVisitor, CodeGenerator {
         shouldSuppressUncheckedWarning = false
         factoryTypeSpec = null
         getScoping = null
+        getSiblingTypes = null
         createMethodCodeBuilder = CodeBlock.builder()
         constructorParametersBuilder.setLength(0)
     }
@@ -133,12 +128,24 @@ class FactoryCodeGenerator : FactoryTypeVisitor, CodeGenerator {
             .build()
     }
 
+    override fun visit(method: GetSiblingTypesMethod) {
+        method.types?.let {
+            getSiblingTypes = MethodSpec
+                .methodBuilder("getSiblingTypes")
+                .addModifiers(Modifier.PUBLIC)
+                .addAnnotation(Override::class.java)
+                .returns(ArrayTypeName.get(Class::class.java))
+                .addStatement("return null")
+                .build()
+        }
+    }
+
     override fun visitExit(factory: FactoryType) {
         factoryClassName = factory.factoryType
         factoryTypeSpec = TypeSpec
             .classBuilder(factoryClassName)
             .addModifiers(Modifier.PUBLIC, Modifier.FINAL)
-            .addSuperinterface(generateFactorySuperInterface(factory))
+            .superclass(generateFactorySuperInterface(factory))
             .addMethod(generateCreateMethod(factory))
             .addMethod(generateGetScopingMethod())
             .addMethod(generateGetTypeMethod(factory))

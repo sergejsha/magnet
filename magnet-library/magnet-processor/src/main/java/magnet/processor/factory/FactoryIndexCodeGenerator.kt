@@ -31,21 +31,11 @@ class FactoryIndexCodeGenerator : FactoryTypeVisitor, CodeGenerator {
         factoryIndexTypeSpec = null
     }
 
-    override fun visitEnter(createMethod: CreateMethod) {
-        // nop
-    }
-
-    override fun visit(parameter: MethodParameter) {
-        // nop
-    }
-
-    override fun visitExit(createMethod: CreateMethod) {
-        // nop
-    }
-
-    override fun visit(method: GetScopingMethod) {
-        // nop
-    }
+    override fun visitEnter(createMethod: CreateMethod) {}
+    override fun visit(parameter: MethodParameter) {}
+    override fun visitExit(createMethod: CreateMethod) {}
+    override fun visit(method: GetScopingMethod) {}
+    override fun visit(method: GetSiblingTypesMethod) {}
 
     override fun visitExit(factory: FactoryType) {
         val factoryPackage = factory.factoryType.packageName()

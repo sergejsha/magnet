@@ -40,7 +40,8 @@ internal class FactoryFromClassAnnotationParser(
             ClassName.bestGuess("${instancePackage}.${instanceName}MagnetFactory"),
             TypeCreateStatement(instanceType),
             parseCreateMethod(element),
-            GetScopingMethod(annotation.scoping)
+            GetScopingMethod(annotation.scoping),
+            GetSiblingTypesMethod(null)
         )
     }
 

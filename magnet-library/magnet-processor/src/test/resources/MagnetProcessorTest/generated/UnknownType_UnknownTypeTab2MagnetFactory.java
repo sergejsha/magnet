@@ -4,7 +4,7 @@ import magnet.Scope;
 import magnet.Scoping;
 import magnet.internal.InstanceFactory;
 
-public final class UnknownTypeTab2MagnetFactory implements InstanceFactory<Tab> {
+public final class UnknownTypeTab2MagnetFactory extends InstanceFactory<Tab> {
     @Override
     public Tab create(Scope scope) {
         return new UnknownTypeTab2();

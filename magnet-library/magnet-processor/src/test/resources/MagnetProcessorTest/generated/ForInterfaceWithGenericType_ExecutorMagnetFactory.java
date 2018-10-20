@@ -4,7 +4,7 @@ import magnet.Scope;
 import magnet.Scoping;
 import magnet.internal.InstanceFactory;
 
-public final class ExecutorImplMagnetFactory implements InstanceFactory<Executor> {
+public final class ExecutorImplMagnetFactory extends InstanceFactory<Executor> {
     @Override
     public Executor create(Scope scope) {
         return new ExecutorImpl();

@@ -186,6 +186,20 @@ final class MagnetScope implements Scope {
                         key, RuntimeInstance.create(object, factory, objectDepth), factory.getScoping()
                 );
             }
+
+            Class[] siblingTypes = factory.getSiblingTypes();
+            if (siblingTypes != null) {
+                for (Class siblingType : siblingTypes) {
+                    String siblingKey = key(siblingType, classifier);
+                    InstanceFactory<T> siblingFactory = instanceManager.getOptionalFactory(type, classifier);
+                    registerInstanceInScope(
+                            siblingKey,
+                            RuntimeInstance.create(object, siblingFactory, objectDepth),
+                            factory.getScoping()
+                    );
+                }
+            }
+
         }
 
         return object;

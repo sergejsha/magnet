@@ -62,14 +62,14 @@ public class MagnetScopingTopmostDependsOnTopmostTest {
     private static class Dependency2 {}
     private static class Dependency3 {}
 
-    private static class MenuItemZeroFactory implements InstanceFactory<MenuItem> {
+    private static class MenuItemZeroFactory extends InstanceFactory<MenuItem> {
         @Override public MenuItem create(Scope scope) {
             return new MenuItemZero();
         }
         @Override public Scoping getScoping() { return Scoping.TOPMOST; }
     }
 
-    private static class MenuItemOneFactory implements InstanceFactory<MenuItem> {
+    private static class MenuItemOneFactory extends InstanceFactory<MenuItem> {
         @Override public MenuItem create(Scope scope) {
             scope.getSingle(Dependency1.class);
             return new MenuItemOne();
@@ -77,7 +77,7 @@ public class MagnetScopingTopmostDependsOnTopmostTest {
         @Override public Scoping getScoping() { return Scoping.TOPMOST; }
     }
 
-    private static class MenuItemTwoFactory implements InstanceFactory<MenuItem> {
+    private static class MenuItemTwoFactory extends InstanceFactory<MenuItem> {
         @Override public MenuItem create(Scope scope) {
             scope.getSingle(Dependency2.class);
             scope.getSingle(MenuItem.class, "one");
@@ -86,7 +86,7 @@ public class MagnetScopingTopmostDependsOnTopmostTest {
         @Override public Scoping getScoping() { return Scoping.TOPMOST; }
     }
 
-    private static class MenuItemThreeFactory implements InstanceFactory<MenuItem> {
+    private static class MenuItemThreeFactory extends InstanceFactory<MenuItem> {
         @Override public MenuItem create(Scope scope) {
             scope.getSingle(Dependency3.class);
             scope.getSingle(MenuItem.class, "two");

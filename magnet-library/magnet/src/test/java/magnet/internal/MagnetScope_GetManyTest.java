@@ -87,35 +87,35 @@ public class MagnetScope_GetManyTest {
         assertThat(twoList).contains(twoScope2.get(0));
     }
 
-    private static class MenuItemOne1Factory implements InstanceFactory<MenuItem> {
+    private static class MenuItemOne1Factory extends InstanceFactory<MenuItem> {
         @Override public MenuItem create(Scope scope) {
             return new MenuItemOne1();
         }
         @Override public Scoping getScoping() { return Scoping.TOPMOST; }
     }
 
-    private static class MenuItemOne2Factory implements InstanceFactory<MenuItem> {
+    private static class MenuItemOne2Factory extends InstanceFactory<MenuItem> {
         @Override public MenuItem create(Scope scope) {
             return new MenuItemOne2();
         }
         @Override public Scoping getScoping() { return Scoping.TOPMOST; }
     }
 
-    private static class MenuItemOne3Factory implements InstanceFactory<MenuItem> {
+    private static class MenuItemOne3Factory extends InstanceFactory<MenuItem> {
         @Override public MenuItem create(Scope scope) {
             return new MenuItemOne3();
         }
         @Override public Scoping getScoping() { return Scoping.TOPMOST; }
     }
 
-    private static class MenuItemTwo1Factory implements InstanceFactory<MenuItem> {
+    private static class MenuItemTwo1Factory extends InstanceFactory<MenuItem> {
         @Override public MenuItem create(Scope scope) {
             return new MenuItemTwo1();
         }
         @Override public Scoping getScoping() { return Scoping.TOPMOST; }
     }
 
-    private static class MenuItemTwo2Factory implements InstanceFactory<MenuItem> {
+    private static class MenuItemTwo2Factory extends InstanceFactory<MenuItem> {
         @Override public MenuItem create(Scope scope) {
             scope.getSingle(Dependency2.class);
             scope.getMany(MenuItem.class, "one");

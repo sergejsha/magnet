@@ -56,7 +56,8 @@ internal class FactoryFromMethodAnnotationParser(
             ClassName.bestGuess(uniqueFactoryNameBuilder.toString()),
             MethodCreateStatement(staticMethodClassName, staticMethodName),
             CreateMethod(methodParameters),
-            GetScopingMethod(annotation.scoping)
+            GetScopingMethod(annotation.scoping),
+            GetSiblingTypesMethod(null)
         )
     }
 

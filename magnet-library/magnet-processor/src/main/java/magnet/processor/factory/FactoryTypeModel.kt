@@ -28,6 +28,7 @@ interface FactoryTypeVisitor {
     fun visit(parameter: MethodParameter)
     fun visitExit(createMethod: CreateMethod)
     fun visit(method: GetScopingMethod)
+    fun visit(method: GetSiblingTypesMethod)
     fun visitExit(factory: FactoryType)
 }
 
@@ -44,12 +45,14 @@ data class FactoryType(
     val factoryType: ClassName,
     val createStatement: CreateStatement,
     val createMethod: CreateMethod,
-    val getScopingMethod: GetScopingMethod
+    val getScopingMethod: GetScopingMethod,
+    val getSiblingTypesMethod: GetSiblingTypesMethod
 ) {
     fun accept(visitor: FactoryTypeVisitor) {
         visitor.visitEnter(this)
         createMethod.accept(visitor)
         getScopingMethod.accept(visitor)
+        getSiblingTypesMethod.accept(visitor)
         visitor.visitExit(this)
     }
 }
@@ -91,6 +94,14 @@ data class MethodParameter(
 
 data class GetScopingMethod(
     val scoping: String
+) {
+    fun accept(visitor: FactoryTypeVisitor) {
+        visitor.visit(this)
+    }
+}
+
+data class GetSiblingTypesMethod(
+    val types: List<ClassName>?
 ) {
     fun accept(visitor: FactoryTypeVisitor) {
         visitor.visit(this)

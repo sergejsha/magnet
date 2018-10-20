@@ -20,9 +20,10 @@ import magnet.Scope;
 import magnet.Scoping;
 
 /* Subject to change. For internal use only. */
-public interface InstanceFactory<T> {
+public abstract class InstanceFactory<T> {
 
-    T create(Scope scope);
-    Scoping getScoping();
+    public abstract T create(Scope scope);
+    public abstract Scoping getScoping();
+    public Class[] getSiblingTypes() { return null; }
 
 }

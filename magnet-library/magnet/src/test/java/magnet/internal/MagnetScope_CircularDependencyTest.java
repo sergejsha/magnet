@@ -50,7 +50,7 @@ public class MagnetScope_CircularDependencyTest {
         scope.getSingle(MenuItem.class, "five");
     }
 
-    private static class MenuItemOneFactory implements InstanceFactory<MenuItem> {
+    private static class MenuItemOneFactory extends InstanceFactory<MenuItem> {
         @Override public MenuItem create(Scope scope) {
             scope.getSingle(MenuItem.class, "two");
             return new MenuItemOne();
@@ -58,7 +58,7 @@ public class MagnetScope_CircularDependencyTest {
         @Override public Scoping getScoping() { return Scoping.TOPMOST; }
     }
 
-    private static class MenuItemTwoFactory implements InstanceFactory<MenuItem> {
+    private static class MenuItemTwoFactory extends InstanceFactory<MenuItem> {
         @Override public MenuItem create(Scope scope) {
             scope.getSingle(MenuItem.class, "three");
             return new MenuItemTwo();
@@ -66,7 +66,7 @@ public class MagnetScope_CircularDependencyTest {
         @Override public Scoping getScoping() { return Scoping.TOPMOST; }
     }
 
-    private static class MenuItemThreeFactory implements InstanceFactory<MenuItem> {
+    private static class MenuItemThreeFactory extends InstanceFactory<MenuItem> {
         @Override public MenuItem create(Scope scope) {
             scope.getSingle(MenuItem.class, "one");
             return new MenuItemThree();
@@ -74,7 +74,7 @@ public class MagnetScope_CircularDependencyTest {
         @Override public Scoping getScoping() { return Scoping.TOPMOST; }
     }
 
-    private static class MenuItemFourFactory implements InstanceFactory<MenuItem> {
+    private static class MenuItemFourFactory extends InstanceFactory<MenuItem> {
         @Override public MenuItem create(Scope scope) {
             scope.getSingle(MenuItem.class, "four");
             return new MenuItemFour();
@@ -82,7 +82,7 @@ public class MagnetScope_CircularDependencyTest {
         @Override public Scoping getScoping() { return Scoping.TOPMOST; }
     }
 
-    private static class MenuItemFiveFactory implements InstanceFactory<MenuItem> {
+    private static class MenuItemFiveFactory extends InstanceFactory<MenuItem> {
         @Override public MenuItem create(Scope scope) {
             return new MenuItemFive(scope);
         }

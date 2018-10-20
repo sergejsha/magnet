@@ -4,7 +4,7 @@ import magnet.Scope;
 import magnet.Scoping;
 import magnet.internal.InstanceFactory;
 
-public final class ExecutorMasterMagnetFactory implements InstanceFactory<ExecutorMaster> {
+public final class ExecutorMasterMagnetFactory extends InstanceFactory<ExecutorMaster> {
     @Override
     @SuppressWarnings("unchecked")
     public ExecutorMaster create(Scope scope) {
