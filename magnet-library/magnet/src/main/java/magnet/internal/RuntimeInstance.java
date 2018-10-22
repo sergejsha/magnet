@@ -21,7 +21,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 
 /* Subject to change. For internal use only. */
 final class RuntimeInstance<T> {
@@ -33,57 +32,57 @@ final class RuntimeInstance<T> {
         this.scopeDepth = scopeDepth;
     }
 
-    public static <V> RuntimeInstance<V> create(V object, InstanceFactory<V> factory, int scopeDepth) {
+    public static <V> RuntimeInstance<V> create(V object, Class<InstanceFactory> factoryClass, int scopeDepth) {
         RuntimeInstance<V> instance = new RuntimeInstance<>(scopeDepth);
-        instance.addValue(object, factory);
+        instance.addValue(object, factoryClass);
         return instance;
     }
 
     @SuppressWarnings("unchecked")
-    public void addValue(T object, InstanceFactory<T> factory) {
+    void addValue(T object, Class<InstanceFactory> factoryClass) {
         if (this.value == null) {
-            this.value = new SingleValue<>(object, factory);
+            this.value = new SingleValue<>(object, factoryClass);
             return;
         }
 
         if (this.value instanceof SingleValue) {
             SingleValue<T> value = (SingleValue<T>) this.value;
 
-            Map<InstanceFactory<T>, T> values = new HashMap<>();
-            values.put(value.factory, value.value);
-            values.put(factory, object);
+            Map<Class<InstanceFactory>, T> values = new HashMap<>();
+            values.put(value.factoryClass, value.value);
+            values.put(factoryClass, object);
             this.value = values;
             return;
         }
 
-        Map<InstanceFactory<T>, T> values = (Map<InstanceFactory<T>, T>) this.value;
-        values.put(factory, object);
+        Map<Class<InstanceFactory>, T> values = (Map<Class<InstanceFactory>, T>) this.value;
+        values.put(factoryClass, object);
     }
 
-    public void addInstance(RuntimeInstance instance) {
+    void addInstance(RuntimeInstance instance) {
         if (instance.value instanceof SingleValue) {
             @SuppressWarnings("unchecked") SingleValue<T> sv = (SingleValue<T>) instance.value;
-            addValue(sv.value, sv.factory);
+            addValue(sv.value, sv.factoryClass);
         } else {
             throw new IllegalStateException(
-                    String.format("Cannot add instance: %s",
-                            instance));
+                String.format("Cannot add instance: %s",
+                    instance));
         }
     }
 
     @SuppressWarnings("unchecked")
-    public T getValue() {
+    T getValue() {
         if (value instanceof SingleValue) {
             return ((SingleValue<T>) value).value;
         }
         throw new IllegalStateException(
-                String.format(
-                        "Single instance requested, while many instances are stored: %s",
-                        value));
+            String.format(
+                "Single instance requested, while many instances are stored: %s",
+                value));
     }
 
     @SuppressWarnings("unchecked")
-    public List<T> getValues() {
+    List<T> getValues() {
         if (this.value instanceof SingleValue) {
             SingleValue<T> value = (SingleValue<T>) this.value;
             return Collections.singletonList(value.value);
@@ -93,26 +92,26 @@ final class RuntimeInstance<T> {
     }
 
     @SuppressWarnings("unchecked")
-    public T getValue(InstanceFactory factory) {
+    T getValue(Class<InstanceFactory> factoryClass) {
         if (value instanceof SingleValue) {
             SingleValue<T> singleValue = (SingleValue<T>) value;
-            return Objects.equals(singleValue.factory, factory) ? singleValue.value : null;
+            return singleValue.factoryClass == factoryClass ? singleValue.value : null;
         }
-        Map<InstanceFactory<T>, T> values = (Map<InstanceFactory<T>, T>) this.value;
-        return values.get(factory);
+        Map<Class<InstanceFactory>, T> values = (Map<Class<InstanceFactory>, T>) this.value;
+        return values.get(factoryClass);
     }
 
-    public int getScopeDepth() {
+    int getScopeDepth() {
         return scopeDepth;
     }
 
     private static final class SingleValue<T> {
         final T value;
-        final InstanceFactory<T> factory;
+        final Class<InstanceFactory> factoryClass;
 
-        SingleValue(T object, InstanceFactory<T> factory) {
+        SingleValue(T object, Class<InstanceFactory> factory) {
             this.value = object;
-            this.factory = factory;
+            this.factoryClass = factory;
         }
     }
 

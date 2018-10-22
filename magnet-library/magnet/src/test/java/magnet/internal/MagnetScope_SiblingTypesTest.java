@@ -112,7 +112,9 @@ public class MagnetScope_SiblingTypesTest {
         ImplementationInterface1Factory(Scoping scoping) { this.scoping = scoping; }
         @Override public Interface1 create(Scope scope) { return new Implementation(); }
         @Override public Scoping getScoping() { return this.scoping; }
-        @Override public Class[] getSiblingTypes() { return new Class[]{Interface2.class}; }
+        @Override public Class[] getSiblingTypes() {
+            return new Class[]{Interface2.class, ImplementationInterface2Factory.class};
+        }
     }
 
     static class ImplementationInterface2Factory extends InstanceFactory<Interface2> {
@@ -120,7 +122,9 @@ public class MagnetScope_SiblingTypesTest {
         ImplementationInterface2Factory(Scoping scoping) { this.scoping = scoping; }
         @Override public Interface2 create(Scope scope) { return new Implementation(); }
         @Override public Scoping getScoping() { return this.scoping; }
-        @Override public Class[] getSiblingTypes() { return new Class[]{Interface1.class}; }
+        @Override public Class[] getSiblingTypes() {
+            return new Class[]{Interface1.class, ImplementationInterface1Factory.class};
+        }
     }
 
 }

@@ -1,9 +1,9 @@
 package magnet.internal;
 
+import magnet.Scope;
+
 import java.util.Collections;
 import java.util.List;
-
-import magnet.Scope;
 
 /** Used for testing MagnetScope implementation. */
 public class InstrumentedScope implements Scope {
@@ -69,7 +69,9 @@ public class InstrumentedScope implements Scope {
             String classifier, Class type, Object object, InstanceFactory factory
     ) {
         String key = MagnetScope.key(type, classifier);
-        RuntimeInstance instance = RuntimeInstance.create(object, factory, scope.depth);
+        RuntimeInstance instance = RuntimeInstance.create(
+            object, (Class<InstanceFactory>) factory.getClass(), scope.depth
+        );
         RuntimeInstance existing = scope.instances.get(key);
         if (existing == null) {
             scope.instances.put(key, instance);

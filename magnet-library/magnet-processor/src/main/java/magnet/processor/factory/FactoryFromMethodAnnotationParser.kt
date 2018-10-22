@@ -53,10 +53,21 @@ internal class FactoryFromMethodAnnotationParser(
         val instanceFullName = uniqueFactoryNameBuilder.toString()
         return annotation.types.map {
 
-            val getSiblingTypesMethod = if (annotation.types.size == 1) null
-            else GetSiblingTypesMethod(annotation.types - it)
+            val isSingleTypeFactory = annotation.types.size == 1
+            val getSiblingTypesMethod = if (isSingleTypeFactory) {
+                null
+            } else {
+                val types = annotation.types - it
+                val siblingTypes = mutableListOf<ClassName>()
+                for (type in types) {
+                    siblingTypes.add(type)
+                    val factoryFullName = generateFactoryName(false, instanceFullName, type)
+                    siblingTypes.add(ClassName.bestGuess(factoryFullName))
+                }
+                GetSiblingTypesMethod(siblingTypes)
+            }
 
-            val factoryFullName = generateFactoryName(annotation, instanceFullName, it)
+            val factoryFullName = generateFactoryName(isSingleTypeFactory, instanceFullName, it)
             FactoryType(
                 element = element,
                 type = it,

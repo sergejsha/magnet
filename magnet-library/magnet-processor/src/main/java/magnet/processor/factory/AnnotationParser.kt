@@ -245,8 +245,8 @@ internal abstract class AnnotationParser<in E : Element>(
 
     companion object {
 
-        fun generateFactoryName(annotation: Annotation, instanceName: String, it: ClassName): String =
-            if (annotation.types.size == 1) {
+        fun generateFactoryName(isSingleTypeFactory: Boolean, instanceName: String, it: ClassName): String =
+            if (isSingleTypeFactory) {
                 "${instanceName}MagnetFactory"
             } else {
                 "$instanceName${it.simpleName()}MagnetFactory"

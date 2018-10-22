@@ -35,10 +35,21 @@ internal class FactoryFromClassAnnotationParser(
 
         return annotation.types.map {
 
-            val getSiblingTypesMethod = if (annotation.types.size == 1) null
-            else GetSiblingTypesMethod(annotation.types - it)
+            val isSingleTypeFactory = annotation.types.size == 1
+            val getSiblingTypesMethod = if (isSingleTypeFactory) {
+                null
+            } else {
+                val types = annotation.types - it
+                val siblingTypes = mutableListOf<ClassName>()
+                for (type in types) {
+                    siblingTypes.add(type)
+                    val factoryName = generateFactoryName(false, instanceName, type)
+                    siblingTypes.add(ClassName.bestGuess("$instancePackage.$factoryName"))
+                }
+                GetSiblingTypesMethod(siblingTypes)
+            }
 
-            val factoryName = generateFactoryName(annotation, instanceName, it)
+            val factoryName = generateFactoryName(isSingleTypeFactory, instanceName, it)
             FactoryType(
                 element = element,
                 type = it,

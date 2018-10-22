@@ -5,7 +5,7 @@ import magnet.Scoping;
 import magnet.internal.InstanceFactory;
 
 public final class Implementation4Interface1MagnetFactory extends InstanceFactory<Interface1> {
-    private static Class[] SIBLING_TYPES = { Interface2.class };
+    private static Class[] SIBLING_TYPES = {Interface2.class, Implementation4Interface2MagnetFactory.class};
 
     @Override
     public Interface1 create(Scope scope) {

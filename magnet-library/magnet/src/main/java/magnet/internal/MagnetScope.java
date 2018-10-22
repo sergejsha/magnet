@@ -16,16 +16,16 @@
 
 package magnet.internal;
 
+import magnet.Classifier;
+import magnet.Scope;
+import magnet.Scoping;
+
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import magnet.Classifier;
-import magnet.Scope;
-import magnet.Scoping;
 
 /* Subject to change. For internal use only. */
 final class MagnetScope implements Scope {
@@ -110,8 +110,8 @@ final class MagnetScope implements Scope {
         Object existing = instances.put(key, RuntimeInstance.create(object, null, depth));
         if (existing != null) {
             throw new IllegalStateException(
-                    String.format("Instance of type %s already registered. Existing instance %s, new instance %s",
-                            key, existing, object));
+                String.format("Instance of type %s already registered. Existing instance %s, new instance %s",
+                    key, existing, object));
         }
     }
 
@@ -136,9 +136,9 @@ final class MagnetScope implements Scope {
             if (instance == null) {
                 if (cardinality == CARDINALITY_SINGLE) {
                     throw new IllegalStateException(
-                            String.format(
-                                    "Instance of type: '%s' and classifier: '%s' was not found in scopes.",
-                                    type.getName(), classifier));
+                        String.format(
+                            "Instance of type: '%s' and classifier: '%s' was not found in scopes.",
+                            type.getName(), classifier));
                 }
                 return null;
             }
@@ -158,7 +158,7 @@ final class MagnetScope implements Scope {
                     return deepInstance.getValue();
                 }
 
-                T object = deepInstance.getValue(factory);
+                T object = deepInstance.getValue((Class<InstanceFactory>) factory.getClass());
                 if (object != null) {
                     return object;
                 }
@@ -176,26 +176,24 @@ final class MagnetScope implements Scope {
         if (keepInScope) {
 
             boolean canUseDeepInstance = deepInstance != null
-                    && deepInstance.getScopeDepth() == objectDepth;
+                && deepInstance.getScopeDepth() == objectDepth;
 
             if (canUseDeepInstance) {
-                deepInstance.addValue(object, factory);
+                deepInstance.addValue(object, (Class<InstanceFactory>) factory.getClass());
 
             } else {
                 registerInstanceInScope(
-                        key, RuntimeInstance.create(object, factory, objectDepth), factory.getScoping()
+                    key, RuntimeInstance.create(object, (Class<InstanceFactory>) factory.getClass(), objectDepth)
                 );
             }
 
-            Class[] siblingTypes = factory.getSiblingTypes();
-            if (siblingTypes != null) {
-                for (Class siblingType : siblingTypes) {
-                    String siblingKey = key(siblingType, classifier);
-                    InstanceFactory<T> siblingFactory = instanceManager.getOptionalFactory(type, classifier);
+            Class[] siblingFactoryTypes = factory.getSiblingTypes();
+            if (siblingFactoryTypes != null) {
+                for (int i = 0, size = siblingFactoryTypes.length; i < size; i += 2) {
+                    String siblingKey = key(siblingFactoryTypes[i], classifier);
                     registerInstanceInScope(
-                            siblingKey,
-                            RuntimeInstance.create(object, siblingFactory, objectDepth),
-                            factory.getScoping()
+                        siblingKey,
+                        RuntimeInstance.create(object, siblingFactoryTypes[i + 1], objectDepth)
                     );
                 }
             }
@@ -205,7 +203,7 @@ final class MagnetScope implements Scope {
         return object;
     }
 
-    private void registerInstanceInScope(String key, RuntimeInstance instance, Scoping scoping) {
+    private void registerInstanceInScope(String key, RuntimeInstance instance) {
         if (depth == instance.getScopeDepth()) {
             RuntimeInstance existing = instances.put(key, instance);
             if (existing != null) {
@@ -216,10 +214,10 @@ final class MagnetScope implements Scope {
         }
         if (parent == null) {
             throw new IllegalStateException(
-                    String.format(
-                            "Cannot register instance with depth %s", instance.getScopeDepth()));
+                String.format(
+                    "Cannot register instance with depth %s", instance.getScopeDepth()));
         }
-        parent.registerInstanceInScope(key, instance, scoping);
+        parent.registerInstanceInScope(key, instance);
     }
 
     @SuppressWarnings("unchecked")
@@ -270,7 +268,7 @@ final class MagnetScope implements Scope {
 
             Instantiation[] objects = instantiations.toArray(new Instantiation[0]);
             StringBuilder builder = new StringBuilder()
-                    .append("Magnet failed because of unresolved circular dependency: ");
+                .append("Magnet failed because of unresolved circular dependency: ");
             for (int i = objects.length; i-- > 0; ) {
                 builder.append(objects[i].key).append(" -> ");
             }
