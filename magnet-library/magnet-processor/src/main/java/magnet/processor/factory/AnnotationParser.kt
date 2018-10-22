@@ -165,7 +165,7 @@ internal abstract class AnnotationParser<in E : Element>(
         }
 
         val declaredTypeElements: List<TypeElement> =
-            verifyTypeDeclaration(interfaceTypeElement, interfaceTypesElement, element)
+            verifyTypeDeclaration(interfaceTypeElement, interfaceTypesElement, scoping, element)
 
         return Annotation(
             declaredTypeElements.map { ClassName.get(it) },
@@ -198,6 +198,7 @@ internal abstract class AnnotationParser<in E : Element>(
     private fun verifyTypeDeclaration(
         interfaceTypeElement: TypeElement?,
         interfaceTypesElement: List<TypeElement>?,
+        scoping: String,
         element: Element
     ): List<TypeElement> {
         val isTypeDeclared = interfaceTypeElement != null
@@ -218,6 +219,11 @@ internal abstract class AnnotationParser<in E : Element>(
         }
 
         if (interfaceTypesElement != null) {
+            if (scoping == Scoping.UNSCOPED.name) {
+                throw env.compilationError(element,
+                    "types() property must be used with scoped instances only. Set " +
+                        "scoping to Scoping.DIRECT or Scoping.TOPMOST.")
+            }
             return interfaceTypesElement
         }
 

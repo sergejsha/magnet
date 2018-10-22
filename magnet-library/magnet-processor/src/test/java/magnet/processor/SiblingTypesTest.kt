@@ -71,6 +71,20 @@ class SiblingTypesTest {
             .hasSourceEquivalentTo(withResource("generated/Implementation4Interface2MagnetFactory.java"))
     }
 
+    @Test
+    fun `types() must be used with scoped instances`() {
+        val compilation = Compiler.javac()
+            .withProcessors(MagnetProcessor())
+            .compile(
+                withResource("Interface1.java"),
+                withResource("Interface2.java"),
+                withResource("Implementation5.java")
+            )
+
+        assertThat(compilation).failed()
+        assertThat(compilation).hadErrorContaining("must be used with scoped instances")
+    }
+
     private fun withResource(name: String): JavaFileObject =
         JavaFileObjects.forResource(javaClass.simpleName + '/' + name)
 
