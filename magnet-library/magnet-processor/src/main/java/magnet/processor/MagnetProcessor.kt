@@ -19,11 +19,11 @@ package magnet.processor
 import magnet.Instance
 import magnet.Magnetizer
 import magnet.processor.factory.CodeWriter
-import magnet.processor.factory.FactoryCodeGenerator
 import magnet.processor.factory.FactoryFromClassAnnotationParser
 import magnet.processor.factory.FactoryFromMethodAnnotationParser
 import magnet.processor.factory.FactoryIndexCodeGenerator
 import magnet.processor.factory.FactoryType
+import magnet.processor.factory.generator.FactoryCodeGenerator
 import magnet.processor.index.MagnetIndexerGenerator
 import javax.annotation.processing.AbstractProcessor
 import javax.annotation.processing.ProcessingEnvironment
@@ -78,15 +78,19 @@ class MagnetProcessor : AbstractProcessor() {
 
         val factoryTypes = mutableListOf<FactoryType>()
         ElementFilter.typesIn(annotatedElements).forEach { element ->
-            val factoryType = factoryFromClassAnnotationParser.parse(element)
-            if (!factoryType.annotation.disabled) {
-                factoryTypes.add(factoryType)
+            val parsedFactoryTypes = factoryFromClassAnnotationParser.parse(element)
+            for (factoryType in parsedFactoryTypes) {
+                if (!factoryType.disabled) {
+                    factoryTypes.add(factoryType)
+                }
             }
         }
         ElementFilter.methodsIn(annotatedElements).forEach { element ->
-            val factoryType = factoryFromMethodAnnotationParser.parse(element)
-            if (!factoryType.annotation.disabled) {
-                factoryTypes.add(factoryType)
+            val parsedFactoryTypes = factoryFromMethodAnnotationParser.parse(element)
+            for (factoryType in parsedFactoryTypes) {
+                if (!factoryType.disabled) {
+                    factoryTypes.add(factoryType)
+                }
             }
         }
 

@@ -14,13 +14,32 @@
  * limitations under the License.
  */
 
-package magnet.processor.factory
+package magnet.processor.factory.generator
 
-import com.squareup.javapoet.*
+import com.squareup.javapoet.AnnotationSpec
+import com.squareup.javapoet.ClassName
+import com.squareup.javapoet.CodeBlock
+import com.squareup.javapoet.MethodSpec
+import com.squareup.javapoet.ParameterSpec
+import com.squareup.javapoet.ParameterizedTypeName
+import com.squareup.javapoet.TypeName
+import com.squareup.javapoet.TypeSpec
 import magnet.Classifier
 import magnet.Scope
 import magnet.Scoping
 import magnet.internal.InstanceFactory
+import magnet.processor.factory.CodeGenerator
+import magnet.processor.factory.CodeWriter
+import magnet.processor.factory.CreateMethod
+import magnet.processor.factory.FactoryType
+import magnet.processor.factory.FactoryTypeVisitor
+import magnet.processor.factory.GetScopingMethod
+import magnet.processor.factory.GetSiblingTypesMethod
+import magnet.processor.factory.GetterMethod
+import magnet.processor.factory.MethodCreateStatement
+import magnet.processor.factory.MethodParameter
+import magnet.processor.factory.PARAM_SCOPE_NAME
+import magnet.processor.factory.TypeCreateStatement
 import javax.lang.model.element.Modifier
 
 class FactoryCodeGenerator : FactoryTypeVisitor, CodeGenerator {
@@ -32,7 +51,8 @@ class FactoryCodeGenerator : FactoryTypeVisitor, CodeGenerator {
     private var shouldSuppressUncheckedWarning = false
     private var constructorParametersBuilder = StringBuilder()
     private var getScoping: MethodSpec? = null
-    private var getSiblingTypes: MethodSpec? = null
+
+    private var getSiblingTypesMethodGenerator = GetSiblingTypesMethodGenerator()
 
     override fun visitEnter(factoryType: FactoryType) {
         // nop
@@ -42,7 +62,7 @@ class FactoryCodeGenerator : FactoryTypeVisitor, CodeGenerator {
         shouldSuppressUncheckedWarning = false
         factoryTypeSpec = null
         getScoping = null
-        getSiblingTypes = null
+        getSiblingTypesMethodGenerator.reset()
         createMethodCodeBuilder = CodeBlock.builder()
         constructorParametersBuilder.setLength(0)
     }
@@ -128,28 +148,34 @@ class FactoryCodeGenerator : FactoryTypeVisitor, CodeGenerator {
             .build()
     }
 
-    override fun visit(method: GetSiblingTypesMethod) {
-        method.types?.let {
-            getSiblingTypes = MethodSpec
-                .methodBuilder("getSiblingTypes")
-                .addModifiers(Modifier.PUBLIC)
-                .addAnnotation(Override::class.java)
-                .returns(ArrayTypeName.get(Class::class.java))
-                .addStatement("return null")
-                .build()
-        }
+    override fun enterSiblingTypesMethod(method: GetSiblingTypesMethod) {
+        getSiblingTypesMethodGenerator.enterSiblingTypesMethod(method)
+    }
+
+    override fun visitSiblingType(type: ClassName) {
+        getSiblingTypesMethodGenerator.visitSiblingType(type)
+    }
+
+    override fun exitSiblingTypesMethod(method: GetSiblingTypesMethod) {
+        getSiblingTypesMethodGenerator.exitSiblingTypesMethod()
     }
 
     override fun visitExit(factory: FactoryType) {
         factoryClassName = factory.factoryType
-        factoryTypeSpec = TypeSpec
+
+        val classBuilder = TypeSpec
             .classBuilder(factoryClassName)
             .addModifiers(Modifier.PUBLIC, Modifier.FINAL)
             .superclass(generateFactorySuperInterface(factory))
             .addMethod(generateCreateMethod(factory))
             .addMethod(generateGetScopingMethod())
+
+        getSiblingTypesMethodGenerator.generate(classBuilder)
+
+        classBuilder
             .addMethod(generateGetTypeMethod(factory))
-            .build()
+
+        factoryTypeSpec = classBuilder.build()
     }
 
     private fun generateCreateMethod(factoryType: FactoryType): MethodSpec {
@@ -162,7 +188,7 @@ class FactoryCodeGenerator : FactoryTypeVisitor, CodeGenerator {
                     .builder(Scope::class.java, PARAM_SCOPE_NAME)
                     .build()
             )
-            .returns(factoryType.annotation.type)
+            .returns(factoryType.type)
             .addCode(createMethodCodeBuilder.build())
 
         if (shouldSuppressUncheckedWarning) {
@@ -203,14 +229,14 @@ class FactoryCodeGenerator : FactoryTypeVisitor, CodeGenerator {
             .methodBuilder("getType")
             .addModifiers(Modifier.PUBLIC, Modifier.STATIC)
             .returns(Class::class.java)
-            .addStatement("return \$T.class", factoryType.annotation.type)
+            .addStatement("return \$T.class", factoryType.type)
             .build()
     }
 
     private fun generateFactorySuperInterface(factoryType: FactoryType): TypeName {
         return ParameterizedTypeName.get(
             ClassName.get(InstanceFactory::class.java),
-            factoryType.annotation.type
+            factoryType.type
         )
     }
 

@@ -10,9 +10,9 @@ import javax.lang.model.element.TypeElement
 /** Awesome static factory method parser. */
 internal class FactoryFromMethodAnnotationParser(
     env: MagnetProcessorEnv
-) : AnnotationParser(env) {
+) : AnnotationParser<ExecutableElement>(env, false) {
 
-    fun parse(element: ExecutableElement): FactoryType {
+    override fun parse(element: ExecutableElement): List<FactoryType> {
 
         if (!element.modifiers.contains(Modifier.STATIC)) {
             throw env.compilationError(element, "Method annotated"
@@ -27,10 +27,12 @@ internal class FactoryFromMethodAnnotationParser(
         val annotation = parseAnnotation(element)
         val staticMethodReturnType = element.returnType
 
-        if (annotation.type.toString() != staticMethodReturnType.toString()) {
-            throw env.compilationError(element, "Method must return instance"
-                + " of ${annotation.type.reflectionName()} as declared"
-                + " by ${Instance::class.java}")
+        for (type in annotation.types) {
+            if (type.toString() != staticMethodReturnType.toString()) {
+                throw env.compilationError(element, "Method must return instance"
+                    + " of ${type.reflectionName()} as declared"
+                    + " by ${Instance::class.java}")
+            }
         }
 
         val staticMethodClassName = ClassName.get(element.enclosingElement as TypeElement)
@@ -48,17 +50,26 @@ internal class FactoryFromMethodAnnotationParser(
             uniqueFactoryNameBuilder.append(methodParameter.name.capitalize())
         }
 
-        uniqueFactoryNameBuilder.append("MagnetFactory")
+        val instanceFullName = uniqueFactoryNameBuilder.toString()
+        return annotation.types.map {
 
-        return FactoryType(
-            element,
-            annotation,
-            ClassName.bestGuess(uniqueFactoryNameBuilder.toString()),
-            MethodCreateStatement(staticMethodClassName, staticMethodName),
-            CreateMethod(methodParameters),
-            GetScopingMethod(annotation.scoping),
-            GetSiblingTypesMethod(null)
-        )
+            val getSiblingTypesMethod = if (annotation.types.size == 1) null
+            else GetSiblingTypesMethod(annotation.types - it)
+
+            val factoryFullName = generateFactoryName(annotation, instanceFullName, it)
+            FactoryType(
+                element = element,
+                type = it,
+                classifier = annotation.classifier,
+                scoping = annotation.scoping,
+                disabled = annotation.disabled,
+                factoryType = ClassName.bestGuess(factoryFullName),
+                createStatement = MethodCreateStatement(staticMethodClassName, staticMethodName),
+                createMethod = CreateMethod(methodParameters),
+                getScopingMethod = GetScopingMethod(annotation.scoping),
+                getSiblingTypesMethod = getSiblingTypesMethod
+            )
+        }
     }
 
 }

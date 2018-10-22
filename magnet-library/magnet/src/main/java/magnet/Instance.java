@@ -16,11 +16,11 @@
 
 package magnet;
 
-import static java.lang.annotation.RetentionPolicy.CLASS;
-
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
+
+import static java.lang.annotation.RetentionPolicy.CLASS;
 
 /**
  * Magnet instantiates classes marked with this annotation automatically. Annotated
@@ -74,22 +74,35 @@ import java.lang.annotation.Target;
  * for more detail.
  */
 @Retention(CLASS)
-@Target({ ElementType.TYPE, ElementType.METHOD })
+@Target({ElementType.TYPE, ElementType.METHOD})
 public @interface Instance {
 
     /**
      * Type to use when annotated instance gets registered in scope. Annotated class must
      * actually implement this type.
      */
-    Class<?> type();
+    Class<?> type() default void.class;
 
-    /** Classifier to use when annotated instance gets registered in scope. */
+    /**
+     * Multiple types to use when annotated instance gets registered in scope. Annotated
+     * class must actually implement all these types. Properties {@link #type()} and
+     * {@code #types()} are exclusively mutual and cannot be used together.
+     */
+    Class<?>[] types() default void.class;
+
+    /**
+     * Classifier to use when annotated instance gets registered in scope.
+     */
     String classifier() default Classifier.NONE;
 
-    /** Scoping rule to be applied when instance of annotated class gets created. */
+    /**
+     * Scoping rule to be applied when instance of annotated class gets created.
+     */
     Scoping scoping() default Scoping.TOPMOST;
 
-    /** Magnet ignores this annotation when this flag is set to <code>true</code>. */
+    /**
+     * Magnet ignores this annotation when this flag is set to <code>true</code>.
+     */
     boolean disabled() default false;
 
 }

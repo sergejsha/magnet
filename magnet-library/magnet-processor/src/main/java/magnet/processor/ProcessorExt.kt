@@ -18,6 +18,6 @@ package magnet.processor
 
 import javax.lang.model.element.AnnotationMirror
 
-inline fun <reified T> AnnotationMirror.mirrors(): Boolean {
+inline fun <reified T> AnnotationMirror.isForType(): Boolean {
     return this.annotationType.toString() == T::class.java.name
 }

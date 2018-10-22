@@ -39,4 +39,13 @@ class MagnetProcessorEnv(private val processEnvironment: ProcessingEnvironment) 
         return CompilationException()
     }
 
+    fun unexpectedCompilationError(element: Element, message: String? = null): CompilationException {
+        processEnvironment.messager.printMessage(
+            Diagnostic.Kind.ERROR,
+            "Unexpected compilation error, please report the bug. Message: ${message ?: "none."}",
+            element
+        )
+        return CompilationException()
+    }
+
 }

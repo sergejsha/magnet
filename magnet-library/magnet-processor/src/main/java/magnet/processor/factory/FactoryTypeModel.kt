@@ -23,17 +23,22 @@ import javax.lang.model.element.Element
 const val PARAM_SCOPE_NAME = "scope"
 
 interface FactoryTypeVisitor {
+
     fun visitEnter(factoryType: FactoryType)
     fun visitEnter(createMethod: CreateMethod)
     fun visit(parameter: MethodParameter)
     fun visitExit(createMethod: CreateMethod)
     fun visit(method: GetScopingMethod)
-    fun visit(method: GetSiblingTypesMethod)
+
+    fun enterSiblingTypesMethod(method: GetSiblingTypesMethod)
+    fun visitSiblingType(type: ClassName)
+    fun exitSiblingTypesMethod(method: GetSiblingTypesMethod)
+
     fun visitExit(factory: FactoryType)
 }
 
 data class Annotation(
-    val type: ClassName,
+    val types: List<ClassName>,
     val classifier: String,
     val scoping: String,
     val disabled: Boolean
@@ -41,18 +46,21 @@ data class Annotation(
 
 data class FactoryType(
     val element: Element,
-    val annotation: Annotation,
+    val type: ClassName,
+    val classifier: String,
+    val scoping: String,
+    val disabled: Boolean,
     val factoryType: ClassName,
     val createStatement: CreateStatement,
     val createMethod: CreateMethod,
     val getScopingMethod: GetScopingMethod,
-    val getSiblingTypesMethod: GetSiblingTypesMethod
+    val getSiblingTypesMethod: GetSiblingTypesMethod?
 ) {
     fun accept(visitor: FactoryTypeVisitor) {
         visitor.visitEnter(this)
         createMethod.accept(visitor)
         getScopingMethod.accept(visitor)
-        getSiblingTypesMethod.accept(visitor)
+        getSiblingTypesMethod?.accept(visitor)
         visitor.visitExit(this)
     }
 }
@@ -101,10 +109,14 @@ data class GetScopingMethod(
 }
 
 data class GetSiblingTypesMethod(
-    val types: List<ClassName>?
+    val siblingTypes: List<ClassName>
 ) {
     fun accept(visitor: FactoryTypeVisitor) {
-        visitor.visit(this)
+        visitor.enterSiblingTypesMethod(this)
+        for (siblingType in siblingTypes) {
+            visitor.visitSiblingType(siblingType)
+        }
+        visitor.exitSiblingTypesMethod(this)
     }
 }
 

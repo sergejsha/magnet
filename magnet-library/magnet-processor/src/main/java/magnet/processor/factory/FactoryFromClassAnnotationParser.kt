@@ -24,25 +24,34 @@ import javax.lang.model.util.ElementFilter
 
 internal class FactoryFromClassAnnotationParser(
     env: MagnetProcessorEnv
-) : AnnotationParser(env) {
+) : AnnotationParser<TypeElement>(env, true) {
 
-    fun parse(element: TypeElement): FactoryType {
+    override fun parse(element: TypeElement): List<FactoryType> {
 
-        val annotation = parseAnnotation(element, checkInheritance = true)
-
+        val annotation = parseAnnotation(element)
         val instanceType = ClassName.get(element)
         val instancePackage = instanceType.packageName()
         val instanceName = instanceType.simpleName()
 
-        return FactoryType(
-            element,
-            annotation,
-            ClassName.bestGuess("${instancePackage}.${instanceName}MagnetFactory"),
-            TypeCreateStatement(instanceType),
-            parseCreateMethod(element),
-            GetScopingMethod(annotation.scoping),
-            GetSiblingTypesMethod(null)
-        )
+        return annotation.types.map {
+
+            val getSiblingTypesMethod = if (annotation.types.size == 1) null
+            else GetSiblingTypesMethod(annotation.types - it)
+
+            val factoryName = generateFactoryName(annotation, instanceName, it)
+            FactoryType(
+                element = element,
+                type = it,
+                classifier = annotation.classifier,
+                scoping = annotation.scoping,
+                disabled = annotation.disabled,
+                factoryType = ClassName.bestGuess("$instancePackage.$factoryName"),
+                createStatement = TypeCreateStatement(instanceType),
+                createMethod = parseCreateMethod(element),
+                getScopingMethod = GetScopingMethod(annotation.scoping),
+                getSiblingTypesMethod = getSiblingTypesMethod
+            )
+        }
     }
 
     private fun parseCreateMethod(element: TypeElement): CreateMethod {

@@ -35,7 +35,9 @@ class FactoryIndexCodeGenerator : FactoryTypeVisitor, CodeGenerator {
     override fun visit(parameter: MethodParameter) {}
     override fun visitExit(createMethod: CreateMethod) {}
     override fun visit(method: GetScopingMethod) {}
-    override fun visit(method: GetSiblingTypesMethod) {}
+    override fun enterSiblingTypesMethod(method: GetSiblingTypesMethod) {}
+    override fun visitSiblingType(type: ClassName) {}
+    override fun exitSiblingTypesMethod(method: GetSiblingTypesMethod) {}
 
     override fun visitExit(factory: FactoryType) {
         val factoryPackage = factory.factoryType.packageName()
@@ -49,8 +51,8 @@ class FactoryIndexCodeGenerator : FactoryTypeVisitor, CodeGenerator {
             .addAnnotation(
                 generateFactoryIndexAnnotation(
                     factory.factoryType,
-                    factory.annotation.type.reflectionName(),
-                    factory.annotation.classifier
+                    factory.type.reflectionName(),
+                    factory.classifier
                 )
             )
             .build()

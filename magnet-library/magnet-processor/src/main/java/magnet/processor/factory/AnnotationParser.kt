@@ -10,21 +10,29 @@ import magnet.Instance
 import magnet.Scope
 import magnet.Scoping
 import magnet.processor.MagnetProcessorEnv
-import magnet.processor.mirrors
+import magnet.processor.isForType
+import javax.lang.model.element.AnnotationValue
 import javax.lang.model.element.Element
 import javax.lang.model.element.TypeElement
 import javax.lang.model.element.VariableElement
 import javax.lang.model.type.TypeKind
+import javax.lang.model.type.TypeMirror
+import javax.lang.model.util.Elements
+import javax.lang.model.util.SimpleAnnotationValueVisitor6
 
 private const val CLASS_NULLABLE = ".Nullable"
 private const val ATTR_TYPE = "type"
+private const val ATTR_TYPES = "types"
 private const val ATTR_SCOPING = "scoping"
 private const val ATTR_CLASSIFIER = "classifier"
 private const val ATTR_DISABLED = "disabled"
 
-internal open class AnnotationParser(
-    protected val env: MagnetProcessorEnv
+internal abstract class AnnotationParser<in E : Element>(
+    protected val env: MagnetProcessorEnv,
+    private val verifyInheritance: Boolean
 ) {
+
+    private val typesAttrExtractor = TypesAttrExtractor(env.elements)
 
     protected fun parseMethodParameter(
         element: Element,
@@ -91,7 +99,7 @@ internal open class AnnotationParser(
         var classifier: String = Classifier.NONE
 
         variable.annotationMirrors.forEach { annotationMirror ->
-            if (annotationMirror.mirrors<Classifier>()) {
+            if (annotationMirror.isForType<Classifier>()) {
                 val declaredClassifier: String? = annotationMirror.elementValues.values.firstOrNull()?.value.toString()
                 declaredClassifier?.let {
                     classifier = it.removeSurrounding("\"", "\"")
@@ -118,29 +126,33 @@ internal open class AnnotationParser(
         )
     }
 
-    protected fun parseAnnotation(element: Element, checkInheritance: Boolean = false): Annotation {
+    protected fun parseAnnotation(element: Element): Annotation {
 
         var interfaceTypeElement: TypeElement? = null
+        var interfaceTypesElement: List<TypeElement>? = null
         var scoping = Scoping.TOPMOST.name
         var classifier = Classifier.NONE
         var disabled = false
 
-        element.annotationMirrors.forEach { annotationMirror ->
-            if (annotationMirror.mirrors<Instance>()) {
-                annotationMirror.elementValues.entries.forEach { entry ->
+        for (annotationMirror in element.annotationMirrors) {
+            if (annotationMirror.isForType<Instance>()) {
+                for (entry in annotationMirror.elementValues.entries) {
                     val entryName = entry.key.simpleName.toString()
                     val entryValue = entry.value.value.toString()
+
                     when (entryName) {
                         ATTR_TYPE -> {
-                            interfaceTypeElement = env.elements.getTypeElement(entryValue)
-                            if (checkInheritance) {
-                                val isTypeImplemented = env.types.isAssignable(
-                                    element.asType(),
-                                    env.types.getDeclaredType(interfaceTypeElement) // erase generic type
-                                )
-                                if (!isTypeImplemented) {
-                                    throw env.compilationError(element,
-                                        "$element must implement $interfaceTypeElement")
+                            env.elements.getTypeElement(entryValue)?.let {
+                                if (verifyInheritance) it.verifyInheritance(element)
+                                interfaceTypeElement = it
+                            }
+                        }
+                        ATTR_TYPES -> {
+                            entry.value.accept(typesAttrExtractor, null)
+                            interfaceTypesElement = typesAttrExtractor.extractValue()
+                            if (verifyInheritance) {
+                                for (typeElement in interfaceTypesElement) {
+                                    if (verifyInheritance) typeElement.verifyInheritance(element)
                                 }
                             }
                         }
@@ -152,14 +164,11 @@ internal open class AnnotationParser(
             }
         }
 
-        val interfaceType = if (interfaceTypeElement == null) {
-            throw env.compilationError(element, "${Instance::class.java} must declare 'type' property.")
-        } else {
-            ClassName.get(interfaceTypeElement)
-        }
+        val declaredTypeElements: List<TypeElement> =
+            verifyTypeDeclaration(interfaceTypeElement, interfaceTypesElement, element)
 
         return Annotation(
-            interfaceType,
+            declaredTypeElements.map { ClassName.get(it) },
             classifier,
             scoping,
             disabled
@@ -184,6 +193,82 @@ internal open class AnnotationParser(
             return upperBounds[0]
         }
         return paramTypeName
+    }
+
+    private fun verifyTypeDeclaration(
+        interfaceTypeElement: TypeElement?,
+        interfaceTypesElement: List<TypeElement>?,
+        element: Element
+    ): List<TypeElement> {
+        val isTypeDeclared = interfaceTypeElement != null
+        val areTypesDeclared = interfaceTypesElement?.isNotEmpty() ?: false
+
+        if (!isTypeDeclared && !areTypesDeclared) {
+            throw env.compilationError(element,
+                "${Instance::class.java} must declare either 'type' or 'types' property.")
+        }
+
+        if (isTypeDeclared && areTypesDeclared) {
+            throw env.compilationError(element,
+                "${Instance::class.java} must declare either 'type' or 'types' property, not both.")
+        }
+
+        if (interfaceTypeElement != null) {
+            return arrayListOf(interfaceTypeElement)
+        }
+
+        if (interfaceTypesElement != null) {
+            return interfaceTypesElement
+        }
+
+        throw env.unexpectedCompilationError(element, "Cannot verify type declaration.")
+    }
+
+    private fun TypeElement.verifyInheritance(element: Element) {
+        val isTypeImplemented = env.types.isAssignable(
+            element.asType(),
+            env.types.getDeclaredType(this) // erase generic type
+        )
+        if (!isTypeImplemented) {
+            throw env.compilationError(element,
+                "$element must implement $this")
+        }
+    }
+
+    abstract fun parse(element: E): List<FactoryType>
+
+    companion object {
+
+        fun generateFactoryName(annotation: Annotation, instanceName: String, it: ClassName): String =
+            if (annotation.types.size == 1) {
+                "${instanceName}MagnetFactory"
+            } else {
+                "$instanceName${it.simpleName()}MagnetFactory"
+            }
+
+    }
+
+}
+
+internal class TypesAttrExtractor(private val elements: Elements)
+    : SimpleAnnotationValueVisitor6<Void?, Void>() {
+
+    private val _collectedTypes = mutableListOf<String>()
+
+    fun extractValue(): List<TypeElement> {
+        val value = _collectedTypes.map { elements.getTypeElement(it) }
+        _collectedTypes.clear()
+        return value
+    }
+
+    override fun visitArray(values: MutableList<out AnnotationValue>?, p: Void?): Void? {
+        values?.let { for (value in values) value.accept(this, p) }
+        return p
+    }
+
+    override fun visitType(typeMirror: TypeMirror?, p: Void?): Void? {
+        typeMirror?.let { _collectedTypes.add(it.toString()) }
+        return p
     }
 
 }
