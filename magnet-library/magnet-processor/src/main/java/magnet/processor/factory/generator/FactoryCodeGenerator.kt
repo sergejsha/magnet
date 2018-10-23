@@ -26,7 +26,6 @@ import com.squareup.javapoet.TypeName
 import com.squareup.javapoet.TypeSpec
 import magnet.Classifier
 import magnet.Scope
-import magnet.Scoping
 import magnet.internal.InstanceFactory
 import magnet.processor.factory.CodeGenerator
 import magnet.processor.factory.CodeWriter
@@ -42,12 +41,12 @@ import magnet.processor.factory.PARAM_SCOPE_NAME
 import magnet.processor.factory.TypeCreateStatement
 import javax.lang.model.element.Modifier
 
-interface Generator {
+interface AspectGenerator {
     fun generate(classBuilder: TypeSpec.Builder)
     fun reset()
 }
 
-internal class GenerationAspect<out G : Generator>(
+internal class Aspect<out G : AspectGenerator>(
     private val generator: G
 ) {
     private var visited: Boolean = false
@@ -74,16 +73,15 @@ class FactoryCodeGenerator : FactoryTypeVisitor, CodeGenerator {
     private lateinit var createMethodCodeBuilder: CodeBlock.Builder
     private var shouldSuppressUncheckedWarning = false
     private var constructorParametersBuilder = StringBuilder()
-    private var getScoping: MethodSpec? = null
 
-    private var aspectGetSiblingTypes = GenerationAspect(GetSiblingTypesMethodGenerator())
+    private var aspectGetSiblingTypes = Aspect(GetSiblingTypesMethodGenerator())
+    private var aspectGetScoping = Aspect(GetScopingMethodGenerator())
 
     override fun visitEnter(factoryType: FactoryType) {}
 
     override fun visitEnter(createMethod: CreateMethod) {
         shouldSuppressUncheckedWarning = false
         factoryTypeSpec = null
-        getScoping = null
         createMethodCodeBuilder = CodeBlock.builder()
         constructorParametersBuilder.setLength(0)
     }
@@ -160,13 +158,7 @@ class FactoryCodeGenerator : FactoryTypeVisitor, CodeGenerator {
     }
 
     override fun visit(method: GetScopingMethod) {
-        getScoping = MethodSpec
-            .methodBuilder("getScoping")
-            .addModifiers(Modifier.PUBLIC)
-            .addAnnotation(Override::class.java)
-            .returns(Scoping::class.java)
-            .addStatement("return \$T.\$L", Scoping::class.java, method.scoping)
-            .build()
+        aspectGetScoping.visit { visit(method) }
     }
 
     override fun enterSiblingTypesMethod(method: GetSiblingTypesMethod) {
@@ -189,8 +181,8 @@ class FactoryCodeGenerator : FactoryTypeVisitor, CodeGenerator {
             .addModifiers(Modifier.PUBLIC, Modifier.FINAL)
             .superclass(generateFactorySuperInterface(factory))
             .addMethod(generateCreateMethod(factory))
-            .addMethod(generateGetScopingMethod())
 
+        aspectGetScoping.generate(classBuilder)
         aspectGetSiblingTypes.generate(classBuilder)
 
         classBuilder
@@ -239,10 +231,6 @@ class FactoryCodeGenerator : FactoryTypeVisitor, CodeGenerator {
         }
 
         return builder.build()
-    }
-
-    private fun generateGetScopingMethod(): MethodSpec {
-        return getScoping!!
     }
 
     private fun generateGetTypeMethod(factoryType: FactoryType): MethodSpec {

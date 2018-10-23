@@ -4,7 +4,6 @@ import app.Page;
 import app.WorkProcessor;
 import java.util.List;
 import magnet.Scope;
-import magnet.Scoping;
 import magnet.internal.InstanceFactory;
 
 public final class HomePageWithManyParameterizedWildcardKnownParamsMagnetFactory extends InstanceFactory<Page> {
@@ -16,11 +15,6 @@ public final class HomePageWithManyParameterizedWildcardKnownParamsMagnetFactory
         List variant3 = scope.getMany(WorkProcessor.class);
         List variant4 = scope.getMany(WorkProcessor.class, "global");
         return new HomePageWithManyParameterizedWildcardKnownParams(variant1, variant2, variant3, variant4);
-    }
-
-    @Override
-    public Scoping getScoping() {
-        return Scoping.TOPMOST;
     }
 
     public static Class getType() {

@@ -23,7 +23,7 @@ import magnet.Scoping;
 public abstract class InstanceFactory<T> {
 
     public abstract T create(Scope scope);
-    public abstract Scoping getScoping();
+    public Scoping getScoping() { return Scoping.TOPMOST; }
     public Class[] getSiblingTypes() { return null; }
 
 }

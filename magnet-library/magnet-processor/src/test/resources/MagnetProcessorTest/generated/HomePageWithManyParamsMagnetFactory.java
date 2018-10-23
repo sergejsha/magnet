@@ -4,7 +4,6 @@ import app.HomeRepository;
 import app.Page;
 import java.util.List;
 import magnet.Scope;
-import magnet.Scoping;
 import magnet.internal.InstanceFactory;
 
 public final class HomePageWithManyParamsMagnetFactory extends InstanceFactory<Page> {
@@ -16,11 +15,6 @@ public final class HomePageWithManyParamsMagnetFactory extends InstanceFactory<P
         List<HomeRepository> variant3 = scope.getMany(HomeRepository.class);
         List<HomeRepository> variant4 = scope.getMany(HomeRepository.class, "global");
         return new HomePageWithManyParams(variant1, variant2, variant3, variant4);
-    }
-
-    @Override
-    public Scoping getScoping() {
-        return Scoping.TOPMOST;
     }
 
     public static Class getType() {

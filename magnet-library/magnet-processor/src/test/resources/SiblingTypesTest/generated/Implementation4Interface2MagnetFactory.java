@@ -1,7 +1,6 @@
 package siblings;
 
 import magnet.Scope;
-import magnet.Scoping;
 import magnet.internal.InstanceFactory;
 
 public final class Implementation4Interface2MagnetFactory extends InstanceFactory<Interface2> {
@@ -10,11 +9,6 @@ public final class Implementation4Interface2MagnetFactory extends InstanceFactor
     @Override
     public Interface2 create(Scope scope) {
         return new Implementation4();
-    }
-
-    @Override
-    public Scoping getScoping() {
-        return Scoping.TOPMOST;
     }
 
     @Override

@@ -25,7 +25,7 @@ import com.squareup.javapoet.TypeSpec
 import magnet.processor.factory.GetSiblingTypesMethod
 import javax.lang.model.element.Modifier
 
-internal class GetSiblingTypesMethodGenerator : Generator {
+internal class GetSiblingTypesMethodGenerator : AspectGenerator {
 
     private var getSiblingTypes: MethodSpec? = null
     private var constBuilder: FieldSpec? = null
