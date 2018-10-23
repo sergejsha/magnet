@@ -129,7 +129,7 @@ internal abstract class AnnotationParser<in E : Element>(
     protected fun parseAnnotation(element: Element): Annotation {
 
         var interfaceTypeElement: TypeElement? = null
-        var interfaceTypesElement: List<TypeElement>? = null
+        var interfaceTypeElements: List<TypeElement>? = null
         var scoping = Scoping.TOPMOST.name
         var classifier = Classifier.NONE
         var disabled = false
@@ -149,9 +149,9 @@ internal abstract class AnnotationParser<in E : Element>(
                         }
                         ATTR_TYPES -> {
                             entry.value.accept(typesAttrExtractor, null)
-                            interfaceTypesElement = typesAttrExtractor.extractValue()
+                            interfaceTypeElements = typesAttrExtractor.extractValue()
                             if (verifyInheritance) {
-                                for (typeElement in interfaceTypesElement) {
+                                for (typeElement in interfaceTypeElements) {
                                     if (verifyInheritance) typeElement.verifyInheritance(element)
                                 }
                             }
@@ -165,7 +165,7 @@ internal abstract class AnnotationParser<in E : Element>(
         }
 
         val declaredTypeElements: List<TypeElement> =
-            verifyTypeDeclaration(interfaceTypeElement, interfaceTypesElement, scoping, element)
+            verifyTypeDeclaration(interfaceTypeElement, interfaceTypeElements, scoping, element)
 
         return Annotation(
             declaredTypeElements.map { ClassName.get(it) },
@@ -197,12 +197,12 @@ internal abstract class AnnotationParser<in E : Element>(
 
     private fun verifyTypeDeclaration(
         interfaceTypeElement: TypeElement?,
-        interfaceTypesElement: List<TypeElement>?,
+        interfaceTypeElements: List<TypeElement>?,
         scoping: String,
         element: Element
     ): List<TypeElement> {
         val isTypeDeclared = interfaceTypeElement != null
-        val areTypesDeclared = interfaceTypesElement?.isNotEmpty() ?: false
+        val areTypesDeclared = interfaceTypeElements?.isNotEmpty() ?: false
 
         if (!isTypeDeclared && !areTypesDeclared) {
             throw env.compilationError(element,
@@ -218,13 +218,13 @@ internal abstract class AnnotationParser<in E : Element>(
             return arrayListOf(interfaceTypeElement)
         }
 
-        if (interfaceTypesElement != null) {
+        if (interfaceTypeElements != null) {
             if (scoping == Scoping.UNSCOPED.name) {
                 throw env.compilationError(element,
                     "types() property must be used with scoped instances only. Set " +
                         "scoping to Scoping.DIRECT or Scoping.TOPMOST.")
             }
-            return interfaceTypesElement
+            return interfaceTypeElements
         }
 
         throw env.unexpectedCompilationError(element, "Cannot verify type declaration.")
@@ -259,11 +259,11 @@ internal abstract class AnnotationParser<in E : Element>(
 internal class TypesAttrExtractor(private val elements: Elements)
     : SimpleAnnotationValueVisitor6<Void?, Void>() {
 
-    private val _collectedTypes = mutableListOf<String>()
+    private val extractedTypes = mutableListOf<String>()
 
     fun extractValue(): List<TypeElement> {
-        val value = _collectedTypes.map { elements.getTypeElement(it) }
-        _collectedTypes.clear()
+        val value = extractedTypes.map { elements.getTypeElement(it) }
+        extractedTypes.clear()
         return value
     }
 
@@ -273,7 +273,7 @@ internal class TypesAttrExtractor(private val elements: Elements)
     }
 
     override fun visitType(typeMirror: TypeMirror?, p: Void?): Void? {
-        typeMirror?.let { _collectedTypes.add(it.toString()) }
+        typeMirror?.let { extractedTypes.add(it.toString()) }
         return p
     }
 

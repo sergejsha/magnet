@@ -25,7 +25,7 @@ import com.squareup.javapoet.TypeSpec
 import magnet.processor.factory.GetSiblingTypesMethod
 import javax.lang.model.element.Modifier
 
-internal class GetSiblingTypesMethodGenerator {
+internal class GetSiblingTypesMethodGenerator : Generator {
 
     private var getSiblingTypes: MethodSpec? = null
     private var constBuilder: FieldSpec? = null
@@ -60,12 +60,14 @@ internal class GetSiblingTypesMethodGenerator {
             .build()
     }
 
-    fun reset() {
+    override fun reset() {
         getSiblingTypes = null
+        constBuilder = null
+        constInitializer = null
         typesLeft = 0
     }
 
-    fun generate(classBuilder: TypeSpec.Builder) {
+    override fun generate(classBuilder: TypeSpec.Builder) {
         constBuilder?.let { classBuilder.addField(it) }
         getSiblingTypes?.let { classBuilder.addMethod(it) }
     }

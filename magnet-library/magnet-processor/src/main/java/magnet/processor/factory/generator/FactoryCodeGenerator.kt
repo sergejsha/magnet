@@ -42,6 +42,30 @@ import magnet.processor.factory.PARAM_SCOPE_NAME
 import magnet.processor.factory.TypeCreateStatement
 import javax.lang.model.element.Modifier
 
+interface Generator {
+    fun generate(classBuilder: TypeSpec.Builder)
+    fun reset()
+}
+
+internal class GenerationAspect<out G : Generator>(
+    private val generator: G
+) {
+    private var visited: Boolean = false
+
+    inline fun visit(block: G.() -> Unit) {
+        block(generator)
+        visited = true
+    }
+
+    fun generate(classBuilder: TypeSpec.Builder) {
+        if (visited) {
+            generator.generate(classBuilder)
+        }
+        generator.reset()
+        visited = false
+    }
+}
+
 class FactoryCodeGenerator : FactoryTypeVisitor, CodeGenerator {
 
     private var factoryTypeSpec: TypeSpec? = null
@@ -52,17 +76,14 @@ class FactoryCodeGenerator : FactoryTypeVisitor, CodeGenerator {
     private var constructorParametersBuilder = StringBuilder()
     private var getScoping: MethodSpec? = null
 
-    private var getSiblingTypesMethodGenerator = GetSiblingTypesMethodGenerator()
+    private var aspectGetSiblingTypes = GenerationAspect(GetSiblingTypesMethodGenerator())
 
-    override fun visitEnter(factoryType: FactoryType) {
-        // nop
-    }
+    override fun visitEnter(factoryType: FactoryType) {}
 
     override fun visitEnter(createMethod: CreateMethod) {
         shouldSuppressUncheckedWarning = false
         factoryTypeSpec = null
         getScoping = null
-        getSiblingTypesMethodGenerator.reset()
         createMethodCodeBuilder = CodeBlock.builder()
         constructorParametersBuilder.setLength(0)
     }
@@ -149,15 +170,15 @@ class FactoryCodeGenerator : FactoryTypeVisitor, CodeGenerator {
     }
 
     override fun enterSiblingTypesMethod(method: GetSiblingTypesMethod) {
-        getSiblingTypesMethodGenerator.enterSiblingTypesMethod(method)
+        aspectGetSiblingTypes.visit { enterSiblingTypesMethod(method) }
     }
 
     override fun visitSiblingType(type: ClassName) {
-        getSiblingTypesMethodGenerator.visitSiblingType(type)
+        aspectGetSiblingTypes.visit { visitSiblingType(type) }
     }
 
     override fun exitSiblingTypesMethod(method: GetSiblingTypesMethod) {
-        getSiblingTypesMethodGenerator.exitSiblingTypesMethod()
+        aspectGetSiblingTypes.visit { exitSiblingTypesMethod() }
     }
 
     override fun visitExit(factory: FactoryType) {
@@ -170,7 +191,7 @@ class FactoryCodeGenerator : FactoryTypeVisitor, CodeGenerator {
             .addMethod(generateCreateMethod(factory))
             .addMethod(generateGetScopingMethod())
 
-        getSiblingTypesMethodGenerator.generate(classBuilder)
+        aspectGetSiblingTypes.generate(classBuilder)
 
         classBuilder
             .addMethod(generateGetTypeMethod(factory))
