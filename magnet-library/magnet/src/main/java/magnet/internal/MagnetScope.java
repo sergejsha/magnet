@@ -122,7 +122,8 @@ final class MagnetScope implements Scope {
 
         List<T> objects = new ArrayList<>(factories.size());
         for (InstanceFactory<T> factory : factories) {
-            objects.add(getSingleObject(type, classifier, factory, CARDINALITY_MANY));
+            T object = getSingleObject(type, classifier, factory, CARDINALITY_MANY);
+            if (object != null) objects.add(object);
         }
         return objects;
     }
