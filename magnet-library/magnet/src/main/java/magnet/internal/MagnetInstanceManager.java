@@ -102,7 +102,8 @@ final class MagnetInstanceManager implements InstanceManager {
         if (selectorFilter == null) {
             throw new IllegalStateException(
                 String.format(
-                    "Filter with id \"%s\" not found. Make sure to install is using @Magnetizer annotation.",
+                    "Filter with id \"%s\" was requested but not found." +
+                        " Make sure it is installed using @Magnetizer annotation.",
                     namespace)
             );
         }
