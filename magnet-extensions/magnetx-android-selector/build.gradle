@@ -26,8 +26,8 @@ compileTestKotlin {
 }
 
 dependencies {
+    compileOnly deps.android
     implementation project(':magnet')
-    implementation deps.android
     implementation deps.kotlinjdk8
 }
 
