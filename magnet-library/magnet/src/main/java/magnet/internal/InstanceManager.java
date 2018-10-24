@@ -16,6 +16,8 @@
 
 package magnet.internal;
 
+import magnet.SelectorFilter;
+
 import java.util.List;
 
 /* Subject to change. For internal use only. */
@@ -23,5 +25,6 @@ interface InstanceManager {
 
     <T> InstanceFactory<T> getOptionalFactory(Class<T> type, String classifier);
     <T> List<InstanceFactory<T>> getManyFactories(Class<T> type, String classifier);
+    SelectorFilter getSelectorFilter(String namespace);
 
 }

@@ -16,16 +16,16 @@
 
 package magnet.internal;
 
-import static com.google.common.truth.Truth.assertThat;
-
+import magnet.Scope;
+import magnet.Scoping;
+import magnet.SelectorFilter;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import magnet.Scope;
-import magnet.Scoping;
+import static com.google.common.truth.Truth.assertThat;
 
 public class MagnetScope_ManyInstancesInMultipleScopesTest {
 
@@ -99,6 +99,9 @@ public class MagnetScope_ManyInstancesInMultipleScopesTest {
             if (type == InstanceType.class) {
                 return (List<InstanceFactory<T>>) instanceTypeFactories;
             }
+            throw new UnsupportedOperationException();
+        }
+        @Override public SelectorFilter getSelectorFilter(String namespace) {
             throw new UnsupportedOperationException();
         }
     }

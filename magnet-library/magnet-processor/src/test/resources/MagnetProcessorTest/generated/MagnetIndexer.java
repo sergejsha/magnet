@@ -4,17 +4,18 @@ import app.extension.HomePageMagnetFactory;
 import app.extension.HomePageMenuItemMagnetFactory;
 import app.extension.UserPageMagnetFactory;
 import app.extension.UserPageMenuItemMagnetFactory;
+
 import java.util.HashMap;
 import java.util.Map;
 
 public final class MagnetIndexer {
 
     public static void register(MagnetInstanceManager instanceManager) {
-        InstanceFactory[] factories = new InstanceFactory[] {
-                new UserPageMenuItemMagnetFactory(),
-                new HomePageMenuItemMagnetFactory(),
-                new HomePageMagnetFactory(),
-                new UserPageMagnetFactory(),
+        InstanceFactory[] factories = new InstanceFactory[]{
+            new UserPageMenuItemMagnetFactory(),
+            new HomePageMenuItemMagnetFactory(),
+            new HomePageMagnetFactory(),
+            new UserPageMagnetFactory(),
         };
 
         Map<Class, Object> index = new HashMap<>(16);
@@ -26,7 +27,7 @@ public final class MagnetIndexer {
         index.put(UserPageMenuItemMagnetFactory.getType(), ranges1);
         index.put(HomePageMagnetFactory.getType(), new Range(2, 2, ""));
 
-        instanceManager.register(factories, index);
+        instanceManager.register(factories, index, null);
     }
 
 }

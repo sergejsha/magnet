@@ -1,3 +1,7 @@
-include ':application-extension'
+include ':application-extension',
+        ':magnetx-android-selector',
+        ':magnet'
 
 rootProject.name = 'magnet-extensions'
+
+project(":magnet").projectDir = new File(rootDir, "../magnet-library/magnet")

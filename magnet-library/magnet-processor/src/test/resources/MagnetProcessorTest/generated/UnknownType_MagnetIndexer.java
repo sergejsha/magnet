@@ -11,6 +11,6 @@ public final class MagnetIndexer {
         };
         Map<Class, Object> index = new HashMap<>(16);
         index.put(UnknownTypeTabMagnetFactory.getType(), new Range(0, 1, ""));
-        instanceManager.register(factories, index);
+        instanceManager.register(factories, index, null);
     }
 }

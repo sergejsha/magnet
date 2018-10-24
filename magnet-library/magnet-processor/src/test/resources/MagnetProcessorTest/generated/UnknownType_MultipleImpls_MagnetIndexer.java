@@ -16,6 +16,6 @@ public final class MagnetIndexer {
         ranges1.put("", new Range(0, 1, ""));
         ranges1.put("2", new Range(1, 1, "2"));
         index.put(UnknownTypeTabMagnetFactory.getType(), ranges1);
-        instanceManager.register(factories, index);
+        instanceManager.register(factories, index, null);
     }
 }

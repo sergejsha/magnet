@@ -98,7 +98,7 @@ public class MagnetScope_SiblingTypesTest {
         index.put(Interface1.class, new Range(0, 1, Classifier.NONE));
         index.put(Interface2.class, new Range(1, 1, Classifier.NONE));
 
-        instanceManager.register(factories, index);
+        instanceManager.register(factories, index, new HashMap<>());
         return instanceManager;
     }
 

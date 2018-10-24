@@ -101,6 +101,20 @@ public @interface Instance {
     Scoping scoping() default Scoping.TOPMOST;
 
     /**
+     * <b>Experimental.</b> Magnet will only create instance of the annotated class if
+     * this selector expression is true after evaluation. Magnet currently support single
+     * type of expression:
+     * <p>
+     * <code>android.api (comparison operator) (api version)</code>
+     * <p>
+     * For instance, the expression <code>android.api >= 28</code> will only create
+     * annotated instance if Build.VERSION.SDK_INT >= 28. For the other versions
+     * <code>null</code> is returned. Make sure to use optional injection to handle
+     * this case.
+     */
+    String selector() default SelectorFilter.DEFAULT_SELECTOR;
+
+    /**
      * Magnet ignores this annotation when this flag is set to <code>true</code>.
      */
     boolean disabled() default false;

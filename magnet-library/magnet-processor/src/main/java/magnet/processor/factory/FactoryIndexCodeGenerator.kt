@@ -27,19 +27,11 @@ class FactoryIndexCodeGenerator : FactoryTypeVisitor, CodeGenerator {
     private var factoryIndexTypeSpec: TypeSpec? = null
     private var factoryIndexClassName: ClassName? = null
 
-    override fun visitEnter(factoryType: FactoryType) {
+    override fun enterFactoryClass(factoryType: FactoryType) {
         factoryIndexTypeSpec = null
     }
 
-    override fun visitEnter(createMethod: CreateMethod) {}
-    override fun visit(parameter: MethodParameter) {}
-    override fun visitExit(createMethod: CreateMethod) {}
-    override fun visit(method: GetScopingMethod) {}
-    override fun enterSiblingTypesMethod(method: GetSiblingTypesMethod) {}
-    override fun visitSiblingType(type: ClassName) {}
-    override fun exitSiblingTypesMethod(method: GetSiblingTypesMethod) {}
-
-    override fun visitExit(factory: FactoryType) {
+    override fun exitFactoryClass(factory: FactoryType) {
         val factoryPackage = factory.factoryType.packageName()
         val factoryName = factory.factoryType.simpleName()
         val factoryIndexName = "${factoryPackage.replace('.', '_')}_${factoryName}"

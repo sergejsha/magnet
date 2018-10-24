@@ -67,6 +67,9 @@ internal class FactoryFromMethodAnnotationParser(
                 GetSiblingTypesMethod(siblingTypes)
             }
 
+            val selectorAttributes = selectorAttributeParser.convert(annotation.selector, element)
+            val getSelectorMethod = if (selectorAttributes == null) null else GetSelectorMethod(selectorAttributes)
+
             val factoryFullName = generateFactoryName(isSingleTypeFactory, instanceFullName, it)
             FactoryType(
                 element = element,
@@ -78,6 +81,7 @@ internal class FactoryFromMethodAnnotationParser(
                 createStatement = MethodCreateStatement(staticMethodClassName, staticMethodName),
                 createMethod = CreateMethod(methodParameters),
                 getScopingMethod = GetScopingMethod(annotation.scoping),
+                getSelectorMethod = getSelectorMethod,
                 getSiblingTypesMethod = getSiblingTypesMethod
             )
         }

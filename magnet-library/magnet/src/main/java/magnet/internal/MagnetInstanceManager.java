@@ -16,12 +16,13 @@
 
 package magnet.internal;
 
+import magnet.Magnetizer;
+import magnet.SelectorFilter;
+
 import java.lang.reflect.Method;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-
-import magnet.Magnetizer;
 
 /* Subject to change. For internal use only. */
 @SuppressWarnings("unchecked")
@@ -29,6 +30,7 @@ final class MagnetInstanceManager implements InstanceManager {
 
     private InstanceFactory[] factories;
     private Map<Class, Object> index;
+    private Map<String, SelectorFilter> filters;
 
     MagnetInstanceManager() {
         registerInstanceFactories();
@@ -41,18 +43,19 @@ final class MagnetInstanceManager implements InstanceManager {
             registerFactories.invoke(magnetClass, this);
         } catch (Exception e) {
             System.err.println(
-                    String.format(
-                            "MagnetIndexer cannot be found. Add a @%s-annotated class to the application module.",
-                            Magnetizer.class
-                    )
+                String.format(
+                    "MagnetIndexer cannot be found. Add a @%s-annotated class to the application module.",
+                    Magnetizer.class
+                )
             );
         }
     }
 
     // called by generated index class
-    void register(InstanceFactory[] factories, Map<Class, Object> index) {
+    void register(InstanceFactory[] factories, Map<Class, Object> index, Map<String, SelectorFilter> filters) {
         this.factories = factories;
         this.index = index;
+        this.filters = filters;
     }
 
     @Override
@@ -63,9 +66,9 @@ final class MagnetInstanceManager implements InstanceManager {
         }
         if (range.getCount() > 1) {
             throw new IllegalStateException(
-                    String.format(
-                            "Multiple factories for type '%s' and classifier '%s' found," +
-                                    " while only one was required", type, classifier));
+                String.format(
+                    "Multiple factories for type '%s' and classifier '%s' found," +
+                        " while only one was required", type, classifier));
         }
         return factories[range.getFrom()];
     }
@@ -94,6 +97,18 @@ final class MagnetInstanceManager implements InstanceManager {
         return Collections.emptyList();
     }
 
+    @Override public SelectorFilter getSelectorFilter(String namespace) {
+        SelectorFilter selectorFilter = filters.get(namespace);
+        if (selectorFilter == null) {
+            throw new IllegalStateException(
+                String.format(
+                    "Filter with namespace \"%s\" not found. Make sure to install is using @Magnetizer annotation.",
+                    namespace)
+            );
+        }
+        return selectorFilter;
+    }
+
     private Range getOptionalRange(Class<?> type, String classifier) {
         Object indexed = index.get(type);
 
@@ -115,8 +130,8 @@ final class MagnetInstanceManager implements InstanceManager {
         }
 
         throw new IllegalStateException(
-                String.format(
-                        "Unsupported index type: %s", indexed.getClass()));
+            String.format(
+                "Unsupported index type: %s", indexed.getClass()));
     }
 
     private <T> List<InstanceFactory<T>> factoriesFromRange(Range range) {

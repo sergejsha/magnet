@@ -24,27 +24,34 @@ const val PARAM_SCOPE_NAME = "scope"
 
 interface FactoryTypeVisitor {
 
-    fun visitEnter(factoryType: FactoryType)
-    fun visitEnter(createMethod: CreateMethod)
-    fun visit(parameter: MethodParameter)
-    fun visitExit(createMethod: CreateMethod)
-    fun visit(method: GetScopingMethod)
+    fun enterFactoryClass(factoryType: FactoryType) {}
 
-    fun enterSiblingTypesMethod(method: GetSiblingTypesMethod)
-    fun visitSiblingType(type: ClassName)
-    fun exitSiblingTypesMethod(method: GetSiblingTypesMethod)
+    fun enterCreateMethod(createMethod: CreateMethod) {}
+    fun visitCreateMethodParameter(parameter: MethodParameter) {}
+    fun exitCreateMethod(createMethod: CreateMethod) {}
 
-    fun visitExit(factory: FactoryType)
+    fun visit(method: GetScopingMethod) {}
+
+    fun enterSiblingTypesMethod(method: GetSiblingTypesMethod) {}
+    fun visitSiblingType(type: ClassName) {}
+    fun exitSiblingTypesMethod(method: GetSiblingTypesMethod) {}
+
+    fun enterGetSelectorMethod(method: GetSelectorMethod) {}
+    fun visitSelectorArgument(argument: String) {}
+    fun exitGetSelectorMethod(method: GetSelectorMethod) {}
+
+    fun exitFactoryClass(factory: FactoryType) {}
 }
 
-data class Annotation(
+class Annotation(
     val types: List<ClassName>,
     val classifier: String,
     val scoping: String,
+    val selector: String,
     val disabled: Boolean
 )
 
-data class FactoryType(
+class FactoryType(
     val element: Element,
     val type: ClassName,
     val classifier: String,
@@ -54,41 +61,43 @@ data class FactoryType(
     val createStatement: CreateStatement,
     val createMethod: CreateMethod,
     val getScopingMethod: GetScopingMethod,
+    val getSelectorMethod: GetSelectorMethod?,
     val getSiblingTypesMethod: GetSiblingTypesMethod?
 ) {
     fun accept(visitor: FactoryTypeVisitor) {
-        visitor.visitEnter(this)
+        visitor.enterFactoryClass(this)
         createMethod.accept(visitor)
         getScopingMethod.accept(visitor)
         getSiblingTypesMethod?.accept(visitor)
-        visitor.visitExit(this)
+        getSelectorMethod?.accept(visitor)
+        visitor.exitFactoryClass(this)
     }
 }
 
-sealed class CreateStatement
+abstract class CreateStatement
 
-data class TypeCreateStatement(
+class TypeCreateStatement(
     val instanceType: ClassName
 ) : CreateStatement()
 
-data class MethodCreateStatement(
+class MethodCreateStatement(
     val staticMethodClassName: ClassName,
     val staticMethodName: String
 ) : CreateStatement()
 
-data class CreateMethod(
+class CreateMethod(
     val methodParameter: List<MethodParameter>
 ) {
     fun accept(visitor: FactoryTypeVisitor) {
-        visitor.visitEnter(this)
+        visitor.enterCreateMethod(this)
         methodParameter.forEach { parameterNode ->
             parameterNode.accept(visitor)
         }
-        visitor.visitExit(this)
+        visitor.exitCreateMethod(this)
     }
 }
 
-data class MethodParameter(
+class MethodParameter(
     val name: String,
     val type: TypeName,
     val typeErased: Boolean,
@@ -96,27 +105,33 @@ data class MethodParameter(
     val method: GetterMethod
 ) {
     fun accept(visitor: FactoryTypeVisitor) {
-        visitor.visit(this)
+        visitor.visitCreateMethodParameter(this)
     }
 }
 
-data class GetScopingMethod(
-    val scoping: String
-) {
+class GetScopingMethod(val scoping: String) {
     fun accept(visitor: FactoryTypeVisitor) {
         visitor.visit(this)
     }
 }
 
-data class GetSiblingTypesMethod(
-    val siblingTypes: List<ClassName>
-) {
+class GetSiblingTypesMethod(val siblingTypes: List<ClassName>) {
     fun accept(visitor: FactoryTypeVisitor) {
         visitor.enterSiblingTypesMethod(this)
         for (siblingType in siblingTypes) {
             visitor.visitSiblingType(siblingType)
         }
         visitor.exitSiblingTypesMethod(this)
+    }
+}
+
+class GetSelectorMethod(val selectorArguments: List<String>) {
+    fun accept(visitor: FactoryTypeVisitor) {
+        visitor.enterGetSelectorMethod(this)
+        for (argument in selectorArguments) {
+            visitor.visitSelectorArgument(argument)
+        }
+        visitor.exitGetSelectorMethod(this)
     }
 }
 

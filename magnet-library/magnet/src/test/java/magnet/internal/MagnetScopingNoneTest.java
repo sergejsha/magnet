@@ -16,8 +16,9 @@
 
 package magnet.internal;
 
-import static com.google.common.truth.Truth.assertThat;
-
+import magnet.Scope;
+import magnet.Scoping;
+import magnet.SelectorFilter;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -25,8 +26,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import magnet.Scope;
-import magnet.Scoping;
+import static com.google.common.truth.Truth.assertThat;
 
 public class MagnetScopingNoneTest {
 
@@ -38,16 +38,16 @@ public class MagnetScopingNoneTest {
     public void before() {
         InstanceManager instanceManager = new StubInstanceManager();
         scope1 = (InstrumentedScope) new InstrumentedScope(
-                new MagnetScope(null, instanceManager))
-                .bind(Dependency1.class, new Dependency1());
+            new MagnetScope(null, instanceManager))
+            .bind(Dependency1.class, new Dependency1());
 
         scope2 = (InstrumentedScope) scope1
-                .createSubscope()
-                .bind(Dependency2.class, new Dependency2());
+            .createSubscope()
+            .bind(Dependency2.class, new Dependency2());
 
         scope3 = (InstrumentedScope) scope2
-                .createSubscope()
-                .bind(Dependency3.class, new Dependency3());
+            .createSubscope()
+            .bind(Dependency3.class, new Dependency3());
     }
 
     @Test
@@ -196,6 +196,9 @@ public class MagnetScopingNoneTest {
             return (InstanceFactory<T>) factories.get(classifier);
         }
         @Override public <T> List<InstanceFactory<T>> getManyFactories(Class<T> type, String classifier) {
+            throw new UnsupportedOperationException();
+        }
+        @Override public SelectorFilter getSelectorFilter(String namespace) {
             throw new UnsupportedOperationException();
         }
     }

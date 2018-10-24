@@ -16,9 +16,8 @@
 
 package magnet.internal;
 
-import static com.google.common.truth.Truth.assertThat;
-import static org.mockito.Mockito.when;
-
+import magnet.Classifier;
+import magnet.Scope;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -29,8 +28,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import magnet.Classifier;
-import magnet.Scope;
+import static com.google.common.truth.Truth.assertThat;
+import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.Silent.class)
 public class MagnetInstanceManagerTest {
@@ -67,12 +66,12 @@ public class MagnetInstanceManagerTest {
         when(instanceFactoryType2Impl2.create(scope)).thenReturn(new Type2Impl());
         when(instanceFactoryType3Impl1.create(scope)).thenReturn(new Type3Impl());
 
-        InstanceFactory[] factories = new InstanceFactory[] {
-                instanceFactoryType1Impl1,
-                instanceFactoryType1Impl2,
-                instanceFactoryType2Impl1,
-                instanceFactoryType2Impl2,
-                instanceFactoryType3Impl1
+        InstanceFactory[] factories = new InstanceFactory[]{
+            instanceFactoryType1Impl1,
+            instanceFactoryType1Impl2,
+            instanceFactoryType2Impl1,
+            instanceFactoryType2Impl2,
+            instanceFactoryType3Impl1
         };
 
         Map<Class, Object> index = new HashMap<>();
@@ -85,7 +84,7 @@ public class MagnetInstanceManagerTest {
         index.put(Type2.class, new Range(2, 2, Classifier.NONE));
         index.put(Type3.class, new Range(4, 1, CLASSIFIER_LOCAL));
 
-        instManager.register(factories, index);
+        instManager.register(factories, index, new HashMap<>());
     }
 
     @Test

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package magnet.processor.factory.generator
+package magnet.processor.factory.siblingtypes
 
 import com.squareup.javapoet.ArrayTypeName
 import com.squareup.javapoet.ClassName
@@ -23,6 +23,7 @@ import com.squareup.javapoet.FieldSpec
 import com.squareup.javapoet.MethodSpec
 import com.squareup.javapoet.TypeSpec
 import magnet.processor.factory.GetSiblingTypesMethod
+import magnet.processor.factory.AspectGenerator
 import javax.lang.model.element.Modifier
 
 internal class GetSiblingTypesMethodGenerator : AspectGenerator {

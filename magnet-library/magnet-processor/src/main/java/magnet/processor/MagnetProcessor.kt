@@ -23,7 +23,7 @@ import magnet.processor.factory.FactoryFromClassAnnotationParser
 import magnet.processor.factory.FactoryFromMethodAnnotationParser
 import magnet.processor.factory.FactoryIndexCodeGenerator
 import magnet.processor.factory.FactoryType
-import magnet.processor.factory.generator.FactoryCodeGenerator
+import magnet.processor.factory.FactoryTypeCodeGenerator
 import magnet.processor.index.MagnetIndexerGenerator
 import javax.annotation.processing.AbstractProcessor
 import javax.annotation.processing.ProcessingEnvironment
@@ -41,7 +41,7 @@ class MagnetProcessor : AbstractProcessor() {
     private lateinit var env: MagnetProcessorEnv
     private lateinit var factoryFromClassAnnotationParser: FactoryFromClassAnnotationParser
     private lateinit var factoryFromMethodAnnotationParser: FactoryFromMethodAnnotationParser
-    private lateinit var factoryCodeGenerator: FactoryCodeGenerator
+    private lateinit var factoryTypeCodeGenerator: FactoryTypeCodeGenerator
     private lateinit var factoryIndexCodeGenerator: FactoryIndexCodeGenerator
 
     override fun init(processingEnvironment: ProcessingEnvironment) {
@@ -49,7 +49,7 @@ class MagnetProcessor : AbstractProcessor() {
         env = MagnetProcessorEnv(processingEnvironment)
         factoryFromClassAnnotationParser = FactoryFromClassAnnotationParser(env)
         factoryFromMethodAnnotationParser = FactoryFromMethodAnnotationParser(env)
-        factoryCodeGenerator = FactoryCodeGenerator()
+        factoryTypeCodeGenerator = FactoryTypeCodeGenerator()
         factoryIndexCodeGenerator = FactoryIndexCodeGenerator()
     }
 
@@ -98,7 +98,7 @@ class MagnetProcessor : AbstractProcessor() {
 
         val codeWriters = mutableListOf<CodeWriter>()
         factoryTypes.forEach { factoryType ->
-            codeWriters.add(factoryCodeGenerator.generateFrom(factoryType))
+            codeWriters.add(factoryTypeCodeGenerator.generateFrom(factoryType))
             codeWriters.add(factoryIndexCodeGenerator.generateFrom(factoryType))
         }
 

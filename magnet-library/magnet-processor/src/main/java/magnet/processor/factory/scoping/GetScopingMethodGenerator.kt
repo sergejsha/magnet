@@ -1,9 +1,10 @@
-package magnet.processor.factory.generator
+package magnet.processor.factory.scoping
 
 import com.squareup.javapoet.MethodSpec
 import com.squareup.javapoet.TypeSpec
 import magnet.Scoping
 import magnet.processor.factory.GetScopingMethod
+import magnet.processor.factory.AspectGenerator
 import javax.lang.model.element.Modifier
 
 internal class GetScopingMethodGenerator : AspectGenerator {

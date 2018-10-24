@@ -19,6 +19,7 @@ package magnet.internal;
 import magnet.Classifier;
 import magnet.Scope;
 import magnet.Scoping;
+import magnet.SelectorFilter;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;
@@ -162,6 +163,24 @@ final class MagnetScope implements Scope {
                 if (object != null) {
                     return object;
                 }
+            }
+        }
+
+        String[] selector = factory.getSelector();
+        if (selector != null) {
+            SelectorFilter selectorFilter = instanceManager.getSelectorFilter(selector[0]);
+            if (!selectorFilter.filter(selector)) {
+                if (cardinality == CARDINALITY_SINGLE) {
+                    StringBuilder selectorBuilder = new StringBuilder();
+                    for (String selectorPart : selector) {
+                        selectorBuilder.append(selectorPart).append(" ");
+                    }
+                    throw new IllegalStateException(
+                        String.format(
+                            "Instance of type: '%s' and classifier: '%s' was excluded by selector filter: %s",
+                            type.getName(), classifier, selectorBuilder.toString()));
+                }
+                return null;
             }
         }
 

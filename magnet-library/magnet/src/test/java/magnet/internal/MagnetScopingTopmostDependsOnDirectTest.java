@@ -16,8 +16,9 @@
 
 package magnet.internal;
 
-import static com.google.common.truth.Truth.assertThat;
-
+import magnet.Scope;
+import magnet.Scoping;
+import magnet.SelectorFilter;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -25,8 +26,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import magnet.Scope;
-import magnet.Scoping;
+import static com.google.common.truth.Truth.assertThat;
 
 public class MagnetScopingTopmostDependsOnDirectTest {
 
@@ -132,6 +132,9 @@ public class MagnetScopingTopmostDependsOnDirectTest {
             return (InstanceFactory<T>) factories.get(classifier);
         }
         @Override public <T> List<InstanceFactory<T>> getManyFactories(Class<T> type, String classifier) {
+            throw new UnsupportedOperationException();
+        }
+        @Override public SelectorFilter getSelectorFilter(String namespace) {
             throw new UnsupportedOperationException();
         }
     }

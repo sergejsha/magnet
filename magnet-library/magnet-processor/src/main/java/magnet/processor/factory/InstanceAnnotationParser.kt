@@ -9,7 +9,9 @@ import magnet.Classifier
 import magnet.Instance
 import magnet.Scope
 import magnet.Scoping
+import magnet.SelectorFilter
 import magnet.processor.MagnetProcessorEnv
+import magnet.processor.factory.selector.SelectorAttributeParser
 import magnet.processor.isForType
 import javax.lang.model.element.AnnotationValue
 import javax.lang.model.element.Element
@@ -27,10 +29,16 @@ private const val ATTR_SCOPING = "scoping"
 private const val ATTR_CLASSIFIER = "classifier"
 private const val ATTR_DISABLED = "disabled"
 
+interface AspectParser<R> {
+    fun parse(value: AnnotationValue, element: Element): R
+}
+
 internal abstract class AnnotationParser<in E : Element>(
     protected val env: MagnetProcessorEnv,
     private val verifyInheritance: Boolean
 ) {
+
+    protected val selectorAttributeParser = SelectorAttributeParser(env)
 
     private val typesAttrExtractor = TypesAttrExtractor(env.elements)
 
@@ -118,11 +126,11 @@ internal abstract class AnnotationParser<in E : Element>(
         }
 
         return MethodParameter(
-            paramName,
-            paramTypeName,
-            paramTypeErased,
-            classifier,
-            getterMethod
+            name = paramName,
+            type = paramTypeName,
+            typeErased = paramTypeErased,
+            classifier = classifier,
+            method = getterMethod
         )
     }
 
@@ -132,6 +140,7 @@ internal abstract class AnnotationParser<in E : Element>(
         var interfaceTypeElements: List<TypeElement>? = null
         var scoping = Scoping.TOPMOST.name
         var classifier = Classifier.NONE
+        var selector = SelectorFilter.DEFAULT_SELECTOR
         var disabled = false
 
         for (annotationMirror in element.annotationMirrors) {
@@ -158,6 +167,7 @@ internal abstract class AnnotationParser<in E : Element>(
                         }
                         ATTR_SCOPING -> scoping = entryValue
                         ATTR_CLASSIFIER -> classifier = entryValue
+                        SelectorAttributeParser.ATTR_NAME -> selector = selectorAttributeParser.parse(entry.value, element)
                         ATTR_DISABLED -> disabled = entryValue.toBoolean()
                     }
                 }
@@ -168,10 +178,11 @@ internal abstract class AnnotationParser<in E : Element>(
             verifyTypeDeclaration(interfaceTypeElement, interfaceTypeElements, scoping, element)
 
         return Annotation(
-            declaredTypeElements.map { ClassName.get(it) },
-            classifier,
-            scoping,
-            disabled
+            types = declaredTypeElements.map { ClassName.get(it) },
+            classifier = classifier,
+            scoping = scoping,
+            selector = selector,
+            disabled = disabled
         )
     }
 
@@ -251,7 +262,6 @@ internal abstract class AnnotationParser<in E : Element>(
             } else {
                 "$instanceName${it.simpleName()}MagnetFactory"
             }
-
     }
 
 }

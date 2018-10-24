@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package magnet.processor.factory.generator
+package magnet.processor.factory
 
 import com.squareup.javapoet.AnnotationSpec
 import com.squareup.javapoet.ClassName
@@ -27,18 +27,9 @@ import com.squareup.javapoet.TypeSpec
 import magnet.Classifier
 import magnet.Scope
 import magnet.internal.InstanceFactory
-import magnet.processor.factory.CodeGenerator
-import magnet.processor.factory.CodeWriter
-import magnet.processor.factory.CreateMethod
-import magnet.processor.factory.FactoryType
-import magnet.processor.factory.FactoryTypeVisitor
-import magnet.processor.factory.GetScopingMethod
-import magnet.processor.factory.GetSiblingTypesMethod
-import magnet.processor.factory.GetterMethod
-import magnet.processor.factory.MethodCreateStatement
-import magnet.processor.factory.MethodParameter
-import magnet.processor.factory.PARAM_SCOPE_NAME
-import magnet.processor.factory.TypeCreateStatement
+import magnet.processor.factory.scoping.GetScopingMethodGenerator
+import magnet.processor.factory.selector.GetSelectorMethodGenerator
+import magnet.processor.factory.siblingtypes.GetSiblingTypesMethodGenerator
 import javax.lang.model.element.Modifier
 
 interface AspectGenerator {
@@ -65,7 +56,7 @@ internal class Aspect<out G : AspectGenerator>(
     }
 }
 
-class FactoryCodeGenerator : FactoryTypeVisitor, CodeGenerator {
+class FactoryTypeCodeGenerator : FactoryTypeVisitor, CodeGenerator {
 
     private var factoryTypeSpec: TypeSpec? = null
     private var factoryClassName: ClassName? = null
@@ -76,17 +67,18 @@ class FactoryCodeGenerator : FactoryTypeVisitor, CodeGenerator {
 
     private var aspectGetSiblingTypes = Aspect(GetSiblingTypesMethodGenerator())
     private var aspectGetScoping = Aspect(GetScopingMethodGenerator())
+    private var aspectGetSelector = Aspect(GetSelectorMethodGenerator())
 
-    override fun visitEnter(factoryType: FactoryType) {}
+    override fun enterFactoryClass(factoryType: FactoryType) {}
 
-    override fun visitEnter(createMethod: CreateMethod) {
+    override fun enterCreateMethod(createMethod: CreateMethod) {
         shouldSuppressUncheckedWarning = false
         factoryTypeSpec = null
         createMethodCodeBuilder = CodeBlock.builder()
         constructorParametersBuilder.setLength(0)
     }
 
-    override fun visit(parameter: MethodParameter) {
+    override fun visitCreateMethodParameter(parameter: MethodParameter) {
         val isScopeParameter = parameter.name == PARAM_SCOPE_NAME
 
         if (!isScopeParameter) {
@@ -151,7 +143,7 @@ class FactoryCodeGenerator : FactoryTypeVisitor, CodeGenerator {
         constructorParametersBuilder.append(parameter.name).append(", ")
     }
 
-    override fun visitExit(createMethod: CreateMethod) {
+    override fun exitCreateMethod(createMethod: CreateMethod) {
         if (constructorParametersBuilder.isNotEmpty()) {
             constructorParametersBuilder.setLength(constructorParametersBuilder.length - 2)
         }
@@ -173,7 +165,19 @@ class FactoryCodeGenerator : FactoryTypeVisitor, CodeGenerator {
         aspectGetSiblingTypes.visit { exitSiblingTypesMethod() }
     }
 
-    override fun visitExit(factory: FactoryType) {
+    override fun enterGetSelectorMethod(method: GetSelectorMethod) {
+        aspectGetSelector.visit { enterGetSelectorMethod(method) }
+    }
+
+    override fun visitSelectorArgument(argument: String) {
+        aspectGetSelector.visit { visitSelectorArgument(argument) }
+    }
+
+    override fun exitGetSelectorMethod(method: GetSelectorMethod) {
+        aspectGetSelector.visit { exitGetSelectorMethod() }
+    }
+
+    override fun exitFactoryClass(factory: FactoryType) {
         factoryClassName = factory.factoryType
 
         val classBuilder = TypeSpec
@@ -184,6 +188,7 @@ class FactoryCodeGenerator : FactoryTypeVisitor, CodeGenerator {
 
         aspectGetScoping.generate(classBuilder)
         aspectGetSiblingTypes.generate(classBuilder)
+        aspectGetSelector.generate(classBuilder)
 
         classBuilder
             .addMethod(generateGetTypeMethod(factory))
