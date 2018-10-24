@@ -20,9 +20,9 @@ import app.Type6MagnetFactory;
 import app.Type7MagnetFactory;
 import app.Type8MagnetFactory;
 import app.Type9MagnetFactory;
-
 import java.util.HashMap;
 import java.util.Map;
+import magnet.SelectorFilter;
 
 public final class MagnetIndexer {
     public static void register(MagnetInstanceManager instanceManager) {
@@ -71,6 +71,7 @@ public final class MagnetIndexer {
         index.put(Type8MagnetFactory.getType(), new Range(18, 1, ""));
         index.put(Type9MagnetFactory.getType(), new Range(19, 1, ""));
 
-        instanceManager.register(factories, index, null);
+        Map<String, SelectorFilter> filters = null;
+        instanceManager.register(factories, index, filters);
     }
 }

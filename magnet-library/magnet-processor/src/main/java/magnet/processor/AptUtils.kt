@@ -17,7 +17,22 @@
 package magnet.processor
 
 import javax.lang.model.element.AnnotationMirror
+import javax.lang.model.element.AnnotationValue
+import javax.lang.model.element.Element
 
-inline fun <reified T> AnnotationMirror.isForType(): Boolean {
-    return this.annotationType.toString() == T::class.java.name
+inline fun <reified T> AnnotationMirror.isOfAnnotationType(): Boolean =
+    this.annotationType.toString() == T::class.java.name
+
+inline fun <reified A> Element.eachAnnotation(
+    block: (name: String, value: AnnotationValue) -> Unit
+) {
+    for (annotationMirror in annotationMirrors) {
+        if (annotationMirror.isOfAnnotationType<A>()) {
+            for (entry in annotationMirror.elementValues.entries) {
+                val name = entry.key.simpleName.toString()
+                val value = entry.value
+                block(name, value)
+            }
+        }
+    }
 }

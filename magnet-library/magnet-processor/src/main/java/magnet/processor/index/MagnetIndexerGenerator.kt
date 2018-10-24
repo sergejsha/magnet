@@ -27,6 +27,8 @@ import magnet.internal.InstanceFactory
 import magnet.processor.MagnetProcessorEnv
 import magnet.processor.index.model.Index
 import magnet.processor.index.model.Inst
+import magnet.processor.index.selector.SelectorFiltersParser
+import magnet.processor.index.selector.SelectorMapGenerator
 import javax.lang.model.element.Element
 import javax.lang.model.element.ExecutableElement
 import javax.lang.model.element.Modifier
@@ -36,10 +38,14 @@ private const val MAGNET_INDEXER_CLASS = "magnet.internal.MagnetIndexer"
 
 class MagnetIndexerGenerator {
 
+    private val selectorMapGenerator = SelectorMapGenerator()
+    private val selectorFiltersParser = SelectorFiltersParser()
+
     private var shouldGenerateRegistry = false
+    private lateinit var selectorFilterClassNames: List<ClassName>
 
     fun generate(
-        annotatedElements: MutableSet<out Any>,
+        annotatedElements: MutableSet<out Element>,
         env: MagnetProcessorEnv
     ): Boolean {
         val alreadyGeneratedMagnetRegistry = env.elements.getTypeElement(MAGNET_INDEXER_CLASS)
@@ -48,13 +54,14 @@ class MagnetIndexerGenerator {
         }
 
         if (!shouldGenerateRegistry) {
-            shouldGenerateRegistry = !annotatedElements.isEmpty()
+            shouldGenerateRegistry = annotatedElements.isNotEmpty()
+            selectorFilterClassNames = selectorFiltersParser.extractSelectorFilters(annotatedElements.firstOrNull(), env)
             return false // wait for next round even if we should generate
         }
 
         val registryClassName = ClassName.bestGuess(MAGNET_INDEXER_CLASS)
         val indexElements = env.elements.getPackageElement("magnet.index")?.enclosedElements ?: listOf()
-        val magnetRegistryTypeSpec = generateMagnetRegistry(indexElements, registryClassName)
+        val magnetRegistryTypeSpec = generateMagnetRegistry(indexElements, registryClassName, selectorFilterClassNames)
 
         val packageName = registryClassName.packageName()
         JavaFile.builder(packageName, magnetRegistryTypeSpec)
@@ -67,16 +74,20 @@ class MagnetIndexerGenerator {
 
     private fun generateMagnetRegistry(
         indexElements: MutableList<out Element>,
-        registryClassName: ClassName
+        registryClassName: ClassName,
+        selectorFilterClassNames: List<ClassName>
     ): TypeSpec {
         return TypeSpec
             .classBuilder(registryClassName)
             .addModifiers(Modifier.PUBLIC, Modifier.FINAL)
-            .addMethod(generateRegisterFactoriesMethod(indexElements))
+            .addMethod(generateRegisterFactoriesMethod(indexElements, selectorFilterClassNames))
             .build()
     }
 
-    private fun generateRegisterFactoriesMethod(indexElements: MutableList<out Element>): MethodSpec {
+    private fun generateRegisterFactoriesMethod(
+        indexElements: MutableList<out Element>,
+        selectorFilterClassNames: List<ClassName>
+    ): MethodSpec {
 
         val factoryRegistryClassName = ClassName.get("magnet.internal", "MagnetInstanceManager")
         val factoryIndexClassName = ClassName.get(FactoryIndex::class.java)
@@ -98,7 +109,9 @@ class MagnetIndexerGenerator {
                 .build())
             .addCode(generateArrayOfFactoriesCodeBlock(index))
             .addCode(generateIndexCodeBlock(index))
-            .addStatement("\$L.register(factories, index, null)", INSTANCE_MANAGER)
+            .addCode(selectorMapGenerator.generateCodeBlock(selectorFilterClassNames))
+            .addStatement("\$L.register(factories, index, \$L)",
+                INSTANCE_MANAGER, selectorMapGenerator.filtersVariableName)
             .build()
     }
 
@@ -154,11 +167,11 @@ class MagnetIndexerGenerator {
                 var factoryKey: ExecutableElement? = null
                 var classifierKey: ExecutableElement? = null
 
-                it.elementValues.entries.forEach {
-                    when (it.key.simpleName.toString()) {
-                        "type" -> interfaceKey = it.key
-                        "factory" -> factoryKey = it.key
-                        "classifier" -> classifierKey = it.key
+                it.elementValues.entries.forEach { entry ->
+                    when (entry.key.simpleName.toString()) {
+                        "type" -> interfaceKey = entry.key
+                        "factory" -> factoryKey = entry.key
+                        "classifier" -> classifierKey = entry.key
                     }
                 }
 

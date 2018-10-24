@@ -6,7 +6,7 @@ import com.google.testing.compile.JavaFileObjects
 import org.junit.Test
 import javax.tools.JavaFileObject
 
-class SelectorTest {
+class SelectorInFactoryClassTest {
 
     @Test
     fun `Empty selector is allowed`() {

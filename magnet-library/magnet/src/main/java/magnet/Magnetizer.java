@@ -16,11 +16,11 @@
 
 package magnet;
 
-import static java.lang.annotation.RetentionPolicy.CLASS;
-
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
+
+import static java.lang.annotation.RetentionPolicy.CLASS;
 
 /**
  * This is the marker-annotation used by Magnet to identify the top level project,
@@ -28,5 +28,10 @@ import java.lang.annotation.Target;
  * There must be a single class in the whole project annotated with this annotation.
  */
 @Retention(CLASS)
-@Target({ ElementType.TYPE })
-public @interface Magnetizer {}
+@Target({ElementType.TYPE})
+public @interface Magnetizer {
+
+    /** Experimental */
+    Class<? extends SelectorFilter>[] selectorFilters() default {};
+
+}

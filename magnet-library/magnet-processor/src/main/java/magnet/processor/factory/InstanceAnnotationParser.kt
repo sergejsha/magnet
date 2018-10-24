@@ -12,7 +12,7 @@ import magnet.Scoping
 import magnet.SelectorFilter
 import magnet.processor.MagnetProcessorEnv
 import magnet.processor.factory.selector.SelectorAttributeParser
-import magnet.processor.isForType
+import magnet.processor.isOfAnnotationType
 import javax.lang.model.element.AnnotationValue
 import javax.lang.model.element.Element
 import javax.lang.model.element.TypeElement
@@ -107,7 +107,7 @@ internal abstract class AnnotationParser<in E : Element>(
         var classifier: String = Classifier.NONE
 
         variable.annotationMirrors.forEach { annotationMirror ->
-            if (annotationMirror.isForType<Classifier>()) {
+            if (annotationMirror.isOfAnnotationType<Classifier>()) {
                 val declaredClassifier: String? = annotationMirror.elementValues.values.firstOrNull()?.value.toString()
                 declaredClassifier?.let {
                     classifier = it.removeSurrounding("\"", "\"")
@@ -144,7 +144,7 @@ internal abstract class AnnotationParser<in E : Element>(
         var disabled = false
 
         for (annotationMirror in element.annotationMirrors) {
-            if (annotationMirror.isForType<Instance>()) {
+            if (annotationMirror.isOfAnnotationType<Instance>()) {
                 for (entry in annotationMirror.elementValues.entries) {
                     val entryName = entry.key.simpleName.toString()
                     val entryValue = entry.value.value.toString()
