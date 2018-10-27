@@ -4,6 +4,6 @@ import magnet.Instance;
 
 @Instance(
     types = Interface.class,
-    selector = "android.kaboom > 25"
+    selector = "android. > 25"
 )
 class Implementation4 implements Interface {}

@@ -17,7 +17,6 @@
 package magnet.internal;
 
 import magnet.Magnetizer;
-import magnet.SelectorFilter;
 
 import java.lang.reflect.Method;
 import java.util.Collections;
@@ -30,7 +29,6 @@ final class MagnetInstanceManager implements InstanceManager {
 
     private InstanceFactory[] factories;
     private Map<Class, Object> index;
-    private Map<String, SelectorFilter> filters;
 
     MagnetInstanceManager() {
         registerInstanceFactories();
@@ -52,10 +50,9 @@ final class MagnetInstanceManager implements InstanceManager {
     }
 
     // called by generated index class
-    void register(InstanceFactory[] factories, Map<Class, Object> index, Map<String, SelectorFilter> filters) {
+    void register(InstanceFactory[] factories, Map<Class, Object> index) {
         this.factories = factories;
         this.index = index;
-        this.filters = filters;
     }
 
     @Override
@@ -95,19 +92,6 @@ final class MagnetInstanceManager implements InstanceManager {
         }
 
         return Collections.emptyList();
-    }
-
-    @Override public SelectorFilter getSelectorFilter(String namespace) {
-        SelectorFilter selectorFilter = filters.get(namespace);
-        if (selectorFilter == null) {
-            throw new IllegalStateException(
-                String.format(
-                    "Filter with id \"%s\" was requested but not found." +
-                        " Make sure it is installed using @Magnetizer annotation.",
-                    namespace)
-            );
-        }
-        return selectorFilter;
     }
 
     private Range getOptionalRange(Class<?> type, String classifier) {

@@ -14,10 +14,10 @@ class SelectorAttributeParser(
 
         val parsedSelector = selector.split(DELIMITER)
         var isSelectorInvalid: Boolean = parsedSelector.size < 4
-            || parsedSelector[0] != "android"
-            || parsedSelector[1] != "api"
+            || parsedSelector[0].isEmpty()
+            || parsedSelector[1].isEmpty()
             || parsedSelector[2] !in OPERATORS
-            || parsedSelector[3].toIntOrNull() == null
+            || parsedSelector[3].isEmpty()
 
         if (!isSelectorInvalid) {
             isSelectorInvalid = when (parsedSelector[2]) {
@@ -27,8 +27,9 @@ class SelectorAttributeParser(
         }
 
         if (isSelectorInvalid) {
-            throw env.compilationError(element, "Invalid selector. Expected format: 'android.api" +
-                " [comparison operator] [api level]'. Supported comparison operators: $OPERATORS." +
+            throw env.compilationError(element, "Invalid selector. Expected format:" +
+                " '[selector id].[selector field] [comparison operator] [value]'." +
+                " Supported comparison operators: $OPERATORS." +
                 " Example selectors: 'android.api >= 28', 'android.api in 0..24'")
         }
 

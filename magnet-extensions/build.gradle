@@ -1,17 +1,18 @@
 buildscript {
     ext.kotlin_version = '1.2.71'
+    ext.android_build_version = '3.2.1'
 
     repositories {
+        maven { url 'https://maven.google.com' }
         jcenter()
     }
 
-    dependencies {
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
-    }
+    dependencies {}
 }
 
 allprojects {
     repositories {
+        maven { url 'https://maven.google.com' }
         jcenter()
         mavenCentral()
     }
@@ -37,6 +38,7 @@ ext.deps = [:]
 ext.deps.android = 'com.google.android:android:4.1.1.4'
 ext.deps.javapoet = 'com.squareup:javapoet:1.11.1'
 ext.deps.jsr305 = 'com.google.code.findbugs:jsr305:3.0.2'
+ext.deps.leakcanary = 'com.squareup.leakcanary:leakcanary-android:1.6.2'
 ext.deps.kotlinjdk8 = "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
 ext.deps.kotlinjdk7 = "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
 

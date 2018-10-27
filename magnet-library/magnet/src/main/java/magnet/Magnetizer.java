@@ -29,9 +29,4 @@ import static java.lang.annotation.RetentionPolicy.CLASS;
  */
 @Retention(CLASS)
 @Target({ElementType.TYPE})
-public @interface Magnetizer {
-
-    /** Experimental */
-    Class<? extends SelectorFilter>[] selectorFilters() default {};
-
-}
+public @interface Magnetizer {}

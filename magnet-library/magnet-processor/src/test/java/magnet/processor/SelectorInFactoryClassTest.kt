@@ -38,7 +38,7 @@ class SelectorInFactoryClassTest {
     }
 
     @Test
-    fun `Invalid selector id fails compilation`() {
+    fun `Empty selector id fails compilation`() {
         val compilation = Compiler.javac()
             .withProcessors(MagnetProcessor())
             .compile(
@@ -51,7 +51,7 @@ class SelectorInFactoryClassTest {
     }
 
     @Test
-    fun `Invalid selector property fails compilation`() {
+    fun `Empty selector filed fails compilation`() {
         val compilation = Compiler.javac()
             .withProcessors(MagnetProcessor())
             .compile(
@@ -77,7 +77,7 @@ class SelectorInFactoryClassTest {
     }
 
     @Test
-    fun `Invalid selector operand fails compilation`() {
+    fun `Empty selector operand fails compilation`() {
         val compilation = Compiler.javac()
             .withProcessors(MagnetProcessor())
             .compile(

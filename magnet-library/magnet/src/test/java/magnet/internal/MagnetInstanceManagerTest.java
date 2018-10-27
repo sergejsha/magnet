@@ -84,7 +84,7 @@ public class MagnetInstanceManagerTest {
         index.put(Type2.class, new Range(2, 2, Classifier.NONE));
         index.put(Type3.class, new Range(4, 1, CLASSIFIER_LOCAL));
 
-        instManager.register(factories, index, new HashMap<>());
+        instManager.register(factories, index);
     }
 
     @Test

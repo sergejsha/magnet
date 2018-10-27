@@ -27,8 +27,6 @@ import magnet.internal.InstanceFactory
 import magnet.processor.MagnetProcessorEnv
 import magnet.processor.index.model.Index
 import magnet.processor.index.model.Inst
-import magnet.processor.index.selector.SelectorFiltersParser
-import magnet.processor.index.selector.SelectorMapGenerator
 import javax.lang.model.element.Element
 import javax.lang.model.element.ExecutableElement
 import javax.lang.model.element.Modifier
@@ -38,11 +36,7 @@ private const val MAGNET_INDEXER_CLASS = "magnet.internal.MagnetIndexer"
 
 class MagnetIndexerGenerator {
 
-    private val selectorMapGenerator = SelectorMapGenerator()
-    private val selectorFiltersParser = SelectorFiltersParser()
-
     private var shouldGenerateRegistry = false
-    private lateinit var selectorFilterClassNames: List<ClassName>
 
     fun generate(
         annotatedElements: MutableSet<out Element>,
@@ -55,13 +49,12 @@ class MagnetIndexerGenerator {
 
         if (!shouldGenerateRegistry) {
             shouldGenerateRegistry = annotatedElements.isNotEmpty()
-            selectorFilterClassNames = selectorFiltersParser.extractSelectorFilters(annotatedElements.firstOrNull(), env)
             return false // wait for next round even if we should generate
         }
 
         val registryClassName = ClassName.bestGuess(MAGNET_INDEXER_CLASS)
         val indexElements = env.elements.getPackageElement("magnet.index")?.enclosedElements ?: listOf()
-        val magnetRegistryTypeSpec = generateMagnetRegistry(indexElements, registryClassName, selectorFilterClassNames)
+        val magnetRegistryTypeSpec = generateMagnetRegistry(indexElements, registryClassName)
 
         val packageName = registryClassName.packageName()
         JavaFile.builder(packageName, magnetRegistryTypeSpec)
@@ -74,19 +67,17 @@ class MagnetIndexerGenerator {
 
     private fun generateMagnetRegistry(
         indexElements: MutableList<out Element>,
-        registryClassName: ClassName,
-        selectorFilterClassNames: List<ClassName>
+        registryClassName: ClassName
     ): TypeSpec {
         return TypeSpec
             .classBuilder(registryClassName)
             .addModifiers(Modifier.PUBLIC, Modifier.FINAL)
-            .addMethod(generateRegisterFactoriesMethod(indexElements, selectorFilterClassNames))
+            .addMethod(generateRegisterFactoriesMethod(indexElements))
             .build()
     }
 
     private fun generateRegisterFactoriesMethod(
-        indexElements: MutableList<out Element>,
-        selectorFilterClassNames: List<ClassName>
+        indexElements: MutableList<out Element>
     ): MethodSpec {
 
         val factoryRegistryClassName = ClassName.get("magnet.internal", "MagnetInstanceManager")
@@ -109,9 +100,7 @@ class MagnetIndexerGenerator {
                 .build())
             .addCode(generateArrayOfFactoriesCodeBlock(index))
             .addCode(generateIndexCodeBlock(index))
-            .addCode(selectorMapGenerator.generateCodeBlock(selectorFilterClassNames))
-            .addStatement("\$L.register(factories, index, \$L)",
-                INSTANCE_MANAGER, selectorMapGenerator.filtersVariableName)
+            .addStatement("\$L.register(factories, index)", INSTANCE_MANAGER)
             .build()
     }
 
