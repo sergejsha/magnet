@@ -18,7 +18,6 @@ package magnet.internal;
 
 import magnet.Scope;
 import magnet.Scoping;
-import magnet.SelectorFilter;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -148,9 +147,6 @@ public class MagnetScope_GetManyTest {
         }
         @Override public <T> List<InstanceFactory<T>> getManyFactories(Class<T> type, String classifier) {
             return (List<InstanceFactory<T>>) factories.get(classifier);
-        }
-        @Override public SelectorFilter getSelectorFilter(String namespace) {
-            throw new UnsupportedOperationException();
         }
     }
 

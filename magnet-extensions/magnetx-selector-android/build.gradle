@@ -1,0 +1,36 @@
+apply plugin: 'kotlin'
+apply plugin: 'kotlin-kapt'
+
+sourceCompatibility = toolsJavaVersion
+targetCompatibility = toolsJavaVersion
+
+buildscript {
+    repositories {
+        maven { url 'https://maven.google.com' }
+        mavenCentral()
+    }
+    dependencies {
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+    }
+}
+
+compileKotlin {
+    kotlinOptions {
+        jvmTarget = toolsJavaVersion
+    }
+}
+
+compileTestKotlin {
+    kotlinOptions {
+        jvmTarget = toolsJavaVersion
+    }
+}
+
+dependencies {
+    compileOnly deps.android
+    implementation deps.kotlinjdk8
+    implementation project(':magnet')
+    kapt project(':magnet-processor')
+}
+
+apply from: rootProject.file('build-maven-push.gradle')

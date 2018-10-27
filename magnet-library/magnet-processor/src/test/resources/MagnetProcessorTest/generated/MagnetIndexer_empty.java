@@ -2,15 +2,13 @@ package magnet.internal;
 
 import java.util.HashMap;
 import java.util.Map;
-import magnet.SelectorFilter;
 
 public final class MagnetIndexer {
 
     public static void register(MagnetInstanceManager instanceManager) {
         InstanceFactory[] factories = new InstanceFactory[0];
         Map<Class, Object> index = new HashMap<>(16);
-        Map<String, SelectorFilter> filters = null;
-        instanceManager.register(factories, index, filters);
+        instanceManager.register(factories, index);
     }
 
 }

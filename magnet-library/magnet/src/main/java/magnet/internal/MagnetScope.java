@@ -169,7 +169,8 @@ final class MagnetScope implements Scope {
 
         String[] selector = factory.getSelector();
         if (selector != null) {
-            SelectorFilter selectorFilter = instanceManager.getSelectorFilter(selector[0]);
+            String selectorName = selector[0];
+            SelectorFilter selectorFilter = getSingle(SelectorFilter.class, selectorName);
             if (!selectorFilter.filter(selector)) {
                 if (cardinality == CARDINALITY_SINGLE) {
                     StringBuilder selectorBuilder = new StringBuilder();

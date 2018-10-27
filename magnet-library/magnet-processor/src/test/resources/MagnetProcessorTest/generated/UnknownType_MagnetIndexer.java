@@ -1,9 +1,9 @@
 package magnet.internal;
 
 import app.extension.UnknownTypeTabMagnetFactory;
+
 import java.util.HashMap;
 import java.util.Map;
-import magnet.SelectorFilter;
 
 public final class MagnetIndexer {
     public static void register(MagnetInstanceManager instanceManager) {
@@ -12,7 +12,6 @@ public final class MagnetIndexer {
         };
         Map<Class, Object> index = new HashMap<>(16);
         index.put(UnknownTypeTabMagnetFactory.getType(), new Range(0, 1, ""));
-        Map<String, SelectorFilter> filters = null;
-        instanceManager.register(factories, index, filters);
+        instanceManager.register(factories, index);
     }
 }

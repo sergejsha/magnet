@@ -4,9 +4,9 @@ import app.extension.HomePageMagnetFactory;
 import app.extension.HomePageMenuItemMagnetFactory;
 import app.extension.UserPageMagnetFactory;
 import app.extension.UserPageMenuItemMagnetFactory;
+
 import java.util.HashMap;
 import java.util.Map;
-import magnet.SelectorFilter;
 
 public final class MagnetIndexer {
 
@@ -27,8 +27,7 @@ public final class MagnetIndexer {
         index.put(UserPageMenuItemMagnetFactory.getType(), ranges1);
         index.put(HomePageMagnetFactory.getType(), new Range(2, 2, ""));
 
-        Map<String, SelectorFilter> filters = null;
-        instanceManager.register(factories, index, filters);
+        instanceManager.register(factories, index);
     }
 
 }
