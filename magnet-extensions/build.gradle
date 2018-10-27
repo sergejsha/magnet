@@ -39,6 +39,7 @@ ext.deps.android = 'com.google.android:android:4.1.1.4'
 ext.deps.javapoet = 'com.squareup:javapoet:1.11.1'
 ext.deps.jsr305 = 'com.google.code.findbugs:jsr305:3.0.2'
 ext.deps.leakcanary = 'com.squareup.leakcanary:leakcanary-android:1.6.2'
+ext.deps.rxandroid = 'io.reactivex.rxjava2:rxandroid:2.1.0'
 ext.deps.kotlinjdk8 = "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
 ext.deps.kotlinjdk7 = "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
 

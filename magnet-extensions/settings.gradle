@@ -1,5 +1,6 @@
-include ':magnetx-extensions-app',
-        ':magnetx-extensions-app-leakcanary',
+include ':magnetx-app',
+        ':magnetx-app-leakcanary',
+	':magnetx-app-rxandroid',
         ':magnetx-selector-android',
         ':magnetx-selector-features',
         ':magnet',

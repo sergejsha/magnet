@@ -29,7 +29,7 @@ dependencies {
     implementation deps.kotlinjdk8
     implementation project(':magnet')
     kapt project(':magnet-processor')
-    api project(':magnetx-extensions-app')
+    api project(':magnetx-app')
 }
 
 tasks.withType(Javadoc).all {
