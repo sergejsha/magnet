@@ -34,7 +34,7 @@ This desing makes dependency injection so easy that it becomes hard not to use i
 
 # Unique features
 
-1. Magnet is capable of injecting annotated classes from compiled libraries. This means you can extend funtionality of your add by just adding libraries to the compilation. See how magnetx-app-leakcanary and magnetx-app-rxandroid leverage this feature.
+1. Magnet is capable of injecting annotated classes from **compiled** libraries. This means you can extend funtionality of your application by just adding libraries as a dependency to the compilation. See how [magnetx-app-leakcanary](magnet-extensions/magnetx-app-leakcanary) and [magnetx-app-rxandroid](magnet-extensions/magnetx-app-rxandroid) leverage this feature.
 
 2. Magnet has a concept of extensible selectors, which gives you additional control over when instances should be injected and when not. The example down below injects `AudioFocusImplLegacy` implementation of `AudioFocus` interface, if current Android API level is less than 26 and `AudioFocusImpl26` one otherwise.
 
@@ -57,7 +57,7 @@ val scope = Magnet.createScope()
 val audioFocus: AudioFocus = scope.getSingle()
 ```
 
-Custom selectors are easy to write. More details can be found in magnetx-selector-android or magnetx-selector-features modules.
+Custom selectors are easy to write. More details can be found in [magnetx-selector-android](magnet-extensions/magnetx-selector-android) or [magnetx-selector-features](magnet-extensions/magnetx-selector-features) modules.
 
 # Documentation
 
