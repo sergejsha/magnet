@@ -19,6 +19,7 @@ package magnet.internal;
 import magnet.Magnetizer;
 
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -56,28 +57,49 @@ final class MagnetInstanceManager implements InstanceManager {
     }
 
     @Override
-    public <T> InstanceFactory<T> getOptionalFactory(Class<T> type, String classifier) {
+    public <T> InstanceFactory<T> getOptionalFactory(
+        Class<T> type, String classifier, FactoryFilter factoryFilter
+    ) {
         Range range = getOptionalRange(type, classifier);
         if (range == null) {
             return null;
         }
-        if (range.getCount() > 1) {
-            throw new IllegalStateException(
-                String.format(
-                    "Multiple factories for type '%s' and classifier '%s' found," +
-                        " while only one was required", type, classifier));
+
+        if (range.getCount() == 1) {
+            InstanceFactory factory = factories[range.getFrom()];
+            if (factoryFilter.filter(factory)) {
+                return factory;
+            }
+            return null;
         }
-        return factories[range.getFrom()];
+
+        InstanceFactory<T> factory = null;
+        for (int index = range.getFrom(), afterLast = range.getFrom() + range.getCount(); index < afterLast; index++) {
+            InstanceFactory<T> candidate = factories[index];
+            if (factoryFilter.filter(candidate)) {
+                if (factory != null) {
+                    throw new IllegalStateException(
+                        String.format("Multiple implementations of type %s (classifier: %s) can be injected," +
+                                " while single implementation is expected. Overloaded factories: %s, %s",
+                            type, classifier, factory, candidate));
+                }
+                factory = candidate;
+            }
+        }
+
+        return factory;
     }
 
     @Override
-    public <T> List<InstanceFactory<T>> getManyFactories(Class<T> type, String classifier) {
+    public <T> List<InstanceFactory<T>> getManyFactories(
+        Class<T> type, String classifier, FactoryFilter factoryFilter
+    ) {
         Object indexed = index.get(type);
 
         if (indexed instanceof Range) {
             Range range = (Range) indexed;
             if (range.getClassifier().equals(classifier)) {
-                return factoriesFromRange(range);
+                return factoriesFromRange(range, factoryFilter);
             }
             return Collections.emptyList();
         }
@@ -86,7 +108,7 @@ final class MagnetInstanceManager implements InstanceManager {
             Map<String, Range> ranges = (Map<String, Range>) indexed;
             Range range = ranges.get(classifier);
             if (range != null) {
-                return factoriesFromRange(range);
+                return factoriesFromRange(range, factoryFilter);
             }
             return Collections.emptyList();
         }
@@ -119,7 +141,24 @@ final class MagnetInstanceManager implements InstanceManager {
                 "Unsupported index type: %s", indexed.getClass()));
     }
 
-    private <T> List<InstanceFactory<T>> factoriesFromRange(Range range) {
+    private <T> List<InstanceFactory<T>> factoriesFromRange(Range range, FactoryFilter factoryFilter) {
+        List<InstanceFactory<T>> filteredFactories = null;
+        for (int index = range.getFrom(), afterLast = range.getFrom() + range.getCount(); index < afterLast; index++) {
+            InstanceFactory<T> factory = factories[index];
+            if (factory.getSelector() != null) {
+                if (filteredFactories == null) {
+                    filteredFactories = new ArrayList<>(range.getCount());
+                }
+                if (factoryFilter.filter(factory)) {
+                    filteredFactories.add(factory);
+                }
+            }
+        }
+
+        if (filteredFactories != null) {
+            return filteredFactories;
+        }
+
         InstanceFactory<T>[] factories = new InstanceFactory[range.getCount()];
         System.arraycopy(this.factories, range.getFrom(), factories, 0, range.getCount());
         return new ImmutableArrayList<>(factories);

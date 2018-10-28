@@ -20,6 +20,8 @@ import magnet.Scope;
 import magnet.Scoping;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.JUnit4;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -28,6 +30,7 @@ import java.util.Map;
 
 import static com.google.common.truth.Truth.assertThat;
 
+@RunWith(JUnit4.class)
 public class MagnetScope_GetManyTest {
 
     private InstrumentedScope scope1;
@@ -142,10 +145,14 @@ public class MagnetScope_GetManyTest {
             factories.put("two", twoList);
         }
 
-        @Override public <T> InstanceFactory<T> getOptionalFactory(Class<T> type, String classifier) {
+        @Override public <T> InstanceFactory<T> getOptionalFactory(
+            Class<T> type, String classifier, FactoryFilter factoryFilter
+        ) {
             return (InstanceFactory<T>) factories.get(classifier);
         }
-        @Override public <T> List<InstanceFactory<T>> getManyFactories(Class<T> type, String classifier) {
+        @Override public <T> List<InstanceFactory<T>> getManyFactories(
+            Class<T> type, String classifier, FactoryFilter factoryFilter
+        ) {
             return (List<InstanceFactory<T>>) factories.get(classifier);
         }
     }
