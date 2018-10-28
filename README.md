@@ -1,25 +1,63 @@
 [![Build Status](https://travis-ci.org/beworker/magnet.svg?branch=master)](https://travis-ci.org/beworker/magnet)
-[![Kotlin version badge](https://img.shields.io/badge/kotlin-1.2.70-blue.svg)](http://kotlinlang.org/)
+[![Kotlin version badge](https://img.shields.io/badge/kotlin-1.2.71-blue.svg)](http://kotlinlang.org/)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](http://www.apache.org/licenses/LICENSE-2.0)
 
-<img src="https://halfbit.de/images/magnet/magnet-logo.png" width="80" />
+<img src="https://halfbit.de/images/magnet/scopes.png" width="80" />
 <hr1> 
 
-Magnet is a minimalist dependency injection and [dependency inversion][1] library for Android helping to write modular applications. If you need a simple, fast and non-intrusive dependency injection library, then Magnet is a good choice for you. It can also be interesting for growing Kotlin community because of its Kotlin-friendly API.
+Magnet is a concise dependency injection and [dependency inversion][1] library for Android, designed for highly modular applications. Magnet operates on hierarchical dependency scopes where a child scope extends its parent scope by keeping a reference to it.
 
-Magnet does **not** use reflection for object creation. It is based on annotation processor which prepares and partly validates dependency graph of your application at build-time. Final creation and validation of the dependency graph happens at runtime. This deliberate design decision esures a fair balance between fully statical and fully dynamic dependency injection. Properly designed Magnet-application allows adding and removing application functionality by adding and removing modules in application's build script whithout any additional programming effort. In that respect Magnet enforces modular design and helps modules be developed and tested in isolation.
+<img src="documentation/images/scopes.png" width="680" />
 
-Magnet is well documented and covered by unit tests.
+An instance is typically injected within a scope. Instance can depend on other instances whithin the same or a parent scope. Magnet will take care for injecting the instance in that scope, which is absolutely required for satisfying all required dependencies. Thus you don't have to declare any modules and componets, and then bind them together. You just define dependencies in your class constructor, optionally declare how to scope the instance and Magnet will do the rest. 
 
-# Design
-Magnet has a very minimalist, almost naive, design. It deals with just two concepts - `Scopes` and `Instances`. The whole design can be described by four simple statements:
+Here is an slightly simplified example of how Magnet would build Dagger's coffe maker.
 
-1. `Scopes` are containers for object `Instances`.
-2. `Scopes` can build up hierarchies.
-3. `Instances` can be put into (bound) and taken from `Scopes`.
-4. `Instances` can depend on other instances.
+```kotlin
+@Instance(type = Pump::class)
+class Thermosiphon(private val heater: Heater) : Pump
 
-<img src="documentation/images/design-diagram.png" width="480" />
+@Instance(type = Heater::class)
+class ElectricHeater(): Heater
+
+@Instance(type = CoffeMaker::class)
+class CoffeeMaker(
+   private val heater: Heater,
+   private val pump: Pump
+)
+
+val scope = Magnet.createScope()
+val coffeMaker: CoffeeMaker = scope.getSingle()
+```
+
+This desing makes dependency injection so easy that it becomes hard not to use it.
+
+# Unique features
+
+1. Magnet is capable of injecting annotated classes from **compiled** libraries. This means you can extend funtionality of your application by just adding libraries as a dependency to the compilation. See how [magnetx-app-leakcanary](magnet-extensions/magnetx-app-leakcanary) and [magnetx-app-rxandroid](magnet-extensions/magnetx-app-rxandroid) leverage this feature.
+
+2. Magnet has a concept of extensible selectors, which gives you additional control over when instances should be injected and when not. The example down below injects `AudioFocusImplLegacy` implementation of `AudioFocus` interface, if current Android API level is less than 26 and `AudioFocusImpl26` one otherwise.
+
+```kotlin
+interface AudioFocus
+
+@Instance(
+    type = AudioFocusImpl::class,
+    selector = "android.api < 26"
+)
+internal class AudioFocusImplLegacy : AudioFocus
+
+@Instance(
+    type = AudioFocusImpl::class,
+    selector = "android.api >= 26"
+)
+internal class AudioFocusImpl26: AudioFocus
+
+val scope = Magnet.createScope()
+val audioFocus: AudioFocus = scope.getSingle()
+```
+
+Custom selectors are easy to write. More details can be found in [magnetx-selector-android](magnet-extensions/magnetx-selector-android) or [magnetx-selector-features](magnet-extensions/magnetx-selector-features) modules.
 
 # Documentation
 
