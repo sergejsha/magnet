@@ -2,18 +2,35 @@
 [![Kotlin version badge](https://img.shields.io/badge/kotlin-1.2.71-blue.svg)](http://kotlinlang.org/)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](http://www.apache.org/licenses/LICENSE-2.0)
 
-<img src="https://halfbit.de/images/magnet/magnet-logo.png" width="80" />
+<img src="https://halfbit.de/images/magnet/scopes.png" width="80" />
 <hr1> 
 
 Magnet is a concise dependency injection and [dependency inversion][1] library for Android, designed for highly modular applications. Magnet operates on hierarchical dependency scopes where a child scope extends its parent scope by keeping a reference to it.
 
-`picture`
+<img src="documentation/images/scopes.png" width="680" />
 
-An instance is typically injected within a scope. Instance can depend on other instances whithin the same or a parent scope. Magnet will take care for injecting the instance in that scope, which is absolutely required for satisfying all required dependencies. Thus you don't have to declare any modules and componets, and then bind them together. You just define dependencies in your class constructor, optionally declare how to scope the instance and Magnet will do the rest.
+An instance is typically injected within a scope. Instance can depend on other instances whithin the same or a parent scope. Magnet will take care for injecting the instance in that scope, which is absolutely required for satisfying all required dependencies. Thus you don't have to declare any modules and componets, and then bind them together. You just define dependencies in your class constructor, optionally declare how to scope the instance and Magnet will do the rest. 
 
-`picture`
+Here is an slightly simplified example of how Magnet would build Dagger's coffe maker.
 
-This desing makes dependency injection so easy that it becomes hard not to use it.
+```kotlin
+@Instance(type = Pump::class)
+class Thermosiphon(private val heater: Heater) : Pump
+
+@Instance(type = Heater::class)
+class ElectricHeater(): Heater
+
+@Instance(type = CoffeMaker::class)
+class CoffeeMaker(
+   private val heater: Heater,
+   private val pump: Pump
+)
+
+val scope = Magnet.createScope()
+val coffeMaker: CoffeeMaker = scope.getSingle()
+```
+
+ This desing makes dependency injection so easy that it becomes hard not to use it.
 
 # Documentation
 
