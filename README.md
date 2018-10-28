@@ -45,13 +45,13 @@ interface AudioFocus
     type = AudioFocus::class,
     selector = "android.api < 26"
 )
-internal class AudioFocusImplLegacy : AudioFocus
+internal class AudioFocusLegacy : AudioFocus
 
 @Instance(
     type = AudioFocus::class,
     selector = "android.api >= 26"
 )
-internal class AudioFocusImpl26: AudioFocus
+internal class AudioFocusV26: AudioFocus
 
 val scope = Magnet.createScope()
 val audioFocus: AudioFocus = scope.getSingle()
