@@ -47,7 +47,7 @@ class FeaturesSelectorFilter(
     }
 
     companion object {
-        const val CLASSIFIER = "magnetx.selector.features"
+        const val CLASSIFIER = "features"
     }
 
 }
