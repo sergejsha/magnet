@@ -11,7 +11,7 @@ Magnet is a concise dependency injection and [dependency inversion][1] library f
 
 An instance is typically injected within a scope. Instance can depend on other instances whithin the same or a parent scope. Magnet will take care for injecting and keeping the instance in the right scope, where all required instance dependencies can be satisfied. Thus you don't have to declare any modules and componets, and then bind them together. You just define dependencies in your class constructor, optionally declare how to scope the instance and Magnet will do the rest. 
 
-Here is an slightly simplified example of how Magnet would build Dagger's coffe maker.
+Here is a slightly simplified example of how Magnet would build Dagger's coffe maker.
 
 ```kotlin
 @Instance(type = Pump::class)
