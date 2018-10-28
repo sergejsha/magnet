@@ -2,7 +2,7 @@
 [![Kotlin version badge](https://img.shields.io/badge/kotlin-1.2.71-blue.svg)](http://kotlinlang.org/)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](http://www.apache.org/licenses/LICENSE-2.0)
 
-<img src="https://halfbit.de/images/magnet/scopes.png" width="80" />
+<img src="documentation/images/magnet.png" width="100" />
 <hr1> 
 
 Magnet is a concise dependency injection and [dependency inversion][1] library for Android, designed for highly modular applications. Magnet operates on hierarchical dependency scopes where a child scope extends its parent scope by keeping a reference to it.
