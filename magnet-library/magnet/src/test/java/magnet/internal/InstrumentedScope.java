@@ -6,7 +6,7 @@ import java.util.Collections;
 import java.util.List;
 
 /** Used for testing MagnetScope implementation. */
-public class InstrumentedScope implements Scope {
+public class InstrumentedScope implements Scope, FactoryFilter {
 
     private final MagnetScope scope;
 
@@ -52,6 +52,8 @@ public class InstrumentedScope implements Scope {
         return new InstrumentedScope((MagnetScope) scope.createSubscope());
     }
 
+    @Override public boolean filter(InstanceFactory factory) { return scope.filter(factory); }
+
     /** Returns and object registered right in this scope or null if no object was registered. */
     @SuppressWarnings("unchecked") <T> T getOptionalInScope(Class<T> type, String classifier) {
         RuntimeInstance<T> instance = scope.instances.get(MagnetScope.key(type, classifier));
@@ -66,7 +68,7 @@ public class InstrumentedScope implements Scope {
 
     /** Injects given object right into the scope, as I would be injected using given factory. */
     @SuppressWarnings("unchecked") void instrumentObjectIntoScope(
-            String classifier, Class type, Object object, InstanceFactory factory
+        String classifier, Class type, Object object, InstanceFactory factory
     ) {
         String key = MagnetScope.key(type, classifier);
         RuntimeInstance instance = RuntimeInstance.create(

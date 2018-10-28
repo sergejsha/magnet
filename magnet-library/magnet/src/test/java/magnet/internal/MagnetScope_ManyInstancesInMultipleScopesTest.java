@@ -20,12 +20,15 @@ import magnet.Scope;
 import magnet.Scoping;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.JUnit4;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import static com.google.common.truth.Truth.assertThat;
 
+@RunWith(JUnit4.class)
 public class MagnetScope_ManyInstancesInMultipleScopesTest {
 
     private InstrumentedScope scope1;
@@ -91,10 +94,14 @@ public class MagnetScope_ManyInstancesInMultipleScopesTest {
             instanceTypeFactories.add(factory3);
         }
 
-        @Override public <T> InstanceFactory<T> getOptionalFactory(Class<T> type, String classifier) {
+        @Override public <T> InstanceFactory<T> getOptionalFactory(
+            Class<T> type, String classifier, FactoryFilter factoryFilter
+        ) {
             throw new UnsupportedOperationException();
         }
-        @Override public <T> List<InstanceFactory<T>> getManyFactories(Class<T> type, String classifier) {
+        @Override public <T> List<InstanceFactory<T>> getManyFactories(
+            Class<T> type, String classifier, FactoryFilter factoryFilter
+        ) {
             if (type == InstanceType.class) {
                 return (List<InstanceFactory<T>>) instanceTypeFactories;
             }

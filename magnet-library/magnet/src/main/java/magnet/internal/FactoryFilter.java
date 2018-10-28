@@ -16,12 +16,7 @@
 
 package magnet.internal;
 
-import java.util.List;
-
 /* Subject to change. For internal use only. */
-interface InstanceManager {
-
-    <T> InstanceFactory<T> getOptionalFactory(Class<T> type, String classifier, FactoryFilter factoryFilter);
-    <T> List<InstanceFactory<T>> getManyFactories(Class<T> type, String classifier, FactoryFilter factoryFilter);
-
+interface FactoryFilter {
+    boolean filter(InstanceFactory factory);
 }

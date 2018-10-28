@@ -23,13 +23,14 @@ import magnet.SelectorFilter;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 /* Subject to change. For internal use only. */
-final class MagnetScope implements Scope {
+final class MagnetScope implements Scope, FactoryFilter {
 
     private static final byte CARDINALITY_OPTIONAL = 0;
     private static final byte CARDINALITY_SINGLE = 1;
@@ -58,25 +59,25 @@ final class MagnetScope implements Scope {
 
     @Override
     public <T> T getOptional(Class<T> type) {
-        InstanceFactory<T> factory = instanceManager.getOptionalFactory(type, Classifier.NONE);
+        InstanceFactory<T> factory = instanceManager.getOptionalFactory(type, Classifier.NONE, this);
         return getSingleObject(type, Classifier.NONE, factory, CARDINALITY_OPTIONAL);
     }
 
     @Override
     public <T> T getOptional(Class<T> type, String classifier) {
-        InstanceFactory<T> factory = instanceManager.getOptionalFactory(type, classifier);
+        InstanceFactory<T> factory = instanceManager.getOptionalFactory(type, classifier, this);
         return getSingleObject(type, classifier, factory, CARDINALITY_OPTIONAL);
     }
 
     @Override
     public <T> T getSingle(Class<T> type) {
-        InstanceFactory<T> factory = instanceManager.getOptionalFactory(type, Classifier.NONE);
+        InstanceFactory<T> factory = instanceManager.getOptionalFactory(type, Classifier.NONE, this);
         return getSingleObject(type, Classifier.NONE, factory, CARDINALITY_SINGLE);
     }
 
     @Override
     public <T> T getSingle(Class<T> type, String classifier) {
-        InstanceFactory<T> factory = instanceManager.getOptionalFactory(type, classifier);
+        InstanceFactory<T> factory = instanceManager.getOptionalFactory(type, classifier, this);
         return getSingleObject(type, classifier, factory, CARDINALITY_SINGLE);
     }
 
@@ -107,6 +108,22 @@ final class MagnetScope implements Scope {
         return new MagnetScope(this, instanceManager);
     }
 
+    @Override
+    public boolean filter(InstanceFactory factory) {
+        String[] selector = factory.getSelector();
+        if (selector == null) {
+            return true;
+        }
+        SelectorFilter selectorFilter = getSingle(SelectorFilter.class, selector[0]);
+        if (selectorFilter == null) {
+            throw new IllegalStateException(
+                String.format("Factory %s requires selector '%s', which implementation is not available in the scope." +
+                        " Make sure to add corresponding %s implementation to the classpath.",
+                    factory, Arrays.toString(selector), SelectorFilter.class));
+        }
+        return selectorFilter.filter(selector);
+    }
+
     private void bind(String key, Object object) {
         Object existing = instances.put(key, RuntimeInstance.create(object, null, depth));
         if (existing != null) {
@@ -117,7 +134,7 @@ final class MagnetScope implements Scope {
     }
 
     private <T> List<T> getManyObjects(Class<T> type, String classifier) {
-        List<InstanceFactory<T>> factories = instanceManager.getManyFactories(type, classifier);
+        List<InstanceFactory<T>> factories = instanceManager.getManyFactories(type, classifier, this);
         if (factories.size() == 0) return Collections.emptyList();
 
         List<T> objects = new ArrayList<>(factories.size());
@@ -139,7 +156,7 @@ final class MagnetScope implements Scope {
                 if (cardinality == CARDINALITY_SINGLE) {
                     throw new IllegalStateException(
                         String.format(
-                            "Instance of type: '%s' and classifier: '%s' was not found in scopes.",
+                            "Instance of type '%s' (classifier: '%s') was not found in scopes.",
                             type.getName(), classifier));
                 }
                 return null;
@@ -164,25 +181,6 @@ final class MagnetScope implements Scope {
                 if (object != null) {
                     return object;
                 }
-            }
-        }
-
-        String[] selector = factory.getSelector();
-        if (selector != null) {
-            String selectorName = selector[0];
-            SelectorFilter selectorFilter = getSingle(SelectorFilter.class, selectorName);
-            if (!selectorFilter.filter(selector)) {
-                if (cardinality == CARDINALITY_SINGLE) {
-                    StringBuilder selectorBuilder = new StringBuilder();
-                    for (String selectorPart : selector) {
-                        selectorBuilder.append(selectorPart).append(" ");
-                    }
-                    throw new IllegalStateException(
-                        String.format(
-                            "Instance of type: '%s' and classifier: '%s' was excluded by selector filter: %s",
-                            type.getName(), classifier, selectorBuilder.toString()));
-                }
-                return null;
             }
         }
 
@@ -218,7 +216,6 @@ final class MagnetScope implements Scope {
                     );
                 }
             }
-
         }
 
         return object;

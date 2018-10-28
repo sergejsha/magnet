@@ -20,11 +20,14 @@ import magnet.Scope;
 import magnet.Scoping;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.JUnit4;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+@RunWith(JUnit4.class)
 public class MagnetScope_CircularDependencyTest {
 
     private MagnetScope scope;
@@ -100,11 +103,15 @@ public class MagnetScope_CircularDependencyTest {
             factories.put("five", new MenuItemFiveFactory());
         }
 
-        @Override public <T> InstanceFactory<T> getOptionalFactory(Class<T> type, String classifier) {
+        @Override public <T> InstanceFactory<T> getOptionalFactory(
+            Class<T> type, String classifier, FactoryFilter factoryFilter
+        ) {
             //noinspection unchecked
             return (InstanceFactory<T>) factories.get(classifier);
         }
-        @Override public <T> List<InstanceFactory<T>> getManyFactories(Class<T> type, String classifier) {
+        @Override public <T> List<InstanceFactory<T>> getManyFactories(
+            Class<T> type, String classifier, FactoryFilter factoryFilter
+        ) {
             throw new UnsupportedOperationException();
         }
     }
