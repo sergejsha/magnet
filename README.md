@@ -42,13 +42,13 @@ This desing makes dependency injection so easy that it becomes hard not to use i
 interface AudioFocus
 
 @Instance(
-    type = AudioFocusImpl::class,
+    type = AudioFocus::class,
     selector = "android.api < 26"
 )
 internal class AudioFocusImplLegacy : AudioFocus
 
 @Instance(
-    type = AudioFocusImpl::class,
+    type = AudioFocus::class,
     selector = "android.api >= 26"
 )
 internal class AudioFocusImpl26: AudioFocus
