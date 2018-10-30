@@ -57,7 +57,7 @@ val scope = Magnet.createScope()
 val audioFocus: AudioFocus = scope.getSingle()
 ```
 
-Custom selectors are easy to write. More details can be found in [magnetx-selector-android](magnet-extensions/magnetx-selector-android) or [magnetx-selector-features](magnet-extensions/magnetx-selector-features) modules.
+Custom selectors are easy to write. For more details checkout [magnetx-selector-android](magnet-extensions/magnetx-selector-android) or [magnetx-selector-features](magnet-extensions/magnetx-selector-features) modules.
 
 # Documentation
 
