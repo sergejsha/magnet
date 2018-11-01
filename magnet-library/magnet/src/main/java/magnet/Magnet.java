@@ -16,15 +16,15 @@
 
 package magnet;
 
-import magnet.internal.InstanceScope;
+import magnet.internal.InternalFactory;
 
-/** Main class serving as the factory for root {@link InstanceScope}. */
+/** Main class for creating scopes. */
 public final class Magnet {
 
     private Magnet() { }
 
     public static <T> T createScope(Class<T> scopeType) {
-        throw new UnsupportedOperationException();
+        return InternalFactory.createScope(scopeType);
     }
 
 }

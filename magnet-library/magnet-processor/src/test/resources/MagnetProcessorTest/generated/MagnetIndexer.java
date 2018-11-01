@@ -27,7 +27,7 @@ public final class MagnetIndexer {
         index.put(UserPageMenuItemMagnetFactory.getType(), ranges1);
         index.put(HomePageMagnetFactory.getType(), new Range(2, 2, ""));
 
-        instanceManager.register(factories, index);
+        instanceManager.register(factories, index, null);
     }
 
 }

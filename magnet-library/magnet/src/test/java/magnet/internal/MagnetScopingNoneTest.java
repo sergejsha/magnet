@@ -39,7 +39,7 @@ public class MagnetScopingNoneTest {
     public void before() {
         InstanceManager instanceManager = new StubInstanceManager();
         scope1 = (InstrumentedInstanceScope) new InstrumentedInstanceScope(
-            new MagnetInstanceScope(null, instanceManager))
+            new MagnetScopeContainer(null, instanceManager))
             .bind(Dependency1.class, new Dependency1());
 
         scope2 = (InstrumentedInstanceScope) scope1
@@ -154,7 +154,7 @@ public class MagnetScopingNoneTest {
     }
 
     private static class MenuItemOneFactory extends InstanceFactory<MenuItem> {
-        @Override public MenuItem create(InstanceScope scope) {
+        @Override public MenuItem create(ScopeContainer scope) {
             scope.getSingle(Dependency1.class);
             return new MenuItemOne();
         }
@@ -162,7 +162,7 @@ public class MagnetScopingNoneTest {
     }
 
     private static class MenuItemTwoFactory extends InstanceFactory<MenuItem> {
-        @Override public MenuItem create(InstanceScope scope) {
+        @Override public MenuItem create(ScopeContainer scope) {
             scope.getSingle(Dependency1.class);
             scope.getSingle(Dependency2.class);
             scope.getSingle(MenuItem.class, "one");
@@ -172,7 +172,7 @@ public class MagnetScopingNoneTest {
     }
 
     private static class MenuItemThreeFactory extends InstanceFactory<MenuItem> {
-        @Override public MenuItem create(InstanceScope scope) {
+        @Override public MenuItem create(ScopeContainer scope) {
             scope.getSingle(Dependency1.class);
             scope.getSingle(Dependency3.class);
             scope.getSingle(MenuItem.class, "one");
@@ -192,15 +192,18 @@ public class MagnetScopingNoneTest {
             factories.put("three", new MenuItemThreeFactory());
         }
 
-        @Override public <T> InstanceFactory<T> getOptionalFactory(
+        @Override public <T> InstanceFactory<T> getOptionalInstanceFactory(
             Class<T> type, String classifier, FactoryFilter factoryFilter
         ) {
             //noinspection unchecked
             return (InstanceFactory<T>) factories.get(classifier);
         }
-        @Override public <T> List<InstanceFactory<T>> getManyFactories(
+        @Override public <T> List<InstanceFactory<T>> getManyInstanceFactories(
             Class<T> type, String classifier, FactoryFilter factoryFilter
         ) {
+            throw new UnsupportedOperationException();
+        }
+        @Override public <T> ScopeFactory<T> getScopeFactory(Class<T> scopeType) {
             throw new UnsupportedOperationException();
         }
     }

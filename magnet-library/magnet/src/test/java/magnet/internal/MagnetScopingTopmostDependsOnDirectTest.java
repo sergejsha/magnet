@@ -39,7 +39,7 @@ public class MagnetScopingTopmostDependsOnDirectTest {
     public void before() {
         InstanceManager instanceManager = new StubInstanceManager();
 
-        scope1 = new InstrumentedInstanceScope(new MagnetInstanceScope(null, instanceManager));
+        scope1 = new InstrumentedInstanceScope(new MagnetScopeContainer(null, instanceManager));
         scope2 = (InstrumentedInstanceScope) scope1.createSubscope();
         scope3 = (InstrumentedInstanceScope) scope2.createSubscope();
     }
@@ -52,21 +52,21 @@ public class MagnetScopingTopmostDependsOnDirectTest {
     private static class MenuItemThree implements MenuItem {}
 
     private static class MenuItemZeroFactory extends InstanceFactory<MenuItem> {
-        @Override public MenuItem create(InstanceScope scope) {
+        @Override public MenuItem create(ScopeContainer scope) {
             return new MenuItemZero();
         }
         @Override public Scoping getScoping() { return Scoping.DIRECT; }
     }
 
     private static class MenuItemOneFactory extends InstanceFactory<MenuItem> {
-        @Override public MenuItem create(InstanceScope scope) {
+        @Override public MenuItem create(ScopeContainer scope) {
             return new MenuItemOne();
         }
         @Override public Scoping getScoping() { return Scoping.DIRECT; }
     }
 
     private static class MenuItemTwoFactory extends InstanceFactory<MenuItem> {
-        @Override public MenuItem create(InstanceScope scope) {
+        @Override public MenuItem create(ScopeContainer scope) {
             scope.getSingle(MenuItem.class, "one");
             return new MenuItemTwo();
         }
@@ -74,7 +74,7 @@ public class MagnetScopingTopmostDependsOnDirectTest {
     }
 
     private static class MenuItemThreeFactory extends InstanceFactory<MenuItem> {
-        @Override public MenuItem create(InstanceScope scope) {
+        @Override public MenuItem create(ScopeContainer scope) {
             scope.getSingle(MenuItem.class, "two");
             return new MenuItemThree();
         }
@@ -128,15 +128,18 @@ public class MagnetScopingTopmostDependsOnDirectTest {
             factories.put("three", new MenuItemThreeFactory());
         }
 
-        @Override public <T> InstanceFactory<T> getOptionalFactory(
+        @Override public <T> InstanceFactory<T> getOptionalInstanceFactory(
             Class<T> type, String classifier, FactoryFilter factoryFilter
         ) {
             //noinspection unchecked
             return (InstanceFactory<T>) factories.get(classifier);
         }
-        @Override public <T> List<InstanceFactory<T>> getManyFactories(
+        @Override public <T> List<InstanceFactory<T>> getManyInstanceFactories(
             Class<T> type, String classifier, FactoryFilter factoryFilter
         ) {
+            throw new UnsupportedOperationException();
+        }
+        @Override public <T> ScopeFactory<T> getScopeFactory(Class<T> scopeType) {
             throw new UnsupportedOperationException();
         }
     }

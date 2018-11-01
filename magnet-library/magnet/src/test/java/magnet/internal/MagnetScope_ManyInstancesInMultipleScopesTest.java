@@ -40,7 +40,7 @@ public class MagnetScope_ManyInstancesInMultipleScopesTest {
 
     @Before
     public void before() {
-        scope1 = new InstrumentedInstanceScope(new MagnetInstanceScope(null, new StubInstanceManager()));
+        scope1 = new InstrumentedInstanceScope(new MagnetScopeContainer(null, new StubInstanceManager()));
         scope1.instrumentObjectIntoScope("", InstanceType.class, new InstanceImpl1(), factory1);
 
         scope2 = (InstrumentedInstanceScope) scope1.createSubscope();
@@ -69,17 +69,17 @@ public class MagnetScope_ManyInstancesInMultipleScopesTest {
     }
 
     private static class InstanceImpl1Factory extends InstanceFactory<InstanceType> {
-        @Override public InstanceType create(InstanceScope scope) { return new InstanceImpl1(); }
+        @Override public InstanceType create(ScopeContainer scope) { return new InstanceImpl1(); }
         @Override public Scoping getScoping() { return Scoping.TOPMOST; }
     }
 
     private static class InstanceImpl2Factory extends InstanceFactory<InstanceType> {
-        @Override public InstanceType create(InstanceScope scope) { return new InstanceImpl2(); }
+        @Override public InstanceType create(ScopeContainer scope) { return new InstanceImpl2(); }
         @Override public Scoping getScoping() { return Scoping.TOPMOST; }
     }
 
     private static class InstanceImpl3Factory extends InstanceFactory<InstanceType> {
-        @Override public InstanceType create(InstanceScope scope) { return new InstanceImpl3(); }
+        @Override public InstanceType create(ScopeContainer scope) { return new InstanceImpl3(); }
         @Override public Scoping getScoping() { return Scoping.TOPMOST; }
     }
 
@@ -93,17 +93,20 @@ public class MagnetScope_ManyInstancesInMultipleScopesTest {
             instanceTypeFactories.add(factory3);
         }
 
-        @Override public <T> InstanceFactory<T> getOptionalFactory(
+        @Override public <T> InstanceFactory<T> getOptionalInstanceFactory(
             Class<T> type, String classifier, FactoryFilter factoryFilter
         ) {
             throw new UnsupportedOperationException();
         }
-        @Override public <T> List<InstanceFactory<T>> getManyFactories(
+        @Override public <T> List<InstanceFactory<T>> getManyInstanceFactories(
             Class<T> type, String classifier, FactoryFilter factoryFilter
         ) {
             if (type == InstanceType.class) {
                 return (List<InstanceFactory<T>>) instanceTypeFactories;
             }
+            throw new UnsupportedOperationException();
+        }
+        @Override public <T> ScopeFactory<T> getScopeFactory(Class<T> scopeType) {
             throw new UnsupportedOperationException();
         }
     }

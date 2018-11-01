@@ -30,11 +30,11 @@ public class MagnetScope_RegisterAndGetTest {
     @Mock
     InstanceManager instanceManager;
 
-    private InstanceScope scope;
+    private ScopeContainer scope;
 
     @Before
     public void before() {
-        scope = new MagnetInstanceScope(null, instanceManager);
+        scope = new MagnetScopeContainer(null, instanceManager);
     }
 
     @Test

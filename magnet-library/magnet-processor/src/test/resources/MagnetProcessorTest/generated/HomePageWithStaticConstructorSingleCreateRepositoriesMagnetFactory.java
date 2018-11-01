@@ -5,12 +5,12 @@ import app.Page;
 import java.util.List;
 import magnet.Scoping;
 import magnet.internal.InstanceFactory;
-import magnet.internal.InstanceScope;
+import magnet.internal.ScopeContainer;
 
 public final class HomePageWithStaticConstructorSingleCreateRepositoriesMagnetFactory extends InstanceFactory<Page> {
 
     @Override
-    public Page create(InstanceScope scope) {
+    public Page create(ScopeContainer scope) {
         List<HomeRepository> repositories = scope.getMany(HomeRepository.class);
         return HomePageWithStaticConstructorSingle.create(repositories);
     }

@@ -68,6 +68,6 @@ public final class MagnetIndexer {
         index.put(ManyTypesType7MagnetFactory.getType(), new Range(17, 1, ""));
         index.put(ManyTypesType8MagnetFactory.getType(), new Range(18, 1, ""));
         index.put(ManyTypesType9MagnetFactory.getType(), new Range(19, 1, ""));
-        instanceManager.register(factories, index);
+        instanceManager.register(factories, index, null);
     }
 }

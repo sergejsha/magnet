@@ -3,12 +3,12 @@ package magnet.internal;
 import java.util.Collections;
 import java.util.List;
 
-/** Used for testing MagnetInstanceScope. */
-public class InstrumentedInstanceScope implements InstanceScope, FactoryFilter {
+/** Used for testing MagnetScopeContainer. */
+public class InstrumentedInstanceScope implements ScopeContainer, FactoryFilter {
 
-    private final MagnetInstanceScope scope;
+    private final MagnetScopeContainer scope;
 
-    public InstrumentedInstanceScope(MagnetInstanceScope scope) {
+    public InstrumentedInstanceScope(MagnetScopeContainer scope) {
         this.scope = scope;
     }
 
@@ -36,18 +36,18 @@ public class InstrumentedInstanceScope implements InstanceScope, FactoryFilter {
         return scope.getMany(type, classifier);
     }
 
-    @Override public <T> InstanceScope bind(Class<T> type, T instance) {
+    @Override public <T> ScopeContainer bind(Class<T> type, T instance) {
         scope.bind(type, instance);
         return this;
     }
 
-    @Override public <T> InstanceScope bind(Class<T> type, T instance, String classifier) {
+    @Override public <T> ScopeContainer bind(Class<T> type, T instance, String classifier) {
         scope.bind(type, instance, classifier);
         return this;
     }
 
-    @Override public InstanceScope createSubscope() {
-        return new InstrumentedInstanceScope((MagnetInstanceScope) scope.createSubscope());
+    @Override public ScopeContainer createSubscope() {
+        return new InstrumentedInstanceScope((MagnetScopeContainer) scope.createSubscope());
     }
 
     @Override public <T> RuntimeInstance<T> findDeepInstance(String key) {
@@ -62,13 +62,13 @@ public class InstrumentedInstanceScope implements InstanceScope, FactoryFilter {
 
     /** Returns and object registered right in this scope or null if no object was registered. */
     @SuppressWarnings("unchecked") <T> T getOptionalInScope(Class<T> type, String classifier) {
-        RuntimeInstance<T> instance = scope.instances.get(MagnetInstanceScope.key(type, classifier));
+        RuntimeInstance<T> instance = scope.instances.get(MagnetScopeContainer.key(type, classifier));
         return instance == null ? null : instance.getValue();
     }
 
     /** Returns list of objects registered right in this scope. */
     @SuppressWarnings("unchecked") <T> List<T> getManyInScope(Class<T> type, String classifier) {
-        RuntimeInstance<T> instance = scope.instances.get(MagnetInstanceScope.key(type, classifier));
+        RuntimeInstance<T> instance = scope.instances.get(MagnetScopeContainer.key(type, classifier));
         return instance == null ? Collections.emptyList() : instance.getValues();
     }
 
@@ -76,7 +76,7 @@ public class InstrumentedInstanceScope implements InstanceScope, FactoryFilter {
     @SuppressWarnings("unchecked") void instrumentObjectIntoScope(
         String classifier, Class type, Object object, InstanceFactory factory
     ) {
-        String key = MagnetInstanceScope.key(type, classifier);
+        String key = MagnetScopeContainer.key(type, classifier);
         RuntimeInstance instance = RuntimeInstance.create(
             object, (Class<InstanceFactory>) factory.getClass(), scope.depth
         );

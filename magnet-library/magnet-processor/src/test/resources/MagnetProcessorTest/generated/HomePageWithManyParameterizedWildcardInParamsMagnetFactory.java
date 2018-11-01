@@ -4,12 +4,12 @@ import app.Page;
 import app.WorkProcessor;
 import java.util.List;
 import magnet.internal.InstanceFactory;
-import magnet.internal.InstanceScope;
+import magnet.internal.ScopeContainer;
 
 public final class HomePageWithManyParameterizedWildcardInParamsMagnetFactory extends InstanceFactory<Page> {
     @Override
     @SuppressWarnings("unchecked")
-    public Page create(InstanceScope scope) {
+    public Page create(ScopeContainer scope) {
         List variant1 = scope.getMany(WorkProcessor.class);
         List variant2 = scope.getMany(WorkProcessor.class, "global");
         List variant3 = scope.getMany(WorkProcessor.class);

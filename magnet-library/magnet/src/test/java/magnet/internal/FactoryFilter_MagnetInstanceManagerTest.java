@@ -38,14 +38,14 @@ public class FactoryFilter_MagnetInstanceManagerTest {
         Map<Class, Object> index = new HashMap<>();
         index.put(Interface1.class, new Range(0, 1, Classifier.NONE));
         index.put(Interface2.class, new Range(1, 2, Classifier.NONE));
-        instanceManager.register(factories, index);
+        instanceManager.register(factories, index, null);
     }
 
     @Test
     public void getOptionalFactoryReturnsFactoryWhenFilterReturnsTrue() {
         when(factoryFilter.filter(instanceFactory1)).thenReturn(true);
         InstanceFactory<Interface1> factory = instanceManager
-            .getOptionalFactory(Interface1.class, Classifier.NONE, factoryFilter);
+            .getOptionalInstanceFactory(Interface1.class, Classifier.NONE, factoryFilter);
         assertThat(factory).isSameAs(instanceFactory1);
     }
 
@@ -53,7 +53,7 @@ public class FactoryFilter_MagnetInstanceManagerTest {
     public void getOptionalFactoryReturnsNullWhenFilterReturnsTrue() {
         when(factoryFilter.filter(instanceFactory1)).thenReturn(false);
         InstanceFactory<Interface1> factory = instanceManager
-            .getOptionalFactory(Interface1.class, Classifier.NONE, factoryFilter);
+            .getOptionalInstanceFactory(Interface1.class, Classifier.NONE, factoryFilter);
         assertThat(factory).isNull();
     }
 
@@ -62,7 +62,7 @@ public class FactoryFilter_MagnetInstanceManagerTest {
         when(factoryFilter.filter(instanceFactory21)).thenReturn(false);
         when(factoryFilter.filter(instanceFactory22)).thenReturn(true);
         InstanceFactory<Interface2> factory = instanceManager
-            .getOptionalFactory(Interface2.class, Classifier.NONE, factoryFilter);
+            .getOptionalInstanceFactory(Interface2.class, Classifier.NONE, factoryFilter);
         assertThat(factory).isSameAs(instanceFactory22);
     }
 
@@ -71,7 +71,7 @@ public class FactoryFilter_MagnetInstanceManagerTest {
         when(factoryFilter.filter(instanceFactory21)).thenReturn(false);
         when(factoryFilter.filter(instanceFactory22)).thenReturn(false);
         InstanceFactory<Interface2> factory = instanceManager
-            .getOptionalFactory(Interface2.class, Classifier.NONE, factoryFilter);
+            .getOptionalInstanceFactory(Interface2.class, Classifier.NONE, factoryFilter);
         assertThat(factory).isNull();
     }
 
@@ -79,7 +79,7 @@ public class FactoryFilter_MagnetInstanceManagerTest {
     public void getOptionalFactoryFailsWhenMultipleFactoriesDetected() {
         when(factoryFilter.filter(instanceFactory21)).thenReturn(true);
         when(factoryFilter.filter(instanceFactory22)).thenReturn(true);
-        instanceManager.getOptionalFactory(Interface2.class, Classifier.NONE, factoryFilter);
+        instanceManager.getOptionalInstanceFactory(Interface2.class, Classifier.NONE, factoryFilter);
     }
 
     @Test
@@ -90,7 +90,7 @@ public class FactoryFilter_MagnetInstanceManagerTest {
         when(factoryFilter.filter(instanceFactory22)).thenReturn(false);
 
         List<InstanceFactory<Interface2>> factories = instanceManager
-            .getManyFactories(Interface2.class, Classifier.NONE, factoryFilter);
+            .getManyInstanceFactories(Interface2.class, Classifier.NONE, factoryFilter);
 
         assertThat(factories).isNotNull();
         assertThat(factories).isEmpty();
@@ -104,7 +104,7 @@ public class FactoryFilter_MagnetInstanceManagerTest {
         when(factoryFilter.filter(instanceFactory22)).thenReturn(true);
 
         List<InstanceFactory<Interface2>> factories = instanceManager
-            .getManyFactories(Interface2.class, Classifier.NONE, factoryFilter);
+            .getManyInstanceFactories(Interface2.class, Classifier.NONE, factoryFilter);
 
         assertThat(factories).isNotNull();
         assertThat(factories).hasSize(1);
@@ -119,7 +119,7 @@ public class FactoryFilter_MagnetInstanceManagerTest {
         when(factoryFilter.filter(instanceFactory22)).thenReturn(true);
 
         List<InstanceFactory<Interface2>> factories = instanceManager
-            .getManyFactories(Interface2.class, Classifier.NONE, factoryFilter);
+            .getManyInstanceFactories(Interface2.class, Classifier.NONE, factoryFilter);
 
         assertThat(factories).isNotNull();
         assertThat(factories).hasSize(2);
@@ -133,7 +133,7 @@ public class FactoryFilter_MagnetInstanceManagerTest {
         when(instanceFactory22.getSelector()).thenReturn(null);
 
         List<InstanceFactory<Interface2>> factories = instanceManager
-            .getManyFactories(Interface2.class, Classifier.NONE, factoryFilter);
+            .getManyInstanceFactories(Interface2.class, Classifier.NONE, factoryFilter);
 
         verify(factoryFilter, never()).filter(any());
         assertThat(factories).isNotNull();
@@ -149,7 +149,7 @@ public class FactoryFilter_MagnetInstanceManagerTest {
         when(factoryFilter.filter(instanceFactory22)).thenReturn(true);
 
         List<InstanceFactory<Interface2>> factories = instanceManager
-            .getManyFactories(Interface2.class, Classifier.NONE, factoryFilter);
+            .getManyInstanceFactories(Interface2.class, Classifier.NONE, factoryFilter);
 
         verify(factoryFilter, never()).filter(instanceFactory21);
         assertThat(factories).isNotNull();

@@ -42,7 +42,7 @@ public class MagnetInstanceManagerTest {
     @Mock InstanceFactory<Type2> instanceFactoryType2Impl2;
     @Mock InstanceFactory<Type3> instanceFactoryType3Impl1;
     @Mock FactoryFilter factoryFilter;
-    @Mock InstanceScope scope;
+    @Mock ScopeContainer scope;
 
     private MagnetInstanceManager instManager;
 
@@ -76,13 +76,13 @@ public class MagnetInstanceManagerTest {
         index.put(Type2.class, new Range(2, 2, Classifier.NONE));
         index.put(Type3.class, new Range(4, 1, CLASSIFIER_LOCAL));
 
-        instManager.register(factories, index);
+        instManager.register(factories, index, null);
     }
 
     @Test
     public void getOptionalFactory_Classified_Existing_SingleTypeInstance() {
         // when
-        InstanceFactory<Type3> factory = instManager.getOptionalFactory(
+        InstanceFactory<Type3> factory = instManager.getOptionalInstanceFactory(
             Type3.class, CLASSIFIER_LOCAL, factoryFilter);
 
         // then
@@ -92,7 +92,7 @@ public class MagnetInstanceManagerTest {
     @Test
     public void getOptionalFactory_Classified_Existing_ManyTypeInstances() {
         // when
-        InstanceFactory<Type1> factory = instManager.getOptionalFactory(
+        InstanceFactory<Type1> factory = instManager.getOptionalInstanceFactory(
             Type1.class, CLASSIFIER_LOCAL, factoryFilter);
 
         // then
@@ -102,7 +102,7 @@ public class MagnetInstanceManagerTest {
     @Test
     public void getOptionalFactory_NotClassified_Existing() {
         // when
-        InstanceFactory<Type1> factory = instManager.getOptionalFactory(
+        InstanceFactory<Type1> factory = instManager.getOptionalInstanceFactory(
             Type1.class, Classifier.NONE, factoryFilter);
 
         // then
@@ -112,7 +112,7 @@ public class MagnetInstanceManagerTest {
     @Test
     public void getOptionalFactory_Classified_NotExisting() {
         // when
-        InstanceFactory<String> factory = instManager.getOptionalFactory(
+        InstanceFactory<String> factory = instManager.getOptionalInstanceFactory(
             String.class, CLASSIFIER_LOCAL, factoryFilter);
 
         // then
@@ -122,7 +122,7 @@ public class MagnetInstanceManagerTest {
     @Test
     public void getOptionalFactory_NotClassified_NotExisting() {
         // when
-        InstanceFactory<String> factory = instManager.getOptionalFactory(
+        InstanceFactory<String> factory = instManager.getOptionalInstanceFactory(
             String.class, Classifier.NONE, factoryFilter);
 
         // then
@@ -132,7 +132,7 @@ public class MagnetInstanceManagerTest {
     @Test
     public void getManyFactories_NotClassified_ManyTypeInstances() {
         // when
-        List<InstanceFactory<Type1>> factories = instManager.getManyFactories(
+        List<InstanceFactory<Type1>> factories = instManager.getManyInstanceFactories(
             Type1.class, Classifier.NONE, factoryFilter);
 
         // then
@@ -143,7 +143,7 @@ public class MagnetInstanceManagerTest {
     @Test
     public void getManyFactories_Classified_ManyTypeInstances() {
         // when
-        List<InstanceFactory<Type1>> factories = instManager.getManyFactories(
+        List<InstanceFactory<Type1>> factories = instManager.getManyInstanceFactories(
             Type1.class, CLASSIFIER_LOCAL, factoryFilter);
 
         // then
@@ -154,7 +154,7 @@ public class MagnetInstanceManagerTest {
     @Test
     public void getManyFactories_NotClassified_SingleTypeInstances() {
         // when
-        List<InstanceFactory<Type2>> factories = instManager.getManyFactories(
+        List<InstanceFactory<Type2>> factories = instManager.getManyInstanceFactories(
             Type2.class, Classifier.NONE, factoryFilter);
 
         // then
@@ -165,7 +165,7 @@ public class MagnetInstanceManagerTest {
     @Test
     public void getManyFactories_Classified_SingleTypeInstances() {
         // when
-        List<InstanceFactory<Type3>> factories = instManager.getManyFactories(
+        List<InstanceFactory<Type3>> factories = instManager.getManyInstanceFactories(
             Type3.class, CLASSIFIER_LOCAL, factoryFilter);
 
         // then

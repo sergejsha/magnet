@@ -2,12 +2,12 @@ package app.extension;
 
 import app.Page;
 import magnet.internal.InstanceFactory;
-import magnet.internal.InstanceScope;
+import magnet.internal.ScopeContainer;
 
 public final class HomePageWithScopeMagnetFactory extends InstanceFactory<Page> {
 
     @Override
-    public Page create(InstanceScope scope) {
+    public Page create(ScopeContainer scope) {
         return new HomePageWithScope(scope);
     }
 

@@ -16,9 +16,7 @@
 
 package magnet;
 
-/**
- * Experimental
- */
+/** Experimental. */
 public abstract class SelectorFilter {
 
     public static final String DEFAULT_SELECTOR = "";

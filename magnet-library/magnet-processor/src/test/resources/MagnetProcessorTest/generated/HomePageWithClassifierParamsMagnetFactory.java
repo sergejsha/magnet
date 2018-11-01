@@ -4,12 +4,12 @@ import app.HomeRepository;
 import app.Page;
 import app.UserData;
 import magnet.internal.InstanceFactory;
-import magnet.internal.InstanceScope;
+import magnet.internal.ScopeContainer;
 
 public final class HomePageWithClassifierParamsMagnetFactory extends InstanceFactory<Page> {
 
     @Override
-    public Page create(InstanceScope scope) {
+    public Page create(ScopeContainer scope) {
         HomeRepository homeRepository = scope.getOptional(HomeRepository.class, "local");
         UserData userData = scope.getSingle(UserData.class, "global");
         return new HomePageWithClassifierParams(homeRepository, userData);

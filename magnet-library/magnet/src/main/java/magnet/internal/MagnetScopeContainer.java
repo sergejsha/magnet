@@ -29,13 +29,13 @@ import java.util.List;
 import java.util.Map;
 
 /* Subject to change. For internal use only. */
-final class MagnetInstanceScope implements InstanceScope, FactoryFilter {
+final class MagnetScopeContainer implements ScopeContainer, FactoryFilter {
 
     private static final byte CARDINALITY_OPTIONAL = 0;
     private static final byte CARDINALITY_SINGLE = 1;
     private static final byte CARDINALITY_MANY = 2;
 
-    private final InstanceScope parent;
+    private final ScopeContainer parent;
     private final InstanceManager instanceManager;
 
     /** Visible for testing */
@@ -49,7 +49,7 @@ final class MagnetInstanceScope implements InstanceScope, FactoryFilter {
         @Override protected InstantiationContext initialValue() { return new InstantiationContext(); }
     };
 
-    MagnetInstanceScope(MagnetInstanceScope parent, InstanceManager instanceManager) {
+    MagnetScopeContainer(MagnetScopeContainer parent, InstanceManager instanceManager) {
         this.depth = parent == null ? 0 : parent.depth + 1;
         this.parent = parent;
         this.instanceManager = instanceManager;
@@ -58,25 +58,25 @@ final class MagnetInstanceScope implements InstanceScope, FactoryFilter {
 
     @Override
     public <T> T getOptional(Class<T> type) {
-        InstanceFactory<T> factory = instanceManager.getOptionalFactory(type, Classifier.NONE, this);
+        InstanceFactory<T> factory = instanceManager.getOptionalInstanceFactory(type, Classifier.NONE, this);
         return getSingleObject(type, Classifier.NONE, factory, CARDINALITY_OPTIONAL);
     }
 
     @Override
     public <T> T getOptional(Class<T> type, String classifier) {
-        InstanceFactory<T> factory = instanceManager.getOptionalFactory(type, classifier, this);
+        InstanceFactory<T> factory = instanceManager.getOptionalInstanceFactory(type, classifier, this);
         return getSingleObject(type, classifier, factory, CARDINALITY_OPTIONAL);
     }
 
     @Override
     public <T> T getSingle(Class<T> type) {
-        InstanceFactory<T> factory = instanceManager.getOptionalFactory(type, Classifier.NONE, this);
+        InstanceFactory<T> factory = instanceManager.getOptionalInstanceFactory(type, Classifier.NONE, this);
         return getSingleObject(type, Classifier.NONE, factory, CARDINALITY_SINGLE);
     }
 
     @Override
     public <T> T getSingle(Class<T> type, String classifier) {
-        InstanceFactory<T> factory = instanceManager.getOptionalFactory(type, classifier, this);
+        InstanceFactory<T> factory = instanceManager.getOptionalInstanceFactory(type, classifier, this);
         return getSingleObject(type, classifier, factory, CARDINALITY_SINGLE);
     }
 
@@ -91,20 +91,20 @@ final class MagnetInstanceScope implements InstanceScope, FactoryFilter {
     }
 
     @Override
-    public <T> InstanceScope bind(Class<T> type, T object) {
+    public <T> ScopeContainer bind(Class<T> type, T object) {
         bind(key(type, Classifier.NONE), object);
         return this;
     }
 
     @Override
-    public <T> InstanceScope bind(Class<T> type, T object, String classifier) {
+    public <T> ScopeContainer bind(Class<T> type, T object, String classifier) {
         bind(key(type, classifier), object);
         return this;
     }
 
     @Override
-    public InstanceScope createSubscope() {
-        return new MagnetInstanceScope(this, instanceManager);
+    public ScopeContainer createSubscope() {
+        return new MagnetScopeContainer(this, instanceManager);
     }
 
     @Override
@@ -133,7 +133,7 @@ final class MagnetInstanceScope implements InstanceScope, FactoryFilter {
     }
 
     private <T> List<T> getManyObjects(Class<T> type, String classifier) {
-        List<InstanceFactory<T>> factories = instanceManager.getManyFactories(type, classifier, this);
+        List<InstanceFactory<T>> factories = instanceManager.getManyInstanceFactories(type, classifier, this);
         if (factories.size() == 0) return Collections.emptyList();
 
         List<T> objects = new ArrayList<>(factories.size());

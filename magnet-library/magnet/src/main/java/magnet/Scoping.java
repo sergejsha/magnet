@@ -16,7 +16,7 @@
 
 package magnet;
 
-import magnet.internal.InstanceScope;
+import magnet.internal.ScopeContainer;
 
 /**
  * Declares the way Magnet binds instances of &#64;Instance</code>-annotated
@@ -67,7 +67,7 @@ public enum Scoping {
      * where all dependencies for the created instance are still fulfilled.
      *
      * <p>
-     * Scopes in Magnet can build a chain of parent-child relations (see {@link InstanceScope} for
+     * Scopes in Magnet can build a chain of parent-child relations (see {@link ScopeContainer} for
      * more detail). This option allows binding instances of annotated class into a one
      * of parent scopes. Magnet goes up the scope chain and checks, whether all dependencies
      * for the instance can still be satisfied in that scope. The most top reached scope

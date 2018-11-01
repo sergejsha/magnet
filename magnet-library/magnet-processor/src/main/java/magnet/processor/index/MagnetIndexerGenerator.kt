@@ -100,7 +100,7 @@ class MagnetIndexerGenerator {
                 .build())
             .addCode(generateArrayOfFactoriesCodeBlock(index))
             .addCode(generateIndexCodeBlock(index))
-            .addStatement("\$L.register(factories, index)", INSTANCE_MANAGER)
+            .addStatement("\$L.register(factories, index, null)", INSTANCE_MANAGER)
             .build()
     }
 
