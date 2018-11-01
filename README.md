@@ -20,14 +20,14 @@ class Thermosiphon(private val heater: Heater) : Pump
 @Instance(type = Heater::class)
 class ElectricHeater(): Heater
 
-@Instance(type = CoffeMaker::class)
+@Instance(type = CoffeeMaker::class)
 class CoffeeMaker(
    private val heater: Heater,
    private val pump: Pump
 )
 
 val scope = Magnet.createScope()
-val coffeMaker: CoffeeMaker = scope.getSingle()
+val coffeeMaker: CoffeeMaker = scope.getSingle()
 ```
 
 This desing makes dependency injection so easy that it becomes hard not to use it.
