@@ -14,11 +14,14 @@ An instance is typically injected within a scope. Instance can depend on other i
 Here is a slightly simplified example of how Magnet would build Dagger's coffe maker.
 
 ```kotlin
+interface Pump
+interface Heater
+
 @Instance(type = Pump::class)
-class Thermosiphon(private val heater: Heater) : Pump
+internal class Thermosiphon(private val heater: Heater) : Pump
 
 @Instance(type = Heater::class)
-class ElectricHeater(): Heater
+internal class ElectricHeater(): Heater
 
 @Instance(type = CoffeeMaker::class)
 class CoffeeMaker(
