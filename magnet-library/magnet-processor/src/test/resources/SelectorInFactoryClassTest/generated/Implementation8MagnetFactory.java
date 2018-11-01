@@ -1,13 +1,13 @@
 package selector;
 
-import magnet.Scope;
 import magnet.internal.InstanceFactory;
+import magnet.internal.InstanceScope;
 
 public final class Implementation8MagnetFactory extends InstanceFactory<Interface> {
     private static String[] SELECTOR = { "android", "api", "in", "1", "19" };
 
     @Override
-    public Interface create(Scope scope) {
+    public Interface create(InstanceScope scope) {
         return new Implementation8();
     }
 

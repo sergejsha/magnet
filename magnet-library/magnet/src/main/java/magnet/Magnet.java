@@ -16,7 +16,6 @@
 
 package magnet;
 
-import magnet.internal.InternalFactory;
 import magnet.internal.InstanceScope;
 
 /** Main class serving as the factory for root {@link InstanceScope}. */
@@ -24,9 +23,8 @@ public final class Magnet {
 
     private Magnet() { }
 
-    /** Creates and returns new root {@link InstanceScope} instance. */
-    public static InstanceScope createRootScope() {
-        return InternalFactory.createRootScope();
+    public static <T> T createScope(Class<T> scopeType) {
+        throw new UnsupportedOperationException();
     }
 
 }

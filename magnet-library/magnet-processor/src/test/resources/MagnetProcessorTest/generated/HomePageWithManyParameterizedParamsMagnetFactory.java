@@ -3,13 +3,13 @@ package app.extension;
 import app.Page;
 import app.WorkProcessor;
 import java.util.List;
-import magnet.Scope;
 import magnet.internal.InstanceFactory;
+import magnet.internal.InstanceScope;
 
 public final class HomePageWithManyParameterizedParamsMagnetFactory extends InstanceFactory<Page> {
     @Override
     @SuppressWarnings("unchecked")
-    public Page create(Scope scope) {
+    public Page create(InstanceScope scope) {
         List variant1 = scope.getMany(WorkProcessor.class);
         List variant2 = scope.getMany(WorkProcessor.class, "global");
         List variant3 = scope.getMany(WorkProcessor.class);

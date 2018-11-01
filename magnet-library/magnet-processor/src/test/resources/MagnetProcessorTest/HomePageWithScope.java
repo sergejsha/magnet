@@ -2,12 +2,12 @@ package app.extension;
 
 import app.Page;
 import magnet.Instance;
-import magnet.Scope;
+import magnet.internal.InstanceScope;
 
 @Instance(type = Page.class)
 class HomePageWithScope implements Page {
 
-    HomePageWithScope(Scope scope) { }
+    HomePageWithScope(InstanceScope scope) { }
 
     @Override
     public void show() {
