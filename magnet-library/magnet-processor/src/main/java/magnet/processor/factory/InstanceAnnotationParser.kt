@@ -22,6 +22,7 @@ import javax.lang.model.type.TypeMirror
 import javax.lang.model.util.Elements
 import javax.lang.model.util.SimpleAnnotationValueVisitor6
 
+const val FACTORY_SUFFIX = "MagnetFactory"
 private const val CLASS_NULLABLE = ".Nullable"
 private const val ATTR_TYPE = "type"
 private const val ATTR_TYPES = "types"
@@ -253,16 +254,6 @@ internal abstract class AnnotationParser<in E : Element>(
     }
 
     abstract fun parse(element: E): List<FactoryType>
-
-    companion object {
-
-        fun generateFactoryName(isSingleTypeFactory: Boolean, instanceName: String, it: ClassName): String =
-            if (isSingleTypeFactory) {
-                "${instanceName}MagnetFactory"
-            } else {
-                "$instanceName${it.simpleName()}MagnetFactory"
-            }
-    }
 
 }
 

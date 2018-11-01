@@ -20,14 +20,27 @@ import android.content.SharedPreferences
 import magnet.Classifier
 import magnet.Instance
 import magnet.SelectorFilter
-import magnetx.FeaturesSelectorFilter.Companion.CLASSIFIER
 
+const val FEATURE_SELECTOR = "features"
+
+/**
+ * This class enables selective injection based on boolean values stored in
+ * provided shared preferences. Add the library containing this class to your
+ * app module to enable feature selector.
+ *
+ *
+ * ### Scope dependencies
+ * `@Classifier(FEATURE_SELECTOR) preferences: SharedPreferences`
+ *
+ * ### Scoping
+ * any scoping
+ */
 @Instance(
     type = SelectorFilter::class,
-    classifier = CLASSIFIER
+    classifier = FEATURE_SELECTOR
 )
-class FeaturesSelectorFilter(
-    @Classifier(CLASSIFIER) private val preferences: SharedPreferences
+internal class FeaturesSelectorFilter(
+    @Classifier(FEATURE_SELECTOR) private val preferences: SharedPreferences
 ) : SelectorFilter() {
 
     override fun filter(selector: Array<String>): Boolean {
@@ -45,11 +58,7 @@ class FeaturesSelectorFilter(
             preferences = preferences
         )
     }
-
-    companion object {
-        const val CLASSIFIER = "features"
-    }
-
+  
 }
 
 private sealed class Operator {

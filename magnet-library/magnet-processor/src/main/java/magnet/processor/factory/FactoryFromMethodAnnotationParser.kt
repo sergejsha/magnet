@@ -88,3 +88,10 @@ internal class FactoryFromMethodAnnotationParser(
     }
 
 }
+
+private fun generateFactoryName(isSingleTypeFactory: Boolean, instanceName: String, it: ClassName): String =
+    if (isSingleTypeFactory) {
+        "${instanceName}MagnetFactory"
+    } else {
+        "$instanceName${it.simpleName()}MagnetFactory"
+    }

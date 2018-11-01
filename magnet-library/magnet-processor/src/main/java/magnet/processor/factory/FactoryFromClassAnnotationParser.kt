@@ -31,28 +31,27 @@ internal class FactoryFromClassAnnotationParser(
         val annotation = parseAnnotation(element)
         val instanceType = ClassName.get(element)
         val instancePackage = instanceType.packageName()
-        val instanceName = instanceType.simpleName()
 
         return annotation.types.map {
 
-            val isSingleTypeFactory = annotation.types.size == 1
-            val getSiblingTypesMethod = if (isSingleTypeFactory) {
-                null
-            } else {
+            val hasSiblingTypes = annotation.types.size > 1
+            val getSiblingTypesMethod = if (hasSiblingTypes) {
                 val types = annotation.types - it
                 val siblingTypes = mutableListOf<ClassName>()
                 for (type in types) {
                     siblingTypes.add(type)
-                    val factoryName = generateFactoryName(false, instanceName, type)
+                    val factoryName = generateFactoryName(true, instanceType, type)
                     siblingTypes.add(ClassName.bestGuess("$instancePackage.$factoryName"))
                 }
                 GetSiblingTypesMethod(siblingTypes)
+            } else {
+                null
             }
 
             val selectorAttributes = selectorAttributeParser.convert(annotation.selector, element)
             val getSelectorMethod = if (selectorAttributes == null) null else GetSelectorMethod(selectorAttributes)
 
-            val factoryName = generateFactoryName(isSingleTypeFactory, instanceName, it)
+            val factoryName = generateFactoryName(hasSiblingTypes, instanceType, it)
             FactoryType(
                 element = element,
                 type = it,
@@ -89,5 +88,28 @@ internal class FactoryFromClassAnnotationParser(
     }
 
 }
+
+private fun generateFactoryName(
+    hasSiblingsTypes: Boolean, instanceType: ClassName, interfaceType: ClassName
+): String =
+    if (hasSiblingsTypes) {
+        "${instanceType.getFullName()}${interfaceType.getFullName()}$FACTORY_SUFFIX"
+    } else {
+        "${instanceType.getFullName()}$FACTORY_SUFFIX"
+    }
+
+private fun ClassName.getFullName(): String {
+    if (enclosingClassName() == null) {
+        return simpleName()
+    }
+    val nameBuilder = StringBuilder(simpleName())
+    var typeClassName = this
+    while (typeClassName.enclosingClassName() != null) {
+        nameBuilder.insert(0, typeClassName.enclosingClassName().simpleName())
+        typeClassName = typeClassName.enclosingClassName()
+    }
+    return nameBuilder.toString()
+}
+
 
 

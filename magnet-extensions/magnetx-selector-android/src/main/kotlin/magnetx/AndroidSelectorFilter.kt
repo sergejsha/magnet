@@ -24,7 +24,7 @@ import magnet.SelectorFilter
     type = SelectorFilter::class,
     classifier = "android"
 )
-class AndroidSelectorFilter : SelectorFilter() {
+internal class AndroidSelectorFilter : SelectorFilter() {
 
     override fun filter(selector: Array<out String>): Boolean {
         check(selector.size >= 4) { "Unexpected selector length: ${selector.size}. $VERSION_ERROR" }
