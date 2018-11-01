@@ -1,5 +1,5 @@
 [![Build Status](https://travis-ci.org/beworker/magnet.svg?branch=master)](https://travis-ci.org/beworker/magnet)
-[![Kotlin version badge](https://img.shields.io/badge/kotlin-1.2.71-blue.svg)](http://kotlinlang.org/)
+[![Kotlin version badge](https://img.shields.io/badge/kotlin-1.3.0-blue.svg)](http://kotlinlang.org/)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](http://www.apache.org/licenses/LICENSE-2.0)
 
 <img src="documentation/images/magnet.png" width="100" />
