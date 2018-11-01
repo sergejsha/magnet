@@ -16,27 +16,29 @@
 
 package magnet
 
+import magnet.internal.InstanceScope
+
 /** Returns an object from the scope or `null`, if object was not found. */
-inline fun <reified T> Scope.getOptional(classifier: String = Classifier.NONE): T? {
+inline fun <reified T> InstanceScope.getOptional(classifier: String = Classifier.NONE): T? {
     return this.getOptional(T::class.java, classifier)
 }
 
 /** Returns an object from the scope or throws exception, if object was not found. */
-inline fun <reified T> Scope.getSingle(classifier: String = Classifier.NONE): T {
+inline fun <reified T> InstanceScope.getSingle(classifier: String = Classifier.NONE): T {
     return this.getSingle(T::class.java, classifier)
 }
 
 /** Returns a list of objects or empty list, if no objects were found. */
-inline fun <reified T> Scope.getMany(classifier: String = Classifier.NONE): List<T> {
+inline fun <reified T> InstanceScope.getMany(classifier: String = Classifier.NONE): List<T> {
     return this.getMany(T::class.java, classifier)
 }
 
 /** Bind given instance into this scope. */
-inline fun <reified T> Scope.bind(instance: T, classifier: String = Classifier.NONE) {
+inline fun <reified T> InstanceScope.bind(instance: T, classifier: String = Classifier.NONE) {
     this.bind(T::class.java, instance, classifier)
 }
 
 /** Creates a subscope of the current scope. */
-inline fun Scope.createSubscope(init: Scope.() -> Unit): Scope {
+inline fun InstanceScope.createSubscope(init: InstanceScope.() -> Unit): InstanceScope {
     return this.createSubscope().apply(init)
 }

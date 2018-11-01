@@ -17,14 +17,15 @@
 package magnet;
 
 import magnet.internal.InternalFactory;
+import magnet.internal.InstanceScope;
 
-/** Main class serving as the factory for root {@link Scope}. */
+/** Main class serving as the factory for root {@link InstanceScope}. */
 public final class Magnet {
 
     private Magnet() { }
 
-    /** Creates and returns new root {@link Scope} instance. */
-    public static Scope createRootScope() {
+    /** Creates and returns new root {@link InstanceScope} instance. */
+    public static InstanceScope createRootScope() {
         return InternalFactory.createRootScope();
     }
 

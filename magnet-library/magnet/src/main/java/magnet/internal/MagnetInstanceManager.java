@@ -25,7 +25,6 @@ import java.util.List;
 import java.util.Map;
 
 /* Subject to change. For internal use only. */
-@SuppressWarnings("unchecked")
 final class MagnetInstanceManager implements InstanceManager {
 
     private InstanceFactory[] factories;
@@ -56,6 +55,7 @@ final class MagnetInstanceManager implements InstanceManager {
         this.index = index;
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public <T> InstanceFactory<T> getOptionalFactory(
         Class<T> type, String classifier, FactoryFilter factoryFilter
@@ -90,6 +90,7 @@ final class MagnetInstanceManager implements InstanceManager {
         return factory;
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public <T> List<InstanceFactory<T>> getManyFactories(
         Class<T> type, String classifier, FactoryFilter factoryFilter
@@ -116,6 +117,7 @@ final class MagnetInstanceManager implements InstanceManager {
         return Collections.emptyList();
     }
 
+    @SuppressWarnings("unchecked")
     private Range getOptionalRange(Class<?> type, String classifier) {
         Object indexed = index.get(type);
 
@@ -141,6 +143,7 @@ final class MagnetInstanceManager implements InstanceManager {
                 "Unsupported index type: %s", indexed.getClass()));
     }
 
+    @SuppressWarnings("unchecked")
     private <T> List<InstanceFactory<T>> factoriesFromRange(Range range, FactoryFilter factoryFilter) {
         List<InstanceFactory<T>> filteredFactories = null;
         for (int index = range.getFrom(), afterLast = range.getFrom() + range.getCount(); index < afterLast; index++) {

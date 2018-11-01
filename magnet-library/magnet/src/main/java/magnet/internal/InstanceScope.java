@@ -14,11 +14,16 @@
  * limitations under the License.
  */
 
-package magnet;
+package magnet.internal;
+
+import magnet.Instance;
 
 import java.util.List;
 
 /**
+ * Subject to change. For internal use only.
+ *
+ * <p>
  * Scope is a container for objects which are stored there at runtime.
  *
  * <p>
@@ -87,7 +92,7 @@ import java.util.List;
  * toaster != null
  * </pre>
  */
-public interface Scope {
+public interface InstanceScope {
 
     /** Returns an object from the scope or {@code null}, if object was not found. */
     <T> T getOptional(Class<T> type);
@@ -108,12 +113,18 @@ public interface Scope {
     <T> List<T> getMany(Class<T> type, String classifier);
 
     /** Bind given instance into this scope. */
-    <T> Scope bind(Class<T> type, T instance);
+    <T> InstanceScope bind(Class<T> type, T instance);
 
     /** Bind given instance into this scope. */
-    <T> Scope bind(Class<T> type, T instance, String classifier);
+    <T> InstanceScope bind(Class<T> type, T instance, String classifier);
 
     /** Creates a child subscope of this scope. */
-    Scope createSubscope();
+    InstanceScope createSubscope();
+
+    /** Finds instance in scope tree. */
+    <T> RuntimeInstance<T> findDeepInstance(String key);
+
+    /** Registers given runtime instance in current scope. */
+    void registerInstanceInScope(String key, RuntimeInstance instance);
 
 }

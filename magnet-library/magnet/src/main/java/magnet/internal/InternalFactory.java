@@ -16,8 +16,6 @@
 
 package magnet.internal;
 
-import magnet.Scope;
-
 /* Subject to change. For internal use only. */
 public final class InternalFactory {
 
@@ -25,8 +23,8 @@ public final class InternalFactory {
 
     private InternalFactory() {}
 
-    public static Scope createRootScope() {
-        return new MagnetScope(null, INSTANCE_MANAGER);
+    public static InstanceScope createRootScope() {
+        return new MagnetInstanceScope(null, INSTANCE_MANAGER);
     }
 
 }

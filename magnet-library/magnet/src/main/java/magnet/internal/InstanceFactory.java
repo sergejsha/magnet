@@ -16,13 +16,12 @@
 
 package magnet.internal;
 
-import magnet.Scope;
 import magnet.Scoping;
 
 /* Subject to change. For internal use only. */
 public abstract class InstanceFactory<T> {
 
-    public abstract T create(Scope scope);
+    public abstract T create(InstanceScope scope);
     public Scoping getScoping() { return Scoping.TOPMOST; }
     public Class[] getSiblingTypes() { return null; }
     public String[] getSelector() { return null; }

@@ -16,6 +16,7 @@
 
 package magnet
 
+import magnet.internal.InstanceScope
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.Mock
@@ -27,7 +28,7 @@ import org.mockito.junit.MockitoJUnitRunner
 class ScopeExtTest {
 
     @Mock
-    lateinit var scope: Scope
+    lateinit var scope: InstanceScope
 
     @Test
     fun testGet() {

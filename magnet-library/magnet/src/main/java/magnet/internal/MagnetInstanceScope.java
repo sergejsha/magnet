@@ -17,7 +17,6 @@
 package magnet.internal;
 
 import magnet.Classifier;
-import magnet.Scope;
 import magnet.Scoping;
 import magnet.SelectorFilter;
 
@@ -30,13 +29,13 @@ import java.util.List;
 import java.util.Map;
 
 /* Subject to change. For internal use only. */
-final class MagnetScope implements Scope, FactoryFilter {
+final class MagnetInstanceScope implements InstanceScope, FactoryFilter {
 
     private static final byte CARDINALITY_OPTIONAL = 0;
     private static final byte CARDINALITY_SINGLE = 1;
     private static final byte CARDINALITY_MANY = 2;
 
-    private final MagnetScope parent;
+    private final InstanceScope parent;
     private final InstanceManager instanceManager;
 
     /** Visible for testing */
@@ -50,7 +49,7 @@ final class MagnetScope implements Scope, FactoryFilter {
         @Override protected InstantiationContext initialValue() { return new InstantiationContext(); }
     };
 
-    MagnetScope(MagnetScope parent, InstanceManager instanceManager) {
+    MagnetInstanceScope(MagnetInstanceScope parent, InstanceManager instanceManager) {
         this.depth = parent == null ? 0 : parent.depth + 1;
         this.parent = parent;
         this.instanceManager = instanceManager;
@@ -92,20 +91,20 @@ final class MagnetScope implements Scope, FactoryFilter {
     }
 
     @Override
-    public <T> Scope bind(Class<T> type, T object) {
+    public <T> InstanceScope bind(Class<T> type, T object) {
         bind(key(type, Classifier.NONE), object);
         return this;
     }
 
     @Override
-    public <T> Scope bind(Class<T> type, T object, String classifier) {
+    public <T> InstanceScope bind(Class<T> type, T object, String classifier) {
         bind(key(type, classifier), object);
         return this;
     }
 
     @Override
-    public Scope createSubscope() {
-        return new MagnetScope(this, instanceManager);
+    public InstanceScope createSubscope() {
+        return new MagnetInstanceScope(this, instanceManager);
     }
 
     @Override
@@ -151,7 +150,7 @@ final class MagnetScope implements Scope, FactoryFilter {
         String key = key(type, classifier);
 
         if (factory == null) {
-            RuntimeInstance<T> instance = findInstanceDeep(key);
+            RuntimeInstance<T> instance = findDeepInstance(key);
             if (instance == null) {
                 if (cardinality == CARDINALITY_SINGLE) {
                     throw new IllegalStateException(
@@ -165,7 +164,7 @@ final class MagnetScope implements Scope, FactoryFilter {
             return instance.getValue();
         }
 
-        RuntimeInstance<T> deepInstance = findInstanceDeep(key);
+        RuntimeInstance<T> deepInstance = findDeepInstance(key);
         boolean keepInScope = factory.getScoping() != Scoping.UNSCOPED;
 
         if (keepInScope) {
@@ -221,7 +220,8 @@ final class MagnetScope implements Scope, FactoryFilter {
         return object;
     }
 
-    private void registerInstanceInScope(String key, RuntimeInstance instance) {
+    @Override
+    public void registerInstanceInScope(String key, RuntimeInstance instance) {
         if (depth == instance.getScopeDepth()) {
             RuntimeInstance existing = instances.put(key, instance);
             if (existing != null) {
@@ -239,10 +239,11 @@ final class MagnetScope implements Scope, FactoryFilter {
     }
 
     @SuppressWarnings("unchecked")
-    private <T> RuntimeInstance<T> findInstanceDeep(String key) {
+    @Override
+    public <T> RuntimeInstance<T> findDeepInstance(String key) {
         RuntimeInstance<T> instance = instances.get(key);
         if (instance == null && parent != null) {
-            return parent.findInstanceDeep(key);
+            return parent.findDeepInstance(key);
         }
         return instance;
     }

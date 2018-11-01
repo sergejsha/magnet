@@ -16,7 +16,6 @@
 
 package magnet.internal;
 
-import magnet.Scope;
 import magnet.Scoping;
 import org.junit.Before;
 import org.junit.Test;
@@ -31,9 +30,9 @@ import static com.google.common.truth.Truth.assertThat;
 @RunWith(JUnit4.class)
 public class MagnetScope_ManyInstancesInMultipleScopesTest {
 
-    private InstrumentedScope scope1;
-    private InstrumentedScope scope2;
-    private InstrumentedScope scope3;
+    private InstrumentedInstanceScope scope1;
+    private InstrumentedInstanceScope scope2;
+    private InstrumentedInstanceScope scope3;
 
     private InstanceImpl1Factory factory1 = new InstanceImpl1Factory();
     private InstanceImpl2Factory factory2 = new InstanceImpl2Factory();
@@ -41,13 +40,13 @@ public class MagnetScope_ManyInstancesInMultipleScopesTest {
 
     @Before
     public void before() {
-        scope1 = new InstrumentedScope(new MagnetScope(null, new StubInstanceManager()));
+        scope1 = new InstrumentedInstanceScope(new MagnetInstanceScope(null, new StubInstanceManager()));
         scope1.instrumentObjectIntoScope("", InstanceType.class, new InstanceImpl1(), factory1);
 
-        scope2 = (InstrumentedScope) scope1.createSubscope();
+        scope2 = (InstrumentedInstanceScope) scope1.createSubscope();
         scope2.instrumentObjectIntoScope("", InstanceType.class, new InstanceImpl2(), factory2);
 
-        scope3 = (InstrumentedScope) scope2.createSubscope();
+        scope3 = (InstrumentedInstanceScope) scope2.createSubscope();
     }
 
     @Test
@@ -70,17 +69,17 @@ public class MagnetScope_ManyInstancesInMultipleScopesTest {
     }
 
     private static class InstanceImpl1Factory extends InstanceFactory<InstanceType> {
-        @Override public InstanceType create(Scope scope) { return new InstanceImpl1(); }
+        @Override public InstanceType create(InstanceScope scope) { return new InstanceImpl1(); }
         @Override public Scoping getScoping() { return Scoping.TOPMOST; }
     }
 
     private static class InstanceImpl2Factory extends InstanceFactory<InstanceType> {
-        @Override public InstanceType create(Scope scope) { return new InstanceImpl2(); }
+        @Override public InstanceType create(InstanceScope scope) { return new InstanceImpl2(); }
         @Override public Scoping getScoping() { return Scoping.TOPMOST; }
     }
 
     private static class InstanceImpl3Factory extends InstanceFactory<InstanceType> {
-        @Override public InstanceType create(Scope scope) { return new InstanceImpl3(); }
+        @Override public InstanceType create(InstanceScope scope) { return new InstanceImpl3(); }
         @Override public Scoping getScoping() { return Scoping.TOPMOST; }
     }
 

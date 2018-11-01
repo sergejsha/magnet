@@ -7,7 +7,7 @@ import com.squareup.javapoet.TypeName
 import com.squareup.javapoet.WildcardTypeName
 import magnet.Classifier
 import magnet.Instance
-import magnet.Scope
+import magnet.internal.InstanceScope
 import magnet.Scoping
 import magnet.SelectorFilter
 import magnet.processor.MagnetProcessorEnv
@@ -59,11 +59,11 @@ internal abstract class AnnotationParser<in E : Element>(
         val paramSpec = ParameterSpec.get(variable)
         val paramName = paramSpec.name
 
-        val isScopeParam = variableType.toString() == Scope::class.java.name
+        val isScopeParam = variableType.toString() == InstanceScope::class.java.name
         if (isScopeParam) {
             return MethodParameter(
                 PARAM_SCOPE_NAME,
-                ClassName.get(Scope::class.java),
+                ClassName.get(InstanceScope::class.java),
                 false,
                 Classifier.NONE,
                 GetterMethod.GET_SCOPE

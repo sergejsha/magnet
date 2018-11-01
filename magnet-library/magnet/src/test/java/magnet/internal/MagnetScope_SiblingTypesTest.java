@@ -17,7 +17,6 @@
 package magnet.internal;
 
 import magnet.Classifier;
-import magnet.Scope;
 import magnet.Scoping;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -34,8 +33,8 @@ public class MagnetScope_SiblingTypesTest {
     @Test
     public void sameInstanceIsRegisteredScope() {
         MagnetInstanceManager instanceManager = createMagnetInstanceManager(Scoping.TOPMOST);
-        Scope topMost = new MagnetScope(null, instanceManager);
-        Scope directScope = topMost.createSubscope();
+        InstanceScope topMost = new MagnetInstanceScope(null, instanceManager);
+        InstanceScope directScope = topMost.createSubscope();
 
         Interface1 instance1 = directScope.getSingle(Interface1.class);
         Interface2 instance2 = directScope.getSingle(Interface2.class);
@@ -45,8 +44,8 @@ public class MagnetScope_SiblingTypesTest {
     @Test
     public void sameInstanceIsRegisteredScopeInReverseOrder() {
         MagnetInstanceManager instanceManager = createMagnetInstanceManager(Scoping.TOPMOST);
-        Scope topMost = new MagnetScope(null, instanceManager);
-        Scope directScope = topMost.createSubscope();
+        InstanceScope topMost = new MagnetInstanceScope(null, instanceManager);
+        InstanceScope directScope = topMost.createSubscope();
 
         Interface2 instance2 = directScope.getSingle(Interface2.class);
         Interface1 instance1 = directScope.getSingle(Interface1.class);
@@ -56,8 +55,8 @@ public class MagnetScope_SiblingTypesTest {
     @Test
     public void sameInstanceIsRegisteredInTopMostScope() {
         MagnetInstanceManager instanceManager = createMagnetInstanceManager(Scoping.TOPMOST);
-        Scope topMost = new MagnetScope(null, instanceManager);
-        Scope directScope = topMost.createSubscope();
+        InstanceScope topMost = new MagnetInstanceScope(null, instanceManager);
+        InstanceScope directScope = topMost.createSubscope();
         directScope.getSingle(Interface1.class);
 
         Interface1 instance1 = topMost.getSingle(Interface1.class);
@@ -68,8 +67,8 @@ public class MagnetScope_SiblingTypesTest {
     @Test
     public void sameInstanceIsRegisteredInDirectScope() {
         MagnetInstanceManager instanceManager = createMagnetInstanceManager(Scoping.DIRECT);
-        Scope topMost = new MagnetScope(null, instanceManager);
-        Scope directScope = topMost.createSubscope();
+        InstanceScope topMost = new MagnetInstanceScope(null, instanceManager);
+        InstanceScope directScope = topMost.createSubscope();
 
         Interface1 instance1 = directScope.getSingle(Interface1.class);
         Interface2 instance2 = directScope.getSingle(Interface2.class);
@@ -79,8 +78,8 @@ public class MagnetScope_SiblingTypesTest {
     @Test
     public void sameInstanceIsNotRegisteredInTopMostScope() {
         MagnetInstanceManager instanceManager = createMagnetInstanceManager(Scoping.DIRECT);
-        MagnetScope topMost = new MagnetScope(null, instanceManager);
-        Scope directScope = topMost.createSubscope();
+        MagnetInstanceScope topMost = new MagnetInstanceScope(null, instanceManager);
+        InstanceScope directScope = topMost.createSubscope();
         directScope.getSingle(Interface1.class);
 
         assertThat(topMost.instances).isEmpty();
@@ -110,7 +109,7 @@ public class MagnetScope_SiblingTypesTest {
     static class ImplementationInterface1Factory extends InstanceFactory<Interface1> {
         private Scoping scoping;
         ImplementationInterface1Factory(Scoping scoping) { this.scoping = scoping; }
-        @Override public Interface1 create(Scope scope) { return new Implementation(); }
+        @Override public Interface1 create(InstanceScope scope) { return new Implementation(); }
         @Override public Scoping getScoping() { return this.scoping; }
         @Override public Class[] getSiblingTypes() {
             return new Class[]{Interface2.class, ImplementationInterface2Factory.class};
@@ -120,7 +119,7 @@ public class MagnetScope_SiblingTypesTest {
     static class ImplementationInterface2Factory extends InstanceFactory<Interface2> {
         private Scoping scoping;
         ImplementationInterface2Factory(Scoping scoping) { this.scoping = scoping; }
-        @Override public Interface2 create(Scope scope) { return new Implementation(); }
+        @Override public Interface2 create(InstanceScope scope) { return new Implementation(); }
         @Override public Scoping getScoping() { return this.scoping; }
         @Override public Class[] getSiblingTypes() {
             return new Class[]{Interface1.class, ImplementationInterface1Factory.class};
