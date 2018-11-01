@@ -58,7 +58,7 @@ internal class FeaturesSelectorFilter(
             preferences = preferences
         )
     }
-
+  
 }
 
 private sealed class Operator {
