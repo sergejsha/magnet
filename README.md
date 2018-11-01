@@ -34,9 +34,11 @@ This desing makes dependency injection so easy that it becomes hard not to use i
 
 # Unique features
 
-1. Magnet is capable of injecting annotated classes from **compiled** libraries. This means you can extend funtionality of your application by just adding libraries as a dependency to the compilation. No source modification is necessary. See how [magnetx-app-leakcanary](magnet-extensions/magnetx-app-leakcanary) and [magnetx-app-rxandroid](magnet-extensions/magnetx-app-rxandroid) leverage this feature.
+1. Magnet does not force you to use any generated classes in your code. This dramatically improves user experience when code does not compile due to an error. Delevoper will see a single error at a single location and not hundreds of errors at all places, where generated code is referenced. If you used dagger, you know what I mean. 
 
-2. Magnet has a concept of extensible declarative selectors, which gives you additional control over when instances should be injected and when not. The example down below injects `AudioFocusImplLegacy` implementation of `AudioFocus` interface, if current Android API level is less than 26 and `AudioFocusImpl26` one otherwise.
+2. Magnet is capable of injecting annotated classes from **compiled** libraries. This means you can extend funtionality of your application by just adding libraries as a dependency to the compilation. No source modification is necessary. See how [magnetx-app-leakcanary](magnet-extensions/magnetx-app-leakcanary) and [magnetx-app-rxandroid](magnet-extensions/magnetx-app-rxandroid) leverage this feature.
+
+3. Magnet has a concept of extensible declarative selectors, which gives you additional control over when instances should be injected and when not. The example down below injects `AudioFocusImplLegacy` implementation of `AudioFocus` interface, if current Android API level is less than 26 and `AudioFocusImpl26` one otherwise.
 
 ```kotlin
 interface AudioFocus
@@ -58,8 +60,6 @@ val audioFocus: AudioFocus = scope.getSingle()
 ```
 
 Custom selectors are easy to write. For more details checkout [magnetx-selector-android](magnet-extensions/magnetx-selector-android) or [magnetx-selector-features](magnet-extensions/magnetx-selector-features) modules.
-
-3. Magnet does not force you to use any generated classes in your code. This dramatically improves user experience when code does not compile due to an error. Delevoper will see a single error at a single location and not hundreds of errors at all places, where generated code is referenced. If you used dagger, you know what I mean. 
 
 # Documentation
 
