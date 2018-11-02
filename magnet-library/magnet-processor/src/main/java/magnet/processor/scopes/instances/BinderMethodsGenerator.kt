@@ -3,18 +3,19 @@ package magnet.processor.scopes.instances
 import com.squareup.javapoet.MethodSpec
 import com.squareup.javapoet.TypeSpec
 import magnet.Classifier
+import magnet.processor.scopes.AspectGenerator
 import magnet.processor.scopes.Model
 import javax.lang.model.element.Modifier
 
-internal class BinderMethodsGenerator {
+internal class BinderMethodsGenerator : AspectGenerator() {
 
     private val builders = mutableListOf<MethodSpec.Builder>()
 
-    fun enterScope() {
+    override fun enterScope(scope: Model.Scope) {
         builders.clear()
     }
 
-    fun visitBindMethod(method: Model.BindMethod) {
+    override fun visitBindMethod(method: Model.BindMethod) {
         var builder = MethodSpec
             .methodBuilder(method.name)
             .addModifiers(Modifier.PUBLIC)
@@ -40,7 +41,7 @@ internal class BinderMethodsGenerator {
         builders.add(builder)
     }
 
-    fun generate(typeBuilder: TypeSpec.Builder) {
+    override fun generate(typeBuilder: TypeSpec.Builder) {
         for (builder in builders) {
             typeBuilder.addMethod(builder.build())
         }

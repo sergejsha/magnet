@@ -24,7 +24,7 @@ public final class InternalFactory {
     private InternalFactory() {}
 
     public static <T> T createScope(Class<T> scopeType) {
-        return INSTANCE_MANAGER.getScopeFactory(scopeType).create(scopeType);
+        return INSTANCE_MANAGER.getScopeFactory(scopeType).create();
     }
 
 }

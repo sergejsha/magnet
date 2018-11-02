@@ -6,18 +6,19 @@ import com.squareup.javapoet.ParameterizedTypeName
 import com.squareup.javapoet.TypeSpec
 import magnet.Classifier
 import magnet.processor.common.CommonModel
+import magnet.processor.scopes.AspectGenerator
 import magnet.processor.scopes.Model
 import javax.lang.model.element.Modifier
 
-internal class GetterMethodsGenerator {
+internal class GetterMethodsGenerator : AspectGenerator() {
 
     private val builders = mutableListOf<MethodSpec.Builder>()
 
-    fun enterScope() {
+    override fun enterScope(scope: Model.Scope) {
         builders.clear()
     }
 
-    fun visitGetterMethod(method: Model.GetterMethod) {
+    override fun visitGetterMethod(method: Model.GetterMethod) {
         var builder = MethodSpec
             .methodBuilder(method.name)
             .addModifiers(Modifier.PUBLIC)
@@ -49,7 +50,7 @@ internal class GetterMethodsGenerator {
         builders.add(builder)
     }
 
-    fun generate(typeBuilder: TypeSpec.Builder) {
+    override fun generate(typeBuilder: TypeSpec.Builder) {
         for (builder in builders) {
             typeBuilder.addMethod(builder.build())
         }

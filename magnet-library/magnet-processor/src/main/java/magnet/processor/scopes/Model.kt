@@ -41,11 +41,11 @@ interface Model {
     )
 
     interface Visitor {
-        fun enterScope(scope: Scope)
-        fun visitBindParentScope(method: BindMethod)
-        fun visitBindMethod(method: BindMethod)
-        fun visitGetterMethod(method: GetterMethod)
-        fun exitScope()
+        fun enterScope(scope: Scope) {}
+        fun visitBindParentScope(method: BindMethod) {}
+        fun visitBindMethod(method: BindMethod) {}
+        fun visitGetterMethod(method: GetterMethod) {}
+        fun exitScope() {}
     }
 
 }

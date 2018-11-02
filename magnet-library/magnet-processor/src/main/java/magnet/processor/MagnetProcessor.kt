@@ -26,7 +26,7 @@ import magnet.processor.factory.FactoryIndexCodeGenerator
 import magnet.processor.factory.FactoryType
 import magnet.processor.factory.FactoryTypeCodeGenerator
 import magnet.processor.index.MagnetIndexerGenerator
-import magnet.processor.scopes.ScopeAnnotationProcessor
+import magnet.processor.scopes.ScopeProcessor
 import javax.annotation.processing.AbstractProcessor
 import javax.annotation.processing.ProcessingEnvironment
 import javax.annotation.processing.RoundEnvironment
@@ -43,7 +43,7 @@ class MagnetProcessor : AbstractProcessor() {
     private lateinit var env: MagnetProcessorEnv
     private lateinit var factoryFromClassAnnotationParser: FactoryFromClassAnnotationParser
     private lateinit var factoryFromMethodAnnotationParser: FactoryFromMethodAnnotationParser
-    private lateinit var scopeAnnotationParser: ScopeAnnotationProcessor
+    private lateinit var scopeProcessor: ScopeProcessor
     private lateinit var factoryTypeCodeGenerator: FactoryTypeCodeGenerator
     private lateinit var factoryIndexCodeGenerator: FactoryIndexCodeGenerator
 
@@ -52,7 +52,7 @@ class MagnetProcessor : AbstractProcessor() {
         env = MagnetProcessorEnv(processingEnvironment)
         factoryFromClassAnnotationParser = FactoryFromClassAnnotationParser(env)
         factoryFromMethodAnnotationParser = FactoryFromMethodAnnotationParser(env)
-        scopeAnnotationParser = ScopeAnnotationProcessor(env)
+        scopeProcessor = ScopeProcessor(env)
         factoryTypeCodeGenerator = FactoryTypeCodeGenerator()
         factoryIndexCodeGenerator = FactoryIndexCodeGenerator()
     }
@@ -63,7 +63,7 @@ class MagnetProcessor : AbstractProcessor() {
     ): Boolean {
         return try {
             val instanceProcessed = processInstanceAnnotation(roundEnv)
-            val scopesProcessed = scopeAnnotationParser.process(roundEnv)
+            val scopesProcessed = scopeProcessor.process(roundEnv)
             val indexCreated = processFactoryIndexAnnotation(env, roundEnv)
             instanceProcessed || scopesProcessed || indexCreated
         } catch (e: Throwable) {

@@ -18,7 +18,7 @@ package magnet.internal;
 
 /* Subject to change. For internal use only. */
 public abstract class ScopeFactory<T> {
-    public abstract T create(Class<T> scopeType);
+    public abstract T create();
 }
 
 /*
@@ -66,7 +66,7 @@ class MagnetAppScope extends InstanceScope implements AppScope {
 // generated
 class AppScopeMagnetFactory extends ScopeFactory<AppScope> {
 
-    @Override public AppScope create(Class<AppScope> scopeType) {
+    @Override public AppScope create() {
         return new MagnetAppScope();
     }
 
