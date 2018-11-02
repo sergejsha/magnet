@@ -12,6 +12,8 @@ internal class ScopeClassGenerator : ClassGenerator() {
     private lateinit var scope: Model.Scope
     private lateinit var classBuilder: TypeSpec.Builder
 
+    override val packageName: String by lazy { scope.packageName }
+
     override fun enterScope(scope: Model.Scope) {
         this.scope = scope
         classBuilder = TypeSpec.classBuilder(scope.getGeneratedScopeImplementationName())

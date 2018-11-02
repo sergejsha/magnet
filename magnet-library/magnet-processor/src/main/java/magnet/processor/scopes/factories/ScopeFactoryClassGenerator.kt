@@ -6,18 +6,20 @@ import com.squareup.javapoet.TypeSpec
 import magnet.internal.ScopeFactory
 import magnet.processor.scopes.ClassGenerator
 import magnet.processor.scopes.Model
+import magnet.processor.scopes.getGeneratedScopeFactoryName
 import javax.lang.model.element.Modifier
 
 class ScopeFactoryClassGenerator : ClassGenerator() {
 
-    private val className get() = "${scope.name}MagnetFactory"
-
     private lateinit var scope: Model.Scope
     private lateinit var classBuilder: TypeSpec.Builder
 
+    override val packageName: String by lazy { scope.packageName }
+
     override fun enterScope(scope: Model.Scope) {
         this.scope = scope
-        classBuilder = TypeSpec.classBuilder(className)
+
+        classBuilder = TypeSpec.classBuilder(scope.getGeneratedScopeFactoryName())
             .addModifiers(Modifier.PUBLIC, Modifier.FINAL)
             .superclass(
                 ParameterizedTypeName.get(

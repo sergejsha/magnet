@@ -45,13 +45,14 @@ abstract class Generator(
         val typeBuilder = classGenerator.generate()
         for (aspect in aspects) aspect.generate(typeBuilder)
         val typeSpec = typeBuilder.build()
-        val packageName = scope.packageName
+        val packageName = classGenerator.packageName
         return CodeWriter(packageName, typeSpec)
     }
 
 }
 
 abstract class ClassGenerator : Model.Visitor {
+    abstract val packageName: String
     abstract fun generate(): TypeSpec.Builder
 }
 

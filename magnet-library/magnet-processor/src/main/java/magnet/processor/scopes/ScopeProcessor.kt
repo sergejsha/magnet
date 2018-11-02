@@ -4,6 +4,7 @@ import magnet.Scope
 import magnet.processor.MagnetProcessorEnv
 import magnet.processor.factory.CodeWriter
 import magnet.processor.scopes.factories.ScopeFactoryGenerator
+import magnet.processor.scopes.indexes.ScopeIndexGenerator
 import magnet.processor.scopes.instances.ScopeInstanceGenerator
 import javax.annotation.processing.RoundEnvironment
 import javax.lang.model.util.ElementFilter
@@ -15,6 +16,7 @@ class ScopeProcessor(
     private val scopeParser = ScopeParser(env)
     private val scopeInstanceGenerator = ScopeInstanceGenerator()
     private val scopeFactoryGenerator = ScopeFactoryGenerator()
+    private val scopeIndexGenerator = ScopeIndexGenerator()
 
     fun process(roundEnv: RoundEnvironment): Boolean {
         val annotatedElements = roundEnv.getElementsAnnotatedWith(Scope::class.java)
@@ -27,6 +29,7 @@ class ScopeProcessor(
             val scope = scopeParser.parse(element)
             codeWriters.add(scopeInstanceGenerator.generate(scope))
             codeWriters.add(scopeFactoryGenerator.generate(scope))
+            codeWriters.add(scopeIndexGenerator.generate(scope))
         }
 
         for (codeWriter in codeWriters) {

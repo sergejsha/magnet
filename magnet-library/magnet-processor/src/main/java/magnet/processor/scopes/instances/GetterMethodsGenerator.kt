@@ -58,8 +58,10 @@ internal class GetterMethodsGenerator : AspectGenerator() {
 
 }
 
-private fun MethodSpec.Builder.addReturnInstanceStatement(methodName: String, instance: CommonModel.Instance): MethodSpec.Builder {
-    return if (instance.classifier == Classifier.NONE) {
+private fun MethodSpec.Builder.addReturnInstanceStatement(
+    methodName: String, instance: CommonModel.Instance
+): MethodSpec.Builder =
+    if (instance.classifier == Classifier.NONE) {
         addStatement(
             "return requireScopeContainer().\$L(\$T.class, \$T.NONE)",
             methodName, instance.type, Classifier::class.java
@@ -70,4 +72,3 @@ private fun MethodSpec.Builder.addReturnInstanceStatement(methodName: String, in
             methodName, instance.type, instance.classifier
         )
     }
-}

@@ -7,13 +7,13 @@ import com.google.testing.compile.JavaFileObjects
 import org.junit.Test
 import javax.tools.JavaFileObject
 
-class ScopeFactoryProcessorTest {
+class ScopeIndexProcessorTest {
 
     private fun withResource(name: String): JavaFileObject =
         JavaFileObjects.forResource(javaClass.simpleName + '/' + name)
 
     @Test
-    fun `ScopeFactory gets generated`() {
+    fun `ScopeIndex gets generated`() {
         val compilation = Compiler.javac()
             .withProcessors(MagnetProcessor())
             .compile(
@@ -22,8 +22,8 @@ class ScopeFactoryProcessorTest {
         assertThat(compilation).succeeded()
 
         CompilationSubject.assertThat(compilation)
-            .generatedSourceFile("test/Scope1MagnetFactory")
-            .hasSourceEquivalentTo(withResource("generated/Scope1MagnetFactory.java"))
+            .generatedSourceFile("magnet.index/test_Scope1MagnetFactory")
+            .hasSourceEquivalentTo(withResource("generated/test_Scope1MagnetFactory.java"))
 
     }
 
