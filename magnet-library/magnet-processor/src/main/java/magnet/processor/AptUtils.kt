@@ -23,16 +23,27 @@ import javax.lang.model.element.Element
 inline fun <reified T> AnnotationMirror.isOfAnnotationType(): Boolean =
     this.annotationType.toString() == T::class.java.name
 
-inline fun <reified A> Element.eachAnnotation(
+inline fun <reified A> Element.eachAnnotationAttributeOf(
     block: (name: String, value: AnnotationValue) -> Unit
 ) {
     for (annotationMirror in annotationMirrors) {
         if (annotationMirror.isOfAnnotationType<A>()) {
             for (entry in annotationMirror.elementValues.entries) {
-                val name = entry.key.simpleName.toString()
-                val value = entry.value
-                block(name, value)
+                block(entry.key.simpleName.toString(), entry.value)
             }
         }
     }
 }
+
+inline fun Element.eachAnnotationAttribute(
+    block: (name: String, value: AnnotationValue) -> Unit
+) {
+    for (annotationMirror in annotationMirrors) {
+        for (entry in annotationMirror.elementValues.entries) {
+            block(entry.key.simpleName.toString(), entry.value)
+        }
+    }
+}
+
+class UnexpectedCompilationError(val element: Element, override val message: String) : Throwable(message)
+class CompilationError(val element: Element, override val message: String) : Throwable(message)

@@ -16,11 +16,11 @@
 
 package magnet;
 
-import static java.lang.annotation.RetentionPolicy.CLASS;
-
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
+
+import static java.lang.annotation.RetentionPolicy.CLASS;
 
 /**
  * Magnet can bind multiple instances of the same type into a scope. Use classifier
@@ -46,7 +46,7 @@ import java.lang.annotation.Target;
  * </pre>
  */
 @Retention(CLASS)
-@Target({ ElementType.PARAMETER })
+@Target({ElementType.PARAMETER, ElementType.METHOD})
 public @interface Classifier {
 
     String NONE = "";

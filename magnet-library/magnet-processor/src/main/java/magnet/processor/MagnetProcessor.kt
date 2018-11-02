@@ -18,6 +18,7 @@ package magnet.processor
 
 import magnet.Instance
 import magnet.Magnetizer
+import magnet.Scope
 import magnet.processor.factory.CodeWriter
 import magnet.processor.factory.FactoryFromClassAnnotationParser
 import magnet.processor.factory.FactoryFromMethodAnnotationParser
@@ -25,6 +26,7 @@ import magnet.processor.factory.FactoryIndexCodeGenerator
 import magnet.processor.factory.FactoryType
 import magnet.processor.factory.FactoryTypeCodeGenerator
 import magnet.processor.index.MagnetIndexerGenerator
+import magnet.processor.scopes.ScopeAnnotationProcessor
 import javax.annotation.processing.AbstractProcessor
 import javax.annotation.processing.ProcessingEnvironment
 import javax.annotation.processing.RoundEnvironment
@@ -41,6 +43,7 @@ class MagnetProcessor : AbstractProcessor() {
     private lateinit var env: MagnetProcessorEnv
     private lateinit var factoryFromClassAnnotationParser: FactoryFromClassAnnotationParser
     private lateinit var factoryFromMethodAnnotationParser: FactoryFromMethodAnnotationParser
+    private lateinit var scopeAnnotationParser: ScopeAnnotationProcessor
     private lateinit var factoryTypeCodeGenerator: FactoryTypeCodeGenerator
     private lateinit var factoryIndexCodeGenerator: FactoryIndexCodeGenerator
 
@@ -49,6 +52,7 @@ class MagnetProcessor : AbstractProcessor() {
         env = MagnetProcessorEnv(processingEnvironment)
         factoryFromClassAnnotationParser = FactoryFromClassAnnotationParser(env)
         factoryFromMethodAnnotationParser = FactoryFromMethodAnnotationParser(env)
+        scopeAnnotationParser = ScopeAnnotationProcessor(env)
         factoryTypeCodeGenerator = FactoryTypeCodeGenerator()
         factoryIndexCodeGenerator = FactoryIndexCodeGenerator()
     }
@@ -59,9 +63,9 @@ class MagnetProcessor : AbstractProcessor() {
     ): Boolean {
         return try {
             val instanceProcessed = processInstanceAnnotation(roundEnv)
+            val scopesProcessed = scopeAnnotationParser.process(roundEnv)
             val indexCreated = processFactoryIndexAnnotation(env, roundEnv)
-
-            instanceProcessed || indexCreated
+            instanceProcessed || scopesProcessed || indexCreated
         } catch (e: CompilationException) {
             true
         }
@@ -122,6 +126,7 @@ class MagnetProcessor : AbstractProcessor() {
     override fun getSupportedAnnotationTypes(): MutableSet<String> {
         return mutableSetOf(
             Instance::class.java.name,
+            Scope::class.java.name,
             Magnetizer::class.java.name
         )
     }
