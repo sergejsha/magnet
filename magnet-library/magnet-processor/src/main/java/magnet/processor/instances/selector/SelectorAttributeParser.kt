@@ -1,7 +1,7 @@
-package magnet.processor.factory.selector
+package magnet.processor.instances.selector
 
 import magnet.processor.MagnetProcessorEnv
-import magnet.processor.factory.AspectParser
+import magnet.processor.instances.AspectParser
 import javax.lang.model.element.AnnotationValue
 import javax.lang.model.element.Element
 

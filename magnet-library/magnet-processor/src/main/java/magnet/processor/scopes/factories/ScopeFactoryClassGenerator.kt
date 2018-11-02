@@ -16,7 +16,7 @@ class ScopeFactoryClassGenerator : ClassGenerator() {
 
     override val packageName: String by lazy { scope.packageName }
 
-    override fun enterScope(scope: Model.Scope) {
+    override fun visitScope(scope: Model.Scope) {
         this.scope = scope
 
         classBuilder = TypeSpec.classBuilder(scope.getGeneratedScopeFactoryName())

@@ -11,7 +11,7 @@ internal class BinderMethodsGenerator : AspectGenerator() {
 
     private val builders = mutableListOf<MethodSpec.Builder>()
 
-    override fun enterScope(scope: Model.Scope) {
+    override fun visitScope(scope: Model.Scope) {
         builders.clear()
     }
 

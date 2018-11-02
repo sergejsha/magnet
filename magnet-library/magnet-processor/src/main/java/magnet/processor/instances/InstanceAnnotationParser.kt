@@ -1,4 +1,4 @@
-package magnet.processor.factory
+package magnet.processor.instances
 
 import com.squareup.javapoet.ClassName
 import com.squareup.javapoet.ParameterSpec
@@ -11,7 +11,7 @@ import magnet.internal.ScopeContainer
 import magnet.Scoping
 import magnet.SelectorFilter
 import magnet.processor.MagnetProcessorEnv
-import magnet.processor.factory.selector.SelectorAttributeParser
+import magnet.processor.instances.selector.SelectorAttributeParser
 import magnet.processor.isOfAnnotationType
 import javax.lang.model.element.AnnotationValue
 import javax.lang.model.element.Element

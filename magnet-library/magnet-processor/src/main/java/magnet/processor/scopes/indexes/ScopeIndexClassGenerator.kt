@@ -17,7 +17,7 @@ internal class ScopeIndexClassGenerator : ClassGenerator() {
 
     override val packageName: String get() = "magnet.index"
 
-    override fun enterScope(scope: Model.Scope) {
+    override fun visitScope(scope: Model.Scope) {
         this.scope = scope
 
         val className = ClassName.get(packageName, scope.getNameIncludingPackage())

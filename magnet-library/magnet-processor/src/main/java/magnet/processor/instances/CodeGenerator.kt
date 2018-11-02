@@ -1,4 +1,4 @@
-package magnet.processor.factory
+package magnet.processor.instances
 
 interface CodeGenerator {
 

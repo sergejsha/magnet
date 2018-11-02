@@ -11,7 +11,7 @@ class BindParentScopeGenerator : AspectGenerator() {
 
     private var builder: MethodSpec.Builder? = null
 
-    override fun enterScope(scope: Model.Scope) {
+    override fun visitScope(scope: Model.Scope) {
         builder = null
     }
 

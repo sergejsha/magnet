@@ -2,7 +2,7 @@ package magnet.processor.scopes
 
 import magnet.Scope
 import magnet.processor.MagnetProcessorEnv
-import magnet.processor.factory.CodeWriter
+import magnet.processor.instances.CodeWriter
 import magnet.processor.scopes.factories.ScopeFactoryGenerator
 import magnet.processor.scopes.indexes.ScopeIndexGenerator
 import magnet.processor.scopes.instances.ScopeInstanceGenerator

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package magnet.processor.factory
+package magnet.processor.instances
 
 import com.squareup.javapoet.AnnotationSpec
 import com.squareup.javapoet.ClassName
@@ -27,9 +27,9 @@ import com.squareup.javapoet.TypeSpec
 import magnet.Classifier
 import magnet.internal.ScopeContainer
 import magnet.internal.InstanceFactory
-import magnet.processor.factory.scoping.GetScopingMethodGenerator
-import magnet.processor.factory.selector.GetSelectorMethodGenerator
-import magnet.processor.factory.siblingtypes.GetSiblingTypesMethodGenerator
+import magnet.processor.instances.scoping.GetScopingMethodGenerator
+import magnet.processor.instances.selector.GetSelectorMethodGenerator
+import magnet.processor.instances.siblingtypes.GetSiblingTypesMethodGenerator
 import javax.lang.model.element.Modifier
 
 interface AspectGenerator {

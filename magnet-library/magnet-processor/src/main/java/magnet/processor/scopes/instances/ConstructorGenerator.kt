@@ -10,7 +10,7 @@ class ConstructorGenerator : AspectGenerator() {
 
     private lateinit var builder: MethodSpec.Builder
 
-    override fun enterScope(scope: Model.Scope) {
+    override fun visitScope(scope: Model.Scope) {
         val hasParentScope = if (scope.bindParentScopeMethod == null) "false" else "true"
         builder = MethodSpec.constructorBuilder()
             .addModifiers(Modifier.PUBLIC)

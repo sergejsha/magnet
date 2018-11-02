@@ -1,12 +1,12 @@
-package magnet.processor.factory.selector
+package magnet.processor.instances.selector
 
 import com.squareup.javapoet.ArrayTypeName
 import com.squareup.javapoet.CodeBlock
 import com.squareup.javapoet.FieldSpec
 import com.squareup.javapoet.MethodSpec
 import com.squareup.javapoet.TypeSpec
-import magnet.processor.factory.AspectGenerator
-import magnet.processor.factory.GetSelectorMethod
+import magnet.processor.instances.AspectGenerator
+import magnet.processor.instances.GetSelectorMethod
 import javax.lang.model.element.Modifier
 
 internal class GetSelectorMethodGenerator : AspectGenerator {

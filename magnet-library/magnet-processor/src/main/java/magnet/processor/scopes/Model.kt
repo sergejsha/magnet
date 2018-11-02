@@ -16,7 +16,7 @@ interface Model {
         val packageName: String get() = type.packageName()
 
         fun accept(visitor: Visitor) {
-            visitor.enterScope(this)
+            visitor.visitScope(this)
             bindParentScopeMethod?.let {
                 visitor.visitBindParentScope(bindParentScopeMethod)
             }
@@ -26,7 +26,6 @@ interface Model {
             for (method in getterMethods) {
                 visitor.visitGetterMethod(method)
             }
-            visitor.exitScope()
         }
     }
 
@@ -41,11 +40,10 @@ interface Model {
     )
 
     interface Visitor {
-        fun enterScope(scope: Scope) {}
+        fun visitScope(scope: Scope) {}
         fun visitBindParentScope(method: BindMethod) {}
         fun visitBindMethod(method: BindMethod) {}
         fun visitGetterMethod(method: GetterMethod) {}
-        fun exitScope() {}
     }
 
 }

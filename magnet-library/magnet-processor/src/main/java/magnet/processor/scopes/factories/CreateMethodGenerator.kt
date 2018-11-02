@@ -12,7 +12,7 @@ class CreateMethodGenerator : AspectGenerator() {
 
     private lateinit var builder: MethodSpec.Builder
 
-    override fun enterScope(scope: Model.Scope) {
+    override fun visitScope(scope: Model.Scope) {
         val factoryClass = ClassName.get(scope.packageName, scope.getGeneratedScopeImplementationName())
         builder = MethodSpec.methodBuilder("create")
             .addModifiers(Modifier.PUBLIC)

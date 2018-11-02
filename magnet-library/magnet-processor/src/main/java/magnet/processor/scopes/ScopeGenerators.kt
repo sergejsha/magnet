@@ -1,7 +1,7 @@
 package magnet.processor.scopes
 
 import com.squareup.javapoet.TypeSpec
-import magnet.processor.factory.CodeWriter
+import magnet.processor.instances.CodeWriter
 
 abstract class Generator(
     private val classGenerator: ClassGenerator
@@ -10,9 +10,9 @@ abstract class Generator(
     private val aspects = mutableListOf<AspectGenerator>()
     private val visitor = object : Model.Visitor {
 
-        override fun enterScope(scope: Model.Scope) {
-            classGenerator.enterScope(scope)
-            for (aspect in aspects) aspect.enterScope(scope)
+        override fun visitScope(scope: Model.Scope) {
+            classGenerator.visitScope(scope)
+            for (aspect in aspects) aspect.visitScope(scope)
         }
 
         override fun visitBindParentScope(method: Model.BindMethod) {
@@ -30,10 +30,6 @@ abstract class Generator(
             for (aspect in aspects) aspect.visitGetterMethod(method)
         }
 
-        override fun exitScope() {
-            classGenerator.exitScope()
-            for (aspect in aspects) aspect.exitScope()
-        }
     }
 
     fun registerAspect(aspectGenerator: AspectGenerator) {
