@@ -19,13 +19,8 @@ package magnet.processor
 import magnet.Instance
 import magnet.Magnetizer
 import magnet.Scope
-import magnet.processor.instances.CodeWriter
-import magnet.processor.instances.FactoryFromClassAnnotationParser
-import magnet.processor.instances.FactoryFromMethodAnnotationParser
-import magnet.processor.instances.FactoryIndexCodeGenerator
-import magnet.processor.instances.FactoryType
-import magnet.processor.instances.FactoryTypeCodeGenerator
 import magnet.processor.index.MagnetIndexerGenerator
+import magnet.processor.instances.InstanceProcessor
 import magnet.processor.scopes.ScopeProcessor
 import javax.annotation.processing.AbstractProcessor
 import javax.annotation.processing.ProcessingEnvironment
@@ -33,7 +28,6 @@ import javax.annotation.processing.RoundEnvironment
 import javax.annotation.processing.SupportedSourceVersion
 import javax.lang.model.SourceVersion
 import javax.lang.model.element.TypeElement
-import javax.lang.model.util.ElementFilter
 
 @SupportedSourceVersion(SourceVersion.RELEASE_8)
 class MagnetProcessor : AbstractProcessor() {
@@ -41,20 +35,14 @@ class MagnetProcessor : AbstractProcessor() {
     private val magnetIndexerGenerator = MagnetIndexerGenerator()
 
     private lateinit var env: MagnetProcessorEnv
-    private lateinit var factoryFromClassAnnotationParser: FactoryFromClassAnnotationParser
-    private lateinit var factoryFromMethodAnnotationParser: FactoryFromMethodAnnotationParser
     private lateinit var scopeProcessor: ScopeProcessor
-    private lateinit var factoryTypeCodeGenerator: FactoryTypeCodeGenerator
-    private lateinit var factoryIndexCodeGenerator: FactoryIndexCodeGenerator
+    private lateinit var instanceProcessor: InstanceProcessor
 
     override fun init(processingEnvironment: ProcessingEnvironment) {
         super.init(processingEnvironment)
         env = MagnetProcessorEnv(processingEnvironment)
-        factoryFromClassAnnotationParser = FactoryFromClassAnnotationParser(env)
-        factoryFromMethodAnnotationParser = FactoryFromMethodAnnotationParser(env)
         scopeProcessor = ScopeProcessor(env)
-        factoryTypeCodeGenerator = FactoryTypeCodeGenerator()
-        factoryIndexCodeGenerator = FactoryIndexCodeGenerator()
+        instanceProcessor = InstanceProcessor(env)
     }
 
     override fun process(
@@ -62,55 +50,13 @@ class MagnetProcessor : AbstractProcessor() {
         roundEnv: RoundEnvironment
     ): Boolean {
         return try {
-            val instanceProcessed = processInstanceAnnotation(roundEnv)
+            val instancesProcessed = instanceProcessor.process(roundEnv)
             val scopesProcessed = scopeProcessor.process(roundEnv)
             val indexCreated = processFactoryIndexAnnotation(env, roundEnv)
-            instanceProcessed || scopesProcessed || indexCreated
+            instancesProcessed || scopesProcessed || indexCreated
         } catch (e: Throwable) {
             true
         }
-    }
-
-    private fun processInstanceAnnotation(
-        roundEnv: RoundEnvironment
-    ): Boolean {
-
-        val annotatedElements = roundEnv.getElementsAnnotatedWith(Instance::class.java)
-        if (annotatedElements.isEmpty()) {
-            return false
-        }
-
-        val factoryTypes = mutableListOf<FactoryType>()
-        ElementFilter.typesIn(annotatedElements).forEach { element ->
-            val parsedFactoryTypes = factoryFromClassAnnotationParser.parse(element)
-            for (factoryType in parsedFactoryTypes) {
-                if (!factoryType.disabled) {
-                    factoryTypes.add(factoryType)
-                }
-            }
-        }
-        ElementFilter.methodsIn(annotatedElements).forEach { element ->
-            val parsedFactoryTypes = factoryFromMethodAnnotationParser.parse(element)
-            for (factoryType in parsedFactoryTypes) {
-                if (!factoryType.disabled) {
-                    factoryTypes.add(factoryType)
-                }
-            }
-        }
-
-        factoryTypes.sortBy { factoryName(it) }
-
-        val codeWriters = mutableListOf<CodeWriter>()
-        factoryTypes.forEach { factoryType ->
-            codeWriters.add(factoryTypeCodeGenerator.generateFrom(factoryType))
-            codeWriters.add(factoryIndexCodeGenerator.generateFrom(factoryType))
-        }
-
-        codeWriters.forEach { codeWriter ->
-            codeWriter.writeInto(env.filer)
-        }
-
-        return true
     }
 
     private fun processFactoryIndexAnnotation(
@@ -132,5 +78,3 @@ class MagnetProcessor : AbstractProcessor() {
     }
 
 }
-
-private fun factoryName(factoryType: FactoryType): String = factoryType.factoryType.simpleName()
