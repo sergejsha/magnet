@@ -24,7 +24,8 @@ interface CommonModel {
         val name: String,
         val type: TypeName,
         val classifier: String,
-        val cardinality: Cardinality
+        val cardinality: Cardinality,
+        val isScope: Boolean
     )
 
     sealed class Cardinality {

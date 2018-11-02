@@ -16,8 +16,6 @@
 
 package magnet.internal;
 
-import java.util.List;
-
 /* Subject to change. For internal use only. */
 public abstract class InstanceScope {
 
@@ -29,9 +27,9 @@ public abstract class InstanceScope {
         this.parentRequired = parentRequired;
     }
 
-    protected void bindParentScope(InstanceScope parent) {
+    protected void setParentScope(InstanceScope parent) {
         if (parent == null) {
-            throw new IllegalStateException("Parent must not be null");
+            throw new IllegalStateException("Parent is already set.");
         }
         if (this.parent != null) {
             throw new IllegalStateException(
@@ -44,23 +42,7 @@ public abstract class InstanceScope {
         this.parent = parent;
     }
 
-    protected void bindInstance(Class type, Object object, String classifier) {
-        requireScopeContainer().bind(type, object, classifier);
-    }
-
-    protected String getSingle(Class<String> type, String classifier) {
-        return requireScopeContainer().getSingle(type, classifier);
-    }
-
-    protected String getOptional(Class<String> type, String classifier) {
-        return requireScopeContainer().getOptional(type, classifier);
-    }
-
-    protected List<String> getMany(Class<String> type, String classifier) {
-        return requireScopeContainer().getMany(type, classifier);
-    }
-
-    private MagnetScopeContainer requireScopeContainer() {
+    protected ScopeContainer requireScopeContainer() {
         if (parentRequired && parent == null) {
             throw new IllegalStateException(
                 "Parent scope is required. Make sure to bind parent" +

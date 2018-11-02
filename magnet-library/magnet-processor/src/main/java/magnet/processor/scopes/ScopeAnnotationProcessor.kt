@@ -11,7 +11,7 @@ class ScopeAnnotationProcessor(
 ) {
 
     private val scopeParser = ScopeParser(env)
-    private val scopeInstanceGenerator = ScopeInstanceGenerator(env)
+    private val scopeInstanceGenerator = ScopeInstanceGenerator()
 
     fun process(roundEnv: RoundEnvironment): Boolean {
         val annotatedElements = roundEnv.getElementsAnnotatedWith(Scope::class.java)

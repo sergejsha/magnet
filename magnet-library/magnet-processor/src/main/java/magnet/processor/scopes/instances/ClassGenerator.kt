@@ -14,7 +14,7 @@ internal class ClassGenerator(
 
     fun enterScope(scope: Model.Scope) {
         this.scope = scope
-        this.classBuilder = TypeSpec.classBuilder(className)
+        classBuilder = TypeSpec.classBuilder(className)
             .addModifiers(Modifier.FINAL)
             .superclass(InstanceScope::class.java)
             .addSuperinterface(scope.type)

@@ -49,9 +49,9 @@ internal class GetterMethodsGenerator {
         builders.add(builder)
     }
 
-    fun generate(classBuilder: TypeSpec.Builder) {
+    fun generate(typeBuilder: TypeSpec.Builder) {
         for (builder in builders) {
-            classBuilder.addMethod(builder.build())
+            typeBuilder.addMethod(builder.build())
         }
     }
 
@@ -60,12 +60,12 @@ internal class GetterMethodsGenerator {
 private fun MethodSpec.Builder.addReturnInstanceStatement(methodName: String, instance: CommonModel.Instance): MethodSpec.Builder {
     return if (instance.classifier == Classifier.NONE) {
         addStatement(
-            "return \$L(\$T.class, \$T.NONE)",
+            "return requireScopeContainer().\$L(\$T.class, \$T.NONE)",
             methodName, instance.type, Classifier::class.java
         )
     } else {
         addStatement(
-            "return \$L(\$T.class, \$S)",
+            "return requireScopeContainer().\$L(\$T.class, \$S)",
             methodName, instance.type, instance.classifier
         )
     }
