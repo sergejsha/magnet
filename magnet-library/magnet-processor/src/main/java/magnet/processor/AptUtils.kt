@@ -47,3 +47,4 @@ inline fun Element.eachAnnotationAttribute(
 
 class UnexpectedCompilationError(val element: Element, override val message: String) : Throwable(message)
 class CompilationError(val element: Element, override val message: String) : Throwable(message)
+class CompilationInterruptionError : Throwable()

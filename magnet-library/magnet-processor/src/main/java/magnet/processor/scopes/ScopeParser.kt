@@ -28,10 +28,19 @@ internal class ScopeParser(
         try {
             element.accept(scopeVisitor, null)
             return scopeVisitor.createScope()
+
         } catch (e: CompilationError) {
-            throw env.compilationError(e.element, e.message)
+            throw env.compilationError(
+                element = e.element, message = e.message, cause = e
+            )
         } catch (e: UnexpectedCompilationError) {
-            throw env.unexpectedCompilationError(e.element, e.message)
+            throw env.unexpectedCompilationError(
+                element = e.element, message = e.message, cause = e
+            )
+        } catch (e: Throwable) {
+            throw env.unexpectedCompilationError(
+                element = element, message = e.message, cause = e
+            )
         }
     }
 
@@ -86,8 +95,8 @@ private class ScopeVisitor : ElementScanner6<Unit, Unit>() {
         return Model.Scope(
             type = requireNotNull(scopeType),
             bindParentScopeMethod = null,
-            bindMethods = bindMethods,
-            getterMethods = getterMethods
+            bindMethods = bindMethods.toList(),
+            getterMethods = getterMethods.toList()
         ).also {
             clear()
         }

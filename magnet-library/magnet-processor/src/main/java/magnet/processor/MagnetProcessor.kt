@@ -66,7 +66,7 @@ class MagnetProcessor : AbstractProcessor() {
             val scopesProcessed = scopeAnnotationParser.process(roundEnv)
             val indexCreated = processFactoryIndexAnnotation(env, roundEnv)
             instanceProcessed || scopesProcessed || indexCreated
-        } catch (e: CompilationException) {
+        } catch (e: Throwable) {
             true
         }
     }

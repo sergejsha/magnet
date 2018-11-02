@@ -9,10 +9,10 @@ import java.util.List;
 @Scope
 interface Scope1 {
 
-    String getName1();
-    @Classifier("name2") String getName2();
+    void bind1(String value);
+    void bind2(@Classifier("bind2") String value);
 
-    @Nullable String getName3();
+    @Classifier("name3") String getName3();
     @Nullable @Classifier("name4") String getName4();
 
     List<String> getName5();

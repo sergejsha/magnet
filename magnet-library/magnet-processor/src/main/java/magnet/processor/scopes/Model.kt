@@ -11,6 +11,10 @@ interface Model {
         val bindMethods: List<BindMethod>,
         val getterMethods: List<GetterMethod>
     ) {
+
+        val name: String get() = type.simpleName()
+        val packageName: String get() = type.packageName()
+
         fun accept(visitor: Visitor) {
             visitor.enterScope(this)
             bindParentScopeMethod?.let {
