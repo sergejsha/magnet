@@ -28,7 +28,7 @@ class RegistryProcessor(
 ) {
 
     private val registryParser by lazy { RegistryParser(env) }
-    private val magnetIndexerGenerator by lazy { RegistryGenerator(env) }
+    private val magnetIndexerGenerator by lazy { RegistryGenerator() }
 
     private var generateRegistryOnNextRound = false
 
@@ -48,7 +48,10 @@ class RegistryProcessor(
         val packageElement = env.elements.getPackageElement(INDEX_PACKAGE)
         val registry = if (packageElement != null) registryParser.parse(packageElement)
         else Model.Registry(instanceFactories = emptyList(), scopeFactories = emptyList())
-        magnetIndexerGenerator.generate(registry)
+
+        magnetIndexerGenerator
+            .generate(registry)
+            .writeInto(env.filer)
 
         return true
     }
