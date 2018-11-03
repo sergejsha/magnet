@@ -14,8 +14,18 @@
  * limitations under the License.
  */
 
-package magnet.processor.registry.model
+package magnet.processor.registry.instances.model
 
-interface InstVisitor {
-    fun visit(inst: Inst)
+data class Index(
+    val instances: List<Inst>,
+    val sections: List<Section>
+) {
+
+    fun accept(visitor: IndexVisitor) {
+        visitor.visit(this)
+        sections.forEach {
+            it.accept(visitor)
+        }
+    }
+
 }

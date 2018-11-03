@@ -24,13 +24,15 @@ import com.squareup.javapoet.ParameterSpec
 import com.squareup.javapoet.TypeSpec
 import magnet.internal.InstanceFactory
 import magnet.processor.MagnetProcessorEnv
-import magnet.processor.registry.model.Index
-import magnet.processor.registry.model.Inst
+import magnet.processor.registry.instances.IndexGeneratorVisitor
+import magnet.processor.registry.instances.Indexer
+import magnet.processor.registry.instances.model.Index
+import magnet.processor.registry.instances.model.Inst
 import javax.lang.model.element.Modifier
 
 private const val INSTANCE_MANAGER = "instanceManager"
 
-class MagnetIndexerGenerator(
+class RegistryGenerator(
     private val env: MagnetProcessorEnv
 ) {
 

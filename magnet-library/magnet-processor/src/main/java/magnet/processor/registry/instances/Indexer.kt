@@ -14,19 +14,27 @@
  * limitations under the License.
  */
 
-package magnet.processor.registry.model
+package magnet.processor.registry.instances
 
-data class Section(
-    val type: String
+import magnet.processor.registry.instances.model.Index
+import magnet.processor.registry.instances.model.Inst
+import magnet.processor.registry.instances.model.InstComparator
+
+class Indexer(
+    private val comparator: Comparator<Inst> = InstComparator()
 ) {
-    val ranges = mutableMapOf<String, Range>()
-    val firstFactory
-        get() = ranges.values.elementAt(0).firstFactory
 
-    fun accept(visitor: IndexVisitor) {
-        visitor.visit(this)
-        ranges.forEach {
-            it.value.accept(visitor)
+    fun index(instances: List<Inst>): Index {
+        val sorted = instances.sortedWith(comparator)
+
+        val indexer = SectionsCreatorVisitor()
+        sorted.forEach {
+            it.accept(indexer)
         }
+
+        return Index(sorted, indexer.sections)
     }
+
 }
+
+

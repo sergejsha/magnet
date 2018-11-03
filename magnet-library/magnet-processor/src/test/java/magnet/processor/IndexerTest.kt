@@ -2,8 +2,8 @@ package magnet.processor
 
 import com.google.common.truth.Truth.assertThat
 import com.squareup.javapoet.ClassName
-import magnet.processor.registry.Indexer
-import magnet.processor.registry.model.Inst
+import magnet.processor.registry.instances.Indexer
+import magnet.processor.registry.instances.model.Inst
 import org.junit.Test
 
 class IndexerTest {

@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-package magnet.processor.registry
+package magnet.processor.registry.instances
 
-import magnet.processor.registry.model.Inst
-import magnet.processor.registry.model.InstVisitor
-import magnet.processor.registry.model.Range
-import magnet.processor.registry.model.Section
+import magnet.processor.registry.instances.model.Inst
+import magnet.processor.registry.instances.model.InstVisitor
+import magnet.processor.registry.instances.model.Range
+import magnet.processor.registry.instances.model.Section
 
 class SectionsCreatorVisitor : InstVisitor {
 
