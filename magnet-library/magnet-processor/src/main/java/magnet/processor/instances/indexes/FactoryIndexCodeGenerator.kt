@@ -14,27 +14,29 @@
  * limitations under the License.
  */
 
-package magnet.processor.instances
+package magnet.processor.instances.indexes
 
 import com.squareup.javapoet.AnnotationSpec
 import com.squareup.javapoet.ClassName
 import com.squareup.javapoet.TypeSpec
-import magnet.internal.FactoryIndex
+import magnet.internal.Index
+import magnet.internal.InstanceFactory
+import magnet.processor.instances.CodeGenerator
+import magnet.processor.instances.CodeWriter
+import magnet.processor.instances.FactoryType
+import magnet.processor.instances.FactoryTypeVisitor
 import javax.lang.model.element.Modifier
 
 class FactoryIndexCodeGenerator : FactoryTypeVisitor, CodeGenerator {
 
-    private var factoryIndexTypeSpec: TypeSpec? = null
-    private var factoryIndexClassName: ClassName? = null
-
-    override fun enterFactoryClass(factoryType: FactoryType) {
-        factoryIndexTypeSpec = null
-    }
+    private lateinit var factoryIndexTypeSpec: TypeSpec
+    private lateinit var factoryIndexClassName: ClassName
 
     override fun exitFactoryClass(factory: FactoryType) {
         val factoryPackage = factory.factoryType.packageName()
         val factoryName = factory.factoryType.simpleName()
-        val factoryIndexName = "${factoryPackage.replace('.', '_')}_${factoryName}"
+        val factoryIndexName = "${factoryPackage.replace('.', '_')}_$factoryName"
+
         factoryIndexClassName = ClassName.get("magnet.index", factoryIndexName)
 
         factoryIndexTypeSpec = TypeSpec
@@ -52,19 +54,20 @@ class FactoryIndexCodeGenerator : FactoryTypeVisitor, CodeGenerator {
 
     private fun generateFactoryIndexAnnotation(
         factoryClassName: ClassName,
-        implType: String,
-        implClassifier: String
+        instanceType: String,
+        classifier: String
     ): AnnotationSpec {
-        return AnnotationSpec.builder(FactoryIndex::class.java)
-            .addMember("factory", "\$T.class", factoryClassName)
-            .addMember("type", "\$S", implType)
-            .addMember("classifier", "\$S", implClassifier)
+        return AnnotationSpec.builder(Index::class.java)
+            .addMember("factoryType", "\$T.class", InstanceFactory::class.java)
+            .addMember("factoryClass", "\$T.class", factoryClassName)
+            .addMember("instanceType", "\$S", instanceType)
+            .addMember("classifier", "\$S", classifier)
             .build()
     }
 
     override fun generateFrom(factoryType: FactoryType): CodeWriter {
         factoryType.accept(this)
-        return CodeWriter(factoryIndexClassName!!.packageName(), factoryIndexTypeSpec!!)
+        return CodeWriter(factoryIndexClassName.packageName(), factoryIndexTypeSpec)
     }
 
 }

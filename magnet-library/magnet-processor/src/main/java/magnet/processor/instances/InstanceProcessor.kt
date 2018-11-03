@@ -2,6 +2,7 @@ package magnet.processor.instances
 
 import magnet.Instance
 import magnet.processor.MagnetProcessorEnv
+import magnet.processor.instances.indexes.FactoryIndexCodeGenerator
 import javax.annotation.processing.RoundEnvironment
 import javax.lang.model.util.ElementFilter
 

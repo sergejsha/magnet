@@ -22,7 +22,6 @@ import com.squareup.javapoet.JavaFile
 import com.squareup.javapoet.MethodSpec
 import com.squareup.javapoet.ParameterSpec
 import com.squareup.javapoet.TypeSpec
-import magnet.internal.FactoryIndex
 import magnet.internal.InstanceFactory
 import magnet.processor.MagnetProcessorEnv
 import magnet.processor.index.model.Index
@@ -81,8 +80,10 @@ class MagnetIndexerGenerator {
     ): MethodSpec {
 
         val factoryRegistryClassName = ClassName.get("magnet.internal", "MagnetInstanceManager")
-        val factoryIndexClassName = ClassName.get(FactoryIndex::class.java)
+        val factoryIndexClassName = ClassName.get(Index::class.java)
 
+        // todo refactor this
+        
         val impls = mutableListOf<Inst>()
         indexElements.forEach {
             parseFactoryIndexAnnotation(it, factoryIndexClassName) { implTypeName, implFactoryName, implTargetName ->
@@ -158,8 +159,8 @@ class MagnetIndexerGenerator {
 
                 it.elementValues.entries.forEach { entry ->
                     when (entry.key.simpleName.toString()) {
-                        "type" -> interfaceKey = entry.key
-                        "factory" -> factoryKey = entry.key
+                        "factoryClass" -> interfaceKey = entry.key
+                        "instanceType" -> factoryKey = entry.key
                         "classifier" -> classifierKey = entry.key
                     }
                 }

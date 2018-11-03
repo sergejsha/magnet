@@ -313,42 +313,6 @@ class MagnetProcessorTest {
     }
 
     @Test
-    fun generateFactoryIndex_Target() {
-
-        val compilation = Compiler.javac()
-            .withProcessors(MagnetProcessor())
-            .compile(
-                withResource("UserPageMenuItem.java"),
-                withResource("MenuItem.java")
-            )
-
-        assertThat(compilation).succeededWithoutWarnings()
-
-        assertThat(compilation)
-            .generatedSourceFile("magnet/index/app_extension_UserPageMenuItemMagnetFactory")
-            .hasSourceEquivalentTo(withResource("generated/app_extension_UserPageMenuItemMagnetFactory.java"))
-    }
-
-    @Test
-    fun generateFactoryIndex_NoTarget() {
-
-        val compilation = Compiler.javac()
-            .withProcessors(MagnetProcessor())
-            .compile(
-                withResource("HomePage.java"),
-                withResource("Page.java"),
-                withResource("HomeRepository.java"),
-                withResource("UserData.java")
-            )
-
-        assertThat(compilation).succeededWithoutWarnings()
-
-        assertThat(compilation)
-            .generatedSourceFile("magnet/index/app_extension_HomePageMagnetFactory")
-            .hasSourceEquivalentTo(withResource("generated/app_extension_HomePageMagnetFactory.java"))
-    }
-
-    @Test
     fun generateFactoryIndex_UnknownType_SingleImpl() {
 
         val compilation = Compiler.javac()
