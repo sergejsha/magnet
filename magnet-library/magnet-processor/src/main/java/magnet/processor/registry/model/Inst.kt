@@ -14,18 +14,16 @@
  * limitations under the License.
  */
 
-package magnet.processor.index.model
+package magnet.processor.registry.model
 
-data class Index(
-    val instances: List<Inst>,
-    val sections: List<Section>
+import com.squareup.javapoet.ClassName
+
+data class Inst(
+    val type: String,
+    val classifier: String,
+    val factory: ClassName
 ) {
-
-    fun accept(visitor: IndexVisitor) {
+    fun accept(visitor: InstVisitor) {
         visitor.visit(this)
-        sections.forEach {
-            it.accept(visitor)
-        }
     }
-
 }

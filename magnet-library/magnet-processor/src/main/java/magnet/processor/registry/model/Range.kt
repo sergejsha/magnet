@@ -14,14 +14,26 @@
  * limitations under the License.
  */
 
-package magnet.processor.index.model
+package magnet.processor.registry.model
 
-data class Inst(
+data class Range(
     val type: String,
     val classifier: String,
-    val factory: String
+    private val inst: Inst,
+    val from: Int
 ) {
-    fun accept(visitor: InstVisitor) {
+    val impls = mutableListOf<Inst>()
+    val firstFactory
+        get() = impls[0].factory
+
+    init {
+        impls.add(inst)
+    }
+
+    fun accept(visitor: IndexVisitor) {
         visitor.visit(this)
+        impls.forEach {
+            it.accept(visitor)
+        }
     }
 }

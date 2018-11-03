@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package magnet.processor.index
+package magnet.processor.registry
 
 import com.squareup.javapoet.ClassName
 import com.squareup.javapoet.CodeBlock
@@ -24,71 +24,50 @@ import com.squareup.javapoet.ParameterSpec
 import com.squareup.javapoet.TypeSpec
 import magnet.internal.InstanceFactory
 import magnet.processor.MagnetProcessorEnv
-import magnet.processor.index.model.Index
-import magnet.processor.index.model.Inst
-import javax.lang.model.element.Element
-import javax.lang.model.element.ExecutableElement
+import magnet.processor.registry.model.Index
+import magnet.processor.registry.model.Inst
 import javax.lang.model.element.Modifier
 
 private const val INSTANCE_MANAGER = "instanceManager"
-private const val MAGNET_INDEXER_CLASS = "magnet.internal.MagnetIndexer"
 
-class MagnetIndexerGenerator {
+class MagnetIndexerGenerator(
+    private val env: MagnetProcessorEnv
+) {
 
-    private var shouldGenerateRegistry = false
-
-    fun generate(
-        annotatedElements: MutableSet<out Element>,
-        env: MagnetProcessorEnv
-    ): Boolean {
-        val alreadyGeneratedMagnetRegistry = env.elements.getTypeElement(MAGNET_INDEXER_CLASS)
-        if (alreadyGeneratedMagnetRegistry != null) {
-            return false
-        }
-
-        if (!shouldGenerateRegistry) {
-            shouldGenerateRegistry = annotatedElements.isNotEmpty()
-            return false // wait for next round even if we should generate
-        }
-
-        val registryClassName = ClassName.bestGuess(MAGNET_INDEXER_CLASS)
-        val indexElements = env.elements.getPackageElement("magnet.index")?.enclosedElements ?: listOf()
-        val magnetRegistryTypeSpec = generateMagnetRegistry(indexElements, registryClassName)
+    fun generate(registry: Model.Registry) {
+        val registryClassName = ClassName.bestGuess(REGISTRY_CLASS_NAME)
+        val magnetRegistryTypeSpec = generateMagnetRegistry(registry, registryClassName)
 
         val packageName = registryClassName.packageName()
         JavaFile.builder(packageName, magnetRegistryTypeSpec)
             .skipJavaLangImports(true)
             .build()
             .writeTo(env.filer)
-
-        return true
     }
 
     private fun generateMagnetRegistry(
-        indexElements: MutableList<out Element>,
+        registry: Model.Registry,
         registryClassName: ClassName
     ): TypeSpec {
         return TypeSpec
             .classBuilder(registryClassName)
             .addModifiers(Modifier.PUBLIC, Modifier.FINAL)
-            .addMethod(generateRegisterFactoriesMethod(indexElements))
+            .addMethod(generateRegisterFactoriesMethod(registry))
             .build()
     }
 
     private fun generateRegisterFactoriesMethod(
-        indexElements: MutableList<out Element>
+        registry: Model.Registry
     ): MethodSpec {
 
         val factoryRegistryClassName = ClassName.get("magnet.internal", "MagnetInstanceManager")
-        val factoryIndexClassName = ClassName.get(Index::class.java)
 
-        // todo refactor this
-        
-        val impls = mutableListOf<Inst>()
-        indexElements.forEach {
-            parseFactoryIndexAnnotation(it, factoryIndexClassName) { implTypeName, implFactoryName, implTargetName ->
-                impls.add(Inst(implTypeName, implTargetName, implFactoryName))
-            }
+        val impls = registry.instanceFactories.map {
+            Inst(
+                type = it.instanceType.toQualifiedName(),
+                classifier = it.classifier,
+                factory = it.factoryClass
+            )
         }
 
         val index = Indexer().index(impls)
@@ -135,7 +114,7 @@ class MagnetIndexerGenerator {
                 .indent()
 
             index.instances.forEach {
-                builder.add("\nnew \$T(),", ClassName.bestGuess(it.factory))
+                builder.add("\nnew \$T(),", it.factory)
             }
 
             return builder
@@ -145,35 +124,7 @@ class MagnetIndexerGenerator {
         }
     }
 
-    private fun <T> parseFactoryIndexAnnotation(
-        element: Element,
-        annotationClassName: ClassName,
-        body: (implTypeName: String, implFactoryName: String, implTargetName: String) -> T) {
-
-        element.annotationMirrors.forEach {
-            val itClassName = ClassName.get(it.annotationType)
-            if (itClassName == annotationClassName) {
-                var interfaceKey: ExecutableElement? = null
-                var factoryKey: ExecutableElement? = null
-                var classifierKey: ExecutableElement? = null
-
-                it.elementValues.entries.forEach { entry ->
-                    when (entry.key.simpleName.toString()) {
-                        "factoryClass" -> interfaceKey = entry.key
-                        "instanceType" -> factoryKey = entry.key
-                        "classifier" -> classifierKey = entry.key
-                    }
-                }
-
-                if (interfaceKey != null && factoryKey != null) {
-                    body(
-                        it.elementValues[interfaceKey]!!.value.toString(),
-                        it.elementValues[factoryKey]!!.value.toString(),
-                        it.elementValues[classifierKey]!!.value.toString()
-                    )
-                }
-            }
-        }
-    }
-
 }
+
+private fun ClassName.toQualifiedName(): String =
+    "${this.packageName()}.${this.simpleName()}"

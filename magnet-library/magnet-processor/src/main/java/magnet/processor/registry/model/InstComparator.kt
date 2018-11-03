@@ -14,10 +14,18 @@
  * limitations under the License.
  */
 
-package magnet.processor.index.model
+package magnet.processor.registry.model
 
-interface IndexVisitor : InstVisitor {
-    fun visit(index: Index)
-    fun visit(section: Section)
-    fun visit(range: Range)
+class InstComparator : Comparator<Inst> {
+    override fun compare(left: Inst, right: Inst): Int {
+        val c1 = left.type.compareTo(right.type)
+        if (c1 != 0) {
+            return c1
+        }
+        val c2 = left.classifier.compareTo(right.classifier)
+        if (c2 != 0) {
+            return c2
+        }
+        return left.factory.compareTo(right.factory)
+    }
 }
