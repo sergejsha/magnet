@@ -19,6 +19,8 @@ package magnet.processor
 import magnet.Instance
 import magnet.Magnetizer
 import magnet.Scope
+import magnet.processor.common.CompilationException
+import magnet.processor.common.ValidationException
 import magnet.processor.instances.InstanceProcessor
 import magnet.processor.registry.RegistryProcessor
 import magnet.processor.scopes.ScopeProcessor
@@ -28,7 +30,6 @@ import javax.annotation.processing.ProcessingEnvironment
 import javax.annotation.processing.RoundEnvironment
 import javax.annotation.processing.SupportedSourceVersion
 import javax.lang.model.SourceVersion
-import javax.lang.model.element.Element
 import javax.lang.model.element.TypeElement
 import javax.lang.model.util.Elements
 import javax.lang.model.util.Types
@@ -59,8 +60,15 @@ class MagnetProcessor : AbstractProcessor() {
             val scopesProcessed = scopeProcessor.process(roundEnv)
             val registryProcessed = registryProcessor.process(roundEnv)
             instancesProcessed || scopesProcessed || registryProcessed
+        } catch (e: ValidationException) {
+            env.report(e)
+            false
+        } catch (e: CompilationException) {
+            env.report(e)
+            false
         } catch (e: Throwable) {
-            true
+            env.report(e)
+            false
         }
     }
 
@@ -82,18 +90,23 @@ class MagnetProcessorEnv(
     val elements: Elements get() = processEnvironment.elementUtils
     val types: Types get() = processEnvironment.typeUtils
 
-    fun compilationError(element: Element, message: String, cause: Throwable? = null): Throwable {
-        processEnvironment.messager.printMessage(Diagnostic.Kind.ERROR, message, element)
-        return cause ?: CompilationError(element, message)
+    fun report(e: ValidationException) {
+        processEnvironment.messager.printMessage(Diagnostic.Kind.ERROR, e.message, e.element)
     }
 
-    fun unexpectedCompilationError(element: Element, message: String? = null, cause: Throwable? = null): Throwable {
+    fun report(e: CompilationException) {
         processEnvironment.messager.printMessage(
             Diagnostic.Kind.ERROR,
-            "Unexpected compilation error, please report the bug. Message: ${message ?: "none."}",
-            element
+            "Unexpected compilation error, please file the bug. Message: ${e.message ?: "none."}",
+            e.element
         )
-        return cause ?: CompilationInterruptionError()
+    }
+
+    fun report(e: Throwable) {
+        processEnvironment.messager.printMessage(
+            Diagnostic.Kind.ERROR,
+            "Unexpected compilation error, please file the bug. Message: ${e.message ?: "none."}"
+        )
     }
 
 }

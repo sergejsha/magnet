@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package magnet.processor
+package magnet.processor.common
 
 import javax.lang.model.element.AnnotationMirror
 import javax.lang.model.element.AnnotationValue
@@ -45,6 +45,5 @@ inline fun Element.eachAnnotationAttribute(
     }
 }
 
-class UnexpectedCompilationError(val element: Element, override val message: String) : Throwable(message)
-class CompilationError(val element: Element, override val message: String) : Throwable(message)
-class CompilationInterruptionError : Throwable()
+class ValidationException(val element: Element, message: String) : Throwable(message)
+class CompilationException(val element: Element, message: String) : Throwable(message)

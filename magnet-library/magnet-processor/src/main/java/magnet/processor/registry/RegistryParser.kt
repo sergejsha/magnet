@@ -5,7 +5,7 @@ import magnet.internal.Index
 import magnet.internal.InstanceFactory
 import magnet.internal.ScopeFactory
 import magnet.processor.MagnetProcessorEnv
-import magnet.processor.isOfAnnotationType
+import magnet.processor.common.isOfAnnotationType
 import javax.lang.model.AnnotatedConstruct
 import javax.lang.model.element.AnnotationValue
 import javax.lang.model.element.PackageElement

@@ -7,12 +7,14 @@ import com.squareup.javapoet.TypeName
 import com.squareup.javapoet.WildcardTypeName
 import magnet.Classifier
 import magnet.Instance
-import magnet.internal.ScopeContainer
 import magnet.Scoping
 import magnet.SelectorFilter
+import magnet.internal.ScopeContainer
 import magnet.processor.MagnetProcessorEnv
+import magnet.processor.common.CompilationException
+import magnet.processor.common.ValidationException
+import magnet.processor.common.isOfAnnotationType
 import magnet.processor.instances.selector.SelectorAttributeParser
-import magnet.processor.isOfAnnotationType
 import javax.lang.model.element.AnnotationValue
 import javax.lang.model.element.Element
 import javax.lang.model.element.TypeElement
@@ -39,7 +41,7 @@ internal abstract class AnnotationParser<in E : Element>(
     private val verifyInheritance: Boolean
 ) {
 
-    protected val selectorAttributeParser = SelectorAttributeParser(env)
+    protected val selectorAttributeParser = SelectorAttributeParser()
 
     private val typesAttrExtractor = TypesAttrExtractor(env.elements)
 
@@ -50,10 +52,12 @@ internal abstract class AnnotationParser<in E : Element>(
 
         val variableType = variable.asType()
         if (variableType.kind == TypeKind.TYPEVAR) {
-            throw env.compilationError(element,
-                "Constructor parameter '${variable.simpleName}' is specified using a generic" +
+            throw ValidationException(
+                element = element,
+                message = "Constructor parameter '${variable.simpleName}' is specified using a generic" +
                     " type which is not supported by Magnet. Use a non-parameterized class or interface" +
-                    " type instead. To inject current scope instance, use 'Scope' parameter type.")
+                    " type instead. To inject current scope instance, use 'Scope' parameter type."
+            )
         }
 
         val paramSpec = ParameterSpec.get(variable)
@@ -190,16 +194,20 @@ internal abstract class AnnotationParser<in E : Element>(
     private fun resolveWildcardParameterType(paramTypeName: TypeName, element: Element): TypeName {
         if (paramTypeName is WildcardTypeName) {
             if (paramTypeName.lowerBounds.size > 0) {
-                throw env.compilationError(element,
-                    "Magnet supports single upper bounds class parameter only," +
-                        " while lower bounds class parameter was found.")
+                throw ValidationException(
+                    element = element,
+                    message = "Magnet supports single upper bounds class parameter only," +
+                        " while lower bounds class parameter was found."
+                )
             }
 
             val upperBounds = paramTypeName.upperBounds
             if (upperBounds.size > 1) {
-                throw env.compilationError(element,
-                    "Magnet supports single upper bounds class parameter only," +
-                        " for example List<${upperBounds[0]}>")
+                throw ValidationException(
+                    element = element,
+                    message = "Magnet supports single upper bounds class parameter only," +
+                        " for example List<${upperBounds[0]}>"
+                )
             }
 
             return upperBounds[0]
@@ -217,13 +225,17 @@ internal abstract class AnnotationParser<in E : Element>(
         val areTypesDeclared = interfaceTypeElements?.isNotEmpty() ?: false
 
         if (!isTypeDeclared && !areTypesDeclared) {
-            throw env.compilationError(element,
-                "${Instance::class.java} must declare either 'type' or 'types' property.")
+            throw ValidationException(
+                element = element,
+                message = "${Instance::class.java} must declare either 'type' or 'types' property."
+            )
         }
 
         if (isTypeDeclared && areTypesDeclared) {
-            throw env.compilationError(element,
-                "${Instance::class.java} must declare either 'type' or 'types' property, not both.")
+            throw ValidationException(
+                element = element,
+                message = "${Instance::class.java} must declare either 'type' or 'types' property, not both."
+            )
         }
 
         if (interfaceTypeElement != null) {
@@ -232,14 +244,16 @@ internal abstract class AnnotationParser<in E : Element>(
 
         if (interfaceTypeElements != null) {
             if (scoping == Scoping.UNSCOPED.name) {
-                throw env.compilationError(element,
-                    "types() property must be used with scoped instances only. Set " +
-                        "scoping to Scoping.DIRECT or Scoping.TOPMOST.")
+                throw ValidationException(
+                    element = element,
+                    message = "types() property must be used with scoped instances only. Set " +
+                        "scoping to Scoping.DIRECT or Scoping.TOPMOST."
+                )
             }
             return interfaceTypeElements
         }
 
-        throw env.unexpectedCompilationError(element, "Cannot verify type declaration.")
+        throw CompilationException(element = element, message = "Cannot verify type declaration.")
     }
 
     private fun TypeElement.verifyInheritance(element: Element) {
@@ -248,8 +262,9 @@ internal abstract class AnnotationParser<in E : Element>(
             env.types.getDeclaredType(this) // erase generic type
         )
         if (!isTypeImplemented) {
-            throw env.compilationError(element,
-                "$element must implement $this")
+            throw ValidationException(
+                element = element, message = "$element must implement $this"
+            )
         }
     }
 

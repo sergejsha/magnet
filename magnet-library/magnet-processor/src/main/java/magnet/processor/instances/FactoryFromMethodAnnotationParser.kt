@@ -3,6 +3,7 @@ package magnet.processor.instances
 import com.squareup.javapoet.ClassName
 import magnet.Instance
 import magnet.processor.MagnetProcessorEnv
+import magnet.processor.common.ValidationException
 import javax.lang.model.element.ExecutableElement
 import javax.lang.model.element.Modifier
 import javax.lang.model.element.TypeElement
@@ -15,13 +16,17 @@ internal class FactoryFromMethodAnnotationParser(
     override fun parse(element: ExecutableElement): List<FactoryType> {
 
         if (!element.modifiers.contains(Modifier.STATIC)) {
-            throw env.compilationError(element, "Method annotated"
-                + " by ${Instance::class.java} must be 'static'")
+            throw ValidationException(
+                element = element,
+                message = "Method annotated by ${Instance::class.java} must be 'static'"
+            )
         }
 
         if (element.modifiers.contains(Modifier.PRIVATE)) {
-            throw env.compilationError(element, "Method annotated"
-                + " by ${Instance::class.java} must not be 'private'")
+            throw ValidationException(
+                element = element,
+                message = "Method annotated by ${Instance::class.java} must not be 'private'"
+            )
         }
 
         val annotation = parseAnnotation(element)
@@ -29,9 +34,12 @@ internal class FactoryFromMethodAnnotationParser(
 
         for (type in annotation.types) {
             if (type.toString() != staticMethodReturnType.toString()) {
-                throw env.compilationError(element, "Method must return instance"
-                    + " of ${type.reflectionName()} as declared"
-                    + " by ${Instance::class.java}")
+                throw ValidationException(
+                    element = element,
+                    message = "Method must return instance"
+                        + " of ${type.reflectionName()} as declared"
+                        + " by ${Instance::class.java}"
+                )
             }
         }
 

@@ -19,6 +19,7 @@ package magnet.processor.instances
 import com.squareup.javapoet.ClassName
 import magnet.Instance
 import magnet.processor.MagnetProcessorEnv
+import magnet.processor.common.ValidationException
 import javax.lang.model.element.TypeElement
 import javax.lang.model.util.ElementFilter
 
@@ -72,8 +73,10 @@ internal class FactoryFromClassAnnotationParser(
 
         val constructors = ElementFilter.constructorsIn(element.enclosedElements)
         if (constructors.size != 1) {
-            throw env.compilationError(element, "Classes annotated with ${Instance::class.java}"
-                + " must have exactly one constructor.")
+            throw ValidationException(
+                element = element,
+                message = "Classes annotated with ${Instance::class.java} must have exactly one constructor."
+            )
         }
 
         val methodParameters = mutableListOf<MethodParameter>()

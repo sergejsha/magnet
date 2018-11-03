@@ -1,13 +1,11 @@
 package magnet.processor.instances.selector
 
-import magnet.processor.MagnetProcessorEnv
+import magnet.processor.common.ValidationException
 import magnet.processor.instances.AspectParser
 import javax.lang.model.element.AnnotationValue
 import javax.lang.model.element.Element
 
-class SelectorAttributeParser(
-    private val env: MagnetProcessorEnv
-) : AspectParser<String> {
+class SelectorAttributeParser : AspectParser<String> {
 
     fun convert(selector: String, element: Element): List<String>? {
         if (selector.isEmpty()) return null
@@ -27,10 +25,13 @@ class SelectorAttributeParser(
         }
 
         if (isSelectorInvalid) {
-            throw env.compilationError(element, "Invalid selector. Expected format:" +
-                " '[selector id].[selector field] [comparison operator] [value]'." +
-                " Supported comparison operators: $OPERATORS." +
-                " Example selectors: 'android.api >= 28', 'android.api in 0..24'")
+            throw ValidationException(
+                element = element,
+                message = "Invalid selector. Expected format:" +
+                    " '[selector id].[selector field] [comparison operator] [value]'." +
+                    " Supported comparison operators: $OPERATORS." +
+                    " Example selectors: 'android.api >= 28', 'android.api in 0..24'"
+            )
         }
 
         return parsedSelector

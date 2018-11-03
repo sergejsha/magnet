@@ -22,11 +22,11 @@ import com.squareup.javapoet.TypeName
 import com.squareup.javapoet.WildcardTypeName
 import magnet.Classifier
 import magnet.Scope
-import magnet.processor.CompilationError
 import magnet.processor.MagnetProcessorEnv
-import magnet.processor.UnexpectedCompilationError
 import magnet.processor.common.CommonModel
-import magnet.processor.eachAnnotationAttributeOf
+import magnet.processor.common.CompilationException
+import magnet.processor.common.ValidationException
+import magnet.processor.common.eachAnnotationAttributeOf
 import javax.lang.model.element.Element
 import javax.lang.model.element.ExecutableElement
 import javax.lang.model.element.TypeElement
@@ -36,29 +36,14 @@ import javax.lang.model.type.TypeMirror
 import javax.lang.model.util.ElementScanner6
 
 internal class ScopeParser(
-    private val env: MagnetProcessorEnv
+    env: MagnetProcessorEnv
 ) {
 
     private val scopeVisitor = ScopeVisitor(env)
 
     fun parse(element: TypeElement): Model.Scope {
-        try {
-            element.accept(scopeVisitor, null)
-            return scopeVisitor.createScope()
-
-        } catch (e: CompilationError) {
-            throw env.compilationError(
-                element = e.element, message = e.message, cause = e
-            )
-        } catch (e: UnexpectedCompilationError) {
-            throw env.unexpectedCompilationError(
-                element = e.element, message = e.message, cause = e
-            )
-        } catch (e: Throwable) {
-            throw env.unexpectedCompilationError(
-                element = element, message = e.message, cause = e
-            )
-        }
+        element.accept(scopeVisitor, null)
+        return scopeVisitor.createScope()
     }
 
 }
@@ -78,9 +63,9 @@ private class ScopeVisitor(
         clear()
         scopeType = when (val type = TypeName.get(e.asType())) {
             is ClassName -> type
-            else -> throw CompilationError(
+            else -> throw ValidationException(
                 element = e,
-                message = "Scope declaration must be a not parametrized interface."
+                message = "Scope declaration interface must not be parametrized."
             )
         }
         super.visitType(e, p)
@@ -153,7 +138,7 @@ private class MethodBuilder(
 
     fun toGetterMethod(): Model.GetterMethod {
         if (params.isNotEmpty()) {
-            throw CompilationError(
+            throw ValidationException(
                 element = element,
                 message = "Getter method must have no parameters."
             )
@@ -168,7 +153,7 @@ private class MethodBuilder(
         return Model.BindMethod(
             name = name,
             instance = params.getOrNull(0)
-                ?: throw CompilationError(
+                ?: throw ValidationException(
                     element = element,
                     message = "Binder method must have exactly one parameter."
                 )
@@ -182,7 +167,7 @@ private fun Element.toInstance(typeMirror: TypeMirror, hasScopeAnnotation: Boole
     val name = simpleName.toString()
     return when (typeName) {
 
-        TypeName.VOID -> throw UnexpectedCompilationError(
+        TypeName.VOID -> throw CompilationException(
             element = this,
             message = "Returning type must not be void."
         )
@@ -190,7 +175,7 @@ private fun Element.toInstance(typeMirror: TypeMirror, hasScopeAnnotation: Boole
         is ParameterizedTypeName -> {
             if (typeName.rawType.reflectionName() == List::class.java.name) {
                 val parameterType = typeName.typeArguments.getOrNull(0)
-                    ?: throw UnexpectedCompilationError(
+                    ?: throw CompilationException(
                         element = this,
                         message = "Cannot read class parameter of $typeName"
                     )
@@ -252,12 +237,12 @@ private fun Element.getSingleOrOptionalCardinality(): CommonModel.Cardinality {
 
 private fun WildcardTypeName.eraseParameterTypes(element: Element): TypeName {
     if (lowerBounds.size > 0) {
-        throw CompilationError(element,
+        throw ValidationException(element,
             "Magnet supports single upper bounds class parameter only," +
                 " while lower bounds class parameter was found.")
     }
     if (upperBounds.size > 1) {
-        throw CompilationError(element,
+        throw ValidationException(element,
             "Magnet supports single upper bounds class parameter only," +
                 " for example List<${upperBounds[0]}>")
     }
