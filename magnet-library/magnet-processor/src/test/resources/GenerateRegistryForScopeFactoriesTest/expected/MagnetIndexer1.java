@@ -2,16 +2,14 @@ package magnet.internal;
 
 import java.util.HashMap;
 import java.util.Map;
-import test.Implementation1MagnetFactory;
+import test.Scope1MagnetFactory;
 
 public final class MagnetIndexer {
     public static void register(MagnetInstanceManager instanceManager) {
-        InstanceFactory[] factories = new InstanceFactory[] {
-            new Implementation1MagnetFactory(),
-        };
+        InstanceFactory[] factories = new InstanceFactory[0];
         Map<Class, Object> index = new HashMap<>(16);
-        index.put(Implementation1MagnetFactory.getType(), new Range(0, 1, ""));
-        Map<Class, ScopeFactory> scopeFactories = null;
+        Map<Class, ScopeFactory> scopeFactories = new HashMap(2);
+        scopeFactories.put(Scope1MagnetFactory.getType(), new Scope1MagnetFactory());
         instanceManager.register(factories, index, scopeFactories);
     }
 }

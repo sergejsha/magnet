@@ -6,7 +6,7 @@ import com.google.testing.compile.JavaFileObjects
 import org.junit.Test
 import javax.tools.JavaFileObject
 
-class RegistryInstanceProcessorTest {
+class GenerateRegistryForInstanceFactoriesTest {
 
     private fun withResource(name: String): JavaFileObject =
         JavaFileObjects.forResource(javaClass.simpleName + '/' + name)

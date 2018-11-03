@@ -8,6 +8,7 @@ internal class ScopeFactoryGenerator : Generator(
 
     init {
         registerAspect(CreateMethodGenerator())
+        registerAspect(GetTypeMethodGenerator())
     }
 
 }
