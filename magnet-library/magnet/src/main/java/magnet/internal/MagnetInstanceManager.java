@@ -17,6 +17,7 @@
 package magnet.internal;
 
 import magnet.Magnetizer;
+import magnet.Scope;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -25,11 +26,11 @@ import java.util.List;
 import java.util.Map;
 
 /* Subject to change. For internal use only. */
-@SuppressWarnings("unchecked")
 final class MagnetInstanceManager implements InstanceManager {
 
     private InstanceFactory[] factories;
     private Map<Class, Object> index;
+    private Map<Class, ScopeFactory> scopeFactories;
 
     MagnetInstanceManager() {
         registerInstanceFactories();
@@ -51,13 +52,15 @@ final class MagnetInstanceManager implements InstanceManager {
     }
 
     // called by generated index class
-    void register(InstanceFactory[] factories, Map<Class, Object> index) {
+    void register(InstanceFactory[] factories, Map<Class, Object> index, Map<Class, ScopeFactory> scopeFactories) {
         this.factories = factories;
         this.index = index;
+        this.scopeFactories = scopeFactories;
     }
 
     @Override
-    public <T> InstanceFactory<T> getOptionalFactory(
+    @SuppressWarnings("unchecked")
+    public <T> InstanceFactory<T> getOptionalInstanceFactory(
         Class<T> type, String classifier, FactoryFilter factoryFilter
     ) {
         Range range = getOptionalRange(type, classifier);
@@ -91,7 +94,8 @@ final class MagnetInstanceManager implements InstanceManager {
     }
 
     @Override
-    public <T> List<InstanceFactory<T>> getManyFactories(
+    @SuppressWarnings("unchecked")
+    public <T> List<InstanceFactory<T>> getManyInstanceFactories(
         Class<T> type, String classifier, FactoryFilter factoryFilter
     ) {
         Object indexed = index.get(type);
@@ -116,6 +120,23 @@ final class MagnetInstanceManager implements InstanceManager {
         return Collections.emptyList();
     }
 
+    @Override
+    @SuppressWarnings("unchecked")
+    public <T> ScopeFactory<T> getScopeFactory(Class<T> scopeType) {
+        ScopeFactory<T> scopeFactory = scopeFactories.get(scopeType);
+        if (scopeFactory == null) {
+            throw new IllegalStateException(
+                String.format(
+                    "ScopeFactory of type %s cannot be found." +
+                        " Make sure to define interface annotated with %s annotation",
+                    scopeType, Scope.class
+                )
+            );
+        }
+        return scopeFactory;
+    }
+
+    @SuppressWarnings("unchecked")
     private Range getOptionalRange(Class<?> type, String classifier) {
         Object indexed = index.get(type);
 
@@ -141,6 +162,7 @@ final class MagnetInstanceManager implements InstanceManager {
                 "Unsupported index type: %s", indexed.getClass()));
     }
 
+    @SuppressWarnings("unchecked")
     private <T> List<InstanceFactory<T>> factoriesFromRange(Range range, FactoryFilter factoryFilter) {
         List<InstanceFactory<T>> filteredFactories = null;
         for (int index = range.getFrom(), afterLast = range.getFrom() + range.getCount(); index < afterLast; index++) {

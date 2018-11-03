@@ -1,8 +1,9 @@
 package magnet.processor
 
 import com.google.common.truth.Truth.assertThat
-import magnet.processor.index.Indexer
-import magnet.processor.index.model.Inst
+import com.squareup.javapoet.ClassName
+import magnet.processor.registry.instances.Indexer
+import magnet.processor.registry.instances.Model.Inst
 import org.junit.Test
 
 class IndexerTest {
@@ -32,40 +33,42 @@ class IndexerTest {
     }
 
     private fun unsortedNodes(): List<Inst> {
+        val factory = ClassName.bestGuess("Factory")
         return listOf(
-            Inst("CType", "four", "Factory"),
-            Inst("CType", "two", "Factory"),
-            Inst("CType", "one", "Factory"),
-            Inst("CType", "three", "Factory"),
-            Inst("CType", "four", "Factory"),
+            Inst("CType", "four", factory),
+            Inst("CType", "two", factory),
+            Inst("CType", "one", factory),
+            Inst("CType", "three", factory),
+            Inst("CType", "four", factory),
 
-            Inst("BType", "", "Factory"),
-            Inst("BType", "", "Factory"),
-            Inst("BType", "", "Factory"),
+            Inst("BType", "", factory),
+            Inst("BType", "", factory),
+            Inst("BType", "", factory),
 
-            Inst("AType", "", "Factory"),
-            Inst("AType", "one", "Factory"),
-            Inst("AType", "", "Factory"),
-            Inst("AType", "two", "Factory"),
-            Inst("AType", "one", "Factory")
+            Inst("AType", "", factory),
+            Inst("AType", "one", factory),
+            Inst("AType", "", factory),
+            Inst("AType", "two", factory),
+            Inst("AType", "one", factory)
         )
     }
 
     private fun sortedNodes(): List<Inst> {
+        val factory = ClassName.bestGuess("Factory")
         return listOf(
-            Inst("AType", "", "Factory"),
-            Inst("AType", "", "Factory"),
-            Inst("AType", "one", "Factory"),
-            Inst("AType", "one", "Factory"),
-            Inst("AType", "two", "Factory"),
-            Inst("BType", "", "Factory"),
-            Inst("BType", "", "Factory"),
-            Inst("BType", "", "Factory"),
-            Inst("CType", "four", "Factory"),
-            Inst("CType", "four", "Factory"),
-            Inst("CType", "one", "Factory"),
-            Inst("CType", "three", "Factory"),
-            Inst("CType", "two", "Factory")
+            Inst("AType", "", factory),
+            Inst("AType", "", factory),
+            Inst("AType", "one", factory),
+            Inst("AType", "one", factory),
+            Inst("AType", "two", factory),
+            Inst("BType", "", factory),
+            Inst("BType", "", factory),
+            Inst("BType", "", factory),
+            Inst("CType", "four", factory),
+            Inst("CType", "four", factory),
+            Inst("CType", "one", factory),
+            Inst("CType", "three", factory),
+            Inst("CType", "two", factory)
         )
     }
 

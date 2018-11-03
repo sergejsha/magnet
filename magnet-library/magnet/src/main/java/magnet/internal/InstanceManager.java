@@ -21,7 +21,12 @@ import java.util.List;
 /* Subject to change. For internal use only. */
 interface InstanceManager {
 
-    <T> InstanceFactory<T> getOptionalFactory(Class<T> type, String classifier, FactoryFilter factoryFilter);
-    <T> List<InstanceFactory<T>> getManyFactories(Class<T> type, String classifier, FactoryFilter factoryFilter);
+    <T> InstanceFactory<T> getOptionalInstanceFactory(
+        Class<T> type, String classifier, FactoryFilter factoryFilter);
+
+    <T> List<InstanceFactory<T>> getManyInstanceFactories(
+        Class<T> type, String classifier, FactoryFilter factoryFilter);
+
+    <T> ScopeFactory<T> getScopeFactory(Class<T> scopeType);
 
 }

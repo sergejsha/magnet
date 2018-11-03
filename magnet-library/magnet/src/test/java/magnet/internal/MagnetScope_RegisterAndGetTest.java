@@ -24,19 +24,17 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import magnet.Scope;
-
 @RunWith(MockitoJUnitRunner.StrictStubs.class)
 public class MagnetScope_RegisterAndGetTest {
 
     @Mock
     InstanceManager instanceManager;
 
-    private Scope scope;
+    private ScopeContainer scope;
 
     @Before
     public void before() {
-        scope = new MagnetScope(null, instanceManager);
+        scope = new MagnetScopeContainer(null, instanceManager);
     }
 
     @Test

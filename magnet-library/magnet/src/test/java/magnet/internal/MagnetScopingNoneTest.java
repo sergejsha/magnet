@@ -16,7 +16,6 @@
 
 package magnet.internal;
 
-import magnet.Scope;
 import magnet.Scoping;
 import org.junit.Before;
 import org.junit.Test;
@@ -32,22 +31,22 @@ import static com.google.common.truth.Truth.assertThat;
 @RunWith(JUnit4.class)
 public class MagnetScopingNoneTest {
 
-    private InstrumentedScope scope1;
-    private InstrumentedScope scope2;
-    private InstrumentedScope scope3;
+    private InstrumentedInstanceScope scope1;
+    private InstrumentedInstanceScope scope2;
+    private InstrumentedInstanceScope scope3;
 
     @Before
     public void before() {
         InstanceManager instanceManager = new StubInstanceManager();
-        scope1 = (InstrumentedScope) new InstrumentedScope(
-            new MagnetScope(null, instanceManager))
+        scope1 = (InstrumentedInstanceScope) new InstrumentedInstanceScope(
+            new MagnetScopeContainer(null, instanceManager))
             .bind(Dependency1.class, new Dependency1());
 
-        scope2 = (InstrumentedScope) scope1
+        scope2 = (InstrumentedInstanceScope) scope1
             .createSubscope()
             .bind(Dependency2.class, new Dependency2());
 
-        scope3 = (InstrumentedScope) scope2
+        scope3 = (InstrumentedInstanceScope) scope2
             .createSubscope()
             .bind(Dependency3.class, new Dependency3());
     }
@@ -155,7 +154,7 @@ public class MagnetScopingNoneTest {
     }
 
     private static class MenuItemOneFactory extends InstanceFactory<MenuItem> {
-        @Override public MenuItem create(Scope scope) {
+        @Override public MenuItem create(ScopeContainer scope) {
             scope.getSingle(Dependency1.class);
             return new MenuItemOne();
         }
@@ -163,7 +162,7 @@ public class MagnetScopingNoneTest {
     }
 
     private static class MenuItemTwoFactory extends InstanceFactory<MenuItem> {
-        @Override public MenuItem create(Scope scope) {
+        @Override public MenuItem create(ScopeContainer scope) {
             scope.getSingle(Dependency1.class);
             scope.getSingle(Dependency2.class);
             scope.getSingle(MenuItem.class, "one");
@@ -173,7 +172,7 @@ public class MagnetScopingNoneTest {
     }
 
     private static class MenuItemThreeFactory extends InstanceFactory<MenuItem> {
-        @Override public MenuItem create(Scope scope) {
+        @Override public MenuItem create(ScopeContainer scope) {
             scope.getSingle(Dependency1.class);
             scope.getSingle(Dependency3.class);
             scope.getSingle(MenuItem.class, "one");
@@ -193,15 +192,18 @@ public class MagnetScopingNoneTest {
             factories.put("three", new MenuItemThreeFactory());
         }
 
-        @Override public <T> InstanceFactory<T> getOptionalFactory(
+        @Override public <T> InstanceFactory<T> getOptionalInstanceFactory(
             Class<T> type, String classifier, FactoryFilter factoryFilter
         ) {
             //noinspection unchecked
             return (InstanceFactory<T>) factories.get(classifier);
         }
-        @Override public <T> List<InstanceFactory<T>> getManyFactories(
+        @Override public <T> List<InstanceFactory<T>> getManyInstanceFactories(
             Class<T> type, String classifier, FactoryFilter factoryFilter
         ) {
+            throw new UnsupportedOperationException();
+        }
+        @Override public <T> ScopeFactory<T> getScopeFactory(Class<T> scopeType) {
             throw new UnsupportedOperationException();
         }
     }

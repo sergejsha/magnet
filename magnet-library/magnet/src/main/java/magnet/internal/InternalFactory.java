@@ -16,17 +16,15 @@
 
 package magnet.internal;
 
-import magnet.Scope;
-
 /* Subject to change. For internal use only. */
 public final class InternalFactory {
 
-    private static final InstanceManager INSTANCE_MANAGER = new MagnetInstanceManager();
+    static final InstanceManager INSTANCE_MANAGER = new MagnetInstanceManager();
 
     private InternalFactory() {}
 
-    public static Scope createRootScope() {
-        return new MagnetScope(null, INSTANCE_MANAGER);
+    public static <T> T createScope(Class<T> scopeType) {
+        return INSTANCE_MANAGER.getScopeFactory(scopeType).create();
     }
 
 }

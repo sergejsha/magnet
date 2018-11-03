@@ -18,39 +18,37 @@ package magnet.processor
 
 import magnet.Instance
 import magnet.Magnetizer
-import magnet.processor.factory.CodeWriter
-import magnet.processor.factory.FactoryFromClassAnnotationParser
-import magnet.processor.factory.FactoryFromMethodAnnotationParser
-import magnet.processor.factory.FactoryIndexCodeGenerator
-import magnet.processor.factory.FactoryType
-import magnet.processor.factory.FactoryTypeCodeGenerator
-import magnet.processor.index.MagnetIndexerGenerator
+import magnet.Scope
+import magnet.processor.common.CompilationException
+import magnet.processor.common.ValidationException
+import magnet.processor.instances.InstanceProcessor
+import magnet.processor.registry.RegistryProcessor
+import magnet.processor.scopes.ScopeProcessor
 import javax.annotation.processing.AbstractProcessor
+import javax.annotation.processing.Filer
 import javax.annotation.processing.ProcessingEnvironment
 import javax.annotation.processing.RoundEnvironment
 import javax.annotation.processing.SupportedSourceVersion
 import javax.lang.model.SourceVersion
 import javax.lang.model.element.TypeElement
-import javax.lang.model.util.ElementFilter
+import javax.lang.model.util.Elements
+import javax.lang.model.util.Types
+import javax.tools.Diagnostic
 
 @SupportedSourceVersion(SourceVersion.RELEASE_8)
 class MagnetProcessor : AbstractProcessor() {
 
-    private val magnetIndexerGenerator = MagnetIndexerGenerator()
-
     private lateinit var env: MagnetProcessorEnv
-    private lateinit var factoryFromClassAnnotationParser: FactoryFromClassAnnotationParser
-    private lateinit var factoryFromMethodAnnotationParser: FactoryFromMethodAnnotationParser
-    private lateinit var factoryTypeCodeGenerator: FactoryTypeCodeGenerator
-    private lateinit var factoryIndexCodeGenerator: FactoryIndexCodeGenerator
+    private lateinit var scopeProcessor: ScopeProcessor
+    private lateinit var instanceProcessor: InstanceProcessor
+    private lateinit var registryProcessor: RegistryProcessor
 
     override fun init(processingEnvironment: ProcessingEnvironment) {
         super.init(processingEnvironment)
         env = MagnetProcessorEnv(processingEnvironment)
-        factoryFromClassAnnotationParser = FactoryFromClassAnnotationParser(env)
-        factoryFromMethodAnnotationParser = FactoryFromMethodAnnotationParser(env)
-        factoryTypeCodeGenerator = FactoryTypeCodeGenerator()
-        factoryIndexCodeGenerator = FactoryIndexCodeGenerator()
+        scopeProcessor = ScopeProcessor(env)
+        instanceProcessor = InstanceProcessor(env)
+        registryProcessor = RegistryProcessor(env)
     }
 
     override fun process(
@@ -58,74 +56,57 @@ class MagnetProcessor : AbstractProcessor() {
         roundEnv: RoundEnvironment
     ): Boolean {
         return try {
-            val instanceProcessed = processInstanceAnnotation(roundEnv)
-            val indexCreated = processFactoryIndexAnnotation(env, roundEnv)
-
-            instanceProcessed || indexCreated
+            val instancesProcessed = instanceProcessor.process(roundEnv)
+            val scopesProcessed = scopeProcessor.process(roundEnv)
+            val registryProcessed = registryProcessor.process(roundEnv)
+            instancesProcessed || scopesProcessed || registryProcessed
+        } catch (e: ValidationException) {
+            env.report(e)
+            false
         } catch (e: CompilationException) {
-            true
+            env.report(e)
+            false
+        } catch (e: Throwable) {
+            env.report(e)
+            false
         }
-    }
-
-    private fun processInstanceAnnotation(
-        roundEnv: RoundEnvironment
-    ): Boolean {
-
-        val annotatedElements = roundEnv.getElementsAnnotatedWith(Instance::class.java)
-        if (annotatedElements.isEmpty()) {
-            return false
-        }
-
-        val factoryTypes = mutableListOf<FactoryType>()
-        ElementFilter.typesIn(annotatedElements).forEach { element ->
-            val parsedFactoryTypes = factoryFromClassAnnotationParser.parse(element)
-            for (factoryType in parsedFactoryTypes) {
-                if (!factoryType.disabled) {
-                    factoryTypes.add(factoryType)
-                }
-            }
-        }
-        ElementFilter.methodsIn(annotatedElements).forEach { element ->
-            val parsedFactoryTypes = factoryFromMethodAnnotationParser.parse(element)
-            for (factoryType in parsedFactoryTypes) {
-                if (!factoryType.disabled) {
-                    factoryTypes.add(factoryType)
-                }
-            }
-        }
-
-        factoryTypes.sortBy { factoryName(it) }
-
-        val codeWriters = mutableListOf<CodeWriter>()
-        factoryTypes.forEach { factoryType ->
-            codeWriters.add(factoryTypeCodeGenerator.generateFrom(factoryType))
-            codeWriters.add(factoryIndexCodeGenerator.generateFrom(factoryType))
-        }
-
-        codeWriters.forEach { codeWriter ->
-            codeWriter.writeInto(env.filer)
-        }
-
-        return true
-    }
-
-    private fun processFactoryIndexAnnotation(
-        env: MagnetProcessorEnv,
-        roundEnv: RoundEnvironment
-    ): Boolean {
-        return magnetIndexerGenerator.generate(
-            roundEnv.getElementsAnnotatedWith(Magnetizer::class.java),
-            env
-        )
     }
 
     override fun getSupportedAnnotationTypes(): MutableSet<String> {
         return mutableSetOf(
             Instance::class.java.name,
+            Scope::class.java.name,
             Magnetizer::class.java.name
         )
     }
 
 }
 
-private fun factoryName(factoryType: FactoryType): String = factoryType.factoryType.simpleName()
+class MagnetProcessorEnv(
+    private val processEnvironment: ProcessingEnvironment
+) {
+
+    val filer: Filer get() = processEnvironment.filer
+    val elements: Elements get() = processEnvironment.elementUtils
+    val types: Types get() = processEnvironment.typeUtils
+
+    fun report(e: ValidationException) {
+        processEnvironment.messager.printMessage(Diagnostic.Kind.ERROR, e.message, e.element)
+    }
+
+    fun report(e: CompilationException) {
+        processEnvironment.messager.printMessage(
+            Diagnostic.Kind.ERROR,
+            "Unexpected compilation error, please file the bug. Message: ${e.message ?: "none."}",
+            e.element
+        )
+    }
+
+    fun report(e: Throwable) {
+        processEnvironment.messager.printMessage(
+            Diagnostic.Kind.ERROR,
+            "Unexpected compilation error, please file the bug. Message: ${e.message ?: "none."}"
+        )
+    }
+
+}

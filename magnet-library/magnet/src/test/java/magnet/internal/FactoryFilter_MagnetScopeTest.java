@@ -14,7 +14,7 @@ import static org.mockito.Mockito.when;
 @RunWith(MockitoJUnitRunner.Silent.class)
 public class FactoryFilter_MagnetScopeTest {
 
-    private InstrumentedScope scope;
+    private InstrumentedInstanceScope scope;
 
     @Mock InstanceManager instanceManager;
     @Mock InstanceFactory instanceFactory;
@@ -22,7 +22,7 @@ public class FactoryFilter_MagnetScopeTest {
 
     @Before
     public void before() {
-        scope = new InstrumentedScope(new MagnetScope(null, instanceManager));
+        scope = new InstrumentedInstanceScope(new MagnetScopeContainer(null, instanceManager));
     }
 
     @Test
