@@ -2,7 +2,7 @@ package magnet.processor.registry
 
 import com.squareup.javapoet.ClassName
 
-interface Model {
+class Model private constructor() {
 
     class Registry(
         val instanceFactories: List<InstanceFactory>,

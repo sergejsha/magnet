@@ -16,10 +16,10 @@
 
 package magnet.processor.registry.instances
 
-import magnet.processor.registry.instances.model.Inst
-import magnet.processor.registry.instances.model.InstVisitor
-import magnet.processor.registry.instances.model.Range
-import magnet.processor.registry.instances.model.Section
+import magnet.processor.registry.instances.Model.Inst
+import magnet.processor.registry.instances.Model.InstVisitor
+import magnet.processor.registry.instances.Model.Range
+import magnet.processor.registry.instances.Model.Section
 
 class SectionsCreatorVisitor : InstVisitor {
 

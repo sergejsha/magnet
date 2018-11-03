@@ -3,7 +3,7 @@ package magnet.processor.scopes
 import com.squareup.javapoet.ClassName
 import magnet.processor.common.CommonModel
 
-interface Model {
+class Model private constructor() {
 
     class Scope(
         val type: ClassName,

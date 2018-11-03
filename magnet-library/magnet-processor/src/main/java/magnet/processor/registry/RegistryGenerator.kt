@@ -26,8 +26,8 @@ import magnet.internal.InstanceFactory
 import magnet.processor.MagnetProcessorEnv
 import magnet.processor.registry.instances.IndexGeneratorVisitor
 import magnet.processor.registry.instances.Indexer
-import magnet.processor.registry.instances.model.Index
-import magnet.processor.registry.instances.model.Inst
+import magnet.processor.registry.instances.Model.Index
+import magnet.processor.registry.instances.Model.Inst
 import javax.lang.model.element.Modifier
 
 private const val INSTANCE_MANAGER = "instanceManager"

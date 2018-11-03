@@ -18,11 +18,11 @@ package magnet.processor.registry.instances
 
 import com.squareup.javapoet.ClassName
 import com.squareup.javapoet.CodeBlock
-import magnet.processor.registry.instances.model.Index
-import magnet.processor.registry.instances.model.IndexVisitor
-import magnet.processor.registry.instances.model.Inst
-import magnet.processor.registry.instances.model.Range
-import magnet.processor.registry.instances.model.Section
+import magnet.processor.registry.instances.Model.Index
+import magnet.processor.registry.instances.Model.IndexVisitor
+import magnet.processor.registry.instances.Model.Inst
+import magnet.processor.registry.instances.Model.Range
+import magnet.processor.registry.instances.Model.Section
 
 class IndexGeneratorVisitor : IndexVisitor {
 

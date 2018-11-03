@@ -18,7 +18,7 @@ package magnet.processor.common
 
 import com.squareup.javapoet.TypeName
 
-interface CommonModel {
+class CommonModel private constructor() {
 
     class Instance(
         val name: String,

@@ -16,9 +16,9 @@
 
 package magnet.processor.registry.instances
 
-import magnet.processor.registry.instances.model.Index
-import magnet.processor.registry.instances.model.Inst
-import magnet.processor.registry.instances.model.InstComparator
+import magnet.processor.registry.instances.Model.Index
+import magnet.processor.registry.instances.Model.Inst
+import magnet.processor.registry.instances.Model.InstComparator
 
 class Indexer(
     private val comparator: Comparator<Inst> = InstComparator()
