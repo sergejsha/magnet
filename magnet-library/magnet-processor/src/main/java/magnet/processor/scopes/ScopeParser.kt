@@ -37,14 +37,36 @@ import javax.lang.model.type.TypeMirror
 import javax.lang.model.util.ElementScanner6
 
 internal class ScopeParser(
-    env: MagnetProcessorEnv
+    private val env: MagnetProcessorEnv
 ) {
 
     private val scopeVisitor = ScopeVisitor(env)
 
     fun parse(element: TypeElement): Model.Scope {
-        element.accept(scopeVisitor, null)
+        scopeVisitor.startType(element)
+
+        var interfaces = element.interfaces
+        while (interfaces.isNotEmpty()) {
+            interfaces = visitInterfaces(interfaces)
+        }
+
         return scopeVisitor.createScope()
+    }
+
+    private fun visitInterfaces(interfaces: List<TypeMirror>): List<TypeMirror> {
+        if (interfaces.isNotEmpty()) {
+            val moreInterfaces = mutableListOf<TypeMirror>()
+            for (superTypeMirror in interfaces) {
+                env.types.asElement(superTypeMirror)?.let { superElement ->
+                    if (superElement is TypeElement) {
+                        scopeVisitor.continueType(superElement)
+                        moreInterfaces.addAll(superElement.interfaces)
+                    }
+                }
+            }
+            return moreInterfaces
+        }
+        return emptyList()
     }
 
 }
@@ -61,19 +83,20 @@ private class ScopeVisitor(
     private var scopeType: ClassName? = null
 
     override fun visitType(e: TypeElement, p: Unit?) {
-        clear()
-        scopeType = when (val type = TypeName.get(e.asType())) {
-            is ClassName -> {
-                if (e.kind != ElementKind.INTERFACE) throw ValidationException(
+        if (scopeType == null) {
+            scopeType = when (val type = TypeName.get(e.asType())) {
+                is ClassName -> {
+                    if (e.kind != ElementKind.INTERFACE) throw ValidationException(
+                        element = e,
+                        message = "Scope must be declared as an interface."
+                    )
+                    type
+                }
+                else -> throw ValidationException(
                     element = e,
-                    message = "Scope must be declared as an interface."
+                    message = "Scope declaration interface must not be parametrized."
                 )
-                type
             }
-            else -> throw ValidationException(
-                element = e,
-                message = "Scope declaration interface must not be parametrized."
-            )
         }
         super.visitType(e, p)
     }
@@ -94,7 +117,6 @@ private class ScopeVisitor(
             val hasScopeAnnotation = typeElement.getAnnotation(Scope::class.java) != null
             it.params.add(e.toInstance(typeMirror, hasScopeAnnotation))
         }
-
         super.visitVariable(e, p)
     }
 
@@ -122,17 +144,20 @@ private class ScopeVisitor(
             bindParentScopeMethod = bindParentScopeMethod,
             bindMethods = bindMethods.toList(),
             getterMethods = getterMethods.toList()
-        ).also {
-            clear()
-        }
+        )
     }
 
-    fun clear() {
+    fun startType(element: TypeElement) {
         methodBuilder = null
         bindParentScopeMethod = null
         scopeType = null
         bindMethods.clear()
         getterMethods.clear()
+        element.accept(this, null)
+    }
+
+    fun continueType(element: Element) {
+        element.accept(this, null)
     }
 
 }

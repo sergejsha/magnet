@@ -13,7 +13,7 @@ class ScopeInstanceProcessorTest {
         JavaFileObjects.forResource(javaClass.simpleName + '/' + name)
 
     @Test
-    fun `Getters`() {
+    fun `Getters in single interface`() {
         val compilation = Compiler.javac()
             .withProcessors(MagnetProcessor())
             .compile(
@@ -28,7 +28,7 @@ class ScopeInstanceProcessorTest {
     }
 
     @Test
-    fun `Binders`() {
+    fun `Binders in single interface`() {
         val compilation = Compiler.javac()
             .withProcessors(MagnetProcessor())
             .compile(
@@ -66,6 +66,24 @@ class ScopeInstanceProcessorTest {
                 withResource("Scope4.java")
             )
         assertThat(compilation).hadErrorContaining("interface")
+
+    }
+
+    @Test
+    fun `Getters in inherited interfaces`() {
+        val compilation = Compiler.javac()
+            .withProcessors(MagnetProcessor())
+            .compile(
+                withResource("Scope5_1.java"),
+                withResource("Scope5_2.java"),
+                withResource("Scope5_3.java"),
+                withResource("Scope5.java")
+            )
+        assertThat(compilation).succeeded()
+
+        CompilationSubject.assertThat(compilation)
+            .generatedSourceFile("test/MagnetInstanceScope5")
+            .hasSourceEquivalentTo(withResource("expected/MagnetInstanceScope5.java"))
 
     }
 
