@@ -1,7 +1,7 @@
 package app.extension;
 
+import magnet.ScopeContainer;
 import magnet.internal.InstanceFactory;
-import magnet.internal.ScopeContainer;
 
 public final class ExecutorImplMagnetFactory extends InstanceFactory<Executor> {
     @Override

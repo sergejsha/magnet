@@ -3,9 +3,9 @@ package app.extension.utils;
 import app.HomeRepository;
 import app.Page;
 import java.util.List;
+import magnet.ScopeContainer;
 import magnet.Scoping;
 import magnet.internal.InstanceFactory;
-import magnet.internal.ScopeContainer;
 
 public final class HomePageWithStaticConstructorSingleCreateRepositoriesMagnetFactory extends InstanceFactory<Page> {
 

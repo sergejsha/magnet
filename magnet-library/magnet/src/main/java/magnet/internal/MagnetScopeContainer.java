@@ -17,6 +17,7 @@
 package magnet.internal;
 
 import magnet.Classifier;
+import magnet.ScopeContainer;
 import magnet.Scoping;
 import magnet.SelectorFilter;
 
@@ -35,7 +36,7 @@ final class MagnetScopeContainer implements ScopeContainer, FactoryFilter {
     private static final byte CARDINALITY_SINGLE = 1;
     private static final byte CARDINALITY_MANY = 2;
 
-    private final ScopeContainer parent;
+    private final MagnetScopeContainer parent;
     private final InstanceManager instanceManager;
 
     /** Visible for testing */
@@ -220,7 +221,7 @@ final class MagnetScopeContainer implements ScopeContainer, FactoryFilter {
         return object;
     }
 
-    @Override
+    //@Override
     public void registerInstanceInScope(String key, RuntimeInstance instance) {
         if (depth == instance.getScopeDepth()) {
             RuntimeInstance existing = instances.put(key, instance);
@@ -239,7 +240,7 @@ final class MagnetScopeContainer implements ScopeContainer, FactoryFilter {
     }
 
     @SuppressWarnings("unchecked")
-    @Override
+    //@Override
     public <T> RuntimeInstance<T> findDeepInstance(String key) {
         RuntimeInstance<T> instance = instances.get(key);
         if (instance == null && parent != null) {

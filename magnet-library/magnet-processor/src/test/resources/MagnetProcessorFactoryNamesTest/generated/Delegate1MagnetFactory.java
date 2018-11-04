@@ -1,7 +1,7 @@
 package test;
 
+import magnet.ScopeContainer;
 import magnet.internal.InstanceFactory;
-import magnet.internal.ScopeContainer;
 
 public final class Delegate1MagnetFactory extends InstanceFactory<Delegate1> {
     @Override

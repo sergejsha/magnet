@@ -9,7 +9,7 @@ import magnet.Classifier
 import magnet.Instance
 import magnet.Scoping
 import magnet.SelectorFilter
-import magnet.internal.ScopeContainer
+import magnet.ScopeContainer
 import magnet.processor.MagnetProcessorEnv
 import magnet.processor.common.CompilationException
 import magnet.processor.common.ValidationException

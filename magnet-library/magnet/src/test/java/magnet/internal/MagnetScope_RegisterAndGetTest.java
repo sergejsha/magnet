@@ -18,6 +18,7 @@ package magnet.internal;
 
 import static com.google.common.truth.Truth.assertThat;
 
+import magnet.ScopeContainer;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;

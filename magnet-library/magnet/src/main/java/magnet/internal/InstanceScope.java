@@ -16,6 +16,8 @@
 
 package magnet.internal;
 
+import magnet.ScopeContainer;
+
 /* Subject to change. For internal use only. */
 public abstract class InstanceScope {
 

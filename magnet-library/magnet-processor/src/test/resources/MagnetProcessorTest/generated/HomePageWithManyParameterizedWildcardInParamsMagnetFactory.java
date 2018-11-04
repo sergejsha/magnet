@@ -3,8 +3,8 @@ package app.extension;
 import app.Page;
 import app.WorkProcessor;
 import java.util.List;
+import magnet.ScopeContainer;
 import magnet.internal.InstanceFactory;
-import magnet.internal.ScopeContainer;
 
 public final class HomePageWithManyParameterizedWildcardInParamsMagnetFactory extends InstanceFactory<Page> {
     @Override

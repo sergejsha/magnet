@@ -16,6 +16,7 @@
 
 package magnet.internal;
 
+import magnet.ScopeContainer;
 import magnet.Scoping;
 
 /* Subject to change. For internal use only. */

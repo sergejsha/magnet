@@ -16,8 +16,6 @@
 
 package magnet;
 
-import magnet.internal.ScopeContainer;
-
 /**
  * Declares the way Magnet binds instances of &#64;Instance</code>-annotated
  * classes into scopes. See each separate setting for more detail.

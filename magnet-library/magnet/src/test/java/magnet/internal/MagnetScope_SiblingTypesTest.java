@@ -17,6 +17,7 @@
 package magnet.internal;
 
 import magnet.Classifier;
+import magnet.ScopeContainer;
 import magnet.Scoping;
 import org.junit.Test;
 import org.junit.runner.RunWith;

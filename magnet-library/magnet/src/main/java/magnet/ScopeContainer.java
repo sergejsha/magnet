@@ -14,11 +14,10 @@
  * limitations under the License.
  */
 
-package magnet.internal;
+package magnet;
 
 import java.util.List;
 
-/** Subject to change. For internal use only. */
 public interface ScopeContainer {
 
     /** Returns an object from the scope or {@code null}, if object was not found. */
@@ -47,11 +46,5 @@ public interface ScopeContainer {
 
     /** Creates a child subscope of this scope. */
     ScopeContainer createSubscope();
-
-    /** Finds instance in scope tree. */
-    <T> RuntimeInstance<T> findDeepInstance(String key);
-
-    /** Registers given runtime instance in current scope. */
-    void registerInstanceInScope(String key, RuntimeInstance instance);
 
 }

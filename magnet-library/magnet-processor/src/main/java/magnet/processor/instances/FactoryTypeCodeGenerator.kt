@@ -25,7 +25,7 @@ import com.squareup.javapoet.ParameterizedTypeName
 import com.squareup.javapoet.TypeName
 import com.squareup.javapoet.TypeSpec
 import magnet.Classifier
-import magnet.internal.ScopeContainer
+import magnet.ScopeContainer
 import magnet.internal.InstanceFactory
 import magnet.processor.instances.scoping.GetScopingMethodGenerator
 import magnet.processor.instances.selector.GetSelectorMethodGenerator

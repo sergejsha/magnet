@@ -2,7 +2,7 @@ package app.extension;
 
 import app.Page;
 import magnet.Instance;
-import magnet.internal.ScopeContainer;
+import magnet.ScopeContainer;
 
 @Instance(type = Page.class)
 class HomePageWithScope implements Page {

@@ -1,5 +1,7 @@
 package magnet.internal;
 
+import magnet.ScopeContainer;
+
 import java.util.Collections;
 import java.util.List;
 
@@ -50,6 +52,7 @@ public class InstrumentedInstanceScope implements ScopeContainer, FactoryFilter 
         return new InstrumentedInstanceScope((MagnetScopeContainer) scope.createSubscope());
     }
 
+    /*
     @Override public <T> RuntimeInstance<T> findDeepInstance(String key) {
         return scope.findDeepInstance(key);
     }
@@ -57,6 +60,7 @@ public class InstrumentedInstanceScope implements ScopeContainer, FactoryFilter 
     @Override public void registerInstanceInScope(String key, RuntimeInstance instance) {
         scope.registerInstanceInScope(key, instance);
     }
+    */
 
     @Override public boolean filter(InstanceFactory factory) { return scope.filter(factory); }
 
