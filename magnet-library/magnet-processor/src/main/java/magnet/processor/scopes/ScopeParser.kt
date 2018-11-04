@@ -59,6 +59,12 @@ internal class ScopeParser(
             for (superTypeMirror in interfaces) {
                 env.types.asElement(superTypeMirror)?.let { superElement ->
                     if (superElement is TypeElement) {
+                        if (superElement.getAnnotation(Scope::class.java) != null) {
+                            throw ValidationException(
+                                element = superElement,
+                                message = "Scope cannot inherit from another scope."
+                            )
+                        }
                         scopeVisitor.continueType(superElement)
                         moreInterfaces.addAll(superElement.interfaces)
                     }

@@ -65,6 +65,7 @@ class ScopeInstanceProcessorTest {
             .compile(
                 withResource("Scope4.java")
             )
+        assertThat(compilation).failed()
         assertThat(compilation).hadErrorContaining("interface")
 
     }
@@ -84,6 +85,19 @@ class ScopeInstanceProcessorTest {
         CompilationSubject.assertThat(compilation)
             .generatedSourceFile("test/MagnetInstanceScope5")
             .hasSourceEquivalentTo(withResource("expected/MagnetInstanceScope5.java"))
+
+    }
+
+    @Test
+    fun `Scope cannot inherit from another scope`() {
+        val compilation = Compiler.javac()
+            .withProcessors(MagnetProcessor())
+            .compile(
+                withResource("Scope6.java"),
+                withResource("Scope6_1.java")
+            )
+        assertThat(compilation).failed()
+        assertThat(compilation).hadErrorContaining("cannot inherit")
 
     }
 

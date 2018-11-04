@@ -28,13 +28,10 @@ public abstract class InstanceScope {
     }
 
     protected void setParentScope(InstanceScope parent) {
-        if (parent == null) {
-            throw new IllegalStateException("Parent is already set.");
-        }
         if (this.parent != null) {
             throw new IllegalStateException(
                 String.format(
-                    "Parent cannot be overwritten. Existing parent %s, new parent %s",
+                    "Parent can be set only once. Existing parent %s, new parent %s",
                     this.parent, parent
                 )
             );
@@ -43,12 +40,12 @@ public abstract class InstanceScope {
     }
 
     protected ScopeContainer requireScopeContainer() {
-        if (parentRequired && parent == null) {
-            throw new IllegalStateException(
-                "Parent scope is required. Make sure to bind parent" +
-                    " scope before calling any other scope's method.");
-        }
         if (scopeContainer == null) {
+            if (parentRequired && parent == null) {
+                throw new IllegalStateException(
+                    "Parent scope is required. Make sure to bind parent" +
+                        " scope before calling any other scope's method.");
+            }
             scopeContainer = new MagnetScopeContainer(
                 /* parent= */ parent == null ? null : parent.scopeContainer,
                 /* instanceManager= */ InternalFactory.INSTANCE_MANAGER
