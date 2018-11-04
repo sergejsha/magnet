@@ -13,7 +13,7 @@ class ScopeInstanceProcessorTest {
         JavaFileObjects.forResource(javaClass.simpleName + '/' + name)
 
     @Test
-    fun `Getters get generated`() {
+    fun `Getters`() {
         val compilation = Compiler.javac()
             .withProcessors(MagnetProcessor())
             .compile(
@@ -23,12 +23,12 @@ class ScopeInstanceProcessorTest {
 
         CompilationSubject.assertThat(compilation)
             .generatedSourceFile("test/MagnetInstanceScope1")
-            .hasSourceEquivalentTo(withResource("generated/MagnetInstanceScope1.java"))
+            .hasSourceEquivalentTo(withResource("expected/MagnetInstanceScope1.java"))
 
     }
 
     @Test
-    fun `Binders get generated`() {
+    fun `Binders`() {
         val compilation = Compiler.javac()
             .withProcessors(MagnetProcessor())
             .compile(
@@ -38,12 +38,12 @@ class ScopeInstanceProcessorTest {
 
         CompilationSubject.assertThat(compilation)
             .generatedSourceFile("test/MagnetInstanceScope2")
-            .hasSourceEquivalentTo(withResource("generated/MagnetInstanceScope2.java"))
+            .hasSourceEquivalentTo(withResource("expected/MagnetInstanceScope2.java"))
 
     }
 
     @Test
-    fun `Parent Scope binder gets generated`() {
+    fun `Parent Scope binder`() {
         val compilation = Compiler.javac()
             .withProcessors(MagnetProcessor())
             .compile(
@@ -54,7 +54,18 @@ class ScopeInstanceProcessorTest {
 
         CompilationSubject.assertThat(compilation)
             .generatedSourceFile("test/MagnetInstanceScope3")
-            .hasSourceEquivalentTo(withResource("generated/MagnetInstanceScope3.java"))
+            .hasSourceEquivalentTo(withResource("expected/MagnetInstanceScope3.java"))
+
+    }
+
+    @Test
+    fun `Scope must be interface`() {
+        val compilation = Compiler.javac()
+            .withProcessors(MagnetProcessor())
+            .compile(
+                withResource("Scope4.java")
+            )
+        assertThat(compilation).hadErrorContaining("interface")
 
     }
 

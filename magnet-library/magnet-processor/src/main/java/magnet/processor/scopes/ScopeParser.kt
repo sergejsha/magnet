@@ -28,6 +28,7 @@ import magnet.processor.common.CompilationException
 import magnet.processor.common.ValidationException
 import magnet.processor.common.eachAnnotationAttributeOf
 import javax.lang.model.element.Element
+import javax.lang.model.element.ElementKind
 import javax.lang.model.element.ExecutableElement
 import javax.lang.model.element.TypeElement
 import javax.lang.model.element.VariableElement
@@ -62,7 +63,13 @@ private class ScopeVisitor(
     override fun visitType(e: TypeElement, p: Unit?) {
         clear()
         scopeType = when (val type = TypeName.get(e.asType())) {
-            is ClassName -> type
+            is ClassName -> {
+                if (e.kind != ElementKind.INTERFACE) throw ValidationException(
+                    element = e,
+                    message = "Scope must be declared as an interface."
+                )
+                type
+            }
             else -> throw ValidationException(
                 element = e,
                 message = "Scope declaration interface must not be parametrized."
