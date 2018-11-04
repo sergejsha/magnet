@@ -85,6 +85,7 @@ internal class FactoryFromMethodAnnotationParser(
                 classifier = annotation.classifier,
                 scoping = annotation.scoping,
                 disabled = annotation.disabled,
+                customFactoryType = annotation.factory,
                 factoryType = ClassName.bestGuess(factoryFullName),
                 createStatement = MethodCreateStatement(staticMethodClassName, staticMethodName),
                 createMethod = CreateMethod(methodParameters),

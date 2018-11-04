@@ -59,6 +59,7 @@ internal class FactoryFromClassAnnotationParser(
                 classifier = annotation.classifier,
                 scoping = annotation.scoping,
                 disabled = annotation.disabled,
+                customFactoryType = annotation.factory,
                 factoryType = ClassName.bestGuess("$instancePackage.$factoryName"),
                 createStatement = TypeCreateStatement(instanceType),
                 createMethod = parseCreateMethod(element),

@@ -1,11 +1,11 @@
 package magnet.processor.instances.selector
 
 import magnet.processor.common.ValidationException
-import magnet.processor.instances.AspectParser
+import magnet.processor.instances.AttributeParser
 import javax.lang.model.element.AnnotationValue
 import javax.lang.model.element.Element
 
-class SelectorAttributeParser : AspectParser<String> {
+class SelectorAttributeParser : AttributeParser<String> {
 
     fun convert(selector: String, element: Element): List<String>? {
         if (selector.isEmpty()) return null

@@ -17,8 +17,5 @@
 package magnet;
 
 public interface Factory<T> {
-
-    T create(ScopeContainer scope, String classifier);
-    Class<T> getType();
-
+    T create(ScopeContainer scope, Class<T> type, String classifier);
 }

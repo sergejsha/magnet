@@ -48,6 +48,7 @@ class Annotation(
     val classifier: String,
     val scoping: String,
     val selector: String,
+    val factory: ClassName?,
     val disabled: Boolean
 )
 
@@ -58,6 +59,7 @@ class FactoryType(
     val scoping: String,
     val disabled: Boolean,
     val factoryType: ClassName,
+    val customFactoryType: ClassName?,
     val createStatement: CreateStatement,
     val createMethod: CreateMethod,
     val getScopingMethod: GetScopingMethod,

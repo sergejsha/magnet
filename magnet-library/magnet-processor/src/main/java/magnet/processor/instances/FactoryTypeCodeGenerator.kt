@@ -27,9 +27,10 @@ import com.squareup.javapoet.TypeSpec
 import magnet.Classifier
 import magnet.ScopeContainer
 import magnet.internal.InstanceFactory
+import magnet.processor.instances.factory.FactoryAttributeCodeGenerator
 import magnet.processor.instances.scoping.GetScopingMethodGenerator
 import magnet.processor.instances.selector.GetSelectorMethodGenerator
-import magnet.processor.instances.siblingtypes.GetSiblingTypesMethodGenerator
+import magnet.processor.instances.siblings.GetSiblingTypesMethodGenerator
 import javax.lang.model.element.Modifier
 
 interface AspectGenerator {
@@ -65,9 +66,10 @@ class FactoryTypeCodeGenerator : FactoryTypeVisitor, CodeGenerator {
     private var shouldSuppressUncheckedWarning = false
     private var constructorParametersBuilder = StringBuilder()
 
-    private var aspectGetSiblingTypes = Aspect(GetSiblingTypesMethodGenerator())
-    private var aspectGetScoping = Aspect(GetScopingMethodGenerator())
-    private var aspectGetSelector = Aspect(GetSelectorMethodGenerator())
+    private val aspectGetSiblingTypes = Aspect(GetSiblingTypesMethodGenerator())
+    private val aspectGetScoping = Aspect(GetScopingMethodGenerator())
+    private val aspectGetSelector = Aspect(GetSelectorMethodGenerator())
+    private val factoryAttributeCodeGenerator = FactoryAttributeCodeGenerator()
 
     override fun enterFactoryClass(factoryType: FactoryType) {}
 
@@ -180,12 +182,13 @@ class FactoryTypeCodeGenerator : FactoryTypeVisitor, CodeGenerator {
     override fun exitFactoryClass(factory: FactoryType) {
         factoryClassName = factory.factoryType
 
-        val classBuilder = TypeSpec
+        val classBuilder: TypeSpec.Builder = TypeSpec
             .classBuilder(factoryClassName)
             .addModifiers(Modifier.PUBLIC, Modifier.FINAL)
             .superclass(generateFactorySuperInterface(factory))
             .addMethod(generateCreateMethod(factory))
 
+        factoryAttributeCodeGenerator.visitFactoryClass(classBuilder, factory)
         aspectGetScoping.generate(classBuilder)
         aspectGetSiblingTypes.generate(classBuilder)
         aspectGetSelector.generate(classBuilder)
@@ -197,7 +200,7 @@ class FactoryTypeCodeGenerator : FactoryTypeVisitor, CodeGenerator {
     }
 
     private fun generateCreateMethod(factoryType: FactoryType): MethodSpec {
-        var builder = MethodSpec
+        var builder: MethodSpec.Builder = MethodSpec
             .methodBuilder("create")
             .addAnnotation(Override::class.java)
             .addModifiers(Modifier.PUBLIC)
@@ -221,10 +224,13 @@ class FactoryTypeCodeGenerator : FactoryTypeVisitor, CodeGenerator {
         val createStatement = factoryType.createStatement
         when (createStatement) {
             is TypeCreateStatement -> {
-                builder.addStatement(
-                    "return new \$T($constructorParametersBuilder)",
-                    createStatement.instanceType
-                )
+                factoryAttributeCodeGenerator.visitCreateMethod(builder, factoryType)
+                if (factoryType.customFactoryType == null) {
+                    builder.addStatement(
+                        "return new \$T($constructorParametersBuilder)",
+                        createStatement.instanceType
+                    )
+                }
             }
             is MethodCreateStatement -> {
                 builder.addStatement(

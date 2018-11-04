@@ -7,13 +7,14 @@ import com.squareup.javapoet.TypeName
 import com.squareup.javapoet.WildcardTypeName
 import magnet.Classifier
 import magnet.Instance
+import magnet.ScopeContainer
 import magnet.Scoping
 import magnet.SelectorFilter
-import magnet.ScopeContainer
 import magnet.processor.MagnetProcessorEnv
 import magnet.processor.common.CompilationException
 import magnet.processor.common.ValidationException
 import magnet.processor.common.isOfAnnotationType
+import magnet.processor.instances.factory.FactoryAttributeParser
 import magnet.processor.instances.selector.SelectorAttributeParser
 import javax.lang.model.element.AnnotationValue
 import javax.lang.model.element.Element
@@ -32,7 +33,7 @@ private const val ATTR_SCOPING = "scoping"
 private const val ATTR_CLASSIFIER = "classifier"
 private const val ATTR_DISABLED = "disabled"
 
-interface AspectParser<R> {
+interface AttributeParser<R> {
     fun parse(value: AnnotationValue, element: Element): R
 }
 
@@ -43,6 +44,7 @@ internal abstract class AnnotationParser<in E : Element>(
 
     protected val selectorAttributeParser = SelectorAttributeParser()
 
+    private val factoryAttributeParser = FactoryAttributeParser(env)
     private val typesAttrExtractor = TypesAttrExtractor(env.elements)
 
     protected fun parseMethodParameter(
@@ -146,6 +148,7 @@ internal abstract class AnnotationParser<in E : Element>(
         var scoping = Scoping.TOPMOST.name
         var classifier = Classifier.NONE
         var selector = SelectorFilter.DEFAULT_SELECTOR
+        var factory: ClassName? = null
         var disabled = false
 
         for (annotationMirror in element.annotationMirrors) {
@@ -172,7 +175,13 @@ internal abstract class AnnotationParser<in E : Element>(
                         }
                         ATTR_SCOPING -> scoping = entryValue
                         ATTR_CLASSIFIER -> classifier = entryValue
-                        SelectorAttributeParser.ATTR_NAME -> selector = selectorAttributeParser.parse(entry.value, element)
+
+                        SelectorAttributeParser.ATTR_NAME ->
+                            selector = selectorAttributeParser.parse(entry.value, element)
+
+                        FactoryAttributeParser.ATTR_NAME ->
+                            factory = factoryAttributeParser.parse(entry.value, element)
+
                         ATTR_DISABLED -> disabled = entryValue.toBoolean()
                     }
                 }
@@ -187,6 +196,7 @@ internal abstract class AnnotationParser<in E : Element>(
             classifier = classifier,
             scoping = scoping,
             selector = selector,
+            factory = factory,
             disabled = disabled
         )
     }
