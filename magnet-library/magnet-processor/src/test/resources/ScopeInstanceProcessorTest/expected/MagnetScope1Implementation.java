@@ -4,8 +4,8 @@ import java.util.List;
 import magnet.Classifier;
 import magnet.internal.InstanceScope;
 
-final class MagnetInstanceScope1 extends InstanceScope implements Scope1 {
-    public MagnetInstanceScope1() {
+final class MagnetScope1Implementation extends InstanceScope implements Scope1 {
+    public MagnetScope1Implementation() {
         super(false);
     }
 

@@ -22,8 +22,8 @@ class ScopeFactoryProcessorTest {
         assertThat(compilation).succeeded()
 
         CompilationSubject.assertThat(compilation)
-            .generatedSourceFile("test/Scope1MagnetFactory")
-            .hasSourceEquivalentTo(withResource("expected/Scope1MagnetFactory.java"))
+            .generatedSourceFile("test/MagnetScope1Factory")
+            .hasSourceEquivalentTo(withResource("expected/MagnetScope1Factory.java"))
 
     }
 

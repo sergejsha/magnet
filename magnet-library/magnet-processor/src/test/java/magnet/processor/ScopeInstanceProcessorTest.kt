@@ -22,8 +22,8 @@ class ScopeInstanceProcessorTest {
         assertThat(compilation).succeeded()
 
         CompilationSubject.assertThat(compilation)
-            .generatedSourceFile("test/MagnetInstanceScope1")
-            .hasSourceEquivalentTo(withResource("expected/MagnetInstanceScope1.java"))
+            .generatedSourceFile("test/MagnetScope1Implementation")
+            .hasSourceEquivalentTo(withResource("expected/MagnetScope1Implementation.java"))
 
     }
 
@@ -37,8 +37,8 @@ class ScopeInstanceProcessorTest {
         assertThat(compilation).succeeded()
 
         CompilationSubject.assertThat(compilation)
-            .generatedSourceFile("test/MagnetInstanceScope2")
-            .hasSourceEquivalentTo(withResource("expected/MagnetInstanceScope2.java"))
+            .generatedSourceFile("test/MagnetScope2Implementation")
+            .hasSourceEquivalentTo(withResource("expected/MagnetScope2Implementation.java"))
 
     }
 
@@ -53,8 +53,8 @@ class ScopeInstanceProcessorTest {
         assertThat(compilation).succeeded()
 
         CompilationSubject.assertThat(compilation)
-            .generatedSourceFile("test/MagnetInstanceScope3")
-            .hasSourceEquivalentTo(withResource("expected/MagnetInstanceScope3.java"))
+            .generatedSourceFile("test/MagnetScope3Implementation")
+            .hasSourceEquivalentTo(withResource("expected/MagnetScope3Implementation.java"))
 
     }
 
@@ -83,8 +83,8 @@ class ScopeInstanceProcessorTest {
         assertThat(compilation).succeeded()
 
         CompilationSubject.assertThat(compilation)
-            .generatedSourceFile("test/MagnetInstanceScope5")
-            .hasSourceEquivalentTo(withResource("expected/MagnetInstanceScope5.java"))
+            .generatedSourceFile("test/MagnetScope5Implementation")
+            .hasSourceEquivalentTo(withResource("expected/MagnetScope5Implementation.java"))
 
     }
 

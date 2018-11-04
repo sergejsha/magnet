@@ -3,8 +3,8 @@ package test;
 import magnet.Classifier;
 import magnet.internal.InstanceScope;
 
-final class MagnetInstanceScope5 extends InstanceScope implements Scope5 {
-    public MagnetInstanceScope5() {
+final class MagnetScope5Implementation extends InstanceScope implements Scope5 {
+    public MagnetScope5Implementation() {
         super(false);
     }
 

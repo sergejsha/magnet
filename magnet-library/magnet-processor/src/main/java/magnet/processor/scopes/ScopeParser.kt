@@ -286,6 +286,3 @@ private fun WildcardTypeName.eraseParameterTypes(element: Element): TypeName {
     }
     return upperBounds[0]
 }
-
-
-

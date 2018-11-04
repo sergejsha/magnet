@@ -2,8 +2,8 @@ package test;
 
 import magnet.internal.InstanceScope;
 
-final class MagnetInstanceScope3 extends InstanceScope implements Scope3 {
-    public MagnetInstanceScope3() {
+final class MagnetScope3Implementation extends InstanceScope implements Scope3 {
+    public MagnetScope3Implementation() {
         super(true);
     }
 
