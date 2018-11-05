@@ -3,4 +3,4 @@ package test;
 import magnet.Scope;
 
 @Scope
-interface ParentScope {}
+interface Scope3_1 {}

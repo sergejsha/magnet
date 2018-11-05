@@ -8,7 +8,7 @@ final class MagnetScope3Implementation extends InstanceScope implements Scope3 {
     }
 
     @Override
-    public void bind(ParentScope scope) {
+    public void bind(Scope3_1 scope) {
         setParentScope((InstanceScope) scope);
     }
 }
