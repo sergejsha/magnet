@@ -19,6 +19,10 @@ package magnet.processor.common
 import javax.lang.model.element.AnnotationMirror
 import javax.lang.model.element.AnnotationValue
 import javax.lang.model.element.Element
+import javax.lang.model.element.TypeElement
+import javax.lang.model.type.TypeMirror
+import javax.lang.model.util.Elements
+import javax.lang.model.util.SimpleAnnotationValueVisitor6
 
 inline fun <reified T> AnnotationMirror.isOfAnnotationType(): Boolean =
     this.annotationType.toString() == T::class.java.name
@@ -47,3 +51,31 @@ inline fun Element.eachAnnotationAttribute(
 
 class ValidationException(val element: Element, message: String) : Throwable(message)
 class CompilationException(val element: Element, message: String) : Throwable(message)
+
+class AnnotationValueExtractor(
+    private val elements: Elements
+) : SimpleAnnotationValueVisitor6<Void?, Void>() {
+
+    private var value: Any? = null
+
+    override fun visitString(s: String, p: Void?): Void? {
+        value = s
+        return p
+    }
+
+    override fun visitType(t: TypeMirror, p: Void?): Void? {
+        value = elements.getTypeElement(t.toString())
+        return p
+    }
+
+    fun getStringValue(value: AnnotationValue): String {
+        value.accept(this, null)
+        return this.value as String
+    }
+
+    fun getTypeElement(value: AnnotationValue): TypeElement {
+        value.accept(this, null)
+        return this.value as TypeElement
+    }
+
+}

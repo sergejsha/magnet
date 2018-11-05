@@ -18,7 +18,6 @@ package magnet;
 
 import magnet.internal.InternalFactory;
 
-/** Main class for creating scopes. */
 public final class Magnet {
 
     private Magnet() { }

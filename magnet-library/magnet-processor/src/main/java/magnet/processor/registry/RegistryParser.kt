@@ -5,18 +5,15 @@ import magnet.internal.Index
 import magnet.internal.InstanceFactory
 import magnet.internal.ScopeFactory
 import magnet.processor.MagnetProcessorEnv
+import magnet.processor.common.AnnotationValueExtractor
 import magnet.processor.common.isOfAnnotationType
 import javax.lang.model.AnnotatedConstruct
-import javax.lang.model.element.AnnotationValue
 import javax.lang.model.element.PackageElement
 import javax.lang.model.element.TypeElement
-import javax.lang.model.type.TypeMirror
-import javax.lang.model.util.Elements
-import javax.lang.model.util.SimpleAnnotationValueVisitor6
 
 class RegistryParser(env: MagnetProcessorEnv) {
 
-    private val extractor = IndexAnnotationExtractor(env.elements)
+    private val extractor = AnnotationValueExtractor(env.elements)
 
     fun parse(element: PackageElement): Model.Registry {
 
@@ -92,31 +89,3 @@ class RegistryParser(env: MagnetProcessorEnv) {
 
 private fun ClassName.isOfType(type: Class<*>): Boolean =
     packageName() == type.`package`.name && simpleName() == type.simpleName
-
-private class IndexAnnotationExtractor(
-    private val elements: Elements
-) : SimpleAnnotationValueVisitor6<Void?, Void>() {
-
-    private var value: Any? = null
-
-    override fun visitString(s: String, p: Void?): Void? {
-        value = s
-        return p
-    }
-
-    override fun visitType(t: TypeMirror, p: Void?): Void? {
-        value = elements.getTypeElement(t.toString())
-        return p
-    }
-
-    fun getStringValue(value: AnnotationValue): String {
-        value.accept(this, null)
-        return this.value as String
-    }
-
-    fun getTypeElement(value: AnnotationValue): TypeElement {
-        value.accept(this, null)
-        return this.value as TypeElement
-    }
-
-}

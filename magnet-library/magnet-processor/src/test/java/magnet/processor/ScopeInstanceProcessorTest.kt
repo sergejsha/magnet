@@ -13,7 +13,7 @@ class ScopeInstanceProcessorTest {
         JavaFileObjects.forResource(javaClass.simpleName + '/' + name)
 
     @Test
-    fun `Getters get generated`() {
+    fun `Getters in single interface`() {
         val compilation = Compiler.javac()
             .withProcessors(MagnetProcessor())
             .compile(
@@ -22,13 +22,13 @@ class ScopeInstanceProcessorTest {
         assertThat(compilation).succeeded()
 
         CompilationSubject.assertThat(compilation)
-            .generatedSourceFile("test/MagnetInstanceScope1")
-            .hasSourceEquivalentTo(withResource("generated/MagnetInstanceScope1.java"))
+            .generatedSourceFile("test/MagnetScope1Implementation")
+            .hasSourceEquivalentTo(withResource("expected/MagnetScope1Implementation.java"))
 
     }
 
     @Test
-    fun `Binders get generated`() {
+    fun `Binders in single interface`() {
         val compilation = Compiler.javac()
             .withProcessors(MagnetProcessor())
             .compile(
@@ -37,24 +37,83 @@ class ScopeInstanceProcessorTest {
         assertThat(compilation).succeeded()
 
         CompilationSubject.assertThat(compilation)
-            .generatedSourceFile("test/MagnetInstanceScope2")
-            .hasSourceEquivalentTo(withResource("generated/MagnetInstanceScope2.java"))
+            .generatedSourceFile("test/MagnetScope2Implementation")
+            .hasSourceEquivalentTo(withResource("expected/MagnetScope2Implementation.java"))
 
     }
 
     @Test
-    fun `Parent Scope binder gets generated`() {
+    fun `Bind ParentScope with @Scope annotation`() {
         val compilation = Compiler.javac()
             .withProcessors(MagnetProcessor())
             .compile(
-                withResource("ParentScope.java"),
+                withResource("Scope3_1.java"),
                 withResource("Scope3.java")
             )
         assertThat(compilation).succeeded()
 
         CompilationSubject.assertThat(compilation)
-            .generatedSourceFile("test/MagnetInstanceScope3")
-            .hasSourceEquivalentTo(withResource("generated/MagnetInstanceScope3.java"))
+            .generatedSourceFile("test/MagnetScope3Implementation")
+            .hasSourceEquivalentTo(withResource("expected/MagnetScope3Implementation.java"))
+
+    }
+
+    @Test
+    fun `Bind ParentScope without @Scope annotation`() {
+        val compilation = Compiler.javac()
+            .withProcessors(MagnetProcessor())
+            .compile(
+                withResource("Scope7_1.java"),
+                withResource("Scope7.java")
+            )
+        assertThat(compilation).succeeded()
+
+        CompilationSubject.assertThat(compilation)
+            .generatedSourceFile("test/MagnetScope7Implementation")
+            .hasSourceEquivalentTo(withResource("expected/MagnetScope7Implementation.java"))
+
+    }
+
+    @Test
+    fun `Scope must be interface`() {
+        val compilation = Compiler.javac()
+            .withProcessors(MagnetProcessor())
+            .compile(
+                withResource("Scope4.java")
+            )
+        assertThat(compilation).failed()
+        assertThat(compilation).hadErrorContaining("interface")
+
+    }
+
+    @Test
+    fun `Getters in inherited interfaces`() {
+        val compilation = Compiler.javac()
+            .withProcessors(MagnetProcessor())
+            .compile(
+                withResource("Scope5_1.java"),
+                withResource("Scope5_2.java"),
+                withResource("Scope5_3.java"),
+                withResource("Scope5.java")
+            )
+        assertThat(compilation).succeeded()
+
+        CompilationSubject.assertThat(compilation)
+            .generatedSourceFile("test/MagnetScope5Implementation")
+            .hasSourceEquivalentTo(withResource("expected/MagnetScope5Implementation.java"))
+
+    }
+
+    @Test
+    fun `Scope cannot inherit from another scope`() {
+        val compilation = Compiler.javac()
+            .withProcessors(MagnetProcessor())
+            .compile(
+                withResource("Scope6.java"),
+                withResource("Scope6_1.java")
+            )
+        assertThat(compilation).failed()
+        assertThat(compilation).hadErrorContaining("cannot inherit")
 
     }
 

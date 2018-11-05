@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package magnet.processor.instances.siblingtypes
+package magnet.processor.instances.siblings
 
 import com.squareup.javapoet.ArrayTypeName
 import com.squareup.javapoet.ClassName

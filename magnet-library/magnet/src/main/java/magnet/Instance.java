@@ -114,9 +114,10 @@ public @interface Instance {
      */
     String selector() default SelectorFilter.DEFAULT_SELECTOR;
 
-    /**
-     * Magnet ignores this annotation when this flag is set to <code>true</code>.
-     */
+    /** Custom factory to be used for creating instance instead of the generated one. */
+    Class<? extends Factory> factory() default Factory.class;
+
+    /** Magnet ignores this annotation when this flag is set to <code>true</code>. */
     boolean disabled() default false;
 
 }

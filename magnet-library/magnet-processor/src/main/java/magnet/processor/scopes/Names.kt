@@ -1,4 +1,4 @@
 package magnet.processor.scopes
 
-fun Model.Scope.getGeneratedScopeImplementationName(): String = "MagnetInstance${this.name}"
-fun Model.Scope.getGeneratedScopeFactoryName(): String = "${this.name}MagnetFactory"
+fun Model.Scope.getGeneratedScopeImplementationName(): String = "Magnet${this.name}Implementation"
+fun Model.Scope.getGeneratedScopeFactoryName(): String = "Magnet${this.name}Factory"

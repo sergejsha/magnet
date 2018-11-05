@@ -3,8 +3,8 @@ package app.extension;
 import app.HomeRepository;
 import app.Page;
 import app.UserData;
+import magnet.ScopeContainer;
 import magnet.internal.InstanceFactory;
-import magnet.internal.ScopeContainer;
 
 public final class HomePageMagnetFactory extends InstanceFactory<Page> {
 

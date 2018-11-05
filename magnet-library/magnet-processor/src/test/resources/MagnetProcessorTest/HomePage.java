@@ -4,7 +4,7 @@ import app.HomeRepository;
 import app.Page;
 import app.UserData;
 import magnet.Instance;
-import magnet.internal.ScopeContainer;
+import magnet.ScopeContainer;
 
 @Instance(type = Page.class)
 class HomePage implements Page {

@@ -16,6 +16,7 @@
 
 package magnet.internal;
 
+import magnet.ScopeContainer;
 import magnet.Scoping;
 import org.junit.Before;
 import org.junit.Test;

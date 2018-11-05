@@ -21,6 +21,7 @@ import com.squareup.javapoet.ParameterizedTypeName
 import com.squareup.javapoet.TypeName
 import com.squareup.javapoet.WildcardTypeName
 import magnet.Classifier
+import magnet.ParentScope
 import magnet.Scope
 import magnet.processor.MagnetProcessorEnv
 import magnet.processor.common.CommonModel
@@ -28,6 +29,7 @@ import magnet.processor.common.CompilationException
 import magnet.processor.common.ValidationException
 import magnet.processor.common.eachAnnotationAttributeOf
 import javax.lang.model.element.Element
+import javax.lang.model.element.ElementKind
 import javax.lang.model.element.ExecutableElement
 import javax.lang.model.element.TypeElement
 import javax.lang.model.element.VariableElement
@@ -36,14 +38,42 @@ import javax.lang.model.type.TypeMirror
 import javax.lang.model.util.ElementScanner6
 
 internal class ScopeParser(
-    env: MagnetProcessorEnv
+    private val env: MagnetProcessorEnv
 ) {
 
     private val scopeVisitor = ScopeVisitor(env)
 
     fun parse(element: TypeElement): Model.Scope {
-        element.accept(scopeVisitor, null)
+        scopeVisitor.startType(element)
+
+        var interfaces = element.interfaces
+        while (interfaces.isNotEmpty()) {
+            interfaces = visitInterfaces(interfaces)
+        }
+
         return scopeVisitor.createScope()
+    }
+
+    private fun visitInterfaces(interfaces: List<TypeMirror>): List<TypeMirror> {
+        if (interfaces.isNotEmpty()) {
+            val moreInterfaces = mutableListOf<TypeMirror>()
+            for (superTypeMirror in interfaces) {
+                env.types.asElement(superTypeMirror)?.let { superElement ->
+                    if (superElement is TypeElement) {
+                        if (superElement.getAnnotation(Scope::class.java) != null) {
+                            throw ValidationException(
+                                element = superElement,
+                                message = "Scope cannot inherit from another scope."
+                            )
+                        }
+                        scopeVisitor.continueType(superElement)
+                        moreInterfaces.addAll(superElement.interfaces)
+                    }
+                }
+            }
+            return moreInterfaces
+        }
+        return emptyList()
     }
 
 }
@@ -60,13 +90,20 @@ private class ScopeVisitor(
     private var scopeType: ClassName? = null
 
     override fun visitType(e: TypeElement, p: Unit?) {
-        clear()
-        scopeType = when (val type = TypeName.get(e.asType())) {
-            is ClassName -> type
-            else -> throw ValidationException(
-                element = e,
-                message = "Scope declaration interface must not be parametrized."
-            )
+        if (scopeType == null) {
+            scopeType = when (val type = TypeName.get(e.asType())) {
+                is ClassName -> {
+                    if (e.kind != ElementKind.INTERFACE) throw ValidationException(
+                        element = e,
+                        message = "Scope must be declared as an interface."
+                    )
+                    type
+                }
+                else -> throw ValidationException(
+                    element = e,
+                    message = "Scope declaration interface must not be parametrized."
+                )
+            }
         }
         super.visitType(e, p)
     }
@@ -83,11 +120,9 @@ private class ScopeVisitor(
     override fun visitVariable(e: VariableElement, p: Unit?) {
         methodBuilder?.let {
             val typeMirror = e.asType()
-            val typeElement = env.types.asElement(typeMirror)
-            val hasScopeAnnotation = typeElement.getAnnotation(Scope::class.java) != null
-            it.params.add(e.toInstance(typeMirror, hasScopeAnnotation))
+            val isParentScope = e.getAnnotation(ParentScope::class.java) != null
+            it.params.add(e.toInstance(typeMirror, isParentScope))
         }
-
         super.visitVariable(e, p)
     }
 
@@ -96,7 +131,7 @@ private class ScopeVisitor(
             when (method.element.returnType.kind) {
                 TypeKind.VOID -> {
                     val binderMethod = method.toBindMethod()
-                    if (binderMethod.instance.isScope) {
+                    if (binderMethod.instance.isParentScope) {
                         bindParentScopeMethod = binderMethod
                     } else {
                         bindMethods.add(binderMethod)
@@ -115,17 +150,20 @@ private class ScopeVisitor(
             bindParentScopeMethod = bindParentScopeMethod,
             bindMethods = bindMethods.toList(),
             getterMethods = getterMethods.toList()
-        ).also {
-            clear()
-        }
+        )
     }
 
-    fun clear() {
+    fun startType(element: TypeElement) {
         methodBuilder = null
         bindParentScopeMethod = null
         scopeType = null
         bindMethods.clear()
         getterMethods.clear()
+        element.accept(this, null)
+    }
+
+    fun continueType(element: Element) {
+        element.accept(this, null)
     }
 
 }
@@ -162,7 +200,7 @@ private class MethodBuilder(
 
 }
 
-private fun Element.toInstance(typeMirror: TypeMirror, hasScopeAnnotation: Boolean): CommonModel.Instance {
+private fun Element.toInstance(typeMirror: TypeMirror, isParentScope: Boolean): CommonModel.Instance {
     val typeName = TypeName.get(typeMirror)
     val name = simpleName.toString()
     return when (typeName) {
@@ -185,7 +223,7 @@ private fun Element.toInstance(typeMirror: TypeMirror, hasScopeAnnotation: Boole
                     type = parameterType,
                     classifier = getClassifier(),
                     cardinality = CommonModel.Cardinality.Many,
-                    isScope = hasScopeAnnotation
+                    isParentScope = isParentScope
                 )
             } else {
                 CommonModel.Instance(
@@ -193,7 +231,7 @@ private fun Element.toInstance(typeMirror: TypeMirror, hasScopeAnnotation: Boole
                     type = typeName,
                     classifier = getClassifier(),
                     cardinality = getSingleOrOptionalCardinality(),
-                    isScope = hasScopeAnnotation
+                    isParentScope = isParentScope
                 )
             }
         }
@@ -204,7 +242,7 @@ private fun Element.toInstance(typeMirror: TypeMirror, hasScopeAnnotation: Boole
                 type = typeName.eraseParameterTypes(this),
                 classifier = getClassifier(),
                 cardinality = getSingleOrOptionalCardinality(),
-                isScope = hasScopeAnnotation
+                isParentScope = isParentScope
             )
         }
 
@@ -213,7 +251,7 @@ private fun Element.toInstance(typeMirror: TypeMirror, hasScopeAnnotation: Boole
             type = typeName,
             classifier = getClassifier(),
             cardinality = getSingleOrOptionalCardinality(),
-            isScope = hasScopeAnnotation
+            isParentScope = isParentScope
         )
     }
 }
@@ -248,6 +286,3 @@ private fun WildcardTypeName.eraseParameterTypes(element: Element): TypeName {
     }
     return upperBounds[0]
 }
-
-
-
