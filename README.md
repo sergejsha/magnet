@@ -75,16 +75,16 @@ Custom selectors are easy to write. For more details checkout [magnetx-selector-
 Kotlin
 ```gradle
 dependencies {
-    api 'de.halfbit:magnet-kotlin:2.5'
-    kapt 'de.halfbit:magnet-processor:2.5'
+    api 'de.halfbit:magnet-kotlin:2.8'
+    kapt 'de.halfbit:magnet-processor:2.8'
 }
 ```
 
 Java
 ```gradle
 dependencies {
-    api 'de.halfbit:magnet:2.5'
-    annotationProcessor 'de.halfbit:magnet-processor:2.5'
+    api 'de.halfbit:magnet:2.8'
+    annotationProcessor 'de.halfbit:magnet-processor:2.8'
 }
 ```
 
@@ -92,10 +92,6 @@ dependencies {
 ```proguard 
 -keep class magnet.internal.MagnetIndexer { *; }
 ```
-
-# Support
-
-Magnet is provided for free, without any support. If you consider using Magnet in your commercial product and you need support or training, feel free to <a href="mailto:info@halfbit.de?subject=Magnet,%20Technical%20support">contact me</a>.
 
 # License
 ```
