@@ -22,11 +22,6 @@ import java.lang.annotation.Target;
 
 import static java.lang.annotation.RetentionPolicy.CLASS;
 
-/**
- * This is the marker-annotation used by Magnet to identify the top level project,
- * where all registered @Instance-annotated classes come together and get indexed.
- * There must be a single class in the whole project annotated with this annotation.
- */
 @Retention(CLASS)
 @Target({ElementType.TYPE})
 public @interface Magnetizer {}

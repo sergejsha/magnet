@@ -4,8 +4,8 @@ import magnet.ParentScope;
 import magnet.Scope;
 
 @Scope
-interface Scope3 {
+interface Scope7 {
 
-    void bind(@ParentScope Scope3_1 scope);
+    void bind(@ParentScope Scope7_1 scope);
 
 }

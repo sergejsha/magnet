@@ -16,6 +16,7 @@
 
 package magnet;
 
+/** Custom factory to be used with {@link Instance#factory()}. */
 public interface Factory<T> {
     T create(ScopeContainer scope, Class<T> type, String classifier);
 }

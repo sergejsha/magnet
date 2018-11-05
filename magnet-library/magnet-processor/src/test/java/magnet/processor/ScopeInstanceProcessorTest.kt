@@ -43,11 +43,11 @@ class ScopeInstanceProcessorTest {
     }
 
     @Test
-    fun `Parent Scope binder`() {
+    fun `Bind ParentScope with @Scope annotation`() {
         val compilation = Compiler.javac()
             .withProcessors(MagnetProcessor())
             .compile(
-                withResource("ParentScope.java"),
+                withResource("Scope3_1.java"),
                 withResource("Scope3.java")
             )
         assertThat(compilation).succeeded()
@@ -55,6 +55,22 @@ class ScopeInstanceProcessorTest {
         CompilationSubject.assertThat(compilation)
             .generatedSourceFile("test/MagnetScope3Implementation")
             .hasSourceEquivalentTo(withResource("expected/MagnetScope3Implementation.java"))
+
+    }
+
+    @Test
+    fun `Bind ParentScope without @Scope annotation`() {
+        val compilation = Compiler.javac()
+            .withProcessors(MagnetProcessor())
+            .compile(
+                withResource("Scope7_1.java"),
+                withResource("Scope7.java")
+            )
+        assertThat(compilation).succeeded()
+
+        CompilationSubject.assertThat(compilation)
+            .generatedSourceFile("test/MagnetScope7Implementation")
+            .hasSourceEquivalentTo(withResource("expected/MagnetScope7Implementation.java"))
 
     }
 

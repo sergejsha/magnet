@@ -21,6 +21,7 @@ import com.squareup.javapoet.ParameterizedTypeName
 import com.squareup.javapoet.TypeName
 import com.squareup.javapoet.WildcardTypeName
 import magnet.Classifier
+import magnet.ParentScope
 import magnet.Scope
 import magnet.processor.MagnetProcessorEnv
 import magnet.processor.common.CommonModel
@@ -119,9 +120,8 @@ private class ScopeVisitor(
     override fun visitVariable(e: VariableElement, p: Unit?) {
         methodBuilder?.let {
             val typeMirror = e.asType()
-            val typeElement = env.types.asElement(typeMirror)
-            val hasScopeAnnotation = typeElement.getAnnotation(Scope::class.java) != null
-            it.params.add(e.toInstance(typeMirror, hasScopeAnnotation))
+            val isParentScope = e.getAnnotation(ParentScope::class.java) != null
+            it.params.add(e.toInstance(typeMirror, isParentScope))
         }
         super.visitVariable(e, p)
     }
@@ -131,7 +131,7 @@ private class ScopeVisitor(
             when (method.element.returnType.kind) {
                 TypeKind.VOID -> {
                     val binderMethod = method.toBindMethod()
-                    if (binderMethod.instance.isScope) {
+                    if (binderMethod.instance.isParentScope) {
                         bindParentScopeMethod = binderMethod
                     } else {
                         bindMethods.add(binderMethod)
@@ -200,7 +200,7 @@ private class MethodBuilder(
 
 }
 
-private fun Element.toInstance(typeMirror: TypeMirror, hasScopeAnnotation: Boolean): CommonModel.Instance {
+private fun Element.toInstance(typeMirror: TypeMirror, isParentScope: Boolean): CommonModel.Instance {
     val typeName = TypeName.get(typeMirror)
     val name = simpleName.toString()
     return when (typeName) {
@@ -223,7 +223,7 @@ private fun Element.toInstance(typeMirror: TypeMirror, hasScopeAnnotation: Boole
                     type = parameterType,
                     classifier = getClassifier(),
                     cardinality = CommonModel.Cardinality.Many,
-                    isScope = hasScopeAnnotation
+                    isParentScope = isParentScope
                 )
             } else {
                 CommonModel.Instance(
@@ -231,7 +231,7 @@ private fun Element.toInstance(typeMirror: TypeMirror, hasScopeAnnotation: Boole
                     type = typeName,
                     classifier = getClassifier(),
                     cardinality = getSingleOrOptionalCardinality(),
-                    isScope = hasScopeAnnotation
+                    isParentScope = isParentScope
                 )
             }
         }
@@ -242,7 +242,7 @@ private fun Element.toInstance(typeMirror: TypeMirror, hasScopeAnnotation: Boole
                 type = typeName.eraseParameterTypes(this),
                 classifier = getClassifier(),
                 cardinality = getSingleOrOptionalCardinality(),
-                isScope = hasScopeAnnotation
+                isParentScope = isParentScope
             )
         }
 
@@ -251,7 +251,7 @@ private fun Element.toInstance(typeMirror: TypeMirror, hasScopeAnnotation: Boole
             type = typeName,
             classifier = getClassifier(),
             cardinality = getSingleOrOptionalCardinality(),
-            isScope = hasScopeAnnotation
+            isParentScope = isParentScope
         )
     }
 }

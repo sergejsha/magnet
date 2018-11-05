@@ -16,14 +16,12 @@
 
 package magnet;
 
-import magnet.internal.InternalFactory;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.Target;
 
-public final class Magnet {
+import static java.lang.annotation.RetentionPolicy.CLASS;
 
-    private Magnet() { }
-
-    public static <T> T createScope(Class<T> scopeType) {
-        return InternalFactory.createScope(scopeType);
-    }
-
-}
+@Retention(CLASS)
+@Target({ElementType.PARAMETER})
+public @interface ParentScope {}
