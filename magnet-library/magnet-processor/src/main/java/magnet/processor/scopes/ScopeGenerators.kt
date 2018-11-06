@@ -15,11 +15,6 @@ abstract class Generator(
             for (aspect in aspects) aspect.visitScope(scope)
         }
 
-        override fun visitBindParentScope(method: Model.BindMethod) {
-            classGenerator.visitBindParentScope(method)
-            for (aspect in aspects) aspect.visitBindParentScope(method)
-        }
-
         override fun visitBindMethod(method: Model.BindMethod) {
             classGenerator.visitBindMethod(method)
             for (aspect in aspects) aspect.visitBindMethod(method)
@@ -28,6 +23,11 @@ abstract class Generator(
         override fun visitGetterMethod(method: Model.GetterMethod) {
             classGenerator.visitGetterMethod(method)
             for (aspect in aspects) aspect.visitGetterMethod(method)
+        }
+
+        override fun visitCreateSubscopeMethod(method: Model.CreateSubscopeMethod) {
+            classGenerator.visitCreateSubscopeMethod(method)
+            for (aspect in aspects) aspect.visitCreateSubscopeMethod(method)
         }
 
     }

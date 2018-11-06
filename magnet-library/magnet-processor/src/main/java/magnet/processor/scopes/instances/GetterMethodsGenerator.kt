@@ -63,12 +63,12 @@ private fun MethodSpec.Builder.addReturnInstanceStatement(
 ): MethodSpec.Builder =
     if (instance.classifier == Classifier.NONE) {
         addStatement(
-            "return requireScopeContainer().\$L(\$T.class, \$T.NONE)",
+            "return $SCOPE_CONTAINER_FIELD_NAME.\$L(\$T.class, \$T.NONE)",
             methodName, instance.type, Classifier::class.java
         )
     } else {
         addStatement(
-            "return requireScopeContainer().\$L(\$T.class, \$S)",
+            "return $SCOPE_CONTAINER_FIELD_NAME.\$L(\$T.class, \$S)",
             methodName, instance.type, instance.classifier
         )
     }

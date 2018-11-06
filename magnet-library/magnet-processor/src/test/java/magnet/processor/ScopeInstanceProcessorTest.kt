@@ -59,11 +59,10 @@ class ScopeInstanceProcessorTest {
     }
 
     @Test
-    fun `Bind ParentScope without @Scope annotation`() {
+    fun `Generate scope without parent`() {
         val compilation = Compiler.javac()
             .withProcessors(MagnetProcessor())
             .compile(
-                withResource("Scope7_1.java"),
                 withResource("Scope7.java")
             )
         assertThat(compilation).succeeded()
@@ -75,7 +74,7 @@ class ScopeInstanceProcessorTest {
     }
 
     @Test
-    fun `Scope must be interface`() {
+    fun `Scope must be an interface`() {
         val compilation = Compiler.javac()
             .withProcessors(MagnetProcessor())
             .compile(

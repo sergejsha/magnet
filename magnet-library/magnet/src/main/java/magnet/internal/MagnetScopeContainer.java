@@ -221,8 +221,7 @@ final class MagnetScopeContainer implements ScopeContainer, FactoryFilter {
         return object;
     }
 
-    //@Override
-    public void registerInstanceInScope(String key, RuntimeInstance instance) {
+    void registerInstanceInScope(String key, RuntimeInstance instance) {
         if (depth == instance.getScopeDepth()) {
             RuntimeInstance existing = instances.put(key, instance);
             if (existing != null) {
@@ -239,9 +238,7 @@ final class MagnetScopeContainer implements ScopeContainer, FactoryFilter {
         parent.registerInstanceInScope(key, instance);
     }
 
-    @SuppressWarnings("unchecked")
-    //@Override
-    public <T> RuntimeInstance<T> findDeepInstance(String key) {
+    @SuppressWarnings("unchecked") <T> RuntimeInstance<T> findDeepInstance(String key) {
         RuntimeInstance<T> instance = instances.get(key);
         if (instance == null && parent != null) {
             return parent.findDeepInstance(key);

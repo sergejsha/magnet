@@ -4,8 +4,4 @@ import magnet.ParentScope;
 import magnet.Scope;
 
 @Scope
-interface Scope3 {
-
-    void bind(@ParentScope Scope3_1 scope);
-
-}
+interface Scope3 extends ParentScope {}

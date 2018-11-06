@@ -127,8 +127,7 @@ final class MagnetInstanceManager implements InstanceManager {
         if (scopeFactory == null) {
             throw new IllegalStateException(
                 String.format(
-                    "ScopeFactory of type %s cannot be found." +
-                        " Make sure to define interface annotated with %s annotation",
+                    "ScopeFactory cannot be found. Make sure given %s type is annotated with %s annotation.",
                     scopeType, Scope.class
                 )
             );

@@ -7,9 +7,9 @@ class Model private constructor() {
 
     class Scope(
         val type: ClassName,
-        val bindParentScopeMethod: BindMethod?,
         val bindMethods: List<BindMethod>,
-        val getterMethods: List<GetterMethod>
+        val getterMethods: List<GetterMethod>,
+        val createSubscopeMethod: CreateSubscopeMethod?
     ) {
 
         val name: String get() = type.simpleName()
@@ -17,14 +17,14 @@ class Model private constructor() {
 
         fun accept(visitor: Visitor) {
             visitor.visitScope(this)
-            bindParentScopeMethod?.let {
-                visitor.visitBindParentScope(bindParentScopeMethod)
-            }
             for (method in bindMethods) {
                 visitor.visitBindMethod(method)
             }
             for (method in getterMethods) {
                 visitor.visitGetterMethod(method)
+            }
+            createSubscopeMethod?.let {
+                visitor.visitCreateSubscopeMethod(it)
             }
         }
     }
@@ -39,11 +39,13 @@ class Model private constructor() {
         val instance: CommonModel.Instance
     )
 
+    class CreateSubscopeMethod
+
     interface Visitor {
         fun visitScope(scope: Scope) {}
-        fun visitBindParentScope(method: BindMethod) {}
         fun visitBindMethod(method: BindMethod) {}
         fun visitGetterMethod(method: GetterMethod) {}
+        fun visitCreateSubscopeMethod(method: CreateSubscopeMethod) {}
     }
 
 }

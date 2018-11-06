@@ -24,8 +24,7 @@ class CommonModel private constructor() {
         val name: String,
         val type: TypeName,
         val classifier: String,
-        val cardinality: Cardinality,
-        val isParentScope: Boolean
+        val cardinality: Cardinality
     )
 
     sealed class Cardinality {

@@ -18,6 +18,7 @@ package magnet;
 
 import java.util.List;
 
+/** Runtime container for instances. */
 public interface ScopeContainer {
 
     /** Returns an object from the scope or {@code null}, if object was not found. */
@@ -44,7 +45,7 @@ public interface ScopeContainer {
     /** Bind given instance into this scope. */
     <T> ScopeContainer bind(Class<T> type, T instance, String classifier);
 
-    /** Creates a child subscope of this scope. */
+    /** Creates a new child scope of this scope. */
     ScopeContainer createSubscope();
 
 }

@@ -10,8 +10,10 @@ import static java.lang.annotation.RetentionPolicy.CLASS;
 @Retention(CLASS)
 @Target({ElementType.TYPE})
 public @interface Index {
+
     Class factoryType();
     Class factoryClass();
     String instanceType();
     String classifier();
+
 }
