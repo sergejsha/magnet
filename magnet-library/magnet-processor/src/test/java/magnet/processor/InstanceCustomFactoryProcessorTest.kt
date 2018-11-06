@@ -28,4 +28,21 @@ class InstanceCustomFactoryProcessorTest {
 
     }
 
+    @Test
+    fun `Use Instance type if Factory is of a parametrized type`() {
+        val compilation = Compiler.javac()
+            .withProcessors(MagnetProcessor())
+            .compile(
+                withResource("Interface2.java"),
+                withResource("Implementation2.java"),
+                withResource("CustomFactory2.java")
+            )
+        CompilationSubject.assertThat(compilation).succeeded()
+
+        CompilationSubject.assertThat(compilation)
+            .generatedSourceFile("test/Implementation2MagnetFactory")
+            .hasSourceEquivalentTo(withResource("expected/Implementation2MagnetFactory.java"))
+
+    }
+
 }
