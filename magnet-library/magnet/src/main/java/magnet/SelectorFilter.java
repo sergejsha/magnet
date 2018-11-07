@@ -16,11 +16,10 @@
 
 package magnet;
 
-/** Experimental. */
+/** Selector handler to handle {@link Instance#selector()} value. */
 public abstract class SelectorFilter {
 
     public static final String DEFAULT_SELECTOR = "";
-
     public abstract boolean filter(String[] selector);
 
 }

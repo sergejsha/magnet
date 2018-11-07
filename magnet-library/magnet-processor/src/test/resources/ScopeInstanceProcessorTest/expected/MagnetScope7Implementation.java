@@ -1,14 +1,10 @@
 package test;
 
-import magnet.internal.InstanceScope;
+import magnet.ScopeContainer;
 
-final class MagnetScope7Implementation extends InstanceScope implements Scope7 {
-    public MagnetScope7Implementation() {
-        super(true);
-    }
-
-    @Override
-    public void bind(Scope7_1 scope) {
-        setParentScope((InstanceScope) scope);
+final class MagnetScope7Implementation implements Scope7 {
+    private final ScopeContainer scopeContainer;
+    public MagnetScope7Implementation(ScopeContainer scopeContainer) {
+        this.scopeContainer = scopeContainer;
     }
 }

@@ -1,21 +1,22 @@
 package test;
 
 import magnet.Classifier;
-import magnet.internal.InstanceScope;
+import magnet.ScopeContainer;
 
-final class MagnetScope2Implementation extends InstanceScope implements Scope2 {
-    public MagnetScope2Implementation() {
-        super(false);
+final class MagnetScope2Implementation implements Scope2 {
+    private final ScopeContainer scopeContainer;
+    public MagnetScope2Implementation(ScopeContainer scopeContainer) {
+        this.scopeContainer = scopeContainer;
     }
 
     @Override
     public void bind1(String value) {
-        requireScopeContainer().bind(String.class, value, Classifier.NONE);
+        scopeContainer.bind(String.class, value, Classifier.NONE);
     }
 
     @Override
     public void bind2(String value) {
-        requireScopeContainer().bind(String.class, value, "bind2");
+        scopeContainer.bind(String.class, value, "bind2");
     }
 
 }

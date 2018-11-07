@@ -26,13 +26,13 @@ internal class BinderMethodsGenerator : AspectGenerator() {
             builder = if (classifier == Classifier.NONE) {
                 builder
                     .addStatement(
-                        "requireScopeContainer().bind(\$T.class, \$L, \$T.NONE)",
+                        "$SCOPE_CONTAINER_FIELD_NAME.bind(\$T.class, \$L, \$T.NONE)",
                         type, name, Classifier::class.java
                     )
             } else {
                 builder
                     .addStatement(
-                        "requireScopeContainer().bind(\$T.class, \$L, \$S)",
+                        "$SCOPE_CONTAINER_FIELD_NAME.bind(\$T.class, \$L, \$S)",
                         type, name, classifier
                     )
             }

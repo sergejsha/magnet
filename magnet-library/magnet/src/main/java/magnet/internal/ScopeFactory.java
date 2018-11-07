@@ -16,7 +16,9 @@
 
 package magnet.internal;
 
+import magnet.ScopeContainer;
+
 /* Subject to change. For internal use only. */
 public abstract class ScopeFactory<T> {
-    public abstract T create();
+    public abstract T create(ScopeContainer scopeContainer);
 }

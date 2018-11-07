@@ -148,7 +148,7 @@ internal abstract class AnnotationParser<in E : Element>(
         var scoping = Scoping.TOPMOST.name
         var classifier = Classifier.NONE
         var selector = SelectorFilter.DEFAULT_SELECTOR
-        var factory: ClassName? = null
+        var factory: TypeName? = null
         var disabled = false
 
         for (annotationMirror in element.annotationMirrors) {

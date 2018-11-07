@@ -21,7 +21,6 @@ import com.squareup.javapoet.ParameterizedTypeName
 import com.squareup.javapoet.TypeName
 import com.squareup.javapoet.WildcardTypeName
 import magnet.Classifier
-import magnet.ParentScope
 import magnet.Scope
 import magnet.processor.MagnetProcessorEnv
 import magnet.processor.common.CommonModel
@@ -41,7 +40,7 @@ internal class ScopeParser(
     private val env: MagnetProcessorEnv
 ) {
 
-    private val scopeVisitor = ScopeVisitor(env)
+    private val scopeVisitor = ScopeVisitor()
 
     fun parse(element: TypeElement): Model.Scope {
         scopeVisitor.startType(element)
@@ -78,13 +77,11 @@ internal class ScopeParser(
 
 }
 
-private class ScopeVisitor(
-    private val env: MagnetProcessorEnv
-) : ElementScanner6<Unit, Unit>() {
+private class ScopeVisitor : ElementScanner6<Unit, Unit>() {
 
     private val bindMethods = mutableListOf<Model.BindMethod>()
     private val getterMethods = mutableListOf<Model.GetterMethod>()
-    private var bindParentScopeMethod: Model.BindMethod? = null
+    private var createSubscopeMethod: Model.CreateSubscopeMethod? = null
 
     private var methodBuilder: MethodBuilder? = null
     private var scopeType: ClassName? = null
@@ -120,8 +117,7 @@ private class ScopeVisitor(
     override fun visitVariable(e: VariableElement, p: Unit?) {
         methodBuilder?.let {
             val typeMirror = e.asType()
-            val isParentScope = e.getAnnotation(ParentScope::class.java) != null
-            it.params.add(e.toInstance(typeMirror, isParentScope))
+            it.params.add(e.toInstance(typeMirror))
         }
         super.visitVariable(e, p)
     }
@@ -129,15 +125,14 @@ private class ScopeVisitor(
     private fun maybeCompleteMethod() {
         methodBuilder?.let { method ->
             when (method.element.returnType.kind) {
-                TypeKind.VOID -> {
-                    val binderMethod = method.toBindMethod()
-                    if (binderMethod.instance.isParentScope) {
-                        bindParentScopeMethod = binderMethod
+                TypeKind.VOID -> bindMethods.add(method.toBindMethod())
+                else -> {
+                    if (method.name == "createSubscope" && method.params.size == 1) {
+                        createSubscopeMethod = method.toCreateSubscopeMethod()
                     } else {
-                        bindMethods.add(binderMethod)
+                        getterMethods.add(method.toGetterMethod())
                     }
                 }
-                else -> getterMethods.add(method.toGetterMethod())
             }
             methodBuilder = null
         }
@@ -147,15 +142,14 @@ private class ScopeVisitor(
         maybeCompleteMethod()
         return Model.Scope(
             type = requireNotNull(scopeType),
-            bindParentScopeMethod = bindParentScopeMethod,
             bindMethods = bindMethods.toList(),
-            getterMethods = getterMethods.toList()
+            getterMethods = getterMethods.toList(),
+            createSubscopeMethod = createSubscopeMethod
         )
     }
 
     fun startType(element: TypeElement) {
         methodBuilder = null
-        bindParentScopeMethod = null
         scopeType = null
         bindMethods.clear()
         getterMethods.clear()
@@ -183,7 +177,7 @@ private class MethodBuilder(
         }
         return Model.GetterMethod(
             name = name,
-            instance = element.toInstance(element.returnType, false)
+            instance = element.toInstance(element.returnType)
         )
     }
 
@@ -198,9 +192,13 @@ private class MethodBuilder(
         )
     }
 
+    fun toCreateSubscopeMethod(): Model.CreateSubscopeMethod {
+        return Model.CreateSubscopeMethod()
+    }
+
 }
 
-private fun Element.toInstance(typeMirror: TypeMirror, isParentScope: Boolean): CommonModel.Instance {
+private fun Element.toInstance(typeMirror: TypeMirror): CommonModel.Instance {
     val typeName = TypeName.get(typeMirror)
     val name = simpleName.toString()
     return when (typeName) {
@@ -222,16 +220,14 @@ private fun Element.toInstance(typeMirror: TypeMirror, isParentScope: Boolean): 
                     name = name,
                     type = parameterType,
                     classifier = getClassifier(),
-                    cardinality = CommonModel.Cardinality.Many,
-                    isParentScope = isParentScope
+                    cardinality = CommonModel.Cardinality.Many
                 )
             } else {
                 CommonModel.Instance(
                     name = name,
                     type = typeName,
                     classifier = getClassifier(),
-                    cardinality = getSingleOrOptionalCardinality(),
-                    isParentScope = isParentScope
+                    cardinality = getSingleOrOptionalCardinality()
                 )
             }
         }
@@ -241,8 +237,7 @@ private fun Element.toInstance(typeMirror: TypeMirror, isParentScope: Boolean): 
                 name = name,
                 type = typeName.eraseParameterTypes(this),
                 classifier = getClassifier(),
-                cardinality = getSingleOrOptionalCardinality(),
-                isParentScope = isParentScope
+                cardinality = getSingleOrOptionalCardinality()
             )
         }
 
@@ -250,8 +245,7 @@ private fun Element.toInstance(typeMirror: TypeMirror, isParentScope: Boolean): 
             name = name,
             type = typeName,
             classifier = getClassifier(),
-            cardinality = getSingleOrOptionalCardinality(),
-            isParentScope = isParentScope
+            cardinality = getSingleOrOptionalCardinality()
         )
     }
 }

@@ -1,14 +1,17 @@
 package test;
 
-import magnet.internal.InstanceScope;
+import magnet.ScopeContainer;
+import magnet.internal.InternalFactory;
 
-final class MagnetScope3Implementation extends InstanceScope implements Scope3 {
-    public MagnetScope3Implementation() {
-        super(true);
+final class MagnetScope3Implementation implements Scope3 {
+    private final ScopeContainer scopeContainer;
+    public MagnetScope3Implementation(ScopeContainer scopeContainer) {
+        this.scopeContainer = scopeContainer;
     }
 
     @Override
-    public void bind(Scope3_1 scope) {
-        setParentScope((InstanceScope) scope);
+    public <T> T createSubscope(Class<T> scopeType) {
+        return InternalFactory.createScope(scopeType, scopeContainer.createSubscope());
     }
+
 }

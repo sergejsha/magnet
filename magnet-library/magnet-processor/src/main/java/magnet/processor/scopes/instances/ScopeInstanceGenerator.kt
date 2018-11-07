@@ -10,7 +10,7 @@ internal class ScopeInstanceGenerator : Generator(
         registerAspect(ConstructorGenerator())
         registerAspect(GetterMethodsGenerator())
         registerAspect(BinderMethodsGenerator())
-        registerAspect(BindParentScopeGenerator())
+        registerAspect(CreateSubscopeGenerator())
     }
 
 }

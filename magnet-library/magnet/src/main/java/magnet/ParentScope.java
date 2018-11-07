@@ -16,12 +16,8 @@
 
 package magnet;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.Target;
+public interface ParentScope {
 
-import static java.lang.annotation.RetentionPolicy.CLASS;
+    <T> T createSubscope(Class<T> scopeType);
 
-@Retention(CLASS)
-@Target({ElementType.PARAMETER})
-public @interface ParentScope {}
+}

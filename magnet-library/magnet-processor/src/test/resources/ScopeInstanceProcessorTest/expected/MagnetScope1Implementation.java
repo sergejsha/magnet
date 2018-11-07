@@ -2,40 +2,41 @@ package test;
 
 import java.util.List;
 import magnet.Classifier;
-import magnet.internal.InstanceScope;
+import magnet.ScopeContainer;
 
-final class MagnetScope1Implementation extends InstanceScope implements Scope1 {
-    public MagnetScope1Implementation() {
-        super(false);
+final class MagnetScope1Implementation implements Scope1 {
+    private final ScopeContainer scopeContainer;
+    public MagnetScope1Implementation(ScopeContainer scopeContainer) {
+        this.scopeContainer = scopeContainer;
     }
 
     @Override
     public String getName1() {
-        return requireScopeContainer().getSingle(String.class, Classifier.NONE);
+        return scopeContainer.getSingle(String.class, Classifier.NONE);
     }
 
     @Override
     public String getName2() {
-        return requireScopeContainer().getSingle(String.class, "name2");
+        return scopeContainer.getSingle(String.class, "name2");
     }
 
     @Override
     public String getName3() {
-        return requireScopeContainer().getOptional(String.class, Classifier.NONE);
+        return scopeContainer.getOptional(String.class, Classifier.NONE);
     }
 
     @Override
     public String getName4() {
-        return requireScopeContainer().getOptional(String.class, "name4");
+        return scopeContainer.getOptional(String.class, "name4");
     }
 
     @Override
     public List<String> getName5() {
-        return requireScopeContainer().getMany(String.class, Classifier.NONE);
+        return scopeContainer.getMany(String.class, Classifier.NONE);
     }
 
     @Override
     public List<String> getName6() {
-        return requireScopeContainer().getMany(String.class, "name6");
+        return scopeContainer.getMany(String.class, "name6");
     }
 }

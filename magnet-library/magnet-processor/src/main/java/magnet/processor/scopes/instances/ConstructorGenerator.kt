@@ -1,24 +1,32 @@
 package magnet.processor.scopes.instances
 
+import com.squareup.javapoet.FieldSpec
 import com.squareup.javapoet.MethodSpec
 import com.squareup.javapoet.TypeSpec
+import magnet.ScopeContainer
 import magnet.processor.scopes.AspectGenerator
-import magnet.processor.scopes.Model
 import javax.lang.model.element.Modifier
+
+internal const val SCOPE_CONTAINER_FIELD_NAME = "scopeContainer"
 
 class ConstructorGenerator : AspectGenerator() {
 
-    private lateinit var builder: MethodSpec.Builder
-
-    override fun visitScope(scope: Model.Scope) {
-        val hasParentScope = if (scope.bindParentScopeMethod == null) "false" else "true"
-        builder = MethodSpec.constructorBuilder()
-            .addModifiers(Modifier.PUBLIC)
-            .addStatement("super(\$L)", hasParentScope)
-    }
-
     override fun generate(typeBuilder: TypeSpec.Builder) {
-        typeBuilder.addMethod(builder.build())
+        typeBuilder
+            .addField(
+                FieldSpec
+                    .builder(ScopeContainer::class.java, SCOPE_CONTAINER_FIELD_NAME)
+                    .addModifiers(Modifier.PRIVATE, Modifier.FINAL)
+                    .build()
+            )
+            .addMethod(
+                MethodSpec
+                    .constructorBuilder()
+                    .addModifiers(Modifier.PUBLIC)
+                    .addParameter(ScopeContainer::class.java, SCOPE_CONTAINER_FIELD_NAME)
+                    .addStatement("this.$SCOPE_CONTAINER_FIELD_NAME = $SCOPE_CONTAINER_FIELD_NAME")
+                    .build()
+            )
     }
 
 }

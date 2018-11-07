@@ -1,7 +1,6 @@
 package magnet.processor.scopes.instances
 
 import com.squareup.javapoet.TypeSpec
-import magnet.internal.InstanceScope
 import magnet.processor.scopes.ClassGenerator
 import magnet.processor.scopes.Model
 import magnet.processor.scopes.getGeneratedScopeImplementationName
@@ -16,9 +15,9 @@ internal class ScopeClassGenerator : ClassGenerator() {
 
     override fun visitScope(scope: Model.Scope) {
         this.scope = scope
-        classBuilder = TypeSpec.classBuilder(scope.getGeneratedScopeImplementationName())
+        classBuilder = TypeSpec
+            .classBuilder(scope.getGeneratedScopeImplementationName())
             .addModifiers(Modifier.FINAL)
-            .superclass(InstanceScope::class.java)
             .addSuperinterface(scope.type)
     }
 

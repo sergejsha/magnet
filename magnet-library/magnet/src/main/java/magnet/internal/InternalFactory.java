@@ -16,6 +16,8 @@
 
 package magnet.internal;
 
+import magnet.ScopeContainer;
+
 /* Subject to change. For internal use only. */
 public final class InternalFactory {
 
@@ -23,8 +25,12 @@ public final class InternalFactory {
 
     private InternalFactory() {}
 
-    public static <T> T createScope(Class<T> scopeType) {
-        return INSTANCE_MANAGER.getScopeFactory(scopeType).create();
+    public static <T> T createScope(Class<T> scopeType, ScopeContainer parentScopeContainer) {
+        ScopeContainer scopeContainer = new MagnetScopeContainer(
+            /* parent = */ (MagnetScopeContainer) parentScopeContainer,
+            /* instanceManager = */ INSTANCE_MANAGER
+        );
+        return INSTANCE_MANAGER.getScopeFactory(scopeType).create(scopeContainer);
     }
 
 }
