@@ -13,7 +13,6 @@ public final class MagnetIndexer {
         };
         Map<Class, Object> index = new HashMap<>(16);
         index.put(Implementation3_1MagnetFactory.getType(), new Range(0, 2, ""));
-        Map<Class, ScopeFactory> scopeFactories = new HashMap(0);
-        instanceManager.register(factories, index, scopeFactories);
+        instanceManager.register(factories, index);
     }
 }

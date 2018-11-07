@@ -16,6 +16,5 @@ public final class MagnetIndexer {
         ranges1.put("one", new Range(0, 1, "one"));
         ranges1.put("two", new Range(1, 1, "two"));
         index.put(Implementation4_1MagnetFactory.getType(), ranges1);
-        Map<Class, ScopeFactory> scopeFactories = new HashMap(0);
-        instanceManager.register(factories, index, scopeFactories);
+        instanceManager.register(factories, index);
     }

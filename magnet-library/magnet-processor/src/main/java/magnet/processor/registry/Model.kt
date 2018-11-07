@@ -5,8 +5,7 @@ import com.squareup.javapoet.ClassName
 class Model private constructor() {
 
     class Registry(
-        val instanceFactories: List<InstanceFactory>,
-        val scopeFactories: List<ScopeFactory>
+        val instanceFactories: List<InstanceFactory>
     )
 
     class InstanceFactory(

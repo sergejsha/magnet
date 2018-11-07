@@ -47,7 +47,7 @@ class RegistryProcessor(
 
         val packageElement = env.elements.getPackageElement(INDEX_PACKAGE)
         val registry = if (packageElement != null) registryParser.parse(packageElement)
-        else Model.Registry(instanceFactories = emptyList(), scopeFactories = emptyList())
+        else Model.Registry(instanceFactories = emptyList())
 
         magnetIndexerGenerator
             .generate(registry)

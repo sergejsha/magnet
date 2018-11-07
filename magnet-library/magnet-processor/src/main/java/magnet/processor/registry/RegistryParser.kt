@@ -3,7 +3,6 @@ package magnet.processor.registry
 import com.squareup.javapoet.ClassName
 import magnet.internal.Index
 import magnet.internal.InstanceFactory
-import magnet.internal.ScopeFactory
 import magnet.processor.MagnetProcessorEnv
 import magnet.processor.common.AnnotationValueExtractor
 import magnet.processor.common.isOfAnnotationType
@@ -18,9 +17,8 @@ class RegistryParser(env: MagnetProcessorEnv) {
     fun parse(element: PackageElement): Model.Registry {
 
         val instanceFactories = mutableListOf<Model.InstanceFactory>()
-        val scopeFactories = mutableListOf<Model.ScopeFactory>()
-
         val factoryIndexElements = element.enclosedElements ?: emptyList()
+
         for (factoryIndexElement in factoryIndexElements) {
             factoryIndexElement.annotationValues { factoryType, factoryClass, instanceType, classifier ->
                 when {
@@ -32,20 +30,12 @@ class RegistryParser(env: MagnetProcessorEnv) {
                                 classifier = classifier
                             )
                         )
-                    factoryType.isOfType(ScopeFactory::class.java) ->
-                        scopeFactories.add(
-                            Model.ScopeFactory(
-                                factoryClass = factoryClass,
-                                instanceType = instanceType
-                            )
-                        )
                 }
             }
         }
 
         return Model.Registry(
-            instanceFactories = instanceFactories,
-            scopeFactories = scopeFactories
+            instanceFactories = instanceFactories
         )
     }
 

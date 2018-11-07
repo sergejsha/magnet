@@ -22,7 +22,6 @@ import com.squareup.javapoet.ParameterSpec
 import com.squareup.javapoet.TypeSpec
 import magnet.processor.instances.CodeWriter
 import magnet.processor.registry.instances.InstanceIndexGenerator
-import magnet.processor.registry.scopes.ScopeIndexGenerator
 import javax.lang.model.element.Modifier
 
 private const val INSTANCE_MANAGER = "instanceManager"
@@ -31,13 +30,11 @@ private const val INSTANCE_MANAGER_PACKAGE = "magnet.internal"
 
 class RegistryGenerator {
 
-    private val scopeIndexGenerator = ScopeIndexGenerator()
     private val instanceIndexGenerator = InstanceIndexGenerator()
 
     fun generate(registry: Model.Registry): CodeWriter {
 
         val instanceFactoriesIndex = instanceIndexGenerator.generate(registry)
-        val scopeFactoriesIndex = scopeIndexGenerator.generate(registry)
 
         val registryClassName = ClassName.bestGuess(REGISTRY_CLASS_NAME)
         val factoryRegistryClassName = ClassName.get(INSTANCE_MANAGER_PACKAGE, INSTANCE_MANAGER_NAME)
@@ -52,11 +49,7 @@ class RegistryGenerator {
                     .builder(factoryRegistryClassName, INSTANCE_MANAGER)
                     .build())
                 .addCode(instanceFactoriesIndex)
-                .addCode(scopeFactoriesIndex)
-                .addStatement(
-                    "\$L.register(factories, index, \$L)",
-                    INSTANCE_MANAGER, scopeIndexGenerator.variableName
-                )
+                .addStatement("\$L.register(factories, index)", INSTANCE_MANAGER)
                 .build())
             .build()
 

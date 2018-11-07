@@ -23,7 +23,6 @@ import magnet.processor.common.CompilationException
 import magnet.processor.common.ValidationException
 import magnet.processor.instances.InstanceProcessor
 import magnet.processor.registry.RegistryProcessor
-import magnet.processor.scopes.ScopeProcessor
 import javax.annotation.processing.AbstractProcessor
 import javax.annotation.processing.Filer
 import javax.annotation.processing.ProcessingEnvironment
@@ -39,14 +38,12 @@ import javax.tools.Diagnostic
 class MagnetProcessor : AbstractProcessor() {
 
     private lateinit var env: MagnetProcessorEnv
-    private lateinit var scopeProcessor: ScopeProcessor
     private lateinit var instanceProcessor: InstanceProcessor
     private lateinit var registryProcessor: RegistryProcessor
 
     override fun init(processingEnvironment: ProcessingEnvironment) {
         super.init(processingEnvironment)
         env = MagnetProcessorEnv(processingEnvironment)
-        scopeProcessor = ScopeProcessor(env)
         instanceProcessor = InstanceProcessor(env)
         registryProcessor = RegistryProcessor(env)
     }
@@ -57,9 +54,8 @@ class MagnetProcessor : AbstractProcessor() {
     ): Boolean {
         return try {
             val instancesProcessed = instanceProcessor.process(roundEnv)
-            val scopesProcessed = scopeProcessor.process(roundEnv)
             val registryProcessed = registryProcessor.process(roundEnv)
-            instancesProcessed || scopesProcessed || registryProcessed
+            instancesProcessed || registryProcessed
         } catch (e: ValidationException) {
             env.report(e)
             false
