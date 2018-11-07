@@ -45,4 +45,22 @@ class InstanceCustomFactoryProcessorTest {
 
     }
 
+    @Test
+    fun `Getters are not generated`() {
+        val compilation = Compiler.javac()
+            .withProcessors(MagnetProcessor())
+            .compile(
+                withResource("Interface3.java"),
+                withResource("Implementation3.java"),
+                withResource("CustomFactory3.java")
+            )
+        CompilationSubject.assertThat(compilation).succeeded()
+
+        CompilationSubject.assertThat(compilation)
+            .generatedSourceFile("test/Implementation3MagnetFactory")
+            .hasSourceEquivalentTo(withResource("expected/Implementation3MagnetFactory.java"))
+
+    }
+
+
 }

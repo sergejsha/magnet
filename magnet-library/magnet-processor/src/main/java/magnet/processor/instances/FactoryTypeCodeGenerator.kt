@@ -61,6 +61,7 @@ class FactoryTypeCodeGenerator : FactoryTypeVisitor, CodeGenerator {
 
     private var factoryTypeSpec: TypeSpec? = null
     private var factoryClassName: ClassName? = null
+    private var generateGettersInCreateMethod = false
 
     private lateinit var createMethodCodeBuilder: CodeBlock.Builder
     private var shouldSuppressUncheckedWarning = false
@@ -71,7 +72,9 @@ class FactoryTypeCodeGenerator : FactoryTypeVisitor, CodeGenerator {
     private val aspectGetSelector = Aspect(GetSelectorMethodGenerator())
     private val factoryAttributeCodeGenerator = FactoryAttributeCodeGenerator()
 
-    override fun enterFactoryClass(factoryType: FactoryType) {}
+    override fun enterFactoryClass(factoryType: FactoryType) {
+        generateGettersInCreateMethod = factoryType.customFactoryType == null
+    }
 
     override fun enterCreateMethod(createMethod: CreateMethod) {
         shouldSuppressUncheckedWarning = false
@@ -81,6 +84,10 @@ class FactoryTypeCodeGenerator : FactoryTypeVisitor, CodeGenerator {
     }
 
     override fun visitCreateMethodParameter(parameter: MethodParameter) {
+        if (!generateGettersInCreateMethod) {
+            return
+        }
+
         val isScopeParameter = parameter.name == PARAM_SCOPE_NAME
 
         if (!isScopeParameter) {
