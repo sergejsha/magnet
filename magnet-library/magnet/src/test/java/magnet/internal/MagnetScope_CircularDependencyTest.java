@@ -16,7 +16,7 @@
 
 package magnet.internal;
 
-import magnet.ScopeContainer;
+import magnet.Scope;
 import magnet.Scoping;
 import org.junit.Before;
 import org.junit.Test;
@@ -30,11 +30,11 @@ import java.util.Map;
 @RunWith(JUnit4.class)
 public class MagnetScope_CircularDependencyTest {
 
-    private MagnetScopeContainer scope;
+    private MagnetScope scope;
 
     @Before
     public void before() {
-        scope = new MagnetScopeContainer(null, new StubInstanceManager());
+        scope = new MagnetScope(null, new StubInstanceManager());
     }
 
     @Test(expected = IllegalStateException.class)
@@ -53,7 +53,7 @@ public class MagnetScope_CircularDependencyTest {
     }
 
     private static class MenuItemOneFactory extends InstanceFactory<MenuItem> {
-        @Override public MenuItem create(ScopeContainer scope) {
+        @Override public MenuItem create(Scope scope) {
             scope.getSingle(MenuItem.class, "two");
             return new MenuItemOne();
         }
@@ -61,7 +61,7 @@ public class MagnetScope_CircularDependencyTest {
     }
 
     private static class MenuItemTwoFactory extends InstanceFactory<MenuItem> {
-        @Override public MenuItem create(ScopeContainer scope) {
+        @Override public MenuItem create(Scope scope) {
             scope.getSingle(MenuItem.class, "three");
             return new MenuItemTwo();
         }
@@ -69,7 +69,7 @@ public class MagnetScope_CircularDependencyTest {
     }
 
     private static class MenuItemThreeFactory extends InstanceFactory<MenuItem> {
-        @Override public MenuItem create(ScopeContainer scope) {
+        @Override public MenuItem create(Scope scope) {
             scope.getSingle(MenuItem.class, "one");
             return new MenuItemThree();
         }
@@ -77,7 +77,7 @@ public class MagnetScope_CircularDependencyTest {
     }
 
     private static class MenuItemFourFactory extends InstanceFactory<MenuItem> {
-        @Override public MenuItem create(ScopeContainer scope) {
+        @Override public MenuItem create(Scope scope) {
             scope.getSingle(MenuItem.class, "four");
             return new MenuItemFour();
         }
@@ -85,7 +85,7 @@ public class MagnetScope_CircularDependencyTest {
     }
 
     private static class MenuItemFiveFactory extends InstanceFactory<MenuItem> {
-        @Override public MenuItem create(ScopeContainer scope) {
+        @Override public MenuItem create(Scope scope) {
             return new MenuItemFive(scope);
         }
         @Override public Scoping getScoping() { return Scoping.TOPMOST; }
@@ -114,9 +114,6 @@ public class MagnetScope_CircularDependencyTest {
         ) {
             throw new UnsupportedOperationException();
         }
-        @Override public <T> ScopeFactory<T> getScopeFactory(Class<T> scopeType) {
-            throw new UnsupportedOperationException();
-        }
     }
 
     private interface MenuItem {}
@@ -127,7 +124,7 @@ public class MagnetScope_CircularDependencyTest {
     private static class MenuItemFour implements MenuItem {}
 
     private static class MenuItemFive implements MenuItem {
-        public MenuItemFive(ScopeContainer scope) {
+        public MenuItemFive(Scope scope) {
             scope.getSingle(MenuItem.class, "five");
         }
     }

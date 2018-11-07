@@ -2,7 +2,7 @@ package app.extension;
 
 import app.MenuItem;
 import magnet.Instance;
-import magnet.ScopeContainer;
+import magnet.Scope;
 
 @Instance(
         type = MenuItem.class,
@@ -10,7 +10,7 @@ import magnet.ScopeContainer;
 )
 class HomePageMenuItem implements MenuItem {
 
-    HomePageMenuItem(ScopeContainer scope) {
+    HomePageMenuItem(Scope scope) {
     }
 
     @Override

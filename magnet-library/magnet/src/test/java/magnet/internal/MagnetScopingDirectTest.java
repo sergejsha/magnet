@@ -16,7 +16,7 @@
 
 package magnet.internal;
 
-import magnet.ScopeContainer;
+import magnet.Scope;
 import magnet.Scoping;
 import org.junit.Before;
 import org.junit.Test;
@@ -40,7 +40,7 @@ public class MagnetScopingDirectTest {
     public void before() {
         InstanceManager instanceManager = new StubInstanceManager();
         scope1 = (InstrumentedInstanceScope) new InstrumentedInstanceScope(
-            new MagnetScopeContainer(null, instanceManager))
+            new MagnetScope(null, instanceManager))
             .bind(Dependency1.class, new Dependency1());
 
         scope2 = (InstrumentedInstanceScope) scope1
@@ -139,7 +139,7 @@ public class MagnetScopingDirectTest {
     }
 
     private static class MenuItemOneFactory extends InstanceFactory<MenuItem> {
-        @Override public MenuItem create(ScopeContainer scope) {
+        @Override public MenuItem create(Scope scope) {
             scope.getSingle(Dependency1.class);
             return new MenuItemOne();
         }
@@ -147,7 +147,7 @@ public class MagnetScopingDirectTest {
     }
 
     private static class MenuItemTwoFactory extends InstanceFactory<MenuItem> {
-        @Override public MenuItem create(ScopeContainer scope) {
+        @Override public MenuItem create(Scope scope) {
             scope.getSingle(MenuItem.class, "one");
             scope.getSingle(Dependency2.class);
             return new MenuItemTwo();
@@ -156,7 +156,7 @@ public class MagnetScopingDirectTest {
     }
 
     private static class MenuItemThreeFactory extends InstanceFactory<MenuItem> {
-        @Override public MenuItem create(ScopeContainer scope) {
+        @Override public MenuItem create(Scope scope) {
             scope.getSingle(MenuItem.class, "two");
             scope.getSingle(Dependency3.class);
             return new MenuItemThree();
@@ -183,9 +183,6 @@ public class MagnetScopingDirectTest {
         @Override public <T> List<InstanceFactory<T>> getManyInstanceFactories(
             Class<T> type, String classifier, FactoryFilter factoryFilter
         ) {
-            throw new UnsupportedOperationException();
-        }
-        @Override public <T> ScopeFactory<T> getScopeFactory(Class<T> scopeType) {
             throw new UnsupportedOperationException();
         }
     }

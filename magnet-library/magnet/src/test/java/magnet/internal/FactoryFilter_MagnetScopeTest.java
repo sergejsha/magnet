@@ -22,7 +22,7 @@ public class FactoryFilter_MagnetScopeTest {
 
     @Before
     public void before() {
-        scope = new InstrumentedInstanceScope(new MagnetScopeContainer(null, instanceManager));
+        scope = new InstrumentedInstanceScope(new MagnetScope(null, instanceManager));
     }
 
     @Test

@@ -1,11 +1,11 @@
 package test;
 
-import magnet.ScopeContainer;
+import magnet.Scope;
 import magnet.internal.InternalFactory;
 
 final class MagnetScope3Implementation implements Scope3 {
-    private final ScopeContainer scopeContainer;
-    public MagnetScope3Implementation(ScopeContainer scopeContainer) {
+    private final Scope scopeContainer;
+    public MagnetScope3Implementation(Scope scopeContainer) {
         this.scopeContainer = scopeContainer;
     }
 

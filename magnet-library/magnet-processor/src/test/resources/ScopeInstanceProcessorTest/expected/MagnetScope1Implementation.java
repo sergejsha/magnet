@@ -2,11 +2,11 @@ package test;
 
 import java.util.List;
 import magnet.Classifier;
-import magnet.ScopeContainer;
+import magnet.Scope;
 
 final class MagnetScope1Implementation implements Scope1 {
-    private final ScopeContainer scopeContainer;
-    public MagnetScope1Implementation(ScopeContainer scopeContainer) {
+    private final Scope scopeContainer;
+    public MagnetScope1Implementation(Scope scopeContainer) {
         this.scopeContainer = scopeContainer;
     }
 

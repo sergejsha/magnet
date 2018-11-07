@@ -17,7 +17,7 @@
 package magnet.internal;
 
 import magnet.Classifier;
-import magnet.ScopeContainer;
+import magnet.Scope;
 import magnet.Scoping;
 import magnet.SelectorFilter;
 
@@ -30,13 +30,13 @@ import java.util.List;
 import java.util.Map;
 
 /* Subject to change. For internal use only. */
-final class MagnetScopeContainer implements ScopeContainer, FactoryFilter {
+final class MagnetScope implements Scope, FactoryFilter {
 
     private static final byte CARDINALITY_OPTIONAL = 0;
     private static final byte CARDINALITY_SINGLE = 1;
     private static final byte CARDINALITY_MANY = 2;
 
-    private final MagnetScopeContainer parent;
+    private final MagnetScope parent;
     private final InstanceManager instanceManager;
 
     /** Visible for testing */
@@ -50,7 +50,7 @@ final class MagnetScopeContainer implements ScopeContainer, FactoryFilter {
         @Override protected InstantiationContext initialValue() { return new InstantiationContext(); }
     };
 
-    MagnetScopeContainer(MagnetScopeContainer parent, InstanceManager instanceManager) {
+    MagnetScope(MagnetScope parent, InstanceManager instanceManager) {
         this.depth = parent == null ? 0 : parent.depth + 1;
         this.parent = parent;
         this.instanceManager = instanceManager;
@@ -92,20 +92,20 @@ final class MagnetScopeContainer implements ScopeContainer, FactoryFilter {
     }
 
     @Override
-    public <T> ScopeContainer bind(Class<T> type, T object) {
+    public <T> Scope bind(Class<T> type, T object) {
         bind(key(type, Classifier.NONE), object);
         return this;
     }
 
     @Override
-    public <T> ScopeContainer bind(Class<T> type, T object, String classifier) {
+    public <T> Scope bind(Class<T> type, T object, String classifier) {
         bind(key(type, classifier), object);
         return this;
     }
 
     @Override
-    public ScopeContainer createSubscope() {
-        return new MagnetScopeContainer(this, instanceManager);
+    public Scope createSubscope() {
+        return new MagnetScope(this, instanceManager);
     }
 
     @Override

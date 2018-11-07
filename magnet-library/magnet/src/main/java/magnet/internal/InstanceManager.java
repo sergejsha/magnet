@@ -27,6 +27,4 @@ interface InstanceManager {
     <T> List<InstanceFactory<T>> getManyInstanceFactories(
         Class<T> type, String classifier, FactoryFilter factoryFilter);
 
-    <T> ScopeFactory<T> getScopeFactory(Class<T> scopeType);
-
 }

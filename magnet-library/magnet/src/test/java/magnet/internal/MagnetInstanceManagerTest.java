@@ -17,7 +17,7 @@
 package magnet.internal;
 
 import magnet.Classifier;
-import magnet.ScopeContainer;
+import magnet.Scope;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -43,7 +43,7 @@ public class MagnetInstanceManagerTest {
     @Mock InstanceFactory<Type2> instanceFactoryType2Impl2;
     @Mock InstanceFactory<Type3> instanceFactoryType3Impl1;
     @Mock FactoryFilter factoryFilter;
-    @Mock ScopeContainer scope;
+    @Mock Scope scope;
 
     private MagnetInstanceManager instManager;
 
@@ -77,7 +77,7 @@ public class MagnetInstanceManagerTest {
         index.put(Type2.class, new Range(2, 2, Classifier.NONE));
         index.put(Type3.class, new Range(4, 1, CLASSIFIER_LOCAL));
 
-        instManager.register(factories, index, null);
+        instManager.register(factories, index);
     }
 
     @Test

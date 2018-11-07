@@ -1,10 +1,10 @@
 package test;
 
-import magnet.ScopeContainer;
+import magnet.Scope;
 
 final class MagnetScope7Implementation implements Scope7 {
-    private final ScopeContainer scopeContainer;
-    public MagnetScope7Implementation(ScopeContainer scopeContainer) {
+    private final Scope scopeContainer;
+    public MagnetScope7Implementation(Scope scopeContainer) {
         this.scopeContainer = scopeContainer;
     }
 }

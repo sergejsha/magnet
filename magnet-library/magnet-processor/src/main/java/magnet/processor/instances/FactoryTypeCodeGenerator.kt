@@ -25,7 +25,7 @@ import com.squareup.javapoet.ParameterizedTypeName
 import com.squareup.javapoet.TypeName
 import com.squareup.javapoet.TypeSpec
 import magnet.Classifier
-import magnet.ScopeContainer
+import magnet.Scope
 import magnet.internal.InstanceFactory
 import magnet.processor.instances.factory.FactoryAttributeCodeGenerator
 import magnet.processor.instances.scoping.GetScopingMethodGenerator
@@ -206,7 +206,7 @@ class FactoryTypeCodeGenerator : FactoryTypeVisitor, CodeGenerator {
             .addModifiers(Modifier.PUBLIC)
             .addParameter(
                 ParameterSpec
-                    .builder(ScopeContainer::class.java, PARAM_SCOPE_NAME)
+                    .builder(Scope::class.java, PARAM_SCOPE_NAME)
                     .build()
             )
             .returns(factoryType.type)

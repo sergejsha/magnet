@@ -1,11 +1,11 @@
 package test;
 
-import magnet.ScopeContainer;
+import magnet.Scope;
 import magnet.internal.ScopeFactory;
 
 public final class MagnetScope1Factory extends ScopeFactory<Scope1> {
     @Override
-    public Scope1 create(ScopeContainer scopeContainer) {
+    public Scope1 create(Scope scopeContainer) {
         return new MagnetScope1Implementation(scopeContainer);
     }
 

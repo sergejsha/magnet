@@ -3,7 +3,7 @@ package magnet.processor.scopes.instances
 import com.squareup.javapoet.FieldSpec
 import com.squareup.javapoet.MethodSpec
 import com.squareup.javapoet.TypeSpec
-import magnet.ScopeContainer
+import magnet.Scope
 import magnet.processor.scopes.AspectGenerator
 import javax.lang.model.element.Modifier
 
@@ -15,7 +15,7 @@ class ConstructorGenerator : AspectGenerator() {
         typeBuilder
             .addField(
                 FieldSpec
-                    .builder(ScopeContainer::class.java, SCOPE_CONTAINER_FIELD_NAME)
+                    .builder(Scope::class.java, SCOPE_CONTAINER_FIELD_NAME)
                     .addModifiers(Modifier.PRIVATE, Modifier.FINAL)
                     .build()
             )
@@ -23,7 +23,7 @@ class ConstructorGenerator : AspectGenerator() {
                 MethodSpec
                     .constructorBuilder()
                     .addModifiers(Modifier.PUBLIC)
-                    .addParameter(ScopeContainer::class.java, SCOPE_CONTAINER_FIELD_NAME)
+                    .addParameter(Scope::class.java, SCOPE_CONTAINER_FIELD_NAME)
                     .addStatement("this.$SCOPE_CONTAINER_FIELD_NAME = $SCOPE_CONTAINER_FIELD_NAME")
                     .build()
             )

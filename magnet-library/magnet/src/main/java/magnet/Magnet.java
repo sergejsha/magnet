@@ -22,8 +22,8 @@ public final class Magnet {
 
     private Magnet() { }
 
-    public static <T> T createRootScope(Class<T> scopeType) {
-        return InternalFactory.createScope(scopeType, null);
+    public static Scope createRootScope() {
+        return InternalFactory.createRootScope();
     }
 
 }

@@ -1,11 +1,11 @@
 package test;
 
 import magnet.Classifier;
-import magnet.ScopeContainer;
+import magnet.Scope;
 
 final class MagnetScope2Implementation implements Scope2 {
-    private final ScopeContainer scopeContainer;
-    public MagnetScope2Implementation(ScopeContainer scopeContainer) {
+    private final Scope scopeContainer;
+    public MagnetScope2Implementation(Scope scopeContainer) {
         this.scopeContainer = scopeContainer;
     }
 

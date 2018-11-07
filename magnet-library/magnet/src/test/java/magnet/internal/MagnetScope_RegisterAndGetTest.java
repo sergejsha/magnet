@@ -18,7 +18,7 @@ package magnet.internal;
 
 import static com.google.common.truth.Truth.assertThat;
 
-import magnet.ScopeContainer;
+import magnet.Scope;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -31,11 +31,11 @@ public class MagnetScope_RegisterAndGetTest {
     @Mock
     InstanceManager instanceManager;
 
-    private ScopeContainer scope;
+    private Scope scope;
 
     @Before
     public void before() {
-        scope = new MagnetScopeContainer(null, instanceManager);
+        scope = new MagnetScope(null, instanceManager);
     }
 
     @Test

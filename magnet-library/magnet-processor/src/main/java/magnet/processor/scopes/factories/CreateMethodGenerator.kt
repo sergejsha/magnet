@@ -3,7 +3,7 @@ package magnet.processor.scopes.factories
 import com.squareup.javapoet.ClassName
 import com.squareup.javapoet.MethodSpec
 import com.squareup.javapoet.TypeSpec
-import magnet.ScopeContainer
+import magnet.Scope
 import magnet.processor.scopes.AspectGenerator
 import magnet.processor.scopes.Model
 import magnet.processor.scopes.getGeneratedScopeImplementationName
@@ -20,7 +20,7 @@ class CreateMethodGenerator : AspectGenerator() {
         builder = MethodSpec.methodBuilder("create")
             .addModifiers(Modifier.PUBLIC)
             .returns(scope.type)
-            .addParameter(ScopeContainer::class.java, FIELD_NAME)
+            .addParameter(Scope::class.java, FIELD_NAME)
             .addAnnotation(Override::class.java)
             .addStatement("return new \$T($FIELD_NAME)", factoryClass)
     }

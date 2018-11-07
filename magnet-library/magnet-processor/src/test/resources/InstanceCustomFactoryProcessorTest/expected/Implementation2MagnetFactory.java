@@ -1,6 +1,6 @@
 package test;
 
-import magnet.ScopeContainer;
+import magnet.Scope;
 import magnet.internal.InstanceFactory;
 
 public final class Implementation2MagnetFactory extends InstanceFactory<Interface2> {
@@ -8,7 +8,7 @@ public final class Implementation2MagnetFactory extends InstanceFactory<Interfac
     private CustomFactory2<Interface2> factory = null;
 
     @Override
-    public Interface2 create(ScopeContainer scope) {
+    public Interface2 create(Scope scope) {
         if (factory == null) {
             factory = new CustomFactory2<Interface2>();
         }

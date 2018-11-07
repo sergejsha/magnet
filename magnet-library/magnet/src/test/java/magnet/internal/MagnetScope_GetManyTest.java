@@ -16,7 +16,7 @@
 
 package magnet.internal;
 
-import magnet.ScopeContainer;
+import magnet.Scope;
 import magnet.Scoping;
 import org.junit.Before;
 import org.junit.Test;
@@ -39,7 +39,7 @@ public class MagnetScope_GetManyTest {
     @Before
     public void before() {
         scope1 = new InstrumentedInstanceScope(
-            new MagnetScopeContainer(null, new StubInstanceManager()));
+            new MagnetScope(null, new StubInstanceManager()));
 
         scope2 = (InstrumentedInstanceScope) scope1
             .createSubscope()
@@ -90,35 +90,35 @@ public class MagnetScope_GetManyTest {
     }
 
     private static class MenuItemOne1Factory extends InstanceFactory<MenuItem> {
-        @Override public MenuItem create(ScopeContainer scope) {
+        @Override public MenuItem create(Scope scope) {
             return new MenuItemOne1();
         }
         @Override public Scoping getScoping() { return Scoping.TOPMOST; }
     }
 
     private static class MenuItemOne2Factory extends InstanceFactory<MenuItem> {
-        @Override public MenuItem create(ScopeContainer scope) {
+        @Override public MenuItem create(Scope scope) {
             return new MenuItemOne2();
         }
         @Override public Scoping getScoping() { return Scoping.TOPMOST; }
     }
 
     private static class MenuItemOne3Factory extends InstanceFactory<MenuItem> {
-        @Override public MenuItem create(ScopeContainer scope) {
+        @Override public MenuItem create(Scope scope) {
             return new MenuItemOne3();
         }
         @Override public Scoping getScoping() { return Scoping.TOPMOST; }
     }
 
     private static class MenuItemTwo1Factory extends InstanceFactory<MenuItem> {
-        @Override public MenuItem create(ScopeContainer scope) {
+        @Override public MenuItem create(Scope scope) {
             return new MenuItemTwo1();
         }
         @Override public Scoping getScoping() { return Scoping.TOPMOST; }
     }
 
     private static class MenuItemTwo2Factory extends InstanceFactory<MenuItem> {
-        @Override public MenuItem create(ScopeContainer scope) {
+        @Override public MenuItem create(Scope scope) {
             scope.getSingle(Dependency2.class);
             scope.getMany(MenuItem.class, "one");
             return new MenuItemTwo2();
@@ -154,9 +154,6 @@ public class MagnetScope_GetManyTest {
             Class<T> type, String classifier, FactoryFilter factoryFilter
         ) {
             return (List<InstanceFactory<T>>) factories.get(classifier);
-        }
-        @Override public <T> ScopeFactory<T> getScopeFactory(Class<T> scopeType) {
-            throw new UnsupportedOperationException();
         }
     }
 

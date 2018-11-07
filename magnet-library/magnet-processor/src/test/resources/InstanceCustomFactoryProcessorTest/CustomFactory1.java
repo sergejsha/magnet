@@ -1,11 +1,11 @@
 package test;
 
 import magnet.Factory;
-import magnet.ScopeContainer;
+import magnet.Scope;
 
 class CustomFactory1 implements Factory<Interface1> {
     @Override
-    public Interface1 create(ScopeContainer scope, Class<Interface1> type, String classifier) {
+    public Interface1 create(Scope scope, Class<Interface1> type, String classifier) {
         return null;
     }
 }

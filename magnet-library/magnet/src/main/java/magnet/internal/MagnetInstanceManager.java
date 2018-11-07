@@ -17,7 +17,6 @@
 package magnet.internal;
 
 import magnet.Magnetizer;
-import magnet.Scope;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -30,7 +29,6 @@ final class MagnetInstanceManager implements InstanceManager {
 
     private InstanceFactory[] factories;
     private Map<Class, Object> index;
-    private Map<Class, ScopeFactory> scopeFactories;
 
     MagnetInstanceManager() {
         registerInstanceFactories();
@@ -52,10 +50,9 @@ final class MagnetInstanceManager implements InstanceManager {
     }
 
     // called by generated index class
-    void register(InstanceFactory[] factories, Map<Class, Object> index, Map<Class, ScopeFactory> scopeFactories) {
+    void register(InstanceFactory[] factories, Map<Class, Object> index) {
         this.factories = factories;
         this.index = index;
-        this.scopeFactories = scopeFactories;
     }
 
     @Override
@@ -118,21 +115,6 @@ final class MagnetInstanceManager implements InstanceManager {
         }
 
         return Collections.emptyList();
-    }
-
-    @Override
-    @SuppressWarnings("unchecked")
-    public <T> ScopeFactory<T> getScopeFactory(Class<T> scopeType) {
-        ScopeFactory<T> scopeFactory = scopeFactories.get(scopeType);
-        if (scopeFactory == null) {
-            throw new IllegalStateException(
-                String.format(
-                    "ScopeFactory cannot be found. Make sure given %s type is annotated with %s annotation.",
-                    scopeType, Scope.class
-                )
-            );
-        }
-        return scopeFactory;
     }
 
     @SuppressWarnings("unchecked")

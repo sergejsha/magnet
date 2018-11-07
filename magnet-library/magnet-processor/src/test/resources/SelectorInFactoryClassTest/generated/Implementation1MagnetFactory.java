@@ -1,11 +1,11 @@
 package selector;
 
-import magnet.ScopeContainer;
+import magnet.Scope;
 import magnet.internal.InstanceFactory;
 
 public final class Implementation1MagnetFactory extends InstanceFactory<Interface> {
     @Override
-    public Interface create(ScopeContainer scope) {
+    public Interface create(Scope scope) {
         return new Implementation1();
     }
 

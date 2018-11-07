@@ -38,7 +38,7 @@ public class FactoryFilter_MagnetInstanceManagerTest {
         Map<Class, Object> index = new HashMap<>();
         index.put(Interface1.class, new Range(0, 1, Classifier.NONE));
         index.put(Interface2.class, new Range(1, 2, Classifier.NONE));
-        instanceManager.register(factories, index, null);
+        instanceManager.register(factories, index);
     }
 
     @Test
