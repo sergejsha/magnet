@@ -16,7 +16,7 @@
 
 package magnet.processor.registry
 
-import magnet.Magnetizer
+import magnet.Registry
 import magnet.processor.MagnetProcessorEnv
 import javax.annotation.processing.RoundEnvironment
 
@@ -39,7 +39,7 @@ class RegistryProcessor(
             return false
         }
 
-        val annotatedRegistryElement = roundEnv.getElementsAnnotatedWith(Magnetizer::class.java)
+        val annotatedRegistryElement = roundEnv.getElementsAnnotatedWith(Registry::class.java)
         if (!generateRegistryOnNextRound) {
             generateRegistryOnNextRound = annotatedRegistryElement.isNotEmpty()
             return false

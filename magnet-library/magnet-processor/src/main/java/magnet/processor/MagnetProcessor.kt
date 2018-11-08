@@ -17,7 +17,7 @@
 package magnet.processor
 
 import magnet.Instance
-import magnet.Magnetizer
+import magnet.Registry
 import magnet.Scope
 import magnet.processor.common.CompilationException
 import magnet.processor.common.ValidationException
@@ -73,7 +73,7 @@ class MagnetProcessor : AbstractProcessor() {
         return mutableSetOf(
             Instance::class.java.name,
             Scope::class.java.name,
-            Magnetizer::class.java.name
+            Registry::class.java.name
         )
     }
 

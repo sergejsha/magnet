@@ -1,8 +1,6 @@
 package app;
 
-import magnet.Magnetizer;
+import magnet.Registry;
 
-@Magnetizer
-public interface AppExtensionRegistry {
-
-}
+@Registry
+public interface AppExtensionRegistry {}

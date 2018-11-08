@@ -22,6 +22,11 @@ import java.lang.annotation.Target;
 
 import static java.lang.annotation.RetentionPolicy.CLASS;
 
+/**
+ * This marker annotation instructs Magnet to generate a registry indexing all
+ * instances available in classpath. Index applies to sources as well as libraries.
+ * Apply this annotation to any interface or class in your main application module.
+ */
 @Retention(CLASS)
 @Target({ElementType.TYPE})
-public @interface Magnetizer {}
+public @interface Registry {}

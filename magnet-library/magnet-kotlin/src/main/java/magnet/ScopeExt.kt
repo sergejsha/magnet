@@ -35,7 +35,3 @@ inline fun <reified T> Scope.bind(instance: T, classifier: String = Classifier.N
 /** Creates a subscope of the current scope. */
 inline fun Scope.createSubscope(init: Scope.() -> Unit): Scope =
     this.createSubscope().apply(init)
-
-/** Creates a subscope of the current scope. */
-fun Scope.createSubscope(): Scope =
-    this.createSubscope()

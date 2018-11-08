@@ -1,6 +1,6 @@
 package test;
 
-import magnet.Magnetizer;
+import magnet.Registry;
 
-@Magnetizer
+@Registry
 class App {}

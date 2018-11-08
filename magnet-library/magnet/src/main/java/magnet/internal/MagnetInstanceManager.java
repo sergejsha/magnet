@@ -16,7 +16,7 @@
 
 package magnet.internal;
 
-import magnet.Magnetizer;
+import magnet.Registry;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -43,7 +43,7 @@ final class MagnetInstanceManager implements InstanceManager {
             System.err.println(
                 String.format(
                     "MagnetIndexer cannot be found. Add a @%s-annotated class to the application module.",
-                    Magnetizer.class
+                    Registry.class
                 )
             );
         }
