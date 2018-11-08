@@ -1,9 +1,10 @@
 package test;
 
+import magnet.Factory;
 import magnet.Scope;
 import magnet.internal.InstanceFactory;
 
-public final class Implementation1MagnetFactory extends InstanceFactory<Interface1> {
+public final class Implementation1MagnetFactory extends InstanceFactory<Interface1> implements Factory.Instantiator<Interface1> {
 
     private CustomFactory1 factory = null;
 
@@ -12,7 +13,12 @@ public final class Implementation1MagnetFactory extends InstanceFactory<Interfac
         if (factory == null) {
             factory = new CustomFactory1();
         }
-        return factory.create(scope, Interface1.class, "");
+        return factory.create(scope, Interface1.class, "", this);
+    }
+
+    @Override
+    public Interface1 instantiate(Scope scope) {
+        return new Implementation1();
     }
 
     public static Class getType() {

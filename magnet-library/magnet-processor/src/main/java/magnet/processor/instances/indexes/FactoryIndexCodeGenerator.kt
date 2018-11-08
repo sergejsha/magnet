@@ -45,7 +45,7 @@ class FactoryIndexCodeGenerator : FactoryTypeVisitor, CodeGenerator {
             .addAnnotation(
                 generateFactoryIndexAnnotation(
                     factory.factoryType,
-                    factory.type.reflectionName(),
+                    factory.interfaceType.reflectionName(),
                     factory.classifier
                 )
             )

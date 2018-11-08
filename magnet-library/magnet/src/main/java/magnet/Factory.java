@@ -16,7 +16,14 @@
 
 package magnet;
 
-/** Custom factory to be used in {@link Instance#factory()}. */
+/** Custom factory to be used with {@link Instance#factory()}. */
 public interface Factory<T> {
-    T create(Scope scope, Class<T> type, String classifier);
+
+    /** Implementation must return instance of give type without delegating the call to the given scope. */
+    T create(Scope scope, Class<T> type, String classifier, Instantiator<T> instantiator);
+
+    /** Instantiator creates new instance of given type using {@code new} operator. */
+    interface Instantiator<T> {
+        T instantiate(Scope scope);
+    }
 }

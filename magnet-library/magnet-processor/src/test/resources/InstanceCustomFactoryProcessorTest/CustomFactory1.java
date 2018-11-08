@@ -5,7 +5,7 @@ import magnet.Scope;
 
 class CustomFactory1 implements Factory<Interface1> {
     @Override
-    public Interface1 create(Scope scope, Class<Interface1> type, String classifier) {
+    public Interface1 create(Scope scope, Class<Interface1> type, String classifier, Instantiator<Interface1> instantiator) {
         return null;
     }
 }

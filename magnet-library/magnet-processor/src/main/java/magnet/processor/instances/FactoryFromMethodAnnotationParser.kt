@@ -81,13 +81,13 @@ internal class FactoryFromMethodAnnotationParser(
             val factoryFullName = generateFactoryName(isSingleTypeFactory, instanceFullName, it)
             FactoryType(
                 element = element,
-                type = it,
+                interfaceType = it,
                 classifier = annotation.classifier,
                 scoping = annotation.scoping,
                 disabled = annotation.disabled,
                 customFactoryType = annotation.factory,
                 factoryType = ClassName.bestGuess(factoryFullName),
-                createStatement = MethodCreateStatement(staticMethodClassName, staticMethodName),
+                createStatement = StaticMethodCreateStatement(staticMethodClassName, staticMethodName),
                 createMethod = CreateMethod(methodParameters),
                 getScopingMethod = GetScopingMethod(annotation.scoping),
                 getSelectorMethod = getSelectorMethod,

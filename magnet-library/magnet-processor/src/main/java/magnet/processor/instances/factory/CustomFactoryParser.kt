@@ -7,7 +7,7 @@ import magnet.processor.instances.AttributeParser
 import javax.lang.model.element.AnnotationValue
 import javax.lang.model.element.Element
 
-class FactoryAttributeParser(
+class CustomFactoryParser(
     env: MagnetProcessorEnv
 ) : AttributeParser<TypeName?> {
 

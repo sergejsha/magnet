@@ -55,7 +55,7 @@ internal class FactoryFromClassAnnotationParser(
             val factoryName = generateFactoryName(hasSiblingTypes, instanceType, it)
             FactoryType(
                 element = element,
-                type = it,
+                interfaceType = it,
                 classifier = annotation.classifier,
                 scoping = annotation.scoping,
                 disabled = annotation.disabled,

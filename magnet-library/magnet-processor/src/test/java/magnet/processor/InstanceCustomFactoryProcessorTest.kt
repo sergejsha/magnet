@@ -12,7 +12,7 @@ class InstanceCustomFactoryProcessorTest {
         JavaFileObjects.forResource(javaClass.simpleName + '/' + name)
 
     @Test
-    fun `Custom factory gets called`() {
+    fun `Not parametrized custom Factory`() {
         val compilation = Compiler.javac()
             .withProcessors(MagnetProcessor())
             .compile(
@@ -29,7 +29,7 @@ class InstanceCustomFactoryProcessorTest {
     }
 
     @Test
-    fun `Use Instance type if Factory is of a parametrized type`() {
+    fun `Parametrized custom Factory`() {
         val compilation = Compiler.javac()
             .withProcessors(MagnetProcessor())
             .compile(
@@ -46,7 +46,7 @@ class InstanceCustomFactoryProcessorTest {
     }
 
     @Test
-    fun `Getters are not generated`() {
+    fun `Custom Factory for implementation with dependencies`() {
         val compilation = Compiler.javac()
             .withProcessors(MagnetProcessor())
             .compile(

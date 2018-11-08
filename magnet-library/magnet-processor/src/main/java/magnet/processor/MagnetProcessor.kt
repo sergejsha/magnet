@@ -57,13 +57,14 @@ class MagnetProcessor : AbstractProcessor() {
             val registryProcessed = registryProcessor.process(roundEnv)
             instancesProcessed || registryProcessed
         } catch (e: ValidationException) {
-            env.report(e)
+            env.reportError(e)
             false
         } catch (e: CompilationException) {
-            env.report(e)
+            env.reportError(e)
             false
         } catch (e: Throwable) {
-            env.report(e)
+            env.reportError(e)
+            e.printStackTrace()
             false
         }
     }
@@ -86,11 +87,11 @@ class MagnetProcessorEnv(
     val elements: Elements get() = processEnvironment.elementUtils
     val types: Types get() = processEnvironment.typeUtils
 
-    fun report(e: ValidationException) {
+    fun reportError(e: ValidationException) {
         processEnvironment.messager.printMessage(Diagnostic.Kind.ERROR, e.message, e.element)
     }
 
-    fun report(e: CompilationException) {
+    fun reportError(e: CompilationException) {
         processEnvironment.messager.printMessage(
             Diagnostic.Kind.ERROR,
             "Unexpected compilation error, please file the bug. Message: ${e.message ?: "none."}",
@@ -98,7 +99,7 @@ class MagnetProcessorEnv(
         )
     }
 
-    fun report(e: Throwable) {
+    fun reportError(e: Throwable) {
         processEnvironment.messager.printMessage(
             Diagnostic.Kind.ERROR,
             "Unexpected compilation error, please file the bug. Message: ${e.message ?: "none."}"

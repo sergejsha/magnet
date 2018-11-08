@@ -8,6 +8,6 @@ import magnet.Instance;
 )
 public class Implementation3 implements Interface3 {
 
-    public Implementation3(String value) {}
+    public Implementation3(String value1, Long value2) {}
 
 }

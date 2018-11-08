@@ -54,7 +54,7 @@ class Annotation(
 
 class FactoryType(
     val element: Element,
-    val type: ClassName,
+    val interfaceType: ClassName,
     val classifier: String,
     val scoping: String,
     val disabled: Boolean,
@@ -82,7 +82,7 @@ class TypeCreateStatement(
     val instanceType: ClassName
 ) : CreateStatement()
 
-class MethodCreateStatement(
+class StaticMethodCreateStatement(
     val staticMethodClassName: ClassName,
     val staticMethodName: String
 ) : CreateStatement()
