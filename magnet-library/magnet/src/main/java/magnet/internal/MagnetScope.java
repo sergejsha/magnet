@@ -47,7 +47,7 @@ final class MagnetScope implements Scope, FactoryFilter {
     final int depth;
 
     /** Visible for testing */
-    final Map<String, RuntimeInstance> instances;
+    final Map<String, RuntimeInstances> instances;
 
     @SuppressWarnings("AnonymousHasLambdaAlternative")
     private final ThreadLocal<InstantiationContext> instantiationContext = new ThreadLocal<InstantiationContext>() {
@@ -160,7 +160,7 @@ final class MagnetScope implements Scope, FactoryFilter {
     }
 
     private void bind(String key, Object object) {
-        Object existing = instances.put(key, RuntimeInstance.create(object, null, depth));
+        Object existing = instances.put(key, new RuntimeInstances<>(depth, null, object));
         if (existing != null) {
             throw new IllegalStateException(
                 String.format("Instance of type %s already registered. Existing instance %s, new instance %s",
@@ -186,7 +186,7 @@ final class MagnetScope implements Scope, FactoryFilter {
         String key = key(type, classifier);
 
         if (factory == null) {
-            RuntimeInstance<T> instance = findDeepInstance(key);
+            RuntimeInstances<T> instance = findDeepInstance(key);
             if (instance == null) {
                 if (cardinality == CARDINALITY_SINGLE) {
                     throw new IllegalStateException(
@@ -197,22 +197,22 @@ final class MagnetScope implements Scope, FactoryFilter {
                 return null;
             }
             instantiationContext.onDependencyFound(instance.getScopeDepth());
-            return instance.getValue();
+            return instance.getSingleInstance();
         }
 
-        RuntimeInstance<T> deepInstance = findDeepInstance(key);
+        RuntimeInstances<T> deepInstances = findDeepInstance(key);
         boolean keepInScope = factory.getScoping() != Scoping.UNSCOPED;
 
         if (keepInScope) {
-            if (deepInstance != null) {
+            if (deepInstances != null) {
                 boolean isSingleOrOptional = cardinality != CARDINALITY_MANY;
 
                 if (isSingleOrOptional) {
-                    instantiationContext.onDependencyFound(deepInstance.getScopeDepth());
-                    return deepInstance.getValue();
+                    instantiationContext.onDependencyFound(deepInstances.getScopeDepth());
+                    return deepInstances.getSingleInstance();
                 }
 
-                T object = deepInstance.getValue((Class<InstanceFactory>) factory.getClass());
+                T object = deepInstances.getOptionalInstance((Class<InstanceFactory<T>>) factory.getClass());
                 if (object != null) {
                     return object;
                 }
@@ -229,15 +229,21 @@ final class MagnetScope implements Scope, FactoryFilter {
 
         if (keepInScope) {
 
-            boolean canUseDeepInstance = deepInstance != null
-                && deepInstance.getScopeDepth() == objectDepth;
+            boolean canUseDeepInstances = deepInstances != null
+                && deepInstances.getScopeDepth() == objectDepth;
 
-            if (canUseDeepInstance) {
-                deepInstance.addValue(object, (Class<InstanceFactory>) factory.getClass());
+            if (canUseDeepInstances) {
+                deepInstances.registerInstance(
+                    (Class<InstanceFactory<T>>) factory.getClass(),
+                    object
+                );
 
             } else {
                 registerInstanceInScope(
-                    key, RuntimeInstance.create(object, (Class<InstanceFactory>) factory.getClass(), objectDepth)
+                    key,
+                    objectDepth,
+                    (Class<InstanceFactory<T>>) factory.getClass(),
+                    object
                 );
             }
 
@@ -246,7 +252,10 @@ final class MagnetScope implements Scope, FactoryFilter {
                 for (int i = 0, size = siblingFactoryTypes.length; i < size; i += 2) {
                     String siblingKey = key(siblingFactoryTypes[i], classifier);
                     registerInstanceInScope(
-                        siblingKey, RuntimeInstance.create(object, siblingFactoryTypes[i + 1], objectDepth)
+                        siblingKey,
+                        objectDepth,
+                        (Class<InstanceFactory<T>>) siblingFactoryTypes[i + 1],
+                        object
                     );
                 }
             }
@@ -255,29 +264,38 @@ final class MagnetScope implements Scope, FactoryFilter {
         return object;
     }
 
-    void registerInstanceInScope(String key, final RuntimeInstance instance) {
-        if (depth == instance.getScopeDepth()) {
-            RuntimeInstance existing = instances.put(key, instance);
-            if (existing != null) {
-                existing.addInstance(instance);
-                instances.put(key, existing);
+    private <T> void registerInstanceInScope(
+        String key, int depth, Class<InstanceFactory<T>> factoryType, T instance
+    ) {
+        if (this.depth == depth) {
+            @SuppressWarnings("unchecked")
+            RuntimeInstances<T> instances = this.instances.get(key);
+            if (instances == null) {
+                instances = new RuntimeInstances<>(depth, factoryType, instance);
+                this.instances.put(key, instances);
+            } else {
+                instances.registerInstance(factoryType, instance);
             }
             return;
         }
         if (parent == null) {
             throw new IllegalStateException(
                 String.format(
-                    "Cannot register instance with depth %s", instance.getScopeDepth()));
+                    "Cannot register instance %s, type: %s, depth: %s",
+                    instance, factoryType, depth
+                )
+            );
         }
-        parent.registerInstanceInScope(key, instance);
+        parent.registerInstanceInScope(key, depth, factoryType, instance);
     }
 
-    @SuppressWarnings("unchecked") <T> RuntimeInstance<T> findDeepInstance(String key) {
-        RuntimeInstance<T> instance = instances.get(key);
-        if (instance == null && parent != null) {
+    @SuppressWarnings("unchecked")
+    private <T> RuntimeInstances<T> findDeepInstance(String key) {
+        RuntimeInstances<T> instances = (RuntimeInstances<T>) this.instances.get(key);
+        if (instances == null && parent != null) {
             return parent.findDeepInstance(key);
         }
-        return instance;
+        return instances;
     }
 
     /** Visible for testing */
