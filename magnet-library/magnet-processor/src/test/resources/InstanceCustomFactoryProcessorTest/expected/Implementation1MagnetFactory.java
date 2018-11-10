@@ -2,6 +2,7 @@ package test;
 
 import magnet.Factory;
 import magnet.Scope;
+import magnet.Scoping;
 import magnet.internal.InstanceFactory;
 
 public final class Implementation1MagnetFactory extends InstanceFactory<Interface1> implements Factory.Instantiator<Interface1> {
@@ -13,7 +14,7 @@ public final class Implementation1MagnetFactory extends InstanceFactory<Interfac
         if (factory == null) {
             factory = new CustomFactory1();
         }
-        return factory.create(scope, Interface1.class, "", this);
+        return factory.create(scope, Interface1.class, "", Scoping.TOPMOST, this);
     }
 
     @Override

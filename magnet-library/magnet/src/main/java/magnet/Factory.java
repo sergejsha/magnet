@@ -20,10 +20,11 @@ package magnet;
 public interface Factory<T> {
 
     /** Implementation must return instance of give type without delegating the call to the given scope. */
-    T create(Scope scope, Class<T> type, String classifier, Instantiator<T> instantiator);
+    T create(Scope scope, Class<T> type, String classifier, Scoping scoping, Instantiator<T> instantiator);
 
     /** Instantiator creates new instance of given type using {@code new} operator. */
     interface Instantiator<T> {
         T instantiate(Scope scope);
     }
+
 }

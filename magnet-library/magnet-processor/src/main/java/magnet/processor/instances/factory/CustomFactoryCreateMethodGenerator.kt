@@ -9,6 +9,7 @@ import com.squareup.javapoet.TypeName
 import com.squareup.javapoet.TypeSpec
 import magnet.Factory
 import magnet.Scope
+import magnet.Scoping
 import magnet.processor.instances.CreateMethod
 import magnet.processor.instances.FactoryType
 import magnet.processor.instances.MethodParameter
@@ -85,8 +86,11 @@ class CustomFactoryCreateMethodGenerator : CreateMethodGenerator {
                             .addStatement("factory = new \$T()", factoryFieldType)
                             .endControlFlow()
                             .addStatement(
-                                "return factory.create(scope, \$T.class, \$S, this)",
-                                factoryType.interfaceType, factoryType.classifier
+                                "return factory.create(scope, \$T.class, \$S, \$T.\$L, this)",
+                                factoryType.interfaceType,
+                                factoryType.classifier,
+                                Scoping::class.java,
+                                factoryType.scoping
                             )
                             .build()
                     )
