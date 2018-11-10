@@ -83,7 +83,7 @@ public class MagnetInstanceManagerTest {
     @Test
     public void getOptionalFactory_Classified_Existing_SingleTypeInstance() {
         // when
-        InstanceFactory<Type3> factory = instManager.getOptionalInstanceFactory(
+        InstanceFactory<Type3> factory = instManager.getFilteredInstanceFactory(
             Type3.class, CLASSIFIER_LOCAL, factoryFilter);
 
         // then
@@ -93,7 +93,7 @@ public class MagnetInstanceManagerTest {
     @Test
     public void getOptionalFactory_Classified_Existing_ManyTypeInstances() {
         // when
-        InstanceFactory<Type1> factory = instManager.getOptionalInstanceFactory(
+        InstanceFactory<Type1> factory = instManager.getFilteredInstanceFactory(
             Type1.class, CLASSIFIER_LOCAL, factoryFilter);
 
         // then
@@ -103,7 +103,7 @@ public class MagnetInstanceManagerTest {
     @Test
     public void getOptionalFactory_NotClassified_Existing() {
         // when
-        InstanceFactory<Type1> factory = instManager.getOptionalInstanceFactory(
+        InstanceFactory<Type1> factory = instManager.getFilteredInstanceFactory(
             Type1.class, Classifier.NONE, factoryFilter);
 
         // then
@@ -113,7 +113,7 @@ public class MagnetInstanceManagerTest {
     @Test
     public void getOptionalFactory_Classified_NotExisting() {
         // when
-        InstanceFactory<String> factory = instManager.getOptionalInstanceFactory(
+        InstanceFactory<String> factory = instManager.getFilteredInstanceFactory(
             String.class, CLASSIFIER_LOCAL, factoryFilter);
 
         // then
@@ -123,7 +123,7 @@ public class MagnetInstanceManagerTest {
     @Test
     public void getOptionalFactory_NotClassified_NotExisting() {
         // when
-        InstanceFactory<String> factory = instManager.getOptionalInstanceFactory(
+        InstanceFactory<String> factory = instManager.getFilteredInstanceFactory(
             String.class, Classifier.NONE, factoryFilter);
 
         // then

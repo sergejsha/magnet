@@ -1,5 +1,6 @@
 package magnet.internal;
 
+import magnet.Classifier;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -21,7 +22,9 @@ public class RuntimeInstancesTest {
     @Test
     @SuppressWarnings("unchecked")
     public void test_getScopeDepth() {
-        RuntimeInstances<String> instances = new RuntimeInstances(1, factory1.getClass(), instance1);
+        RuntimeInstances<String> instances = new RuntimeInstances(
+            1, factory1, Interface1.class, instance1, Classifier.NONE
+        );
         int depth = instances.getScopeDepth();
         assertThat(depth).isEqualTo(1);
     }
@@ -29,7 +32,9 @@ public class RuntimeInstancesTest {
     @Test
     @SuppressWarnings("unchecked")
     public void test_getInstances_SingleItem() {
-        RuntimeInstances<Interface1> instances = new RuntimeInstances(1, factory1.getClass(), instance1);
+        RuntimeInstances<Interface1> instances = new RuntimeInstances(
+            1, factory1, Interface1.class, instance1, Classifier.NONE
+        );
         List<Interface1> result = instances.getInstances();
         assertThat(result).containsExactly(instance1);
     }
@@ -37,9 +42,10 @@ public class RuntimeInstancesTest {
     @Test
     @SuppressWarnings("unchecked")
     public void test_getInstances_ManyItems() {
-        RuntimeInstances<Interface1> instances = new RuntimeInstances(1, factory1.getClass(), instance1);
-        Class factoryType2 = factory2.getClass();
-        instances.registerInstance((Class<InstanceFactory<Interface1>>) factoryType2, instance2);
+        RuntimeInstances<Interface1> instances = new RuntimeInstances(
+            1, factory1, Interface1.class, instance1, Classifier.NONE
+        );
+        instances.registerInstance(factory2, Interface1.class, instance2, Classifier.NONE);
         List<Interface1> result = instances.getInstances();
         assertThat(result).containsExactly(instance1, instance2);
     }
@@ -47,12 +53,14 @@ public class RuntimeInstancesTest {
     @Test
     @SuppressWarnings("unchecked")
     public void test_getSingleInstance() {
-        RuntimeInstances<Interface1> instances = new RuntimeInstances(1, factory1.getClass(), instance1);
+        RuntimeInstances<Interface1> instances = new RuntimeInstances(
+            1, factory1, Interface1.class, instance1, Classifier.NONE
+        );
         Interface1 result = instances.getSingleInstance();
         assertThat(result).isSameAs(instance1);
     }
 
-    abstract class Factory1 extends InstanceFactory<Interface1> {}
-    abstract class Factory2 extends InstanceFactory<Interface1> {}
     interface Interface1 {}
+    abstract static class Factory1 extends InstanceFactory<Interface1> {}
+    abstract static class Factory2 extends InstanceFactory<Interface1> {}
 }

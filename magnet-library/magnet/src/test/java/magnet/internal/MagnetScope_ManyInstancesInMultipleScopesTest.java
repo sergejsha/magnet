@@ -16,6 +16,7 @@
 
 package magnet.internal;
 
+import magnet.Classifier;
 import magnet.Scope;
 import magnet.Scoping;
 import org.junit.Before;
@@ -42,10 +43,10 @@ public class MagnetScope_ManyInstancesInMultipleScopesTest {
     @Before
     public void before() {
         scope1 = new InstrumentedInstanceScope(new MagnetScope(null, new StubInstanceManager()));
-        scope1.instrumentObjectIntoScope("", InstanceType.class, new InstanceImpl1(), factory1);
+        scope1.instrumentObjectIntoScope(factory1, InstanceType.class, new InstanceImpl1(), Classifier.NONE);
 
         scope2 = (InstrumentedInstanceScope) scope1.createSubscope();
-        scope2.instrumentObjectIntoScope("", InstanceType.class, new InstanceImpl2(), factory2);
+        scope2.instrumentObjectIntoScope(factory2, InstanceType.class, new InstanceImpl2(), Classifier.NONE);
 
         scope3 = (InstrumentedInstanceScope) scope2.createSubscope();
     }
@@ -94,7 +95,13 @@ public class MagnetScope_ManyInstancesInMultipleScopesTest {
             instanceTypeFactories.add(factory3);
         }
 
-        @Override public <T> InstanceFactory<T> getOptionalInstanceFactory(
+        @Override
+        public <T> InstanceFactory getInstanceFactory(
+            Class<T> instanceType, String classifier, Class<InstanceFactory<T>> factoryType
+        ) {
+            throw new UnsupportedOperationException();
+        }
+        @Override public <T> InstanceFactory<T> getFilteredInstanceFactory(
             Class<T> type, String classifier, FactoryFilter factoryFilter
         ) {
             throw new UnsupportedOperationException();

@@ -145,7 +145,13 @@ public class MagnetScope_GetManyTest {
             factories.put("two", twoList);
         }
 
-        @Override public <T> InstanceFactory<T> getOptionalInstanceFactory(
+        @Override
+        public <T> InstanceFactory getInstanceFactory(
+            Class<T> instanceType, String classifier, Class<InstanceFactory<T>> factoryType
+        ) {
+            throw new UnsupportedOperationException();
+        }
+        @Override public <T> InstanceFactory<T> getFilteredInstanceFactory(
             Class<T> type, String classifier, FactoryFilter factoryFilter
         ) {
             return (InstanceFactory<T>) factories.get(classifier);

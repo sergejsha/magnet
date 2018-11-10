@@ -57,7 +57,25 @@ final class MagnetInstanceManager implements InstanceManager {
 
     @Override
     @SuppressWarnings("unchecked")
-    public <T> InstanceFactory<T> getOptionalInstanceFactory(
+    public <T> InstanceFactory getInstanceFactory(
+        Class<T> instanceType, String classifier, Class<InstanceFactory<T>> factoryType
+    ) {
+        Range range = getOptionalRange(instanceType, classifier);
+        if (range == null) return null;
+        if (range.getCount() == 1) return factories[range.getFrom()];
+
+        for (int index = range.getFrom(), afterLast = range.getFrom() + range.getCount(); index < afterLast; index++) {
+            InstanceFactory<T> candidate = factories[index];
+            if (candidate.getClass() == factoryType) {
+                return candidate;
+            }
+        }
+        return null;
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public <T> InstanceFactory<T> getFilteredInstanceFactory(
         Class<T> type, String classifier, FactoryFilter factoryFilter
     ) {
         Range range = getOptionalRange(type, classifier);

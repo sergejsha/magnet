@@ -21,7 +21,10 @@ import java.util.List;
 /* Subject to change. For internal use only. */
 interface InstanceManager {
 
-    <T> InstanceFactory<T> getOptionalInstanceFactory(
+    <T> InstanceFactory getInstanceFactory(
+        Class<T> instanceType, String classifier, Class<InstanceFactory<T>> factoryType);
+
+    <T> InstanceFactory<T> getFilteredInstanceFactory(
         Class<T> type, String classifier, FactoryFilter factoryFilter);
 
     <T> List<InstanceFactory<T>> getManyInstanceFactories(

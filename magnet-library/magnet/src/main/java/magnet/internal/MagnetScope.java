@@ -25,8 +25,10 @@ import java.lang.ref.WeakReference;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -58,34 +60,34 @@ final class MagnetScope implements Scope, FactoryFilter {
         this.depth = parent == null ? 0 : parent.depth + 1;
         this.parent = parent;
         this.instanceManager = instanceManager;
-        this.instances = new HashMap<>();
+        this.instances = new HashMap<>(32, 0.75f);
     }
 
     @Override
     public <T> T getOptional(Class<T> type) {
         checkNotDisposed();
-        InstanceFactory<T> factory = instanceManager.getOptionalInstanceFactory(type, Classifier.NONE, this);
+        InstanceFactory<T> factory = instanceManager.getFilteredInstanceFactory(type, Classifier.NONE, this);
         return getSingleObject(type, Classifier.NONE, factory, CARDINALITY_OPTIONAL);
     }
 
     @Override
     public <T> T getOptional(Class<T> type, String classifier) {
         checkNotDisposed();
-        InstanceFactory<T> factory = instanceManager.getOptionalInstanceFactory(type, classifier, this);
+        InstanceFactory<T> factory = instanceManager.getFilteredInstanceFactory(type, classifier, this);
         return getSingleObject(type, classifier, factory, CARDINALITY_OPTIONAL);
     }
 
     @Override
     public <T> T getSingle(Class<T> type) {
         checkNotDisposed();
-        InstanceFactory<T> factory = instanceManager.getOptionalInstanceFactory(type, Classifier.NONE, this);
+        InstanceFactory<T> factory = instanceManager.getFilteredInstanceFactory(type, Classifier.NONE, this);
         return getSingleObject(type, Classifier.NONE, factory, CARDINALITY_SINGLE);
     }
 
     @Override
     public <T> T getSingle(Class<T> type, String classifier) {
         checkNotDisposed();
-        InstanceFactory<T> factory = instanceManager.getOptionalInstanceFactory(type, classifier, this);
+        InstanceFactory<T> factory = instanceManager.getFilteredInstanceFactory(type, classifier, this);
         return getSingleObject(type, classifier, factory, CARDINALITY_SINGLE);
     }
 
@@ -103,24 +105,50 @@ final class MagnetScope implements Scope, FactoryFilter {
 
     @Override
     public <T> Scope bind(Class<T> type, T object) {
-        checkNotDisposed();
-        bind(key(type, Classifier.NONE), object);
+        bind(type, object, Classifier.NONE);
         return this;
     }
 
     @Override
     public <T> Scope bind(Class<T> type, T object, String classifier) {
         checkNotDisposed();
-        bind(key(type, classifier), object);
+        final String key = key(type, classifier);
+        Object existing = instances.put(
+            key,
+            new RuntimeInstances<>(
+                /* depth = */ depth,
+                /* factory = */ null,
+                /* instanceType = */ type,
+                /* instance = */ object,
+                /* classifier = */ classifier
+            )
+        );
+        if (existing != null) {
+            throw new IllegalStateException(
+                String.format("Instance of type %s already registered. Existing instance %s, new instance %s",
+                    key, existing, object));
+        }
         return this;
     }
 
     @Override
     public Scope createSubscope() {
         checkNotDisposed();
+
         MagnetScope child = new MagnetScope(this, instanceManager);
         if (children == null) children = new ArrayList<>(4);
         children.add(new WeakReference<>(child));
+
+        if (children.size() > 30) {
+            Iterator<WeakReference<MagnetScope>> iterator = children.iterator();
+            //noinspection Java8CollectionRemoveIf
+            while (iterator.hasNext()) {
+                WeakReference<MagnetScope> scopeRef = iterator.next();
+                if (scopeRef.get() == null) {
+                    iterator.remove();
+                }
+            }
+        }
         return child;
     }
 
@@ -135,7 +163,7 @@ final class MagnetScope implements Scope, FactoryFilter {
                 }
             }
         }
-        // todo dispose instances
+        new ScopeDisposer(instanceManager).dispose(this);
         disposed = true;
     }
 
@@ -159,15 +187,6 @@ final class MagnetScope implements Scope, FactoryFilter {
         return selectorFilter.filter(selector);
     }
 
-    private void bind(String key, Object object) {
-        Object existing = instances.put(key, new RuntimeInstances<>(depth, null, object));
-        if (existing != null) {
-            throw new IllegalStateException(
-                String.format("Instance of type %s already registered. Existing instance %s, new instance %s",
-                    key, existing, object));
-        }
-    }
-
     private <T> List<T> getManyObjects(Class<T> type, String classifier) {
         List<InstanceFactory<T>> factories = instanceManager.getManyInstanceFactories(type, classifier, this);
         if (factories.size() == 0) return Collections.emptyList();
@@ -181,9 +200,11 @@ final class MagnetScope implements Scope, FactoryFilter {
     }
 
     @SuppressWarnings("unchecked")
-    private <T> T getSingleObject(Class<T> type, String classifier, InstanceFactory<T> factory, byte cardinality) {
+    private <T> T getSingleObject(
+        Class<T> objectType, String classifier, InstanceFactory<T> factory, byte cardinality
+    ) {
         InstantiationContext instantiationContext = this.instantiationContext.get();
-        String key = key(type, classifier);
+        String key = key(objectType, classifier);
 
         if (factory == null) {
             RuntimeInstances<T> instance = findDeepInstance(key);
@@ -192,7 +213,7 @@ final class MagnetScope implements Scope, FactoryFilter {
                     throw new IllegalStateException(
                         String.format(
                             "Instance of type '%s' (classifier: '%s') was not found in scopes.",
-                            type.getName(), classifier));
+                            objectType.getName(), classifier));
                 }
                 return null;
             }
@@ -233,17 +254,16 @@ final class MagnetScope implements Scope, FactoryFilter {
                 && deepInstances.getScopeDepth() == objectDepth;
 
             if (canUseDeepInstances) {
-                deepInstances.registerInstance(
-                    (Class<InstanceFactory<T>>) factory.getClass(),
-                    object
-                );
+                deepInstances.registerInstance(factory, objectType, object, classifier);
 
             } else {
                 registerInstanceInScope(
                     key,
                     objectDepth,
-                    (Class<InstanceFactory<T>>) factory.getClass(),
-                    object
+                    factory,
+                    objectType,
+                    object,
+                    classifier
                 );
             }
 
@@ -251,11 +271,16 @@ final class MagnetScope implements Scope, FactoryFilter {
             if (siblingFactoryTypes != null) {
                 for (int i = 0, size = siblingFactoryTypes.length; i < size; i += 2) {
                     String siblingKey = key(siblingFactoryTypes[i], classifier);
+                    InstanceFactory siblingFactory = instanceManager.getInstanceFactory(
+                        objectType, classifier, siblingFactoryTypes[i + 1]
+                    );
                     registerInstanceInScope(
                         siblingKey,
                         objectDepth,
-                        (Class<InstanceFactory<T>>) siblingFactoryTypes[i + 1],
-                        object
+                        siblingFactory,
+                        objectType,
+                        object,
+                        classifier
                     );
                 }
             }
@@ -265,28 +290,34 @@ final class MagnetScope implements Scope, FactoryFilter {
     }
 
     private <T> void registerInstanceInScope(
-        String key, int depth, Class<InstanceFactory<T>> factoryType, T instance
+        String key,
+        int depth,
+        InstanceFactory<T> factory,
+        Class<T> instanceType,
+        T instance,
+        String classifier
     ) {
         if (this.depth == depth) {
-            @SuppressWarnings("unchecked")
-            RuntimeInstances<T> instances = this.instances.get(key);
+            @SuppressWarnings("unchecked") final RuntimeInstances<T> instances = this.instances.get(key);
             if (instances == null) {
-                instances = new RuntimeInstances<>(depth, factoryType, instance);
-                this.instances.put(key, instances);
+                this.instances.put(
+                    key,
+                    new RuntimeInstances<>(depth, factory, instanceType, instance, classifier)
+                );
             } else {
-                instances.registerInstance(factoryType, instance);
+                instances.registerInstance(factory, instanceType, instance, classifier);
             }
             return;
         }
         if (parent == null) {
             throw new IllegalStateException(
                 String.format(
-                    "Cannot register instance %s, type: %s, depth: %s",
-                    instance, factoryType, depth
+                    "Cannot register instance %s, factory: %s, depth: %s",
+                    instance, factory, depth
                 )
             );
         }
-        parent.registerInstanceInScope(key, depth, factoryType, instance);
+        parent.registerInstanceInScope(key, depth, factory, instanceType, instance, classifier);
     }
 
     @SuppressWarnings("unchecked")
@@ -364,6 +395,28 @@ final class MagnetScope implements Scope, FactoryFilter {
 
         @Override public int hashCode() {
             return key.hashCode();
+        }
+    }
+
+    private final class ScopeDisposer implements RuntimeInstances.InstanceVisitor {
+
+        private InstanceManager instanceManager;
+
+        ScopeDisposer(InstanceManager instanceManager) {
+            this.instanceManager = instanceManager;
+        }
+
+        void dispose(MagnetScope scope) {
+            Collection<RuntimeInstances> runtimeInstances = scope.instances.values();
+            for (RuntimeInstances runtimeInstance : runtimeInstances) {
+                runtimeInstance.accept(this);
+            }
+        }
+
+        @Override public <T> void visit(InstanceFactory<T> factory, Class<T> instanceType, T instance) {
+            if (factory.isDisposable()) {
+                factory.dispose(instance);
+            }
         }
     }
 

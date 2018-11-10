@@ -70,15 +70,18 @@ public class InstrumentedInstanceScope implements Scope, FactoryFilter {
     }
 
     /** Injects given object right into the scope, as I would be injected using given factory. */
-    @SuppressWarnings("unchecked") void instrumentObjectIntoScope(
-        String classifier, Class type, Object object, InstanceFactory factory
+    @SuppressWarnings("unchecked") <T> void instrumentObjectIntoScope(
+        InstanceFactory<T> factory, Class<T> objectType, T object, String classifier
     ) {
-        String key = MagnetScope.key(type, classifier);
+        String key = MagnetScope.key(objectType, classifier);
         RuntimeInstances existing = scope.instances.get(key);
         if (existing == null) {
-            scope.instances.put(key, new RuntimeInstances(scope.depth, factory.getClass(), object));
+            scope.instances.put(
+                key,
+                new RuntimeInstances(scope.depth, factory, objectType, object, classifier)
+            );
         } else {
-            existing.registerInstance(factory.getClass(), object);
+            existing.registerInstance(factory, objectType, object, classifier);
         }
     }
 

@@ -26,6 +26,12 @@ public abstract class InstanceFactory<T> {
     public Scoping getScoping() { return Scoping.TOPMOST; }
     public Class[] getSiblingTypes() { return null; }
     public String[] getSelector() { return null; }
+
     public boolean isDisposable() { return false; }
+    public void dispose(T instance) {
+        throw new IllegalStateException(
+            String.format("Instance %s is not disposable", instance)
+        );
+    }
 
 }
