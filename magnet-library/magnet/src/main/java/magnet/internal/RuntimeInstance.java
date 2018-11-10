@@ -22,6 +22,27 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+interface RuntimeInstance2<T> {
+
+    String getKey();
+    int getScopeDepth();
+
+    interface Value {}
+
+    interface SingleValue<T> extends Value {
+        Class<InstanceFactory> getFactoryType();
+        T getInstance();
+    }
+
+    interface ManyValues<T> extends Value {
+        T getInstances();
+        T getInstance(Class<InstanceFactory<T>> factoryType);
+    }
+
+}
+
+
+
 /* Subject to change. For internal use only. */
 final class RuntimeInstance<T> {
 
