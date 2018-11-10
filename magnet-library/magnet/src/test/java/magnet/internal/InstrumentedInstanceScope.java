@@ -51,6 +51,9 @@ public class InstrumentedInstanceScope implements Scope, FactoryFilter {
     @Override public Scope createSubscope() {
         return new InstrumentedInstanceScope((MagnetScope) scope.createSubscope());
     }
+    @Override public void dispose() {
+        scope.dispose();
+    }
 
     /*
     @Override public <T> RuntimeInstance<T> findDeepInstance(String key) {

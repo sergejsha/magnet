@@ -21,6 +21,7 @@ import magnet.Scope;
 import magnet.Scoping;
 import magnet.SelectorFilter;
 
+import java.lang.ref.WeakReference;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -38,6 +39,9 @@ final class MagnetScope implements Scope, FactoryFilter {
 
     private final MagnetScope parent;
     private final InstanceManager instanceManager;
+
+    private boolean disposed = false;
+    private List<WeakReference<MagnetScope>> children;
 
     /** Visible for testing */
     final int depth;
@@ -59,53 +63,84 @@ final class MagnetScope implements Scope, FactoryFilter {
 
     @Override
     public <T> T getOptional(Class<T> type) {
+        checkNotDisposed();
         InstanceFactory<T> factory = instanceManager.getOptionalInstanceFactory(type, Classifier.NONE, this);
         return getSingleObject(type, Classifier.NONE, factory, CARDINALITY_OPTIONAL);
     }
 
     @Override
     public <T> T getOptional(Class<T> type, String classifier) {
+        checkNotDisposed();
         InstanceFactory<T> factory = instanceManager.getOptionalInstanceFactory(type, classifier, this);
         return getSingleObject(type, classifier, factory, CARDINALITY_OPTIONAL);
     }
 
     @Override
     public <T> T getSingle(Class<T> type) {
+        checkNotDisposed();
         InstanceFactory<T> factory = instanceManager.getOptionalInstanceFactory(type, Classifier.NONE, this);
         return getSingleObject(type, Classifier.NONE, factory, CARDINALITY_SINGLE);
     }
 
     @Override
     public <T> T getSingle(Class<T> type, String classifier) {
+        checkNotDisposed();
         InstanceFactory<T> factory = instanceManager.getOptionalInstanceFactory(type, classifier, this);
         return getSingleObject(type, classifier, factory, CARDINALITY_SINGLE);
     }
 
     @Override
     public <T> List<T> getMany(Class<T> type) {
+        checkNotDisposed();
         return getManyObjects(type, Classifier.NONE);
     }
 
     @Override
     public <T> List<T> getMany(Class<T> type, String classifier) {
+        checkNotDisposed();
         return getManyObjects(type, classifier);
     }
 
     @Override
     public <T> Scope bind(Class<T> type, T object) {
+        checkNotDisposed();
         bind(key(type, Classifier.NONE), object);
         return this;
     }
 
     @Override
     public <T> Scope bind(Class<T> type, T object, String classifier) {
+        checkNotDisposed();
         bind(key(type, classifier), object);
         return this;
     }
 
     @Override
     public Scope createSubscope() {
-        return new MagnetScope(this, instanceManager);
+        checkNotDisposed();
+        MagnetScope child = new MagnetScope(this, instanceManager);
+        if (children == null) children = new ArrayList<>(4);
+        children.add(new WeakReference<>(child));
+        return child;
+    }
+
+    @Override
+    public void dispose() {
+        checkNotDisposed();
+        if (children != null) {
+            for (WeakReference<MagnetScope> child : children) {
+                MagnetScope scope = child.get();
+                if (scope != null) {
+                    scope.dispose();
+                }
+            }
+        }
+        // todo dispose instances
+        disposed = true;
+    }
+
+    private void checkNotDisposed() {
+        if (disposed) throw new IllegalStateException("Scope is disposed.");
     }
 
     @Override
@@ -211,8 +246,7 @@ final class MagnetScope implements Scope, FactoryFilter {
                 for (int i = 0, size = siblingFactoryTypes.length; i < size; i += 2) {
                     String siblingKey = key(siblingFactoryTypes[i], classifier);
                     registerInstanceInScope(
-                        siblingKey,
-                        RuntimeInstance.create(object, siblingFactoryTypes[i + 1], objectDepth)
+                        siblingKey, RuntimeInstance.create(object, siblingFactoryTypes[i + 1], objectDepth)
                     );
                 }
             }
@@ -221,7 +255,7 @@ final class MagnetScope implements Scope, FactoryFilter {
         return object;
     }
 
-    void registerInstanceInScope(String key, RuntimeInstance instance) {
+    void registerInstanceInScope(String key, final RuntimeInstance instance) {
         if (depth == instance.getScopeDepth()) {
             RuntimeInstance existing = instances.put(key, instance);
             if (existing != null) {

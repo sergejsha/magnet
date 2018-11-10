@@ -116,4 +116,7 @@ public interface Scope {
     /** Creates a new child scope of this scope. */
     Scope createSubscope();
 
+    /** Disposes this and all children scopes. Notifies instances with {@link Instance#disposer()}. */
+    void dispose();
+
 }

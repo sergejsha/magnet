@@ -117,6 +117,9 @@ public @interface Instance {
     /** Custom factory to be used for creating instance instead of the generated one. */
     Class<? extends Factory> factory() default Factory.class;
 
+    /** Name of optional disposer method to be called, when whole scope gets disposed. */
+    String disposer() default "";
+
     /** Magnet ignores this annotation when this flag is set to <code>true</code>. */
     boolean disabled() default false;
 
