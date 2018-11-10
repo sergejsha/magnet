@@ -7,6 +7,8 @@ import javax.lang.model.element.Element
 
 class SelectorAttributeParser : AttributeParser<String> {
 
+    override val attrName: String = "selector"
+
     fun convert(selector: String, element: Element): List<String>? {
         if (selector.isEmpty()) return null
 
@@ -42,8 +44,6 @@ class SelectorAttributeParser : AttributeParser<String> {
     }
 
     companion object {
-        const val ATTR_NAME = "selector"
-
         private val DELIMITER = Regex("[?!\\s|.]+")
         private val OPERATORS = arrayListOf(">", "<", ">=", "<=", "==", "!=", "in", "!in")
     }

@@ -22,6 +22,8 @@ import com.squareup.javapoet.ParameterizedTypeName
 import com.squareup.javapoet.TypeName
 import com.squareup.javapoet.TypeSpec
 import magnet.internal.InstanceFactory
+import magnet.processor.instances.disposer.DisposeMethodGenerator
+import magnet.processor.instances.disposer.IsDisposableMethodGenerator
 import magnet.processor.instances.factory.CreateMethodGenerator
 import magnet.processor.instances.factory.DefaultCreateMethodGenerator
 import magnet.processor.instances.scoping.GetScopingMethodGenerator
@@ -63,10 +65,14 @@ class FactoryTypeCodeGenerator : FactoryTypeVisitor, CodeGenerator {
     private val aspectGetScoping = Aspect(GetScopingMethodGenerator())
     private val aspectGetSelector = Aspect(GetSelectorMethodGenerator())
     private val createMethodGenerator: CreateMethodGenerator = DefaultCreateMethodGenerator()
+    private val isDisposableMethodGenerator = IsDisposableMethodGenerator()
+    private val disposeMethodGenerator = DisposeMethodGenerator()
 
     override fun enterFactoryClass(factoryType: FactoryType) {
         generateGettersInCreateMethod = factoryType.customFactoryType == null
         createMethodGenerator.visitFactoryClass(factoryType)
+        isDisposableMethodGenerator.visitFactoryClass(factoryType)
+        disposeMethodGenerator.visitFactoryClass(factoryType)
     }
 
     override fun enterCreateMethod(createMethod: CreateMethod) {
@@ -124,6 +130,8 @@ class FactoryTypeCodeGenerator : FactoryTypeVisitor, CodeGenerator {
         aspectGetScoping.generate(classBuilder)
         aspectGetSiblingTypes.generate(classBuilder)
         aspectGetSelector.generate(classBuilder)
+        isDisposableMethodGenerator.generate(classBuilder)
+        disposeMethodGenerator.generate(classBuilder)
 
         classBuilder
             .addMethod(generateGetTypeMethod(factory))

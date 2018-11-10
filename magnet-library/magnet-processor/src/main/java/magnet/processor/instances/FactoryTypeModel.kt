@@ -49,6 +49,7 @@ class Annotation(
     val scoping: String,
     val selector: String,
     val factory: TypeName?,
+    val disposer: String?,
     val disabled: Boolean
 )
 
@@ -59,7 +60,9 @@ class FactoryType(
     val scoping: String,
     val disabled: Boolean,
     val factoryType: ClassName,
+    val implementationType: ClassName?,
     val customFactoryType: TypeName?,
+    val disposerMethodName: String?,
     val createStatement: CreateStatement,
     val createMethod: CreateMethod,
     val getScopingMethod: GetScopingMethod,

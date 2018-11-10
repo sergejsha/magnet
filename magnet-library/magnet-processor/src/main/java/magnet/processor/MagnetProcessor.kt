@@ -19,6 +19,7 @@ package magnet.processor
 import magnet.Instance
 import magnet.Registry
 import magnet.Scope
+import magnet.processor.common.AnnotationValueExtractor
 import magnet.processor.common.CompilationException
 import magnet.processor.common.ValidationException
 import magnet.processor.instances.InstanceProcessor
@@ -86,6 +87,7 @@ class MagnetProcessorEnv(
     val filer: Filer get() = processEnvironment.filer
     val elements: Elements get() = processEnvironment.elementUtils
     val types: Types get() = processEnvironment.typeUtils
+    val annotation = AnnotationValueExtractor(elements)
 
     fun reportError(e: ValidationException) {
         processEnvironment.messager.printMessage(Diagnostic.Kind.ERROR, e.message, e.element)

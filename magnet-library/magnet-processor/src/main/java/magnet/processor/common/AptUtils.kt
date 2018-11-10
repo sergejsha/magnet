@@ -69,11 +69,13 @@ class AnnotationValueExtractor(
     }
 
     fun getStringValue(value: AnnotationValue): String {
+        this.value = null
         value.accept(this, null)
         return this.value as String
     }
 
     fun getTypeElement(value: AnnotationValue): TypeElement {
+        this.value = null
         value.accept(this, null)
         return this.value as TypeElement
     }

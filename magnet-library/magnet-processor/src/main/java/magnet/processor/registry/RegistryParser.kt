@@ -3,16 +3,15 @@ package magnet.processor.registry
 import com.squareup.javapoet.ClassName
 import magnet.internal.Index
 import magnet.internal.InstanceFactory
-import magnet.processor.MagnetProcessorEnv
 import magnet.processor.common.AnnotationValueExtractor
 import magnet.processor.common.isOfAnnotationType
 import javax.lang.model.AnnotatedConstruct
 import javax.lang.model.element.PackageElement
 import javax.lang.model.element.TypeElement
 
-class RegistryParser(env: MagnetProcessorEnv) {
-
-    private val extractor = AnnotationValueExtractor(env.elements)
+class RegistryParser(
+    private val extractor: AnnotationValueExtractor
+) {
 
     fun parse(element: PackageElement): Model.Registry {
 

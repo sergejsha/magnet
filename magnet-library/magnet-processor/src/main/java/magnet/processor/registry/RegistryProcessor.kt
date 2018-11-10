@@ -27,7 +27,7 @@ class RegistryProcessor(
     private val env: MagnetProcessorEnv
 ) {
 
-    private val registryParser by lazy { RegistryParser(env) }
+    private val registryParser by lazy { RegistryParser(env.annotation) }
     private val magnetIndexerGenerator by lazy { RegistryGenerator() }
 
     private var generateRegistryOnNextRound = false
