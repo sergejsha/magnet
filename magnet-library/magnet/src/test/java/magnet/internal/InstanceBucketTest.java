@@ -11,7 +11,7 @@ import java.util.List;
 import static com.google.common.truth.Truth.assertThat;
 
 @RunWith(MockitoJUnitRunner.StrictStubs.class)
-public class RuntimeInstancesTest {
+public class InstanceBucketTest {
 
     @Mock private Factory1 factory1;
     @Mock private Factory2 factory2;
@@ -19,12 +19,12 @@ public class RuntimeInstancesTest {
     @Mock private Interface1 instance1;
     @Mock private Interface1 instance2;
 
-    @Mock private RuntimeInstances.OnInstanceListener listener;
+    @Mock private InstanceBucket.OnInstanceListener listener;
 
     @Test
     @SuppressWarnings("unchecked")
     public void test_getScopeDepth() {
-        RuntimeInstances<String> instances = new RuntimeInstances(
+        InstanceBucket<String> instances = new InstanceBucket(
             1, factory1, Interface1.class, instance1, Classifier.NONE, listener
         );
         int depth = instances.getScopeDepth();
@@ -34,7 +34,7 @@ public class RuntimeInstancesTest {
     @Test
     @SuppressWarnings("unchecked")
     public void test_getInstances_SingleItem() {
-        RuntimeInstances<Interface1> instances = new RuntimeInstances(
+        InstanceBucket<Interface1> instances = new InstanceBucket(
             1, factory1, Interface1.class, instance1, Classifier.NONE, listener
         );
         List<Interface1> result = instances.getInstances();
@@ -44,7 +44,7 @@ public class RuntimeInstancesTest {
     @Test
     @SuppressWarnings("unchecked")
     public void test_getInstances_ManyItems() {
-        RuntimeInstances<Interface1> instances = new RuntimeInstances(
+        InstanceBucket<Interface1> instances = new InstanceBucket(
             1, factory1, Interface1.class, instance1, Classifier.NONE, listener
         );
         instances.registerInstance(factory2, Interface1.class, instance2, Classifier.NONE);
@@ -55,7 +55,7 @@ public class RuntimeInstancesTest {
     @Test
     @SuppressWarnings("unchecked")
     public void test_getSingleInstance() {
-        RuntimeInstances<Interface1> instances = new RuntimeInstances(
+        InstanceBucket<Interface1> instances = new InstanceBucket(
             1, factory1, Interface1.class, instance1, Classifier.NONE, listener
         );
         Interface1 result = instances.getSingleInstance();

@@ -83,7 +83,7 @@ public class MagnetScope_SiblingTypesTest {
         Scope directScope = topMost.createSubscope();
         directScope.getSingle(Interface1.class);
 
-        assertThat(topMost.instances).isEmpty();
+        assertThat(topMost.instanceBuckets).isEmpty();
     }
 
     private static MagnetInstanceManager createMagnetInstanceManager(Scoping scoping) {

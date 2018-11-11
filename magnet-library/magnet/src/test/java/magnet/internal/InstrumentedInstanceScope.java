@@ -59,13 +59,13 @@ public class InstrumentedInstanceScope implements Scope, FactoryFilter {
 
     /** Returns and object registered right in this scope or null if no object was registered. */
     @SuppressWarnings("unchecked") <T> T getOptionalInScope(Class<T> type, String classifier) {
-        RuntimeInstances<T> instance = scope.instances.get(MagnetScope.key(type, classifier));
+        InstanceBucket<T> instance = scope.instanceBuckets.get(MagnetScope.key(type, classifier));
         return instance == null ? null : instance.getSingleInstance();
     }
 
     /** Returns list of objects registered right in this scope. */
     @SuppressWarnings("unchecked") <T> List<T> getManyInScope(Class<T> type, String classifier) {
-        RuntimeInstances<T> instance = scope.instances.get(MagnetScope.key(type, classifier));
+        InstanceBucket<T> instance = scope.instanceBuckets.get(MagnetScope.key(type, classifier));
         return instance == null ? Collections.emptyList() : instance.getInstances();
     }
 
@@ -74,11 +74,11 @@ public class InstrumentedInstanceScope implements Scope, FactoryFilter {
         InstanceFactory<T> factory, Class<T> objectType, T object, String classifier
     ) {
         String key = MagnetScope.key(objectType, classifier);
-        RuntimeInstances existing = scope.instances.get(key);
+        InstanceBucket existing = scope.instanceBuckets.get(key);
         if (existing == null) {
-            scope.instances.put(
+            scope.instanceBuckets.put(
                 key,
-                new RuntimeInstances(scope.depth, factory, objectType, object, classifier, scope)
+                new InstanceBucket(scope.depth, factory, objectType, object, classifier, scope)
             );
         } else {
             existing.registerInstance(factory, objectType, object, classifier);

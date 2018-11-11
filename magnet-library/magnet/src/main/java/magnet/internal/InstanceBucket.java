@@ -23,13 +23,13 @@ import java.util.List;
 
 /* Subject to change. For internal use only. */
 @SuppressWarnings("unchecked")
-final class RuntimeInstances<T> {
+final class InstanceBucket<T> {
 
     private final int scopeDepth;
     private final OnInstanceListener listener;
     /* NonNull */ private Instance instance;
 
-    RuntimeInstances(
+    InstanceBucket(
         int scopeDepth,
         InstanceFactory<T> factory,
         Class<T> instanceType,
