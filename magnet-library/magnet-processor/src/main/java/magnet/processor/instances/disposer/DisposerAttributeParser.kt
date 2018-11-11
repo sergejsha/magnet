@@ -21,7 +21,7 @@ internal class DisposerAttributeParser(
         if (element.kind != ElementKind.CLASS) {
             throw ValidationException(
                 element = element,
-                message = "Disposer can be defined for annotated class, not a method."
+                message = "Disposer can be defined for annotated class only."
             )
         }
 
@@ -33,7 +33,7 @@ internal class DisposerAttributeParser(
             .find { it.kind == ElementKind.METHOD && it.simpleName.toString() == methodName }
             ?: throw ValidationException(
                 element = element,
-                message = "Instance must have disposer method: $methodName()."
+                message = "Instance must declare disposer method $methodName()."
             )
 
         val returnType = (methodElement as ExecutableElement).returnType

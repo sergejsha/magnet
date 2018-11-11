@@ -18,7 +18,10 @@ internal class DisposeMethodGenerator {
             .addModifiers(Modifier.PUBLIC)
             .returns(TypeName.VOID)
             .addParameter(factoryType.interfaceType, "instance")
-            .addStatement("((\$T) instance).\$L()", factoryType.implementationType, factoryType.disposerMethodName)
+            .addStatement(
+                "((\$T) instance).\$L()",
+                factoryType.implementationType, factoryType.disposerMethodName
+            )
     }
 
     fun generate(typeBuilder: TypeSpec.Builder) {

@@ -62,4 +62,16 @@ class InstanceDisposerTest {
         CompilationSubject.assertThat(compilation).hadErrorContaining("must return void")
     }
 
+    @Test
+    fun `Disposer cannot be used with UNSCOPED instances`() {
+        val compilation = Compiler.javac()
+            .withProcessors(MagnetProcessor())
+            .compile(
+                withResource("Interface.java"),
+                withResource("Implementation5.java")
+            )
+        CompilationSubject.assertThat(compilation).failed()
+        CompilationSubject.assertThat(compilation).hadErrorContaining("UNSCOPED")
+    }
+
 }

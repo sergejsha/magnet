@@ -14,6 +14,7 @@ import magnet.processor.MagnetProcessorEnv
 import magnet.processor.common.CompilationException
 import magnet.processor.common.ValidationException
 import magnet.processor.common.isOfAnnotationType
+import magnet.processor.instances.disposer.DisposerAnnotationValidator
 import magnet.processor.instances.disposer.DisposerAttributeParser
 import magnet.processor.instances.factory.FactoryAttributeParser
 import magnet.processor.instances.selector.SelectorAttributeParser
@@ -39,6 +40,10 @@ interface AttributeParser<R> {
     fun parse(value: AnnotationValue, element: Element): R
 }
 
+interface AnnotationValidator {
+    fun validate(annotation: Annotation, element: Element)
+}
+
 internal abstract class AnnotationParser<in E : Element>(
     private val env: MagnetProcessorEnv,
     private val verifyInheritance: Boolean
@@ -49,6 +54,7 @@ internal abstract class AnnotationParser<in E : Element>(
     private val typesAttrExtractor = TypesAttrExtractor(env.elements)
     private val factoryAttrParser = FactoryAttributeParser(env.annotation)
     private val disposerAttrParser = DisposerAttributeParser(env.annotation)
+    private val validators = listOf<AnnotationValidator>(DisposerAnnotationValidator())
 
     protected fun parseMethodParameter(
         element: Element,
@@ -214,7 +220,11 @@ internal abstract class AnnotationParser<in E : Element>(
             factory = factory,
             disposer = disposer,
             disabled = disabled
-        )
+        ).also {
+            for (validator in validators) {
+                validator.validate(annotation = it, element = element)
+            }
+        }
     }
 
     private fun resolveWildcardParameterType(paramTypeName: TypeName, element: Element): TypeName {

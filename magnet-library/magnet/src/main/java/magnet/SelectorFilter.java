@@ -16,7 +16,7 @@
 
 package magnet;
 
-/** Selector handler to handle {@link Instance#selector()} value. */
+/** Selector handler for processing {@link Instance#selector()} value at runtime. */
 public abstract class SelectorFilter {
 
     public static final String DEFAULT_SELECTOR = "";
