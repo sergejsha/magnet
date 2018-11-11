@@ -27,7 +27,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -41,8 +40,8 @@ final class MagnetScope implements Scope, FactoryFilter, InstanceBucket.OnInstan
     private final MagnetScope parent;
     private final InstanceManager instanceManager;
 
+    private WeakScopeReference childrenScopes;
     private boolean disposed = false;
-    private List<WeakReference<MagnetScope>> children;
     private List<InstanceBucket.SingleValueInstance> disposables;
 
     /** Visible for testing */
@@ -137,19 +136,8 @@ final class MagnetScope implements Scope, FactoryFilter, InstanceBucket.OnInstan
         checkNotDisposed();
 
         MagnetScope child = new MagnetScope(this, instanceManager);
-        if (children == null) children = new ArrayList<>(4);
-        children.add(new WeakReference<>(child));
+        childrenScopes = new WeakScopeReference(child, childrenScopes);
 
-        if (children.size() > 30) {
-            Iterator<WeakReference<MagnetScope>> iterator = children.iterator();
-            //noinspection Java8CollectionRemoveIf
-            while (iterator.hasNext()) {
-                WeakReference<MagnetScope> scopeRef = iterator.next();
-                if (scopeRef.get() == null) {
-                    iterator.remove();
-                }
-            }
-        }
         return child;
     }
 
@@ -158,13 +146,15 @@ final class MagnetScope implements Scope, FactoryFilter, InstanceBucket.OnInstan
     public void dispose() {
         checkNotDisposed();
 
-        if (children != null) {
-            for (WeakReference<MagnetScope> child : children) {
-                MagnetScope scope = child.get();
+        WeakScopeReference weakScope = childrenScopes;
+        if (weakScope != null) {
+            do {
+                MagnetScope scope = weakScope.get();
                 if (scope != null) {
                     scope.dispose();
                 }
-            }
+                weakScope = weakScope.next;
+            } while (weakScope != null);
         }
 
         if (disposables != null) {
@@ -175,6 +165,29 @@ final class MagnetScope implements Scope, FactoryFilter, InstanceBucket.OnInstan
         }
 
         disposed = true;
+
+        if (parent != null) {
+            parent.onChildScopeDisposed(this);
+        }
+    }
+
+    private void onChildScopeDisposed(MagnetScope childScope) {
+        if (childrenScopes == null) return;
+        WeakScopeReference prevWeakScope = null;
+        WeakScopeReference weakScope = childrenScopes;
+        do {
+            MagnetScope scope = weakScope.get();
+            if (scope == childScope) {
+                if (prevWeakScope == null) {
+                    childrenScopes = weakScope.next;
+                } else {
+                    prevWeakScope.next = weakScope.next;
+                }
+                break;
+            }
+            prevWeakScope = weakScope;
+            weakScope = weakScope.next;
+        } while (weakScope != null);
     }
 
     @Override
@@ -188,7 +201,7 @@ final class MagnetScope implements Scope, FactoryFilter, InstanceBucket.OnInstan
     }
 
     private void checkNotDisposed() {
-        if (disposed) throw new IllegalStateException("Scope is disposed.");
+        if (disposed) throw new IllegalStateException("Scope is already disposed.");
     }
 
     @Override
@@ -415,6 +428,14 @@ final class MagnetScope implements Scope, FactoryFilter, InstanceBucket.OnInstan
 
         @Override public int hashCode() {
             return key.hashCode();
+        }
+    }
+
+    private final static class WeakScopeReference extends WeakReference<MagnetScope> {
+        /* Nullable */ private WeakScopeReference next;
+        WeakScopeReference(MagnetScope referent, WeakScopeReference next) {
+            super(referent);
+            this.next = next;
         }
     }
 

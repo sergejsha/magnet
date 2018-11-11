@@ -70,7 +70,7 @@ public class InstrumentedInstanceScope implements Scope, FactoryFilter {
     }
 
     /** Injects given object right into the scope, as I would be injected using given factory. */
-    @SuppressWarnings("unchecked") <T> void instrumentObjectIntoScope(
+    @SuppressWarnings("unchecked") <T> InstrumentedInstanceScope instrumentObjectIntoScope(
         InstanceFactory<T> factory, Class<T> objectType, T object, String classifier
     ) {
         String key = MagnetScope.key(objectType, classifier);
@@ -83,6 +83,11 @@ public class InstrumentedInstanceScope implements Scope, FactoryFilter {
         } else {
             existing.registerInstance(factory, objectType, object, classifier);
         }
+        return this;
+    }
+
+    InstrumentedInstanceScope createInstrumentedSubscope() {
+        return new InstrumentedInstanceScope((MagnetScope) scope.createSubscope());
     }
 
 }
