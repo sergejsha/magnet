@@ -14,13 +14,21 @@
  * limitations under the License.
  */
 
-package magnet
+package magnet.kotlin
 
+import magnet.Classifier
+import magnet.Scope
+import magnet.bind
+import magnet.getOptional
+import magnet.getSingle
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.Mock
+import org.mockito.Mockito.any
+import org.mockito.Mockito.anyString
 import org.mockito.Mockito.verify
 import org.mockito.junit.MockitoJUnitRunner
+import org.mockito.Mockito.`when` as on
 
 @Suppress("UNUSED_VARIABLE")
 @RunWith(MockitoJUnitRunner.StrictStubs::class)
@@ -49,11 +57,14 @@ class ScopeExtTest {
 
     @Test
     fun testRegister() {
+        // given
+        on(scope.bind(any(Class::class.java), any(), anyString())).thenReturn(scope)
+
         // when
         scope.bind("component")
 
         // then
-        verify(scope).bind("component", Classifier.NONE)
+        verify(scope).bind(String::class.java, "component", Classifier.NONE)
     }
 
 }
