@@ -19,11 +19,13 @@ public class RuntimeInstancesTest {
     @Mock private Interface1 instance1;
     @Mock private Interface1 instance2;
 
+    @Mock private RuntimeInstances.OnInstanceListener listener;
+
     @Test
     @SuppressWarnings("unchecked")
     public void test_getScopeDepth() {
         RuntimeInstances<String> instances = new RuntimeInstances(
-            1, factory1, Interface1.class, instance1, Classifier.NONE
+            1, factory1, Interface1.class, instance1, Classifier.NONE, listener
         );
         int depth = instances.getScopeDepth();
         assertThat(depth).isEqualTo(1);
@@ -33,7 +35,7 @@ public class RuntimeInstancesTest {
     @SuppressWarnings("unchecked")
     public void test_getInstances_SingleItem() {
         RuntimeInstances<Interface1> instances = new RuntimeInstances(
-            1, factory1, Interface1.class, instance1, Classifier.NONE
+            1, factory1, Interface1.class, instance1, Classifier.NONE, listener
         );
         List<Interface1> result = instances.getInstances();
         assertThat(result).containsExactly(instance1);
@@ -43,7 +45,7 @@ public class RuntimeInstancesTest {
     @SuppressWarnings("unchecked")
     public void test_getInstances_ManyItems() {
         RuntimeInstances<Interface1> instances = new RuntimeInstances(
-            1, factory1, Interface1.class, instance1, Classifier.NONE
+            1, factory1, Interface1.class, instance1, Classifier.NONE, listener
         );
         instances.registerInstance(factory2, Interface1.class, instance2, Classifier.NONE);
         List<Interface1> result = instances.getInstances();
@@ -54,7 +56,7 @@ public class RuntimeInstancesTest {
     @SuppressWarnings("unchecked")
     public void test_getSingleInstance() {
         RuntimeInstances<Interface1> instances = new RuntimeInstances(
-            1, factory1, Interface1.class, instance1, Classifier.NONE
+            1, factory1, Interface1.class, instance1, Classifier.NONE, listener
         );
         Interface1 result = instances.getSingleInstance();
         assertThat(result).isSameAs(instance1);

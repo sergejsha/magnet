@@ -17,7 +17,6 @@
 package magnet.internal;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -27,6 +26,7 @@ import java.util.List;
 final class RuntimeInstances<T> {
 
     private final int scopeDepth;
+    private final OnInstanceListener listener;
     /* NonNull */ private Instance instance;
 
     RuntimeInstances(
@@ -34,10 +34,12 @@ final class RuntimeInstances<T> {
         InstanceFactory<T> factory,
         Class<T> instanceType,
         T instance,
-        String classifier
+        String classifier,
+        OnInstanceListener listener
     ) {
         this.scopeDepth = scopeDepth;
-        this.instance = new SingleValueInstance<>(factory, instanceType, instance, classifier);
+        this.listener = listener;
+        this.instance = createSingleValueInstance(factory, instanceType, instance, classifier);
     }
 
     int getScopeDepth() { return scopeDepth; }
@@ -89,43 +91,32 @@ final class RuntimeInstances<T> {
         if (this.instance instanceof SingleValueInstance) {
             SingleValueInstance<T> single = (SingleValueInstance<T>) this.instance;
             ManyValueInstance<T> many = new ManyValueInstance<>(single);
-            many.putInstance(new SingleValueInstance<>(factory, instanceType, instance, classifier));
+            many.putInstance(createSingleValueInstance(factory, instanceType, instance, classifier));
             this.instance = many;
 
         } else {
             ManyValueInstance<T> many = (ManyValueInstance<T>) this.instance;
-            many.putInstance(new SingleValueInstance<>(factory, instanceType, instance, classifier));
+            many.putInstance(createSingleValueInstance(factory, instanceType, instance, classifier));
         }
     }
 
-    void accept(InstanceVisitor visitor) {
-        if (instance instanceof SingleValueInstance) {
-            SingleValueInstance<T> single = (SingleValueInstance<T>) this.instance;
-            visitor.visit(
-                single.factory,
-                single.instanceType,
-                single.instance
-            );
-        } else {
-            ManyValueInstance<T> many = (ManyValueInstance<T>) this.instance;
-            Collection<SingleValueInstance<T>> singles = many.instances.values();
-            for (SingleValueInstance<T> single : singles) {
-                visitor.visit(
-                    single.factory,
-                    single.instanceType,
-                    single.instance
-                );
-            }
+    private SingleValueInstance<T> createSingleValueInstance(
+        InstanceFactory<T> factory, Class<T> instanceType, T instance, String classifier
+    ) {
+        SingleValueInstance<T> single = new SingleValueInstance<>(factory, instanceType, instance, classifier);
+        if (factory != null && factory.isDisposable()) {
+            listener.onInstanceRegistered(single);
         }
+        return single;
     }
 
-    private interface Instance {}
+    interface Instance {}
 
-    private static class SingleValueInstance<T> implements Instance {
-        /* Nullable */ private final InstanceFactory<T> factory;
-        private final Class<T> instanceType;
-        private final T instance;
-        private final String classifier;
+    static class SingleValueInstance<T> implements Instance {
+        /* Nullable */ final InstanceFactory<T> factory;
+        final Class<T> instanceType;
+        final T instance;
+        final String classifier;
 
         SingleValueInstance(
             InstanceFactory<T> factory,
@@ -172,6 +163,32 @@ final class RuntimeInstances<T> {
         }
     }
 
+    interface OnInstanceListener {
+        <T> void onInstanceRegistered(SingleValueInstance<T> instance);
+    }
+
+    /*
+    void accept(InstanceVisitor visitor) {
+        if (instance instanceof SingleValueInstance) {
+            SingleValueInstance<T> single = (SingleValueInstance<T>) this.instance;
+            visitor.visit(
+                single.factory,
+                single.instanceType,
+                single.instance
+            );
+        } else {
+            ManyValueInstance<T> many = (ManyValueInstance<T>) this.instance;
+            Collection<SingleValueInstance<T>> singles = many.instances.values();
+            for (SingleValueInstance<T> single : singles) {
+                visitor.visit(
+                    single.factory,
+                    single.instanceType,
+                    single.instance
+                );
+            }
+        }
+    }
+
     interface InstanceVisitor {
         <T> void visit(
             InstanceFactory<T> factory,
@@ -179,5 +196,6 @@ final class RuntimeInstances<T> {
             T instance
         );
     }
+    */
 
 }

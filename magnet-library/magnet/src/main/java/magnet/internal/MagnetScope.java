@@ -25,7 +25,6 @@ import java.lang.ref.WeakReference;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -33,7 +32,7 @@ import java.util.List;
 import java.util.Map;
 
 /* Subject to change. For internal use only. */
-final class MagnetScope implements Scope, FactoryFilter {
+final class MagnetScope implements Scope, FactoryFilter, RuntimeInstances.OnInstanceListener {
 
     private static final byte CARDINALITY_OPTIONAL = 0;
     private static final byte CARDINALITY_SINGLE = 1;
@@ -44,6 +43,7 @@ final class MagnetScope implements Scope, FactoryFilter {
 
     private boolean disposed = false;
     private List<WeakReference<MagnetScope>> children;
+    private List<RuntimeInstances.SingleValueInstance> disposables;
 
     /** Visible for testing */
     final int depth;
@@ -120,7 +120,8 @@ final class MagnetScope implements Scope, FactoryFilter {
                 /* factory = */ null,
                 /* instanceType = */ type,
                 /* instance = */ object,
-                /* classifier = */ classifier
+                /* classifier = */ classifier,
+                /* listener = */  this
             )
         );
         if (existing != null) {
@@ -153,8 +154,10 @@ final class MagnetScope implements Scope, FactoryFilter {
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public void dispose() {
         checkNotDisposed();
+
         if (children != null) {
             for (WeakReference<MagnetScope> child : children) {
                 MagnetScope scope = child.get();
@@ -163,8 +166,25 @@ final class MagnetScope implements Scope, FactoryFilter {
                 }
             }
         }
-        new ScopeDisposer(instanceManager).dispose(this);
+
+        if (disposables != null) {
+            for (int i = disposables.size(); i-- > 0; ) {
+                RuntimeInstances.SingleValueInstance single = disposables.get(i);
+                single.factory.dispose(single.instance);
+            }
+        }
+
         disposed = true;
+    }
+
+    @Override
+    public <T> void onInstanceRegistered(RuntimeInstances.SingleValueInstance<T> instance) {
+        if (instance.factory.isDisposable()) {
+            if (disposables == null) {
+                disposables = new ArrayList<>(8);
+            }
+            disposables.add(instance);
+        }
     }
 
     private void checkNotDisposed() {
@@ -302,7 +322,7 @@ final class MagnetScope implements Scope, FactoryFilter {
             if (instances == null) {
                 this.instances.put(
                     key,
-                    new RuntimeInstances<>(depth, factory, instanceType, instance, classifier)
+                    new RuntimeInstances<>(depth, factory, instanceType, instance, classifier, this)
                 );
             } else {
                 instances.registerInstance(factory, instanceType, instance, classifier);
@@ -395,28 +415,6 @@ final class MagnetScope implements Scope, FactoryFilter {
 
         @Override public int hashCode() {
             return key.hashCode();
-        }
-    }
-
-    private final class ScopeDisposer implements RuntimeInstances.InstanceVisitor {
-
-        private InstanceManager instanceManager;
-
-        ScopeDisposer(InstanceManager instanceManager) {
-            this.instanceManager = instanceManager;
-        }
-
-        void dispose(MagnetScope scope) {
-            Collection<RuntimeInstances> runtimeInstances = scope.instances.values();
-            for (RuntimeInstances runtimeInstance : runtimeInstances) {
-                runtimeInstance.accept(this);
-            }
-        }
-
-        @Override public <T> void visit(InstanceFactory<T> factory, Class<T> instanceType, T instance) {
-            if (factory.isDisposable()) {
-                factory.dispose(instance);
-            }
         }
     }
 

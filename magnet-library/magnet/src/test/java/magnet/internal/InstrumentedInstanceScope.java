@@ -78,7 +78,7 @@ public class InstrumentedInstanceScope implements Scope, FactoryFilter {
         if (existing == null) {
             scope.instances.put(
                 key,
-                new RuntimeInstances(scope.depth, factory, objectType, object, classifier)
+                new RuntimeInstances(scope.depth, factory, objectType, object, classifier, scope)
             );
         } else {
             existing.registerInstance(factory, objectType, object, classifier);
