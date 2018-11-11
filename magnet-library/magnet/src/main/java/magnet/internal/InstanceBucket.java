@@ -16,6 +16,9 @@
 
 package magnet.internal;
 
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -25,177 +28,185 @@ import java.util.List;
 @SuppressWarnings("unchecked")
 final class InstanceBucket<T> {
 
+    @NotNull private final OnInstanceListener listener;
+    @NotNull private Instance instance;
     private final int scopeDepth;
-    private final OnInstanceListener listener;
-    /* NonNull */ private Instance instance;
 
     InstanceBucket(
         int scopeDepth,
-        InstanceFactory<T> factory,
-        Class<T> instanceType,
-        T instance,
-        String classifier,
-        OnInstanceListener listener
+        @Nullable InstanceFactory<T> factory,
+        @NotNull Class<T> objectType,
+        @NotNull T object,
+        @NotNull String classifier,
+        @NotNull OnInstanceListener listener
     ) {
         this.scopeDepth = scopeDepth;
         this.listener = listener;
-        this.instance = createSingleValueInstance(factory, instanceType, instance, classifier);
+        this.instance = createSingleInstance(factory, objectType, object, classifier);
     }
 
     int getScopeDepth() { return scopeDepth; }
 
+    @NotNull
     T getSingleInstance() {
-        if (instance instanceof SingleValueInstance) {
-            SingleValueInstance singleValueInstance = (SingleValueInstance) instance;
-            return (T) singleValueInstance.instance;
-        } else {
-            ManyValueInstance manyValueInstance = (ManyValueInstance) instance;
-            throw new IllegalStateException(
-                String.format(
-                    "Single instance requested, while many instances are stored: %s",
-                    manyValueInstance.instances
-                )
-            );
+        if (instance instanceof InjectedInstance) {
+            return ((InjectedInstance<T>) instance).object;
+        } else if (instance instanceof BoundInstance) {
+            return ((BoundInstance<T>) instance).object;
         }
+
+        ManyValueInstance manyValueInstance = (ManyValueInstance) instance;
+        throw new IllegalStateException(
+            String.format(
+                "Single instance requested, while many instances are stored: %s",
+                manyValueInstance.instances
+            )
+        );
     }
 
-    T getOptionalInstance(Class<InstanceFactory<T>> factoryType) {
-        if (instance instanceof SingleValueInstance) {
-            SingleValueInstance singleValueInstance = (SingleValueInstance) instance;
-            if (singleValueInstance.factory.getClass() == factoryType) {
-                return (T) singleValueInstance.instance;
+    @Nullable
+    T getOptional(@Nullable Class<InstanceFactory<T>> factoryType) {
+        if (instance instanceof InjectedInstance) {
+            InjectedInstance<T> single = (InjectedInstance<T>) instance;
+            if (single.factory.getClass() == factoryType) {
+                return single.object;
             }
-        } else {
-            ManyValueInstance manyValueInstance = (ManyValueInstance) instance;
-            return (T) manyValueInstance.getOptionalInstance(factoryType);
+            return null;
+        } else if (instance instanceof BoundInstance) {
+            BoundInstance<T> single = (BoundInstance<T>) instance;
+            if (factoryType == null) {
+                return single.object;
+            }
+            return null;
         }
-        return null;
+        return (T) ((ManyValueInstance) instance).getOptional(factoryType);
     }
 
-    List<T> getInstances() {
-        if (instance instanceof SingleValueInstance) {
-            SingleValueInstance single = (SingleValueInstance) instance;
-            return (List<T>) Collections.singletonList(single.instance);
-        } else {
-            ManyValueInstance manyValueInstance = (ManyValueInstance) instance;
-            return (List<T>) manyValueInstance.getInstances();
+    @NotNull
+    List<T> getMany() {
+        if (instance instanceof InjectedInstance) {
+            return Collections.singletonList(((InjectedInstance<T>) instance).object);
+        } else if (instance instanceof BoundInstance) {
+            return Collections.singletonList(((BoundInstance<T>) instance).object);
         }
+        return ((ManyValueInstance<T>) instance).getMany();
     }
 
-    void registerInstance(
-        InstanceFactory<T> factory,
-        Class<T> instanceType,
-        T instance,
-        String classifier
+    void registerObject(
+        @Nullable InstanceFactory<T> factory,
+        @NotNull Class<T> objectType,
+        @NotNull T object,
+        @NotNull String classifier
     ) {
-        if (this.instance instanceof SingleValueInstance) {
-            SingleValueInstance<T> single = (SingleValueInstance<T>) this.instance;
-            ManyValueInstance<T> many = new ManyValueInstance<>(single);
-            many.putInstance(createSingleValueInstance(factory, instanceType, instance, classifier));
-            this.instance = many;
-
-        } else {
+        if (this.instance instanceof ManyValueInstance) {
             ManyValueInstance<T> many = (ManyValueInstance<T>) this.instance;
-            many.putInstance(createSingleValueInstance(factory, instanceType, instance, classifier));
+            many.putSingle(createSingleInstance(factory, objectType, object, classifier));
+
+        } else {
+            ManyValueInstance<T> many = new ManyValueInstance<>((SingleInstance<T>) this.instance);
+            many.putSingle(createSingleInstance(factory, objectType, object, classifier));
+            this.instance = many;
         }
     }
 
-    private SingleValueInstance<T> createSingleValueInstance(
-        InstanceFactory<T> factory, Class<T> instanceType, T instance, String classifier
+    @NotNull private SingleInstance<T> createSingleInstance(
+        @Nullable InstanceFactory<T> factory,
+        @NotNull Class<T> objectType,
+        @NotNull T object,
+        @NotNull String classifier
     ) {
-        SingleValueInstance<T> single = new SingleValueInstance<>(factory, instanceType, instance, classifier);
-        if (factory != null && factory.isDisposable()) {
-            listener.onInstanceRegistered(single);
+        SingleInstance single;
+        if (factory == null) {
+            single = new BoundInstance<>(objectType, object, classifier);
+        } else {
+            single = new InjectedInstance<>(factory, objectType, object, classifier);
         }
+        listener.onInstanceCreated(single);
         return single;
     }
 
     interface Instance {}
 
-    static class SingleValueInstance<T> implements Instance {
-        /* Nullable */ final InstanceFactory<T> factory;
-        final Class<T> instanceType;
-        final T instance;
-        final String classifier;
+    static abstract class SingleInstance<T> implements Instance {
+        @NotNull final Class<T> objectType;
+        @NotNull final T object;
+        @NotNull final String classifier;
 
-        SingleValueInstance(
-            InstanceFactory<T> factory,
-            Class<T> instanceType,
-            T instance,
-            String classifier
+        SingleInstance(
+            @NotNull Class<T> objectType,
+            @NotNull T object,
+            @NotNull String classifier
         ) {
-            this.factory = factory;
-            this.instanceType = instanceType;
-            this.instance = instance;
+            this.objectType = objectType;
+            this.object = object;
             this.classifier = classifier;
         }
     }
 
-    private static class ManyValueInstance<T> implements Instance {
-        private final HashMap<Class<InstanceFactory<T>>, SingleValueInstance<T>> instances = new HashMap<>(8);
+    static class BoundInstance<T> extends SingleInstance<T> {
+        BoundInstance(
+            @NotNull Class<T> objectType,
+            @NotNull T object,
+            @NotNull String classifier
+        ) {
+            super(objectType, object, classifier);
+        }
+    }
 
-        ManyValueInstance(SingleValueInstance<T> single) {
-            instances.put(
-                (Class<InstanceFactory<T>>) single.factory.getClass(),
-                single
-            );
+    static class InjectedInstance<T> extends SingleInstance<T> {
+        @NotNull final InstanceFactory<T> factory;
+
+        InjectedInstance(
+            @NotNull InstanceFactory<T> factory,
+            @NotNull Class<T> objectType,
+            @NotNull T object,
+            @NotNull String classifier
+        ) {
+            super(objectType, object, classifier);
+            this.factory = factory;
+        }
+    }
+
+    private static class ManyValueInstance<T> implements Instance {
+        @NotNull
+        private final HashMap<Class<InstanceFactory<T>>, SingleInstance<T>> instances;
+
+        ManyValueInstance(@NotNull SingleInstance<T> single) {
+            instances = new HashMap<>(8);
+            putSingle(single);
         }
 
-        List<T> getInstances() {
+        @NotNull
+        List<T> getMany() {
             List<T> result = new ArrayList<>(this.instances.size());
-            for (SingleValueInstance<T> single : this.instances.values()) {
-                result.add(single.instance);
+            for (SingleInstance<T> single : this.instances.values()) {
+                result.add(single.object);
             }
             return result;
         }
 
-        T getOptionalInstance(Class<InstanceFactory<T>> factoryType) {
-            SingleValueInstance<T> single = instances.get(factoryType);
+        @Nullable
+        T getOptional(@Nullable Class<InstanceFactory<T>> factoryType) {
+            SingleInstance<T> single = instances.get(factoryType);
             if (single == null) return null;
-            return single.instance;
+            return single.object;
         }
 
-        void putInstance(SingleValueInstance<T> single) {
-            instances.put(
-                (Class<InstanceFactory<T>>) single.factory.getClass(),
-                single
-            );
+        void putSingle(@NotNull SingleInstance<T> single) {
+            @Nullable final Class<InstanceFactory<T>> objectType;
+            if (single instanceof InjectedInstance) {
+                objectType = (Class<InstanceFactory<T>>) ((InjectedInstance) single).factory.getClass();
+            } else if (single instanceof BoundInstance) {
+                objectType = null;
+            } else {
+                throw new IllegalStateException("Unsupported SingleInstance type.");
+            }
+            instances.put(objectType, single);
         }
     }
 
     interface OnInstanceListener {
-        <T> void onInstanceRegistered(SingleValueInstance<T> instance);
+        <T> void onInstanceCreated(SingleInstance<T> instance);
     }
-
-    /*
-    void accept(InstanceVisitor visitor) {
-        if (instance instanceof SingleValueInstance) {
-            SingleValueInstance<T> single = (SingleValueInstance<T>) this.instance;
-            visitor.visit(
-                single.factory,
-                single.instanceType,
-                single.instance
-            );
-        } else {
-            ManyValueInstance<T> many = (ManyValueInstance<T>) this.instance;
-            Collection<SingleValueInstance<T>> singles = many.instances.values();
-            for (SingleValueInstance<T> single : singles) {
-                visitor.visit(
-                    single.factory,
-                    single.instanceType,
-                    single.instance
-                );
-            }
-        }
-    }
-
-    interface InstanceVisitor {
-        <T> void visit(
-            InstanceFactory<T> factory,
-            Class<T> instanceType,
-            T instance
-        );
-    }
-    */
 
 }

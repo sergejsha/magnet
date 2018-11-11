@@ -16,11 +16,20 @@
 
 package magnet;
 
+import org.jetbrains.annotations.NotNull;
+
 /** Custom factory to be used with {@link Instance#factory()}. */
 public interface Factory<T> {
 
     /** Implementation must return instance of give type without delegating the call to the given scope. */
-    T create(Scope scope, Class<T> type, String classifier, Scoping scoping, Instantiator<T> instantiator);
+    @NotNull
+    T create(
+        @NotNull Scope scope,
+        @NotNull Class<T> type,
+        @NotNull String classifier,
+        @NotNull Scoping scoping,
+        @NotNull Instantiator<T> instantiator
+    );
 
     /** Instantiator creates new instance of given type using {@code new} operator. */
     interface Instantiator<T> {

@@ -37,7 +37,7 @@ public class InstanceBucketTest {
         InstanceBucket<Interface1> instances = new InstanceBucket(
             1, factory1, Interface1.class, instance1, Classifier.NONE, listener
         );
-        List<Interface1> result = instances.getInstances();
+        List<Interface1> result = instances.getMany();
         assertThat(result).containsExactly(instance1);
     }
 
@@ -47,8 +47,8 @@ public class InstanceBucketTest {
         InstanceBucket<Interface1> instances = new InstanceBucket(
             1, factory1, Interface1.class, instance1, Classifier.NONE, listener
         );
-        instances.registerInstance(factory2, Interface1.class, instance2, Classifier.NONE);
-        List<Interface1> result = instances.getInstances();
+        instances.registerObject(factory2, Interface1.class, instance2, Classifier.NONE);
+        List<Interface1> result = instances.getMany();
         assertThat(result).containsExactly(instance1, instance2);
     }
 

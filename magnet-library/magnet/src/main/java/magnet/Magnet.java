@@ -17,11 +17,13 @@
 package magnet;
 
 import magnet.internal.InternalFactory;
+import org.jetbrains.annotations.NotNull;
 
 public final class Magnet {
 
     private Magnet() { }
 
+    @NotNull
     public static Scope createRootScope() {
         return InternalFactory.createRootScope();
     }

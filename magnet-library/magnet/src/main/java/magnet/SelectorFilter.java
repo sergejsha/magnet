@@ -16,10 +16,12 @@
 
 package magnet;
 
+import org.jetbrains.annotations.NotNull;
+
 /** Selector handler for processing {@link Instance#selector()} value at runtime. */
 public abstract class SelectorFilter {
 
     public static final String DEFAULT_SELECTOR = "";
-    public abstract boolean filter(String[] selector);
+    public abstract boolean filter(@NotNull String[] selector);
 
 }

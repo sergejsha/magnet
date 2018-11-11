@@ -16,6 +16,9 @@
 
 package magnet;
 
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
 import java.util.List;
 
 /**
@@ -90,31 +93,31 @@ import java.util.List;
 public interface Scope {
 
     /** Returns an object from the scope or {@code null}, if object was not found. */
-    <T> T getOptional(Class<T> type);
+    @Nullable <T> T getOptional(@NotNull Class<T> type);
 
     /** Returns an object from the scope or {@code null}, if object was not found. */
-    <T> T getOptional(Class<T> type, String classifier);
+    @Nullable <T> T getOptional(@NotNull Class<T> type, @NotNull String classifier);
 
     /** Returns an object from the scope or throws exception, if object was not found. */
-    <T> T getSingle(Class<T> type);
+    @NotNull <T> T getSingle(@NotNull Class<T> type);
 
     /** Returns an object from the scope or throws exception, if object was not found. */
-    <T> T getSingle(Class<T> type, String classifier);
+    @NotNull <T> T getSingle(@NotNull Class<T> type, @NotNull String classifier);
 
     /** Returns a list of objects or empty list, if no objects were found. */
-    <T> List<T> getMany(Class<T> type);
+    @NotNull <T> List<T> getMany(@NotNull Class<T> type);
 
     /** Returns a list of objects or empty list, if no objects were found. */
-    <T> List<T> getMany(Class<T> type, String classifier);
+    @NotNull <T> List<T> getMany(@NotNull Class<T> type, @NotNull String classifier);
 
     /** Bind given instance into this scope. */
-    <T> Scope bind(Class<T> type, T instance);
+    @NotNull <T> Scope bind(@NotNull Class<T> type, @NotNull T instance);
 
     /** Bind given instance into this scope. */
-    <T> Scope bind(Class<T> type, T instance, String classifier);
+    @NotNull <T> Scope bind(@NotNull Class<T> type, @NotNull T instance, @NotNull String classifier);
 
     /** Creates a new child scope of this scope. */
-    Scope createSubscope();
+    @NotNull Scope createSubscope();
 
     /** Disposes this and all children scopes. Notifies instances with {@link Instance#disposer()}. */
     void dispose();

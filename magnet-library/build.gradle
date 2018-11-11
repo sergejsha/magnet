@@ -37,6 +37,7 @@ ext.deps = [:]
 ext.deps.javapoet = 'com.squareup:javapoet:1.11.1'
 ext.deps.kotlinjdk8 = "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
 ext.deps.kotlinjdk7 = "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+ext.deps.annotations = 'org.jetbrains:annotations:16.0.1'
 
 // testing
 ext.deps.junit = 'junit:junit:4.12'

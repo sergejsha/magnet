@@ -17,6 +17,7 @@
 package magnet.internal;
 
 import magnet.Scope;
+import org.jetbrains.annotations.NotNull;
 
 /* Subject to change. For internal use only. */
 public final class InternalFactory {
@@ -25,6 +26,7 @@ public final class InternalFactory {
 
     private InternalFactory() {}
 
+    @NotNull
     public static Scope createRootScope() {
         return new MagnetScope(
             /* parent = */ null,
