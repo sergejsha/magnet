@@ -164,7 +164,7 @@ final class MagnetScope implements Scope, FactoryFilter, InstanceBucket.OnInstan
     @Override
     @SuppressWarnings("unchecked")
     public void dispose() {
-        checkNotDisposed();
+        if (disposed) return;
 
         WeakScopeReference weakScope = childrenScopes;
         if (weakScope != null) {
