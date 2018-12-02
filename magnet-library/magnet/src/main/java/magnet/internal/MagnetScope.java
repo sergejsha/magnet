@@ -24,13 +24,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.lang.ref.WeakReference;
-import java.util.ArrayDeque;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /* Subject to change. For internal use only. */
 final class MagnetScope implements Scope, FactoryFilter, InstanceBucket.OnInstanceListener {
@@ -39,23 +33,31 @@ final class MagnetScope implements Scope, FactoryFilter, InstanceBucket.OnInstan
     private static final byte CARDINALITY_SINGLE = 1;
     private static final byte CARDINALITY_MANY = 2;
 
-    @Nullable private final MagnetScope parent;
-    @NotNull private final InstanceManager instanceManager;
+    @Nullable
+    private final MagnetScope parent;
+    @NotNull
+    private final InstanceManager instanceManager;
 
-    @Nullable private WeakScopeReference childrenScopes;
-    @Nullable private List<InstanceBucket.InjectedInstance> disposables;
+    @Nullable
+    private WeakScopeReference childrenScopes;
+    @Nullable
+    private List<InstanceBucket.InjectedInstance> disposables;
     private boolean disposed = false;
 
     /** Visible for testing */
     final int depth;
 
     /** Visible for testing */
-    @NotNull final Map<String, InstanceBucket> instanceBuckets;
+    @NotNull
+    final Map<String, InstanceBucket> instanceBuckets;
 
     @SuppressWarnings("AnonymousHasLambdaAlternative")
     @NotNull
     private final ThreadLocal<InstantiationContext> instantiationContext = new ThreadLocal<InstantiationContext>() {
-        @Override protected InstantiationContext initialValue() { return new InstantiationContext(); }
+        @Override
+        protected InstantiationContext initialValue() {
+            return new InstantiationContext();
+        }
     };
 
     MagnetScope(@Nullable MagnetScope parent, @NotNull InstanceManager instanceManager) {
@@ -328,15 +330,16 @@ final class MagnetScope implements Scope, FactoryFilter, InstanceBucket.OnInstan
             Class[] siblingFactoryTypes = factory.getSiblingTypes();
             if (siblingFactoryTypes != null) {
                 for (int i = 0, size = siblingFactoryTypes.length; i < size; i += 2) {
-                    String siblingKey = key(siblingFactoryTypes[i], classifier);
+                    Class siblingObjectType = siblingFactoryTypes[i];
+                    String siblingKey = key(siblingObjectType, classifier);
                     InstanceFactory siblingFactory = instanceManager.getInstanceFactory(
-                        objectType, classifier, siblingFactoryTypes[i + 1]
+                        siblingObjectType, classifier, siblingFactoryTypes[i + 1]
                     );
                     registerInstanceInScope(
                         siblingKey,
                         objectDepth,
                         siblingFactory,
-                        objectType,
+                        siblingObjectType,
                         object,
                         classifier
                     );
@@ -446,20 +449,24 @@ final class MagnetScope implements Scope, FactoryFilter, InstanceBucket.OnInstan
             this.key = key;
         }
 
-        @Override public boolean equals(Object o) {
+        @Override
+        public boolean equals(Object o) {
             if (this == o) return true;
             if (o == null || getClass() != o.getClass()) return false;
             Instantiation that = (Instantiation) o;
             return key.equals(that.key);
         }
 
-        @Override public int hashCode() {
+        @Override
+        public int hashCode() {
             return key.hashCode();
         }
     }
 
     private final static class WeakScopeReference extends WeakReference<MagnetScope> {
-        @Nullable private WeakScopeReference next;
+        @Nullable
+        private WeakScopeReference next;
+
         WeakScopeReference(MagnetScope referent, @Nullable WeakScopeReference next) {
             super(referent);
             this.next = next;
