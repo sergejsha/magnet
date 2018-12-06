@@ -68,8 +68,9 @@ Custom selectors are easy to write. For more details checkout [magnetx-selector-
 # Documentation
 
 1. [Developer Guide](https://www.halfbit.de/magnet/developer-guide/)
-2. [Dependency Inversion][1]
-3. [Hierarchical Scopes][2]
+2. [Sample application](https://github.com/beworker/g1)
+3. [Dependency Inversion][1]
+4. [Hierarchical Scopes][2]
 
 # Gradle
 
