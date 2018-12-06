@@ -76,7 +76,7 @@ Custom selectors are easy to write. For more details checkout [magnetx-selector-
 
 # Help wanted
 
-The power of Magnet - dynamic injection of instances into scopes based on their dependencies - can also become its weakness when you as a developer wants to see the whole picture at once - all scopes and instances created at runtime. For this purpose Magnet needs a visual dependency monitor which can show
+The power of Magnet - dynamic injection of instances into scopes - can also become its weakness when you, as a developer, want to see how instances are injected at runtime. For this purpose Magnet needs a visual dependency monitor which can show
 * a graph of current runtime scopes
 * the instances kept in the scopes
 * the IN and OUT dependencies for a selected instance.
