@@ -65,10 +65,12 @@ val audioFocus: AudioFocus = scope.getSingle()
 
 Custom selectors are easy to write. For more details checkout [magnetx-selector-android](magnet-extensions/magnetx-selector-android) or [magnetx-selector-features](magnet-extensions/magnetx-selector-features) modules.
 
+4. Magnet supports dependency inversion between app modules. See [sample app][3] for more detail.
+
 # Documentation
 
 1. [Developer Guide](https://www.halfbit.de/magnet/developer-guide/)
-2. [Sample application](https://github.com/beworker/g1)
+2. [Sample application][3]
 3. [Dependency Inversion][1]
 4. [Hierarchical Scopes][2]
 
@@ -114,3 +116,4 @@ limitations under the License.
 
 [1]: https://github.com/beworker/magnet/wiki/Dependency-inversion
 [2]: https://github.com/beworker/magnet/wiki/Dependency-auto-scoping
+[3]: https://github.com/beworker/g1
