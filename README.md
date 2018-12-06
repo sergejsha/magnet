@@ -81,7 +81,7 @@ The power of Magnet - dynamic injection of instances into scopes based on their 
 * the instances kept in the scopes
 * the IN and OUT dependencies for a selected instance.
 
-The monitor should be implemented for [Stetho](https://github.com/facebook/stetho) or [Flipper](https://github.com/facebook/flipper) or any other reasonable debugging tool of your choice. If you are an expecienced Java/Kotlin developer willing to contribute and having enough capacity for the task - please welcome on board. Your help is warmly appreciated.
+The monitor should be implemented for [Stetho](https://github.com/facebook/stetho) or [Flipper](https://github.com/facebook/flipper) or any other reasonable debugging tool of your choice. If you are an expecienced Java/Kotlin developer willing to contribute, you like Magnet and you have capacity for the task - please welcome on board. Your help is warmly appreciated.
 
 # Gradle
 
