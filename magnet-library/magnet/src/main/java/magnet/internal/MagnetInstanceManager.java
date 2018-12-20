@@ -17,6 +17,7 @@
 package magnet.internal;
 
 import magnet.Registry;
+import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -57,7 +58,7 @@ final class MagnetInstanceManager implements InstanceManager {
 
     @Override
     @SuppressWarnings("unchecked")
-    public <T> InstanceFactory getInstanceFactory(
+    public <T> @Nullable InstanceFactory getInstanceFactory(
         Class<T> instanceType, String classifier, Class<InstanceFactory<T>> factoryType
     ) {
         Range range = getOptionalRange(instanceType, classifier);
@@ -75,7 +76,7 @@ final class MagnetInstanceManager implements InstanceManager {
 
     @Override
     @SuppressWarnings("unchecked")
-    public <T> InstanceFactory<T> getFilteredInstanceFactory(
+    public <T> @Nullable InstanceFactory<T> getFilteredInstanceFactory(
         Class<T> type, String classifier, FactoryFilter factoryFilter
     ) {
         Range range = getOptionalRange(type, classifier);

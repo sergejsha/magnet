@@ -33,23 +33,18 @@ final class MagnetScope implements Scope, FactoryFilter, InstanceBucket.OnInstan
     private static final byte CARDINALITY_SINGLE = 1;
     private static final byte CARDINALITY_MANY = 2;
 
-    @Nullable
-    private final MagnetScope parent;
-    @NotNull
-    private final InstanceManager instanceManager;
+    @Nullable private final MagnetScope parent;
+    @NotNull private final InstanceManager instanceManager;
 
-    @Nullable
-    private WeakScopeReference childrenScopes;
-    @Nullable
-    private List<InstanceBucket.InjectedInstance> disposables;
+    @Nullable private WeakScopeReference childrenScopes;
+    @Nullable private List<InstanceBucket.InjectedInstance> disposables;
     private boolean disposed = false;
 
     /** Visible for testing */
     final int depth;
 
     /** Visible for testing */
-    @NotNull
-    final Map<String, InstanceBucket> instanceBuckets;
+    @NotNull final Map<String, InstanceBucket> instanceBuckets;
 
     @SuppressWarnings("AnonymousHasLambdaAlternative")
     @NotNull
@@ -132,7 +127,6 @@ final class MagnetScope implements Scope, FactoryFilter, InstanceBucket.OnInstan
     public <T> Scope bind(@NotNull Class<T> type, @NotNull T object, @NotNull String classifier) {
         checkNotDisposed();
         final String key = key(type, classifier);
-        // todo
         Object existing = instanceBuckets.put(
             key,
             new InstanceBucket<>(
@@ -213,7 +207,7 @@ final class MagnetScope implements Scope, FactoryFilter, InstanceBucket.OnInstan
     }
 
     @Override
-    public <T> void onInstanceCreated(InstanceBucket.SingleInstance<T> instance) {
+    public <T> void onInstanceCreated(InstanceBucket.SingleObjectInstance<T> instance) {
         if (instance instanceof InstanceBucket.InjectedInstance) {
             InstanceBucket.InjectedInstance injected = (InstanceBucket.InjectedInstance) instance;
             if (injected.factory.isDisposable()) {
@@ -261,14 +255,17 @@ final class MagnetScope implements Scope, FactoryFilter, InstanceBucket.OnInstan
     @Nullable
     @SuppressWarnings("unchecked")
     private <T> T findOrInjectOptional(
-        Class<T> objectType, String classifier, InstanceFactory<T> factory, byte cardinality
+        @NotNull Class<T> objectType,
+        @NotNull String classifier,
+        @Nullable InstanceFactory<T> factory,
+        byte cardinality
     ) {
         @NotNull InstantiationContext instantiationContext = this.instantiationContext.get();
         @NotNull String key = key(objectType, classifier);
 
+        InstanceBucket<T> deepInstance = findDeepInstanceBucket(key, factory);
         if (factory == null) {
-            InstanceBucket<T> instanceBucket = findDeepInstanceBucket(key);
-            if (instanceBucket == null) {
+            if (deepInstance == null) {
                 if (cardinality == CARDINALITY_SINGLE) {
                     throw new IllegalStateException(
                         String.format(
@@ -277,23 +274,21 @@ final class MagnetScope implements Scope, FactoryFilter, InstanceBucket.OnInstan
                 }
                 return null;
             }
-            instantiationContext.onDependencyFound(instanceBucket.getScopeDepth());
-            return instanceBucket.getSingleInstance();
+            instantiationContext.onDependencyFound(deepInstance.getScopeDepth());
+            return deepInstance.getSingleInstance();
         }
 
-        InstanceBucket<T> deepInstances = findDeepInstanceBucket(key);
         boolean keepInScope = factory.getScoping() != Scoping.UNSCOPED;
-
         if (keepInScope) {
-            if (deepInstances != null) {
+            if (deepInstance != null) {
                 boolean isSingleOrOptional = cardinality != CARDINALITY_MANY;
 
                 if (isSingleOrOptional) {
-                    instantiationContext.onDependencyFound(deepInstances.getScopeDepth());
-                    return deepInstances.getSingleInstance();
+                    instantiationContext.onDependencyFound(deepInstance.getScopeDepth());
+                    return deepInstance.getSingleInstance();
                 }
 
-                T object = deepInstances.getOptional((Class<InstanceFactory<T>>) factory.getClass());
+                T object = deepInstance.getOptional((Class<InstanceFactory<T>>) factory.getClass());
                 if (object != null) {
                     return object;
                 }
@@ -310,11 +305,11 @@ final class MagnetScope implements Scope, FactoryFilter, InstanceBucket.OnInstan
 
         if (keepInScope) {
 
-            boolean canUseDeepInstances = deepInstances != null
-                && deepInstances.getScopeDepth() == objectDepth;
+            boolean canUseDeepInstances = deepInstance != null
+                && deepInstance.getScopeDepth() == objectDepth;
 
             if (canUseDeepInstances) {
-                deepInstances.registerObject(factory, objectType, object, classifier);
+                deepInstance.registerObject(factory, objectType, object, classifier);
 
             } else {
                 registerInstanceInScope(
@@ -351,12 +346,12 @@ final class MagnetScope implements Scope, FactoryFilter, InstanceBucket.OnInstan
     }
 
     private <T> void registerInstanceInScope(
-        String key,
+        @NotNull String key,
         int depth,
-        InstanceFactory<T> factory,
-        Class<T> objectType,
-        T object,
-        String classifier
+        @Nullable InstanceFactory<T> factory,
+        @NotNull Class<T> objectType,
+        @NotNull T object,
+        @NotNull String classifier
     ) {
         if (this.depth == depth) {
             @SuppressWarnings("unchecked") final InstanceBucket<T> bucket = instanceBuckets.get(key);
@@ -383,12 +378,11 @@ final class MagnetScope implements Scope, FactoryFilter, InstanceBucket.OnInstan
 
     @Nullable
     @SuppressWarnings("unchecked")
-    private <T> InstanceBucket<T> findDeepInstanceBucket(String key) {
+    private <T> InstanceBucket<T> findDeepInstanceBucket(String key, InstanceFactory<T> factory) {
         InstanceBucket<T> bucket = (InstanceBucket<T>) instanceBuckets.get(key);
-        if (bucket == null && parent != null) {
-            return parent.findDeepInstanceBucket(key);
-        }
-        return bucket;
+        if (bucket != null && bucket.hasInstanceWithFactory(factory)) return bucket;
+        if (parent == null) return null;
+        return parent.findDeepInstanceBucket(key, factory);
     }
 
     /** Visible for testing */
