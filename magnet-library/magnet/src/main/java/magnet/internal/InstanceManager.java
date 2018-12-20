@@ -16,15 +16,17 @@
 
 package magnet.internal;
 
+import org.jetbrains.annotations.Nullable;
+
 import java.util.List;
 
 /* Subject to change. For internal use only. */
 interface InstanceManager {
 
-    <T> InstanceFactory getInstanceFactory(
+    <T> @Nullable InstanceFactory getInstanceFactory(
         Class<T> instanceType, String classifier, Class<InstanceFactory<T>> factoryType);
 
-    <T> InstanceFactory<T> getFilteredInstanceFactory(
+    <T> @Nullable InstanceFactory<T> getFilteredInstanceFactory(
         Class<T> type, String classifier, FactoryFilter factoryFilter);
 
     <T> List<InstanceFactory<T>> getManyInstanceFactories(
