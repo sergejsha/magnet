@@ -108,7 +108,7 @@ dependencies {
 
 # License
 ```
-Copyright 2018 Sergej Shafarenka, www.halfbit.de
+Copyright 2018-2019 Sergej Shafarenka, www.halfbit.de
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
