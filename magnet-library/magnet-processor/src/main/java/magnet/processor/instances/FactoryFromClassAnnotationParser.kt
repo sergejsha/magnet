@@ -20,6 +20,7 @@ import com.squareup.javapoet.ClassName
 import magnet.Instance
 import magnet.processor.MagnetProcessorEnv
 import magnet.processor.common.ValidationException
+import javax.lang.model.element.Modifier
 import javax.lang.model.element.TypeElement
 import javax.lang.model.util.ElementFilter
 
@@ -74,11 +75,14 @@ internal class FactoryFromClassAnnotationParser(
 
     private fun parseCreateMethod(element: TypeElement): CreateMethod {
 
-        val constructors = ElementFilter.constructorsIn(element.enclosedElements)
+        val constructors = ElementFilter
+            .constructorsIn(element.enclosedElements)
+            .filterNot { it.modifiers.contains(Modifier.PRIVATE) || it.modifiers.contains(Modifier.PROTECTED) }
         if (constructors.size != 1) {
             throw ValidationException(
                 element = element,
-                message = "Classes annotated with ${Instance::class.java} must have exactly one constructor."
+                message = "Classes annotated with ${Instance::class.java} must have exactly one " +
+                    "public or package-protected constructor."
             )
         }
 
