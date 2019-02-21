@@ -88,18 +88,20 @@ The monitor should be implemented for [Stetho](https://github.com/facebook/steth
 Kotlin
 ```gradle
 dependencies {
-    api 'de.halfbit:magnet-kotlin:2.8'
-    kapt 'de.halfbit:magnet-processor:2.8'
+    api 'de.halfbit:magnet-kotlin:<version>'
+    kapt 'de.halfbit:magnet-processor:<version>'
 }
 ```
 
 Java
 ```gradle
 dependencies {
-    api 'de.halfbit:magnet:2.8'
-    annotationProcessor 'de.halfbit:magnet-processor:2.8'
+    api 'de.halfbit:magnet:<version>'
+    annotationProcessor 'de.halfbit:magnet-processor:<version>'
 }
 ```
+
+Latest published version: [![Maven Central](http://img.shields.io/maven-central/v/de.halfbit/magnet.svg)](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22de.halfbit%22%20a%3A%22magnet%22)
 
 # Proguard & R8
 ```proguard 
