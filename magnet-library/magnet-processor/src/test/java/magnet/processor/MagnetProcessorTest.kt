@@ -347,6 +347,68 @@ class MagnetProcessorTest {
 
     }
 
+    @Test
+    fun generateFactory_FailOnAdditionalPackageProtectedConstructor() {
+
+        val compilation = Compiler.javac()
+            .withProcessors(MagnetProcessor())
+            .compile(
+                withResource("HomePageConstructorsWithAdditionalPackageProtected.java"),
+                withResource("Page.java")
+            )
+
+        assertThat(compilation).failed()
+        assertThat(compilation).hadErrorContaining("must have exactly one public or package-protected constructor")
+    }
+
+    @Test
+    fun generateFactory_FailWithNoPublicOrPackageProtectedConstructor() {
+
+        val compilation = Compiler.javac()
+            .withProcessors(MagnetProcessor())
+            .compile(
+                withResource("HomePageConstructorsWithNoPublicOrPackageProtected.java"),
+                withResource("Page.java")
+            )
+
+        assertThat(compilation).failed()
+        assertThat(compilation).hadErrorContaining("must have exactly one public or package-protected constructor")
+    }
+
+    @Test
+    fun generateFactory_AllowAdditionalPrivateConstructor() {
+
+        val compilation = Compiler.javac()
+            .withProcessors(MagnetProcessor())
+            .compile(
+                withResource("HomePageConstructorsWithAdditionalPrivate.java"),
+                withResource("Page.java")
+            )
+
+        assertThat(compilation).succeededWithoutWarnings()
+
+        assertThat(compilation)
+            .generatedSourceFile("app/extension/HomePageConstructorsWithAdditionalPrivateMagnetFactory")
+            .hasSourceEquivalentTo(withResource("generated/HomePageConstructorsWithAdditionalPrivateMagnetFactory.java"))
+    }
+
+    @Test
+    fun generateFactory_AllowAdditionalProtectedConstructor() {
+
+        val compilation = Compiler.javac()
+            .withProcessors(MagnetProcessor())
+            .compile(
+                withResource("HomePageConstructorsWithAdditionalProtected.java"),
+                withResource("Page.java")
+            )
+
+        assertThat(compilation).succeededWithoutWarnings()
+
+        assertThat(compilation)
+            .generatedSourceFile("app/extension/HomePageConstructorsWithAdditionalProtectedMagnetFactory")
+            .hasSourceEquivalentTo(withResource("generated/HomePageConstructorsWithAdditionalProtectedMagnetFactory.java"))
+    }
+
     private fun withResource(name: String): JavaFileObject {
         return JavaFileObjects.forResource(javaClass.simpleName + '/' + name)
     }
