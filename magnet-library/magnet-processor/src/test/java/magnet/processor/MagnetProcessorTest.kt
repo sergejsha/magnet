@@ -286,13 +286,13 @@ class MagnetProcessorTest {
             .withProcessors(MagnetProcessor())
             .compile(
                 withResource("StaticMethodProvidesInnerClass/PowerManager.java"),
-                withResource("StaticMethodProvidesInnerClass/Testee.java")
+                withResource("StaticMethodProvidesInnerClass/PowerManagerProvider.java")
             )
 
         assertThat(compilation).succeededWithoutWarnings()
         assertThat(compilation)
-            .generatedSourceFile("app/TesteeProvideWakeLockMagnetFactory")
-            .hasSourceEquivalentTo(withResource("StaticMethodProvidesInnerClass/generated/TesteeProvideWakeLockMagnetFactory.java"))
+            .generatedSourceFile("app/PowerManagerProviderProvideWakeLockMagnetFactory")
+            .hasSourceEquivalentTo(withResource("StaticMethodProvidesInnerClass/generated/PowerManagerProviderProvideWakeLockMagnetFactory.java"))
     }
 
     @Test
