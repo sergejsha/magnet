@@ -6,8 +6,10 @@ import java.util.List;
 
 import magnet.Scope;
 import magnet.Scoping;
+import magnet.internal.Generated;
 import magnet.internal.InstanceFactory;
 
+@Generated
 public final class HomePageWithStaticConstructorSingleCreateRepositoriesMagnetFactory extends InstanceFactory<Page> {
 
     @Override

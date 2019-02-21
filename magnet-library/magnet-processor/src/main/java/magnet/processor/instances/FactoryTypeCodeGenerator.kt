@@ -16,11 +16,8 @@
 
 package magnet.processor.instances
 
-import com.squareup.javapoet.ClassName
-import com.squareup.javapoet.MethodSpec
-import com.squareup.javapoet.ParameterizedTypeName
-import com.squareup.javapoet.TypeName
-import com.squareup.javapoet.TypeSpec
+import com.squareup.javapoet.*
+import magnet.internal.Generated
 import magnet.internal.InstanceFactory
 import magnet.processor.instances.disposer.DisposeMethodGenerator
 import magnet.processor.instances.disposer.IsDisposableMethodGenerator
@@ -123,6 +120,7 @@ class FactoryTypeCodeGenerator : FactoryTypeVisitor, CodeGenerator {
         val classBuilder: TypeSpec.Builder = TypeSpec
             .classBuilder(factoryClassName)
             .addModifiers(Modifier.PUBLIC, Modifier.FINAL)
+            .addAnnotation(Generated::class.java)
             .superclass(generateFactorySuperInterface(factory))
 
         createMethodGenerator.generate(classBuilder)

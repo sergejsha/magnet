@@ -3,8 +3,10 @@ package test;
 import magnet.Factory;
 import magnet.Scope;
 import magnet.Scoping;
+import magnet.internal.Generated;
 import magnet.internal.InstanceFactory;
 
+@Generated
 public final class Implementation2MagnetFactory extends InstanceFactory<Interface2> implements Factory.Instantiator<Interface2> {
 
     private CustomFactory2<Interface2> factory = null;

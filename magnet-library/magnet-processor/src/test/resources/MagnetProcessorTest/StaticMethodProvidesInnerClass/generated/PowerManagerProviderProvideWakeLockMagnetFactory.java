@@ -1,13 +1,15 @@
 package app;
 
 import magnet.Scope;
+import magnet.internal.Generated;
 import magnet.internal.InstanceFactory;
 
-public final class TesteeProvideWakeLockMagnetFactory extends InstanceFactory<PowerManager.WakeLock> {
+@Generated
+public final class PowerManagerProviderProvideWakeLockMagnetFactory extends InstanceFactory<PowerManager.WakeLock> {
 
     @Override
     public PowerManager.WakeLock create(Scope scope) {
-        return Testee.provideWakeLock();
+        return PowerManagerProvider.provideWakeLock();
     }
 
     public static Class getType() {

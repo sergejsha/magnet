@@ -5,6 +5,7 @@ import java.util.Map;
 import test.Implementation4_1MagnetFactory;
 import test.Implementation4_2MagnetFactory;
 
+@Generated
 public final class MagnetIndexer {
     public static void register(MagnetInstanceManager instanceManager) {
         InstanceFactory[] factories = new InstanceFactory[] {

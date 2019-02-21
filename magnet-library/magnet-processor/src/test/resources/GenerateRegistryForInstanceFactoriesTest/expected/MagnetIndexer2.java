@@ -3,6 +3,7 @@ package magnet.internal;
 import java.util.HashMap;
 import java.util.Map;
 
+@Generated
 public final class MagnetIndexer {
     public static void register(MagnetInstanceManager instanceManager) {
         InstanceFactory[] factories = new InstanceFactory[0];

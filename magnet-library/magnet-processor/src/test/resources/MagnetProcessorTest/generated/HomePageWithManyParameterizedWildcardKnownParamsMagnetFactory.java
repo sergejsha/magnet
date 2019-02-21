@@ -5,8 +5,10 @@ import app.WorkProcessor;
 import java.util.List;
 
 import magnet.Scope;
+import magnet.internal.Generated;
 import magnet.internal.InstanceFactory;
 
+@Generated
 public final class HomePageWithManyParameterizedWildcardKnownParamsMagnetFactory extends InstanceFactory<Page> {
     @Override
     @SuppressWarnings("unchecked")

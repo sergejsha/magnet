@@ -4,8 +4,10 @@ import app.HomeRepository;
 import app.Page;
 import app.UserData;
 import magnet.Scope;
+import magnet.internal.Generated;
 import magnet.internal.InstanceFactory;
 
+@Generated
 public final class HomePageWithClassifierParamsMagnetFactory extends InstanceFactory<Page> {
 
     @Override

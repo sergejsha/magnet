@@ -19,6 +19,7 @@ package magnet.processor.instances.indexes
 import com.squareup.javapoet.AnnotationSpec
 import com.squareup.javapoet.ClassName
 import com.squareup.javapoet.TypeSpec
+import magnet.internal.Generated
 import magnet.internal.Index
 import magnet.internal.InstanceFactory
 import magnet.processor.instances.CodeGenerator
@@ -42,6 +43,7 @@ class FactoryIndexCodeGenerator : FactoryTypeVisitor, CodeGenerator {
         factoryIndexTypeSpec = TypeSpec
             .classBuilder(factoryIndexClassName)
             .addModifiers(Modifier.PUBLIC, Modifier.FINAL)
+            .addAnnotation(Generated::class.java)
             .addAnnotation(
                 generateFactoryIndexAnnotation(
                     factory.factoryType,
