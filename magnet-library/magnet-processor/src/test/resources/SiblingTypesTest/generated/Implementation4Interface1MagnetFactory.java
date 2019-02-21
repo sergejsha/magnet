@@ -1,8 +1,10 @@
 package siblings;
 
 import magnet.Scope;
+import magnet.internal.Generated;
 import magnet.internal.InstanceFactory;
 
+@Generated
 public final class Implementation4Interface1MagnetFactory extends InstanceFactory<Interface1> {
     private static Class[] SIBLING_TYPES = {Interface2.class, Implementation4Interface2MagnetFactory.class};
 

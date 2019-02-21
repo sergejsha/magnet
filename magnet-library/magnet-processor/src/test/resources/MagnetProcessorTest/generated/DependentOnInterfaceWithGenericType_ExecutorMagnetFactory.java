@@ -1,8 +1,10 @@
 package app.extension;
 
 import magnet.Scope;
+import magnet.internal.Generated;
 import magnet.internal.InstanceFactory;
 
+@Generated
 public final class ExecutorMasterMagnetFactory extends InstanceFactory<ExecutorMaster> {
     @Override
     @SuppressWarnings("unchecked")

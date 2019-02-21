@@ -1,8 +1,10 @@
 package selector;
 
 import magnet.Scope;
+import magnet.internal.Generated;
 import magnet.internal.InstanceFactory;
 
+@Generated
 public final class Implementation8MagnetFactory extends InstanceFactory<Interface> {
     private static String[] SELECTOR = { "android", "api", "in", "1", "19" };
 

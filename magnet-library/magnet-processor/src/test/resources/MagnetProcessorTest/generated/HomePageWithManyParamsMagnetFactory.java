@@ -4,8 +4,10 @@ import app.HomeRepository;
 import app.Page;
 import java.util.List;
 import magnet.Scope;
+import magnet.internal.Generated;
 import magnet.internal.InstanceFactory;
 
+@Generated
 public final class HomePageWithManyParamsMagnetFactory extends InstanceFactory<Page> {
 
     @Override

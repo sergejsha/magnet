@@ -20,6 +20,7 @@ import com.squareup.javapoet.ClassName
 import com.squareup.javapoet.MethodSpec
 import com.squareup.javapoet.ParameterSpec
 import com.squareup.javapoet.TypeSpec
+import magnet.internal.Generated
 import magnet.processor.instances.CodeWriter
 import magnet.processor.registry.instances.InstanceIndexGenerator
 import javax.lang.model.element.Modifier
@@ -42,6 +43,7 @@ class RegistryGenerator {
         val typeSpec = TypeSpec
             .classBuilder(registryClassName)
             .addModifiers(Modifier.PUBLIC, Modifier.FINAL)
+            .addAnnotation(Generated::class.java)
             .addMethod(MethodSpec
                 .methodBuilder("register")
                 .addModifiers(Modifier.PUBLIC, Modifier.STATIC)
