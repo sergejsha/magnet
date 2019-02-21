@@ -1,6 +1,6 @@
 include ':magnetx-app',
         ':magnetx-app-leakcanary',
-	':magnetx-app-rxandroid',
+		':magnetx-app-rxandroid',
         ':magnetx-selector-android',
         ':magnetx-selector-features',
         ':magnet',
@@ -8,5 +8,5 @@ include ':magnetx-app',
 
 rootProject.name = 'magnet-extensions'
 
-project(":magnet").projectDir = new File(rootDir, "../magnet-library/magnet")
-project(":magnet-processor").projectDir = new File(rootDir, "../magnet-library/magnet-processor")
+project(":magnet").projectDir = new File(rootDir.toString(), "../magnet-library/magnet")
+project(":magnet-processor").projectDir = new File(rootDir.toString(), "../magnet-library/magnet-processor")
