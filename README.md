@@ -73,6 +73,7 @@ Custom selectors are easy to write. For more details checkout [magnetx-selector-
 2. [Sample application][3]
 3. [Dependency Inversion][1]
 4. [Hierarchical Scopes][2]
+5. [How to inject Android ViewModels][4]
 
 # Help wanted
 
@@ -128,3 +129,4 @@ limitations under the License.
 [1]: https://github.com/beworker/magnet/wiki/Dependency-inversion
 [2]: https://github.com/beworker/magnet/wiki/Dependency-auto-scoping
 [3]: https://github.com/beworker/g1
+[4]: https://github.com/beworker/magnet/issues/69#issuecomment-468033997
