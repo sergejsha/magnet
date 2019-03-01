@@ -296,6 +296,23 @@ class MagnetProcessorTest {
     }
 
     @Test
+    fun generateFactory_StaticMethodNeedsDependencyWithClassifier() {
+        val compilation = Compiler.javac()
+            .withProcessors(MagnetProcessor())
+            .compile(
+                    withResource("StaticMethodNeedsDependencyWithClassifier/Context.java"),
+                    withResource("StaticMethodNeedsDependencyWithClassifier/PowerManager.java"),
+                    withResource("StaticMethodNeedsDependencyWithClassifier/PowerManagerProvider.java")
+            )
+
+        assertThat(compilation).succeededWithoutWarnings()
+        assertThat(compilation)
+            .generatedSourceFile("app/PowerManagerProviderProvideWakeLockMagnetFactory")
+            .hasSourceEquivalentTo(withResource("StaticMethodNeedsDependencyWithClassifier/generated/PowerManagerProviderProvideWakeLockMagnetFactory.java"))
+
+    }
+
+    @Test
     fun generateFactory_DisabledAnnotation_UsingStaticMethod() {
 
         val compilation = Compiler.javac()
