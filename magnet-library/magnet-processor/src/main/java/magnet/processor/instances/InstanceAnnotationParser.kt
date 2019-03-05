@@ -77,11 +77,11 @@ internal abstract class AnnotationParser<in E : Element>(
         val isScopeParam = variableType.toString() == Scope::class.java.name
         if (isScopeParam) {
             return MethodParameter(
-                PARAM_SCOPE_NAME,
-                ClassName.get(Scope::class.java),
-                false,
-                Classifier.NONE,
-                GetterMethod.GET_SCOPE
+                name = PARAM_SCOPE_NAME,
+                type = ClassName.get(Scope::class.java),
+                typeErased = false,
+                classifier = Classifier.NONE,
+                method = GetterMethod.GET_SCOPE
             )
         }
 
@@ -91,26 +91,46 @@ internal abstract class AnnotationParser<in E : Element>(
         var paramTypeErased = false
         paramTypeName = if (paramTypeName is ParameterizedTypeName) {
 
-            if (paramTypeName.rawType.reflectionName() == List::class.java.typeName) {
-                getterMethod = GetterMethod.GET_MANY
+            when (paramTypeName.rawType.reflectionName()) {
+                List::class.java.typeName -> {
+                    getterMethod = GetterMethod.GET_MANY
 
-                var listParamTypeName = paramTypeName.typeArguments[0]
-                listParamTypeName = resolveWildcardParameterType(listParamTypeName, element)
+                    var listParamTypeName = paramTypeName.typeArguments[0]
+                    listParamTypeName = resolveWildcardParameterType(listParamTypeName, element)
 
-                if (listParamTypeName is ParameterizedTypeName) {
-                    if (!listParamTypeName.typeArguments.isEmpty()) {
-                        paramTypeErased = true
-                        listParamTypeName = listParamTypeName.rawType
+                    if (listParamTypeName is ParameterizedTypeName) {
+                        if (!listParamTypeName.typeArguments.isEmpty()) {
+                            paramTypeErased = true
+                            listParamTypeName = listParamTypeName.rawType
+                        }
                     }
+
+                    listParamTypeName
                 }
 
-                listParamTypeName
+                Lazy::class.java.typeName -> {
 
-            } else {
-                if (!paramTypeName.typeArguments.isEmpty()) {
-                    paramTypeErased = true
+                    var listParamTypeName = paramTypeName.typeArguments[0]
+                    listParamTypeName = resolveWildcardParameterType(listParamTypeName, element)
+
+                    if (listParamTypeName is ParameterizedTypeName) {
+                        if (!listParamTypeName.typeArguments.isEmpty()) {
+                            paramTypeErased = true
+                            listParamTypeName = listParamTypeName.rawType
+                        }
+                    }
+
+                    // TODO create lazy structure here
+
+                    listParamTypeName
                 }
-                paramTypeName.rawType
+
+                else -> {
+                    if (!paramTypeName.typeArguments.isEmpty()) {
+                        paramTypeErased = true
+                    }
+                    paramTypeName.rawType
+                }
             }
 
         } else {

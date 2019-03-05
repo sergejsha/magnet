@@ -296,6 +296,21 @@ class MagnetProcessorTest {
     }
 
     @Test
+    fun generateFactory_SingleLazyParameter() {
+
+        val compilation = Compiler.javac()
+            .withProcessors(MagnetProcessor())
+            .compile(
+                withResource("SingleLazyParameter/UnderTest.java")
+            )
+
+        assertThat(compilation).succeededWithoutWarnings()
+        assertThat(compilation)
+            .generatedSourceFile("app/UnderTest.java")
+            .hasSourceEquivalentTo(withResource("SingleLazyParameter/generated/UnderTestMagnetFactory.java"))
+    }
+
+    @Test
     fun generateFactory_DisabledAnnotation_UsingStaticMethod() {
 
         val compilation = Compiler.javac()
