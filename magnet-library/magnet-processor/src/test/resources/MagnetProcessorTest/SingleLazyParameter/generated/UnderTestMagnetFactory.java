@@ -9,7 +9,7 @@ import magnet.internal.SingleLazy;
 public final class UnderTestMagnetFactory extends InstanceFactory<UnderTest> {
     @Override
     public UnderTest create(Scope scope) {
-        SingleLazy dep = SingleLazy(scope.getSingle(String.class, ""))
+        SingleLazy dep = SingleLazy(scope, String.class, "")
         return new UnderTest(dep);
     }
 
