@@ -14,6 +14,7 @@ allprojects {
     repositories {
         jcenter()
         mavenCentral()
+        maven { url "https://kotlin.bintray.com/kotlinx/" }
     }
 
     configurations {
@@ -37,6 +38,7 @@ ext.deps = [:]
 ext.deps.javapoet = 'com.squareup:javapoet:1.11.1'
 ext.deps.kotlinjdk8 = "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
 ext.deps.kotlinjdk7 = "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+ext.deps.kotlinMetadata = 'org.jetbrains.kotlinx:kotlinx-metadata-jvm:0.0.5'
 ext.deps.annotations = 'org.jetbrains:annotations:16.0.1'
 
 // testing

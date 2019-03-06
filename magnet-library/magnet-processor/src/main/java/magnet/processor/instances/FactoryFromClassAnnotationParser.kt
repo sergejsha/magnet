@@ -17,6 +17,15 @@
 package magnet.processor.instances
 
 import com.squareup.javapoet.ClassName
+import kotlinx.metadata.Flag
+import kotlinx.metadata.Flags
+import kotlinx.metadata.KmClassVisitor
+import kotlinx.metadata.KmConstructorVisitor
+import kotlinx.metadata.KmTypeVisitor
+import kotlinx.metadata.KmValueParameterVisitor
+import kotlinx.metadata.KmVariance
+import kotlinx.metadata.jvm.KotlinClassHeader
+import kotlinx.metadata.jvm.KotlinClassMetadata
 import magnet.Instance
 import magnet.processor.MagnetProcessorEnv
 import magnet.processor.common.ValidationException
@@ -86,6 +95,42 @@ internal class FactoryFromClassAnnotationParser(
             )
         }
 
+        val kotlinHeader = element.getAnnotation(Metadata::class.java)?.let {
+            KotlinClassHeader(
+                it.kind,
+                it.metadataVersion,
+                it.bytecodeVersion,
+                it.data1,
+                it.data2,
+                it.extraString,
+                it.packageName,
+                it.extraInt
+            )
+        }
+
+        kotlinHeader?.let {
+            val metadata = KotlinClassMetadata.read(it)
+            if (metadata is KotlinClassMetadata.Class) {
+                metadata.accept(object : KmClassVisitor() {
+                    override fun visitConstructor(flags: Flags): KmConstructorVisitor? {
+                        return if (flags.isPrimaryConstructor) {
+                            object : KmConstructorVisitor() {
+                                override fun visitValueParameter(flags: Flags, name: String): KmValueParameterVisitor? {
+                                    return object : KmValueParameterVisitor() {
+                                        override fun visitType(flags: Flags): KmTypeVisitor? {
+                                            return TypeExtractorVisitor(flags)
+                                        }
+                                    }
+                                }
+                            }
+                        } else null
+                    }
+                })
+            }
+        }
+
+        // todo create a kotlin property fetcher class, for Lazy<(List)T(?)> properties
+
         val methodParameters = mutableListOf<MethodParameter>()
         constructors[0].parameters.forEach { variable ->
             val methodParameter = parseMethodParameter(element, variable)
@@ -98,6 +143,33 @@ internal class FactoryFromClassAnnotationParser(
     }
 
 }
+
+class TypeExtractorVisitor(
+    private val flags: Flags,
+    private val offset: Int = 0
+) : KmTypeVisitor() {
+
+    private val nullable = flags.isNullableType
+
+    override fun visitClass(name: kotlinx.metadata.ClassName) {
+        println(" ".repeat(offset) + "enter: $name, isNullable: $nullable")
+    }
+
+    override fun visitArgument(flags: Flags, variance: KmVariance): KmTypeVisitor? {
+        return TypeExtractorVisitor(flags, offset + 2)
+    }
+
+    override fun visitTypeParameter(id: Int) {
+        println(" ".repeat(offset) + "visitType: $id")
+    }
+
+    override fun visitEnd() {
+        println(" ".repeat(offset) + "exit")
+    }
+}
+
+internal val Flags.isPrimaryConstructor: Boolean get() = Flag.Constructor.IS_PRIMARY(this)
+internal val Flags.isNullableType: Boolean get() = Flag.Type.IS_NULLABLE(this)
 
 private fun generateFactoryName(
     hasSiblingsTypes: Boolean, instanceType: ClassName, interfaceType: ClassName
@@ -120,6 +192,3 @@ private fun ClassName.getFullName(): String {
     }
     return nameBuilder.toString()
 }
-
-
-
