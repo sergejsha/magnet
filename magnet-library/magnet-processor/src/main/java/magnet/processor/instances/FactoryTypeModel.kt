@@ -102,10 +102,15 @@ class CreateMethod(
     }
 }
 
+enum class Laziness {
+    None, Nullable, NotNullable
+}
+
 class MethodParameter(
     val name: String,
     val type: TypeName,
     val typeErased: Boolean,
+    val laziness: Laziness,
     val classifier: String,
     val method: GetterMethod
 ) {

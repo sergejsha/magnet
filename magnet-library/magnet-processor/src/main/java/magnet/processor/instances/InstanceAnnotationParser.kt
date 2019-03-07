@@ -17,6 +17,7 @@ import magnet.processor.common.isOfAnnotationType
 import magnet.processor.instances.disposer.DisposerAnnotationValidator
 import magnet.processor.instances.disposer.DisposerAttributeParser
 import magnet.processor.instances.factory.FactoryAttributeParser
+import magnet.processor.instances.kotlin.MethodMetadata
 import magnet.processor.instances.selector.SelectorAttributeParser
 import javax.lang.model.element.AnnotationValue
 import javax.lang.model.element.Element
@@ -58,7 +59,8 @@ internal abstract class AnnotationParser<in E : Element>(
 
     protected fun parseMethodParameter(
         element: Element,
-        variable: VariableElement
+        variable: VariableElement,
+        methodMetadata: MethodMetadata
     ): MethodParameter {
 
         val variableType = variable.asType()
@@ -80,6 +82,7 @@ internal abstract class AnnotationParser<in E : Element>(
                 name = PARAM_SCOPE_NAME,
                 type = ClassName.get(Scope::class.java),
                 typeErased = false,
+                laziness = Laziness.None,
                 classifier = Classifier.NONE,
                 method = GetterMethod.GET_SCOPE
             )
@@ -87,42 +90,39 @@ internal abstract class AnnotationParser<in E : Element>(
 
         var paramTypeName = paramSpec.type
         var getterMethod: GetterMethod? = null
+        var laziness = Laziness.None
 
         var paramTypeErased = false
         paramTypeName = if (paramTypeName is ParameterizedTypeName) {
 
             when (paramTypeName.rawType.reflectionName()) {
+
                 List::class.java.typeName -> {
                     getterMethod = GetterMethod.GET_MANY
 
-                    var listParamTypeName = paramTypeName.typeArguments[0]
-                    listParamTypeName = resolveWildcardParameterType(listParamTypeName, element)
-
-                    if (listParamTypeName is ParameterizedTypeName) {
-                        if (!listParamTypeName.typeArguments.isEmpty()) {
-                            paramTypeErased = true
-                            listParamTypeName = listParamTypeName.rawType
+                    paramTypeName
+                        .extractGenericTypeName(element)
+                        .let { (genericTypeName, typeErased) ->
+                            paramTypeErased = typeErased
+                            genericTypeName
                         }
-                    }
-
-                    listParamTypeName
                 }
 
                 Lazy::class.java.typeName -> {
 
-                    var listParamTypeName = paramTypeName.typeArguments[0]
-                    listParamTypeName = resolveWildcardParameterType(listParamTypeName, element)
+                    // fixme handle cases, when methodMeta not available for java classes
+                    // fixme handle Lazy<List<T>>
 
-                    if (listParamTypeName is ParameterizedTypeName) {
-                        if (!listParamTypeName.typeArguments.isEmpty()) {
-                            paramTypeErased = true
-                            listParamTypeName = listParamTypeName.rawType
+                    val typeMeta = methodMetadata.isParameterNullable(paramName, 1)
+                    laziness = if (typeMeta.nullable) Laziness.Nullable
+                    else Laziness.NotNullable
+
+                    paramTypeName
+                        .extractGenericTypeName(element)
+                        .let { (genericTypeName, typeErased) ->
+                            paramTypeErased = typeErased
+                            genericTypeName
                         }
-                    }
-
-                    // TODO create lazy structure here
-
-                    listParamTypeName
                 }
 
                 else -> {
@@ -165,9 +165,23 @@ internal abstract class AnnotationParser<in E : Element>(
             name = paramName,
             type = paramTypeName,
             typeErased = paramTypeErased,
+            laziness = laziness,
             classifier = classifier,
             method = getterMethod
         )
+    }
+
+    private fun ParameterizedTypeName.extractGenericTypeName(element: Element): Pair<TypeName, Boolean> {
+        var paramTypeName = typeArguments[0]
+        var paramTypeErased = false
+        paramTypeName = resolveWildcardParameterType(paramTypeName, element)
+        if (paramTypeName is ParameterizedTypeName) {
+            if (!paramTypeName.typeArguments.isEmpty()) {
+                paramTypeErased = true
+                paramTypeName = paramTypeName.rawType
+            }
+        }
+        return Pair(paramTypeName, paramTypeErased)
     }
 
     protected fun parseAnnotation(element: Element): Annotation {
@@ -325,7 +339,6 @@ internal abstract class AnnotationParser<in E : Element>(
     }
 
     abstract fun parse(element: E): List<FactoryType>
-
 }
 
 internal class TypesAttrExtractor(private val elements: Elements)

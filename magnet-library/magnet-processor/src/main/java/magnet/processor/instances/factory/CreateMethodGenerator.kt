@@ -4,10 +4,13 @@ import com.squareup.javapoet.CodeBlock
 import com.squareup.javapoet.MethodSpec
 import com.squareup.javapoet.TypeSpec
 import magnet.Classifier
+import magnet.internal.OptionalLazy
+import magnet.internal.SingleLazy
 import magnet.processor.instances.CreateMethod
 import magnet.processor.instances.CreateStatement
 import magnet.processor.instances.FactoryType
 import magnet.processor.instances.GetterMethod
+import magnet.processor.instances.Laziness
 import magnet.processor.instances.MethodParameter
 import magnet.processor.instances.PARAM_SCOPE_NAME
 import magnet.processor.instances.StaticMethodCreateStatement
@@ -42,11 +45,35 @@ interface CreateMethodGenerator {
                     }
 
                 } else {
-                    addStatement(
-                        "\$T ${parameter.name} = scope.${parameter.method.code}(\$T.class)",
-                        parameter.type,
-                        parameter.type
-                    )
+
+                    when (parameter.laziness) {
+                        Laziness.None ->
+                            addStatement(
+                                "\$T ${parameter.name} = scope.${parameter.method.code}(\$T.class)",
+                                parameter.type,
+                                parameter.type
+                            )
+
+                        Laziness.Nullable ->
+                            addStatement(
+                                "\$T<\$T> ${parameter.name} = new \$T(scope, \$T.class, \$S)",
+                                Lazy::class.java,
+                                parameter.type,
+                                OptionalLazy::class.java,
+                                parameter.type,
+                                parameter.classifier
+                            )
+
+                        Laziness.NotNullable ->
+                            addStatement(
+                                "\$T<\$T> ${parameter.name} = new \$T(scope, \$T.class, \$S)",
+                                Lazy::class.java,
+                                parameter.type,
+                                SingleLazy::class.java,
+                                parameter.type,
+                                parameter.classifier
+                            )
+                    }
                 }
 
             } else {

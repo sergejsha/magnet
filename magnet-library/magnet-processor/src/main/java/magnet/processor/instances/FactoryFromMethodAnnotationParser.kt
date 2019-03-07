@@ -51,11 +51,15 @@ internal class FactoryFromMethodAnnotationParser(
             .append(staticMethodClassName.simpleName().capitalize())
             .append(staticMethodName.capitalize())
 
+        // fixme
+        //val methodMetadata =
+
         val methodParameters = mutableListOf<MethodParameter>()
         element.parameters.forEach { variable ->
-            val methodParameter = parseMethodParameter(element, variable)
-            methodParameters.add(methodParameter)
-            uniqueFactoryNameBuilder.append(methodParameter.name.capitalize())
+            // fixme
+            //val methodParameter = parseMethodParameter(element, variable, methodMetadata)
+            //methodParameters.add(methodParameter)
+            //uniqueFactoryNameBuilder.append(methodParameter.name.capitalize())
         }
 
         val instanceFullName = uniqueFactoryNameBuilder.toString()

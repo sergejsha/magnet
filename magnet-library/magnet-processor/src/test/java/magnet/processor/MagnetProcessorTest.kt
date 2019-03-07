@@ -306,7 +306,7 @@ class MagnetProcessorTest {
 
         assertThat(compilation).succeededWithoutWarnings()
         assertThat(compilation)
-            .generatedSourceFile("app/UnderTest.java")
+            .generatedSourceFile("app/UnderTestMagnetFactory")
             .hasSourceEquivalentTo(withResource("SingleLazyParameter/generated/UnderTestMagnetFactory.java"))
     }
 
