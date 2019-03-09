@@ -102,15 +102,17 @@ class CreateMethod(
     }
 }
 
-enum class Laziness {
-    None, Nullable, NotNullable
-}
+data class TypeWrapper(
+    val interfaceType: TypeName,
+    val implType: TypeName,
+    val nullable: Boolean
+)
 
 class MethodParameter(
     val name: String,
     val type: TypeName,
     val typeErased: Boolean,
-    val laziness: Laziness,
+    val typeWrapper: TypeWrapper? = null,
     val classifier: String,
     val method: GetterMethod
 ) {

@@ -1,3 +1,6 @@
 package app
 
-class UnderTest(dep1: Lazy<String>, dep2: Lazy<String?>)
+import magnet.Instance
+
+@Instance(type = UnderTest::class)
+class UnderTest(dep: Lazy<List<String>>)

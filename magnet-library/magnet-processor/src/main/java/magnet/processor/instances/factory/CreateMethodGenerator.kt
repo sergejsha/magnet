@@ -4,13 +4,10 @@ import com.squareup.javapoet.CodeBlock
 import com.squareup.javapoet.MethodSpec
 import com.squareup.javapoet.TypeSpec
 import magnet.Classifier
-import magnet.internal.OptionalLazy
-import magnet.internal.SingleLazy
 import magnet.processor.instances.CreateMethod
 import magnet.processor.instances.CreateStatement
 import magnet.processor.instances.FactoryType
 import magnet.processor.instances.GetterMethod
-import magnet.processor.instances.Laziness
 import magnet.processor.instances.MethodParameter
 import magnet.processor.instances.PARAM_SCOPE_NAME
 import magnet.processor.instances.StaticMethodCreateStatement
@@ -28,51 +25,52 @@ interface CreateMethodGenerator {
         val isScopeParameter = parameter.name == PARAM_SCOPE_NAME
         if (!isScopeParameter) {
             if (parameter.classifier == Classifier.NONE) {
+
                 if (parameter.method == GetterMethod.GET_MANY) {
-                    if (parameter.typeErased) {
-                        addStatement(
-                            "\$T ${parameter.name} = scope.${parameter.method.code}(\$T.class)",
-                            List::class.java,
-                            parameter.type
-                        )
+                    if (parameter.typeWrapper == null) {
+                        if (parameter.typeErased) {
+                            addStatement(
+                                "\$T ${parameter.name} = scope.${parameter.method.code}(\$T.class)",
+                                List::class.java,
+                                parameter.type
+                            )
+                        } else {
+                            addStatement(
+                                "\$T<\$T> ${parameter.name} = scope.${parameter.method.code}(\$T.class)",
+                                List::class.java,
+                                parameter.type,
+                                parameter.type
+                            )
+                        }
                     } else {
                         addStatement(
-                            "\$T<\$T> ${parameter.name} = scope.${parameter.method.code}(\$T.class)",
+                            "\$T<\$T<\$T>> ${parameter.name} = new \$T(scope, \$T.class, \$S)",
+                            parameter.typeWrapper.interfaceType,
                             List::class.java,
                             parameter.type,
-                            parameter.type
+                            parameter.typeWrapper.implType,
+                            parameter.type,
+                            parameter.classifier
                         )
                     }
 
                 } else {
+                    if (parameter.typeWrapper == null) {
+                        addStatement(
+                            "\$T ${parameter.name} = scope.${parameter.method.code}(\$T.class)",
+                            parameter.type,
+                            parameter.type
+                        )
 
-                    when (parameter.laziness) {
-                        Laziness.None ->
-                            addStatement(
-                                "\$T ${parameter.name} = scope.${parameter.method.code}(\$T.class)",
-                                parameter.type,
-                                parameter.type
-                            )
-
-                        Laziness.Nullable ->
-                            addStatement(
-                                "\$T<\$T> ${parameter.name} = new \$T(scope, \$T.class, \$S)",
-                                Lazy::class.java,
-                                parameter.type,
-                                OptionalLazy::class.java,
-                                parameter.type,
-                                parameter.classifier
-                            )
-
-                        Laziness.NotNullable ->
-                            addStatement(
-                                "\$T<\$T> ${parameter.name} = new \$T(scope, \$T.class, \$S)",
-                                Lazy::class.java,
-                                parameter.type,
-                                SingleLazy::class.java,
-                                parameter.type,
-                                parameter.classifier
-                            )
+                    } else {
+                        addStatement(
+                            "\$T<\$T> ${parameter.name} = new \$T(scope, \$T.class, \$S)",
+                            parameter.typeWrapper.interfaceType,
+                            parameter.type,
+                            parameter.typeWrapper.implType,
+                            parameter.type,
+                            parameter.classifier
+                        )
                     }
                 }
 

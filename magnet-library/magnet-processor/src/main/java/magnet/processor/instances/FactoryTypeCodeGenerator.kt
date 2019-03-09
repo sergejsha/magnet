@@ -16,7 +16,11 @@
 
 package magnet.processor.instances
 
-import com.squareup.javapoet.*
+import com.squareup.javapoet.ClassName
+import com.squareup.javapoet.MethodSpec
+import com.squareup.javapoet.ParameterizedTypeName
+import com.squareup.javapoet.TypeName
+import com.squareup.javapoet.TypeSpec
 import magnet.internal.Generated
 import magnet.internal.InstanceFactory
 import magnet.processor.instances.disposer.DisposeMethodGenerator

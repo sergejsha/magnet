@@ -10,6 +10,9 @@ import magnet.Instance
 import magnet.Scope
 import magnet.Scoping
 import magnet.SelectorFilter
+import magnet.internal.ManyLazy
+import magnet.internal.OptionalLazy
+import magnet.internal.SingleLazy
 import magnet.processor.MagnetProcessorEnv
 import magnet.processor.common.CompilationException
 import magnet.processor.common.ValidationException
@@ -60,7 +63,7 @@ internal abstract class AnnotationParser<in E : Element>(
     protected fun parseMethodParameter(
         element: Element,
         variable: VariableElement,
-        methodMetadata: MethodMetadata
+        methodMetadata: MethodMetadata?
     ): MethodParameter {
 
         val variableType = variable.asType()
@@ -82,15 +85,14 @@ internal abstract class AnnotationParser<in E : Element>(
                 name = PARAM_SCOPE_NAME,
                 type = ClassName.get(Scope::class.java),
                 typeErased = false,
-                laziness = Laziness.None,
                 classifier = Classifier.NONE,
                 method = GetterMethod.GET_SCOPE
             )
         }
 
-        var paramTypeName = paramSpec.type
+        var paramTypeName: TypeName = paramSpec.type
         var getterMethod: GetterMethod? = null
-        var laziness = Laziness.None
+        var typeWrapper: TypeWrapper? = null
 
         var paramTypeErased = false
         paramTypeName = if (paramTypeName is ParameterizedTypeName) {
@@ -109,20 +111,68 @@ internal abstract class AnnotationParser<in E : Element>(
                 }
 
                 Lazy::class.java.typeName -> {
+                    if (methodMetadata == null) {
+                        throw CompilationException(
+                            element = element,
+                            message = "kotlin.Lazy parameter can only be used with Kotlin classes."
+                        )
+                    }
 
-                    // fixme handle cases, when methodMeta not available for java classes
-                    // fixme handle Lazy<List<T>>
+                    val argumentType = paramTypeName.typeArguments[0]
+                    if (argumentType is ParameterizedTypeName) {
+                        if (argumentType.rawType.reflectionName() == List::class.java.typeName) {
+                            getterMethod = GetterMethod.GET_MANY
 
-                    val typeMeta = methodMetadata.isParameterNullable(paramName, 1)
-                    laziness = if (typeMeta.nullable) Laziness.Nullable
-                    else Laziness.NotNullable
 
-                    paramTypeName
-                        .extractGenericTypeName(element)
-                        .let { (genericTypeName, typeErased) ->
-                            paramTypeErased = typeErased
-                            genericTypeName
+                            // todo
+                            // Fail compilation of Lazy<List<String?>>
+                            // Fail compilation of Lazy<List<String>?>
+                            // Write test for Lazy<Foo<Bar>> == Lazy<Foo>
+                            // Write test for Lazy<List<Foo<Bar>>> == Lazy<List<Foo>>
+                            // Write test for overloaded static providers
+                            // Avoid generation of special methods for the case when classifier is Classifier.NONE
+
+                            //val nullable = methodMetadata.isParameterNullable(paramName, 2).nullable
+
+                            val implType = ManyLazy::class.java
+                            typeWrapper = TypeWrapper(
+                                interfaceType = ClassName.get(Lazy::class.java),
+                                implType = ClassName.get(implType),
+                                nullable = false
+                            )
+
+                            argumentType
+                                .extractGenericTypeName(element)
+                                .let { (genericTypeName, typeErased) ->
+                                    paramTypeErased = typeErased
+                                    genericTypeName
+                                }
                         }
+
+                        argumentType
+                            .extractGenericTypeName(element)
+                            .let { (genericTypeName, typeErased) ->
+                                paramTypeErased = typeErased
+                                genericTypeName
+                            }
+
+                    } else {
+
+                        val nullable = methodMetadata.isParameterNullable(paramName, 1).nullable
+                        val implType = if (nullable) OptionalLazy::class.java else SingleLazy::class.java
+                        typeWrapper = TypeWrapper(
+                            interfaceType = ClassName.get(Lazy::class.java),
+                            implType = ClassName.get(implType),
+                            nullable = nullable
+                        )
+
+                        paramTypeName
+                            .extractGenericTypeName(element)
+                            .let { (genericTypeName, typeErased) ->
+                                paramTypeErased = typeErased
+                                genericTypeName
+                            }
+                    }
                 }
 
                 else -> {
@@ -165,23 +215,23 @@ internal abstract class AnnotationParser<in E : Element>(
             name = paramName,
             type = paramTypeName,
             typeErased = paramTypeErased,
-            laziness = laziness,
+            typeWrapper = typeWrapper,
             classifier = classifier,
             method = getterMethod
         )
     }
 
     private fun ParameterizedTypeName.extractGenericTypeName(element: Element): Pair<TypeName, Boolean> {
-        var paramTypeName = typeArguments[0]
+        var firstArgumentTypeName = typeArguments[0]
         var paramTypeErased = false
-        paramTypeName = resolveWildcardParameterType(paramTypeName, element)
-        if (paramTypeName is ParameterizedTypeName) {
-            if (!paramTypeName.typeArguments.isEmpty()) {
+        firstArgumentTypeName = resolveWildcardParameterType(firstArgumentTypeName, element)
+        if (firstArgumentTypeName is ParameterizedTypeName) {
+            if (!firstArgumentTypeName.typeArguments.isEmpty()) {
                 paramTypeErased = true
-                paramTypeName = paramTypeName.rawType
+                firstArgumentTypeName = firstArgumentTypeName.rawType
             }
         }
-        return Pair(paramTypeName, paramTypeErased)
+        return Pair(firstArgumentTypeName, paramTypeErased)
     }
 
     protected fun parseAnnotation(element: Element): Annotation {

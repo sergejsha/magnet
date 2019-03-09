@@ -21,6 +21,8 @@ import magnet.Instance
 import magnet.processor.MagnetProcessorEnv
 import magnet.processor.common.ValidationException
 import magnet.processor.instances.kotlin.KotlinConstructorMetadata
+import magnet.processor.instances.kotlin.MethodMetadata
+import magnet.processor.instances.kotlin.PrimaryConstructorSelector
 import javax.lang.model.element.Modifier
 import javax.lang.model.element.TypeElement
 import javax.lang.model.util.ElementFilter
@@ -88,8 +90,11 @@ internal class FactoryFromClassAnnotationParser(
             )
         }
 
-        val methodMetadata = KotlinConstructorMetadata(element)
         val methodParameters = mutableListOf<MethodParameter>()
+        val methodMetadata: MethodMetadata? = element
+            .getAnnotation(Metadata::class.java)
+            ?.let { KotlinConstructorMetadata(it, element, PrimaryConstructorSelector) }
+
         constructors[0].parameters.forEach { variable ->
             val methodParameter = parseMethodParameter(element, variable, methodMetadata)
             methodParameters.add(methodParameter)

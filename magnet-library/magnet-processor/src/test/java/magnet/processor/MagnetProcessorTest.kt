@@ -1,3 +1,19 @@
+/*
+ * Copyright (C) 2018 Sergej Shafarenka, www.halfbit.de
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package magnet.processor
 
 import com.google.testing.compile.CompilationSubject.assertThat
@@ -296,18 +312,90 @@ class MagnetProcessorTest {
     }
 
     @Test
-    fun generateFactory_SingleLazyParameter() {
+    fun generateFactory_Lazy_Constructor_NoKotlinMetadata() {
 
         val compilation = Compiler.javac()
             .withProcessors(MagnetProcessor())
-            .compile(
-                withResource("SingleLazyParameter/UnderTest.java")
-            )
+            .compile(withResource("Lazy_Constructor_NoKotlinMetadata/UnderTest.java"))
+
+        assertThat(compilation).failed()
+        assertThat(compilation).hadErrorContaining("can only be used with Kotlin classes")
+    }
+
+    @Test
+    fun generateFactory_Lazy_Constructor_OptionalParameter() {
+
+        val compilation = Compiler.javac()
+            .withProcessors(MagnetProcessor())
+            .compile(withResource("Lazy_Constructor_OptionalParameter/UnderTest.java"))
 
         assertThat(compilation).succeededWithoutWarnings()
         assertThat(compilation)
             .generatedSourceFile("app/UnderTestMagnetFactory")
-            .hasSourceEquivalentTo(withResource("SingleLazyParameter/generated/UnderTestMagnetFactory.java"))
+            .hasSourceEquivalentTo(withResource("Lazy_Constructor_OptionalParameter/expected/UnderTestMagnetFactory.java"))
+    }
+
+    @Test
+    fun generateFactory_Lazy_Constructor_SingleParameter() {
+
+        val compilation = Compiler.javac()
+            .withProcessors(MagnetProcessor())
+            .compile(withResource("Lazy_Constructor_SingleParameter/UnderTest.java"))
+
+        assertThat(compilation).succeededWithoutWarnings()
+        assertThat(compilation)
+            .generatedSourceFile("app/UnderTestMagnetFactory")
+            .hasSourceEquivalentTo(withResource("Lazy_Constructor_SingleParameter/expected/UnderTestMagnetFactory.java"))
+    }
+
+    @Test
+    fun generateFactory_Lazy_Constructor_ManyParameter() {
+
+        val compilation = Compiler.javac()
+            .withProcessors(MagnetProcessor())
+            .compile(withResource("Lazy_Constructor_ManyParameter/UnderTest.java"))
+
+        assertThat(compilation).succeededWithoutWarnings()
+        assertThat(compilation)
+            .generatedSourceFile("app/UnderTestMagnetFactory")
+            .hasSourceEquivalentTo(withResource("Lazy_Constructor_ManyParameter/expected/UnderTestMagnetFactory.java"))
+    }
+
+    @Test
+    fun generateFactory_Lazy_Method_SingleParameter() {
+
+        val compilation = Compiler.javac()
+            .withProcessors(MagnetProcessor())
+            .compile(withResource("Lazy_Method_SingleParameter/UnderTest.java"))
+
+        assertThat(compilation).succeededWithoutWarnings()
+        assertThat(compilation)
+            .generatedSourceFile("app/UnderTestProvideUnderTestDepMagnetFactory")
+            .hasSourceEquivalentTo(withResource("Lazy_Method_SingleParameter/expected/UnderTestProvideUnderTestDepMagnetFactory.java"))
+    }
+
+    @Test
+    fun generateFactory_Lazy_Method_OptionalParameter() {
+
+        val compilation = Compiler.javac()
+            .withProcessors(MagnetProcessor())
+            .compile(withResource("Lazy_Method_OptionalParameter/UnderTest.java"))
+
+        assertThat(compilation).succeededWithoutWarnings()
+        assertThat(compilation)
+            .generatedSourceFile("app/UnderTestProvideUnderTestDepMagnetFactory")
+            .hasSourceEquivalentTo(withResource("Lazy_Method_OptionalParameter/expected/UnderTestProvideUnderTestDepMagnetFactory.java"))
+    }
+
+    @Test
+    fun generateFactory_Lazy_Method_NoKotlinMetadata() {
+
+        val compilation = Compiler.javac()
+            .withProcessors(MagnetProcessor())
+            .compile(withResource("Lazy_Method_NoKotlinMetadata/UnderTest.java"))
+
+        assertThat(compilation).failed()
+        assertThat(compilation).hadErrorContaining("can only be used with Kotlin classes")
     }
 
     @Test
