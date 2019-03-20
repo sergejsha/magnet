@@ -12,8 +12,8 @@ public final class HomePageWithParamsMagnetFactory extends InstanceFactory<Page>
 
     @Override
     public Page create(Scope scope) {
-        HomeRepository homeRepository = scope.getOptional(HomeRepository.class);
-        UserData userData = scope.getSingle(UserData.class);
+        HomeRepository homeRepository = scope.getOptional(HomeRepository.class, "");
+        UserData userData = scope.getSingle(UserData.class, "");
         return new HomePageWithParams(homeRepository, userData);
     }
 

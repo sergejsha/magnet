@@ -20,6 +20,9 @@ import com.squareup.javapoet.ClassName
 import magnet.Instance
 import magnet.processor.MagnetProcessorEnv
 import magnet.processor.common.ValidationException
+import magnet.processor.instances.kotlin.KotlinConstructorMetadata
+import magnet.processor.instances.kotlin.MethodMetadata
+import magnet.processor.instances.kotlin.PrimaryConstructorSelector
 import javax.lang.model.element.Modifier
 import javax.lang.model.element.TypeElement
 import javax.lang.model.util.ElementFilter
@@ -78,6 +81,7 @@ internal class FactoryFromClassAnnotationParser(
         val constructors = ElementFilter
             .constructorsIn(element.enclosedElements)
             .filterNot { it.modifiers.contains(Modifier.PRIVATE) || it.modifiers.contains(Modifier.PROTECTED) }
+
         if (constructors.size != 1) {
             throw ValidationException(
                 element = element,
@@ -87,8 +91,12 @@ internal class FactoryFromClassAnnotationParser(
         }
 
         val methodParameters = mutableListOf<MethodParameter>()
+        val methodMetadata: MethodMetadata? = element
+            .getAnnotation(Metadata::class.java)
+            ?.let { KotlinConstructorMetadata(it, element, PrimaryConstructorSelector) }
+
         constructors[0].parameters.forEach { variable ->
-            val methodParameter = parseMethodParameter(element, variable)
+            val methodParameter = parseMethodParameter(element, variable, methodMetadata)
             methodParameters.add(methodParameter)
         }
 
@@ -102,11 +110,8 @@ internal class FactoryFromClassAnnotationParser(
 private fun generateFactoryName(
     hasSiblingsTypes: Boolean, instanceType: ClassName, interfaceType: ClassName
 ): String =
-    if (hasSiblingsTypes) {
-        "${instanceType.getFullName()}${interfaceType.getFullName()}$FACTORY_SUFFIX"
-    } else {
-        "${instanceType.getFullName()}$FACTORY_SUFFIX"
-    }
+    if (hasSiblingsTypes) "${instanceType.getFullName()}${interfaceType.getFullName()}$FACTORY_SUFFIX"
+    else "${instanceType.getFullName()}$FACTORY_SUFFIX"
 
 private fun ClassName.getFullName(): String {
     if (enclosingClassName() == null) {
@@ -120,6 +125,3 @@ private fun ClassName.getFullName(): String {
     }
     return nameBuilder.toString()
 }
-
-
-

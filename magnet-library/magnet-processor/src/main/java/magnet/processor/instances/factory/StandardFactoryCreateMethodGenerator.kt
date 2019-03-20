@@ -37,7 +37,6 @@ class StandardFactoryCreateMethodGenerator : CreateMethodGenerator {
     }
 
     override fun visitCreateMethodParameter(parameter: MethodParameter) {
-
         createMethodCodeBuilder?.let { builder ->
             builder.addCreateParameterStatement(parameter)
             constructorParametersBuilder.append(parameter.name).append(", ")

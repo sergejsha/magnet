@@ -96,7 +96,9 @@ class MagnetProcessorEnv(
     fun reportError(e: CompilationException) {
         processEnvironment.messager.printMessage(
             Diagnostic.Kind.ERROR,
-            "Unexpected compilation error, please file the bug. Message: ${e.message ?: "none."}",
+            "Unexpected compilation error," +
+                " please file the bug at https://github.com/beworker/magnet/issues." +
+                " Message: ${e.message ?: "none."}",
             e.element
         )
     }
@@ -104,7 +106,9 @@ class MagnetProcessorEnv(
     fun reportError(e: Throwable) {
         processEnvironment.messager.printMessage(
             Diagnostic.Kind.ERROR,
-            "Unexpected compilation error, please file the bug. Message: ${e.message ?: "none."}"
+            "Unexpected compilation error," +
+                " please file the bug at https://github.com/beworker/magnet/issues." +
+                " Message: ${e.message ?: "none."}"
         )
     }
 

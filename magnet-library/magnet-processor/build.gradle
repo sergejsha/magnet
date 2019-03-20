@@ -26,7 +26,9 @@ compileTestKotlin {
 
 dependencies {
     implementation project(':magnet')
+    implementation project(':magnet-kotlin')
     implementation deps.kotlinjdk8
+    implementation deps.kotlinMetadata
     implementation deps.javapoet
 
     testImplementation deps.compileTesting

@@ -102,12 +102,23 @@ class CreateMethod(
     }
 }
 
-class MethodParameter(
+enum class Cardinality {
+    Single, Optional, Many
+}
+
+sealed class Expression {
+    object Scope : Expression()
+    data class Getter(val cardinality: Cardinality) : Expression()
+    data class LazyGetter(val cardinality: Cardinality) : Expression()
+}
+
+data class MethodParameter(
     val name: String,
-    val type: TypeName,
-    val typeErased: Boolean,
+    val expression: Expression,
+    val returnType: TypeName,
+    val parameterType: TypeName,
     val classifier: String,
-    val method: GetterMethod
+    val typeErased: Boolean
 ) {
     fun accept(visitor: FactoryTypeVisitor) {
         visitor.visitCreateMethodParameter(this)
@@ -138,13 +149,4 @@ class GetSelectorMethod(val selectorArguments: List<String>) {
         }
         visitor.exitGetSelectorMethod(this)
     }
-}
-
-enum class GetterMethod(val code: String) {
-
-    GET_SINGLE("getSingle"),
-    GET_OPTIONAL("getOptional"),
-    GET_MANY("getMany"),
-    GET_SCOPE("");
-
 }

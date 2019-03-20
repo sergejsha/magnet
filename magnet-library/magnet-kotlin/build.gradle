@@ -29,7 +29,9 @@ dependencies {
     implementation deps.kotlinjdk7
 
     testImplementation deps.junit
+    testImplementation deps.truth
     testImplementation deps.mockito
+    testImplementation deps.mockitoKotlin
 }
 
 apply from: rootProject.file('build-maven-push.gradle')

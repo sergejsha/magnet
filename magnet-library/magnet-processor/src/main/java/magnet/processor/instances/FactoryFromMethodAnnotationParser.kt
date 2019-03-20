@@ -3,7 +3,12 @@ package magnet.processor.instances
 import com.squareup.javapoet.ClassName
 import magnet.Instance
 import magnet.processor.MagnetProcessorEnv
+import magnet.processor.common.CompilationException
 import magnet.processor.common.ValidationException
+import magnet.processor.instances.kotlin.KotlinConstructorMetadata
+import magnet.processor.instances.kotlin.MethodMetadata
+import magnet.processor.instances.kotlin.NamedFunctionSelector
+import javax.lang.model.element.Element
 import javax.lang.model.element.ExecutableElement
 import javax.lang.model.element.Modifier
 import javax.lang.model.element.TypeElement
@@ -51,9 +56,20 @@ internal class FactoryFromMethodAnnotationParser(
             .append(staticMethodClassName.simpleName().capitalize())
             .append(staticMethodName.capitalize())
 
+        val topmostElement = element.getTopmostTypeElement()
+        val methodMetadata: MethodMetadata? = topmostElement
+            .getAnnotation(Metadata::class.java)
+            ?.let {
+                KotlinConstructorMetadata(
+                    metadataAnnotation = it,
+                    element = topmostElement,
+                    functionSelector = NamedFunctionSelector(element)
+                )
+            }
+
         val methodParameters = mutableListOf<MethodParameter>()
         element.parameters.forEach { variable ->
-            val methodParameter = parseMethodParameter(element, variable)
+            val methodParameter = parseMethodParameter(element, variable, methodMetadata)
             methodParameters.add(methodParameter)
             uniqueFactoryNameBuilder.append(methodParameter.name.capitalize())
         }
@@ -100,9 +116,22 @@ internal class FactoryFromMethodAnnotationParser(
 
 }
 
-private fun generateFactoryName(isSingleTypeFactory: Boolean, instanceName: String, it: ClassName): String =
-    if (isSingleTypeFactory) {
-        "${instanceName}MagnetFactory"
-    } else {
-        "$instanceName${it.simpleName()}MagnetFactory"
+private fun Element.getTopmostTypeElement(): TypeElement {
+    var result: TypeElement? = null
+    var element: Element? = this
+    while (element != null) {
+        if (element is TypeElement) {
+            result = element
+        }
+        element = element.enclosingElement
     }
+    return result
+        ?: throw CompilationException(
+            element = this,
+            message = "Static method must be declared in a class."
+        )
+}
+
+private fun generateFactoryName(isSingleTypeFactory: Boolean, instanceName: String, it: ClassName): String =
+    if (isSingleTypeFactory) "${instanceName}MagnetFactory"
+    else "$instanceName${it.simpleName()}MagnetFactory"

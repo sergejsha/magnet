@@ -13,7 +13,7 @@ public final class HomePageWithManyWildcardParamsMagnetFactory extends InstanceF
 
     @Override
     public Page create(Scope scope) {
-        List<HomeRepository> repositories = scope.getMany(HomeRepository.class);
+        List<HomeRepository> repositories = scope.getMany(HomeRepository.class, "");
         return new HomePageWithManyWildcardParams(repositories);
     }
 
