@@ -33,7 +33,7 @@ import javax.lang.model.element.ExecutableElement
 import javax.lang.model.element.TypeElement
 
 interface MethodMetadata {
-    fun isParameterNullable(paramName: String, typeDepth: Int): TypeMeta
+    fun getParamMeta(paramName: String, typeDepth: Int): TypeMeta
 }
 
 data class ParamMeta(
@@ -113,7 +113,7 @@ internal class KotlinConstructorMetadata(
         }
     }
 
-    override fun isParameterNullable(paramName: String, typeDepth: Int): TypeMeta {
+    override fun getParamMeta(paramName: String, typeDepth: Int): TypeMeta {
 
         val paramMeta = paramMetas[paramName]
             ?: throw CompilationException(

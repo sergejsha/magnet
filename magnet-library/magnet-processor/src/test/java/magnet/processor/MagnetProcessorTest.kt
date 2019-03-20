@@ -308,7 +308,37 @@ class MagnetProcessorTest {
         assertThat(compilation).succeededWithoutWarnings()
         assertThat(compilation)
             .generatedSourceFile("app/PowerManagerProviderProvideWakeLockMagnetFactory")
-            .hasSourceEquivalentTo(withResource("StaticMethodProvidesInnerClass/generated/PowerManagerProviderProvideWakeLockMagnetFactory.java"))
+            .hasSourceEquivalentTo(withResource("StaticMethodProvidesInnerClass/expected/PowerManagerProviderProvideWakeLockMagnetFactory.java"))
+    }
+
+    @Test
+    fun generateFactory_Covariance_Constructor_ManyParameter() {
+
+        val compilation = Compiler.javac()
+            .withProcessors(MagnetProcessor())
+            .compile(
+                withResource("Covariance_Constructor_ManyParameter/Foo.java"),
+                withResource("Covariance_Constructor_ManyParameter/UnderTest.java")
+            )
+
+        assertThat(compilation).succeededWithoutWarnings()
+        assertThat(compilation)
+            .generatedSourceFile("app/UnderTestMagnetFactory")
+            .hasSourceEquivalentTo(withResource("Covariance_Constructor_ManyParameter/expected/UnderTestMagnetFactory.java"))
+    }
+
+    @Test
+    fun generateFactory_Covariance_Constructor_SingleParameter() {
+
+        val compilation = Compiler.javac()
+            .withProcessors(MagnetProcessor())
+            .compile(
+                withResource("Covariance_Constructor_SingleParameter/Foo.java"),
+                withResource("Covariance_Constructor_SingleParameter/UnderTest.java")
+            )
+
+        assertThat(compilation).failed()
+        assertThat(compilation).hadErrorContaining("is specified using a generic type")
     }
 
     @Test
@@ -362,6 +392,28 @@ class MagnetProcessorTest {
     }
 
     @Test
+    fun generateFactory_Lazy_Constructor_ManyParameter_NullableGenericType() {
+
+        val compilation = Compiler.javac()
+            .withProcessors(MagnetProcessor())
+            .compile(withResource("Lazy_Constructor_ManyParameter_NullableGenericType/UnderTest.java"))
+
+        assertThat(compilation).failed()
+        assertThat(compilation).hadErrorContaining("be parametrized with none nullable type")
+    }
+
+    @Test
+    fun generateFactory_Lazy_Constructor_ManyParameter_NullableListType() {
+
+        val compilation = Compiler.javac()
+            .withProcessors(MagnetProcessor())
+            .compile(withResource("Lazy_Constructor_ManyParameter_NullableListType/UnderTest.java"))
+
+        assertThat(compilation).failed()
+        assertThat(compilation).hadErrorContaining("be parametrized with none nullable List type")
+    }
+
+    @Test
     fun generateFactory_Lazy_Method_SingleParameter() {
 
         val compilation = Compiler.javac()
@@ -372,6 +424,22 @@ class MagnetProcessorTest {
         assertThat(compilation)
             .generatedSourceFile("app/UnderTestProvideUnderTestDepMagnetFactory")
             .hasSourceEquivalentTo(withResource("Lazy_Method_SingleParameter/expected/UnderTestProvideUnderTestDepMagnetFactory.java"))
+    }
+
+    @Test
+    fun generateFactory_Lazy_Constructor_SingleParameter_ParameterizedType() {
+
+        val compilation = Compiler.javac()
+            .withProcessors(MagnetProcessor())
+            .compile(
+                withResource("Lazy_Constructor_SingleParameter_ParameterizedType/Foo.java"),
+                withResource("Lazy_Constructor_SingleParameter_ParameterizedType/UnderTest.java")
+            )
+
+        assertThat(compilation).succeededWithoutWarnings()
+        assertThat(compilation)
+            .generatedSourceFile("app/UnderTestMagnetFactory")
+            .hasSourceEquivalentTo(withResource("Lazy_Constructor_SingleParameter_ParameterizedType/expected/UnderTestMagnetFactory.java"))
     }
 
     @Test

@@ -21,8 +21,8 @@ public final class Implementation3MagnetFactory extends InstanceFactory<Interfac
 
     @Override
     public Interface3 instantiate(Scope scope) {
-        String value1 = scope.getSingle(String.class);
-        Long value2 = scope.getSingle(Long.class);
+        String value1 = scope.getSingle(String.class, "");
+        Long value2 = scope.getSingle(Long.class, "");
         return new Implementation3(value1, value2);
     }
 

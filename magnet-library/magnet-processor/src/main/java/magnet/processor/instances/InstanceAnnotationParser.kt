@@ -10,13 +10,11 @@ import magnet.Instance
 import magnet.Scope
 import magnet.Scoping
 import magnet.SelectorFilter
-import magnet.internal.ManyLazy
-import magnet.internal.OptionalLazy
-import magnet.internal.SingleLazy
 import magnet.processor.MagnetProcessorEnv
 import magnet.processor.common.CompilationException
 import magnet.processor.common.ValidationException
 import magnet.processor.common.isOfAnnotationType
+import magnet.processor.common.validationError
 import magnet.processor.instances.disposer.DisposerAnnotationValidator
 import magnet.processor.instances.disposer.DisposerAttributeParser
 import magnet.processor.instances.factory.FactoryAttributeParser
@@ -60,6 +58,10 @@ internal abstract class AnnotationParser<in E : Element>(
     private val disposerAttrParser = DisposerAttributeParser(env.annotation)
     private val validators = listOf<AnnotationValidator>(DisposerAnnotationValidator())
 
+    private val scopeTypeName = ClassName.get(Scope::class.java)
+    private val listTypeName = ClassName.get(List::class.java)
+    private val lazyTypeName = ClassName.get(Lazy::class.java)
+
     protected fun parseMethodParameter(
         element: Element,
         variable: VariableElement,
@@ -77,161 +79,177 @@ internal abstract class AnnotationParser<in E : Element>(
         }
 
         val paramSpec = ParameterSpec.get(variable)
+        val paramType = paramSpec.type
         val paramName = paramSpec.name
 
-        val isScopeParam = variableType.toString() == Scope::class.java.name
-        if (isScopeParam) {
-            return MethodParameter(
-                name = PARAM_SCOPE_NAME,
-                type = ClassName.get(Scope::class.java),
-                typeErased = false,
-                classifier = Classifier.NONE,
-                method = GetterMethod.GET_SCOPE
-            )
-        }
+        var paramReturnType: TypeName = paramType
+        var paramExpression: Expression = Expression.Scope
+        var paramParameterType: TypeName = paramType
+        var paramClassifier: String = Classifier.NONE
+        var paramTypeErased: Boolean = false
 
-        var paramTypeName: TypeName = paramSpec.type
-        var getterMethod: GetterMethod? = null
-        var typeWrapper: TypeWrapper? = null
-
-        var paramTypeErased = false
-        paramTypeName = if (paramTypeName is ParameterizedTypeName) {
-
-            when (paramTypeName.rawType.reflectionName()) {
-
-                List::class.java.typeName -> {
-                    getterMethod = GetterMethod.GET_MANY
-
-                    paramTypeName
-                        .extractGenericTypeName(element)
-                        .let { (genericTypeName, typeErased) ->
-                            paramTypeErased = typeErased
-                            genericTypeName
-                        }
-                }
-
-                Lazy::class.java.typeName -> {
-                    if (methodMetadata == null) {
-                        throw CompilationException(
-                            element = element,
-                            message = "kotlin.Lazy parameter can only be used with Kotlin classes."
-                        )
-                    }
-
-                    val argumentType = paramTypeName.typeArguments[0]
-                    if (argumentType is ParameterizedTypeName) {
-                        if (argumentType.rawType.reflectionName() == List::class.java.typeName) {
-                            getterMethod = GetterMethod.GET_MANY
-
-
-                            // todo
-                            // Fail compilation of Lazy<List<String?>>
-                            // Fail compilation of Lazy<List<String>?>
-                            // Write test for Lazy<Foo<Bar>> == Lazy<Foo>
-                            // Write test for Lazy<List<Foo<Bar>>> == Lazy<List<Foo>>
-                            // Write test for overloaded static providers
-                            // Avoid generation of special methods for the case when classifier is Classifier.NONE
-
-                            //val nullable = methodMetadata.isParameterNullable(paramName, 2).nullable
-
-                            val implType = ManyLazy::class.java
-                            typeWrapper = TypeWrapper(
-                                interfaceType = ClassName.get(Lazy::class.java),
-                                implType = ClassName.get(implType),
-                                nullable = false
-                            )
-
-                            argumentType
-                                .extractGenericTypeName(element)
-                                .let { (genericTypeName, typeErased) ->
-                                    paramTypeErased = typeErased
-                                    genericTypeName
-                                }
-                        }
-
-                        argumentType
-                            .extractGenericTypeName(element)
-                            .let { (genericTypeName, typeErased) ->
-                                paramTypeErased = typeErased
-                                genericTypeName
-                            }
-
-                    } else {
-
-                        val nullable = methodMetadata.isParameterNullable(paramName, 1).nullable
-                        val implType = if (nullable) OptionalLazy::class.java else SingleLazy::class.java
-                        typeWrapper = TypeWrapper(
-                            interfaceType = ClassName.get(Lazy::class.java),
-                            implType = ClassName.get(implType),
-                            nullable = nullable
-                        )
-
-                        paramTypeName
-                            .extractGenericTypeName(element)
-                            .let { (genericTypeName, typeErased) ->
-                                paramTypeErased = typeErased
-                                genericTypeName
-                            }
-                    }
-                }
-
-                else -> {
-                    if (!paramTypeName.typeArguments.isEmpty()) {
-                        paramTypeErased = true
-                    }
-                    paramTypeName.rawType
-                }
-            }
-
-        } else {
-            ClassName.get(variableType)
-        }
-
-        paramTypeName = resolveWildcardParameterType(paramTypeName, element)
-
-        var hasNullableAnnotation = false
-        var classifier: String = Classifier.NONE
-
-        variable.annotationMirrors.forEach { annotationMirror ->
-            if (annotationMirror.isOfAnnotationType<Classifier>()) {
-                val declaredClassifier: String? = annotationMirror.elementValues.values.firstOrNull()?.value.toString()
-                declaredClassifier?.let {
-                    classifier = it.removeSurrounding("\"", "\"")
-                }
-
-            } else {
-                val annotationType = annotationMirror.annotationType.toString()
-                if (annotationType.endsWith(CLASS_NULLABLE)) {
-                    hasNullableAnnotation = true
-                }
-            }
-        }
-
-        if (getterMethod == null) {
-            getterMethod = if (hasNullableAnnotation) GetterMethod.GET_OPTIONAL else GetterMethod.GET_SINGLE
+        paramParameterType.parseParamType(
+            paramName, methodMetadata, variable
+        ) { returnType, expression, parameterType, classifier, erased ->
+            paramReturnType = returnType
+            paramExpression = expression
+            paramParameterType = parameterType
+            paramClassifier = classifier
+            paramTypeErased = erased
         }
 
         return MethodParameter(
             name = paramName,
-            type = paramTypeName,
-            typeErased = paramTypeErased,
-            typeWrapper = typeWrapper,
-            classifier = classifier,
-            method = getterMethod
+            expression = paramExpression,
+            returnType = paramReturnType,
+            parameterType = paramParameterType,
+            classifier = paramClassifier,
+            typeErased = paramTypeErased
         )
     }
 
-    private fun ParameterizedTypeName.extractGenericTypeName(element: Element): Pair<TypeName, Boolean> {
-        var firstArgumentTypeName = typeArguments[0]
+    private fun TypeName.parseParamType(
+        paramName: String,
+        methodMetadata: MethodMetadata?,
+        variable: VariableElement,
+        block: (
+            returnType: TypeName,
+            expression: Expression,
+            parameterType: TypeName,
+            classifier: String,
+            typeErased: Boolean
+        ) -> Unit
+    ) {
+        var paramReturnType: TypeName = this
+        var paramExpression: Expression = Expression.Scope
+        var paramParameterType: TypeName = this
+        var paramClassifier: String = Classifier.NONE
         var paramTypeErased = false
-        firstArgumentTypeName = resolveWildcardParameterType(firstArgumentTypeName, element)
-        if (firstArgumentTypeName is ParameterizedTypeName) {
-            if (!firstArgumentTypeName.typeArguments.isEmpty()) {
-                paramTypeErased = true
-                firstArgumentTypeName = firstArgumentTypeName.rawType
+
+        when (this) {
+            scopeTypeName -> {
+                paramExpression = Expression.Scope
+            }
+
+            is ParameterizedTypeName -> {
+                when (rawType) {
+                    listTypeName -> {
+                        val (type, erased) = firstArgumentRawType(variable)
+                        paramParameterType = type
+                        paramTypeErased = erased
+                        paramReturnType = if (erased) listTypeName
+                        else ParameterizedTypeName.get(listTypeName, paramParameterType)
+                        paramExpression = Expression.Getter(Cardinality.Many)
+                        variable.annotations { _, classifier ->
+                            paramClassifier = classifier
+                        }
+                    }
+
+                    lazyTypeName -> {
+                        if (methodMetadata == null) variable.validationError(
+                            "Lazy can only be used with Kotlin classes."
+                        )
+
+                        parseLazyArgumentType(
+                            paramName, methodMetadata, variable
+                        ) { returnType, cardinality, parameterType ->
+                            paramReturnType = ParameterizedTypeName.get(lazyTypeName, returnType)
+                            paramParameterType = parameterType
+                            paramExpression = Expression.LazyGetter(cardinality)
+                            variable.annotations { _, classifier ->
+                                paramClassifier = classifier
+                            }
+                        }
+                    }
+
+                    else -> {
+                        paramParameterType = rawType
+                        variable.annotations { cardinality, classifier ->
+                            paramExpression = Expression.Getter(cardinality)
+                            paramClassifier = classifier
+                        }
+                    }
+                }
+            }
+
+            else -> {
+                variable.annotations { cardinality, classifier ->
+                    paramExpression = Expression.Getter(cardinality)
+                    paramClassifier = classifier
+                }
             }
         }
-        return Pair(firstArgumentTypeName, paramTypeErased)
+
+        block(
+            paramReturnType,
+            paramExpression,
+            paramParameterType,
+            paramClassifier,
+            paramTypeErased
+        )
+    }
+
+    private fun ParameterizedTypeName.parseLazyArgumentType(
+        paramName: String,
+        methodMetadata: MethodMetadata,
+        variable: VariableElement,
+        block: (
+            returnType: TypeName,
+            cardinality: Cardinality,
+            parameterType: TypeName
+        ) -> Unit
+    ) {
+        when (val argumentType = typeArguments.first()) {
+            scopeTypeName -> variable.validationError("Lazy cannot be parametrized with Scope type.")
+            is ParameterizedTypeName -> {
+                when (argumentType.rawType) {
+                    lazyTypeName -> variable.validationError("Lazy cannot be parametrized with another Lazy type.")
+                    listTypeName -> {
+                        if (methodMetadata.getParamMeta(paramName, 1).nullable) {
+                            variable.validationError(
+                                "Lazy<List> must be parametrized with none nullable List type."
+                            )
+                        }
+                        val listArgumentType = argumentType.typeArguments.first()
+                        when (listArgumentType) {
+                            is ParameterizedTypeName -> {
+                                block(
+                                    ParameterizedTypeName.get(listTypeName, listArgumentType),
+                                    Cardinality.Many,
+                                    listArgumentType.rawType
+                                )
+                            }
+                            else -> {
+                                if (methodMetadata.getParamMeta(paramName, 2).nullable) {
+                                    variable.validationError(
+                                        "Lazy<List<T>> must be parametrized with none nullable type."
+                                    )
+                                }
+                                block(
+                                    ParameterizedTypeName.get(listTypeName, listArgumentType),
+                                    Cardinality.Many,
+                                    listArgumentType
+                                )
+                            }
+                        }
+                    }
+                    else -> {
+                        block(
+                            argumentType,
+                            methodMetadata.getNullableCardinality(paramName, 1),
+                            argumentType.rawType
+                        )
+                    }
+                }
+            }
+            else -> {
+                block(
+                    argumentType,
+                    methodMetadata.getNullableCardinality(paramName, 1),
+                    argumentType
+                )
+            }
+        }
     }
 
     protected fun parseAnnotation(element: Element): Annotation {
@@ -311,30 +329,6 @@ internal abstract class AnnotationParser<in E : Element>(
         }
     }
 
-    private fun resolveWildcardParameterType(paramTypeName: TypeName, element: Element): TypeName {
-        if (paramTypeName is WildcardTypeName) {
-            if (paramTypeName.lowerBounds.size > 0) {
-                throw ValidationException(
-                    element = element,
-                    message = "Magnet supports single upper bounds class parameter only," +
-                        " while lower bounds class parameter was found."
-                )
-            }
-
-            val upperBounds = paramTypeName.upperBounds
-            if (upperBounds.size > 1) {
-                throw ValidationException(
-                    element = element,
-                    message = "Magnet supports single upper bounds class parameter only," +
-                        " for example List<${upperBounds[0]}>"
-                )
-            }
-
-            return upperBounds[0]
-        }
-        return paramTypeName
-    }
-
     private fun verifyTypeDeclaration(
         interfaceTypeElement: TypeElement?,
         interfaceTypeElements: List<TypeElement>?,
@@ -345,16 +339,14 @@ internal abstract class AnnotationParser<in E : Element>(
         val areTypesDeclared = interfaceTypeElements?.isNotEmpty() ?: false
 
         if (!isTypeDeclared && !areTypesDeclared) {
-            throw ValidationException(
-                element = element,
-                message = "${Instance::class.java} must declare either 'type' or 'types' property."
+            element.validationError(
+                "${Instance::class.java} must declare either 'type' or 'types' property."
             )
         }
 
         if (isTypeDeclared && areTypesDeclared) {
-            throw ValidationException(
-                element = element,
-                message = "${Instance::class.java} must declare either 'type' or 'types' property, not both."
+            element.validationError(
+                "${Instance::class.java} must declare either 'type' or 'types' property, not both."
             )
         }
 
@@ -364,9 +356,8 @@ internal abstract class AnnotationParser<in E : Element>(
 
         if (interfaceTypeElements != null) {
             if (scoping == Scoping.UNSCOPED.name) {
-                throw ValidationException(
-                    element = element,
-                    message = "types() property must be used with scoped instances only. Set " +
+                element.validationError(
+                    "types() property must be used with scoped instances only. Set " +
                         "scoping to Scoping.DIRECT or Scoping.TOPMOST."
                 )
             }
@@ -379,16 +370,71 @@ internal abstract class AnnotationParser<in E : Element>(
     private fun TypeElement.verifyInheritance(element: Element) {
         val isTypeImplemented = env.types.isAssignable(
             element.asType(),
-            env.types.getDeclaredType(this) // erase generic type
+            env.types.getDeclaredType(this)
         )
         if (!isTypeImplemented) {
-            throw ValidationException(
-                element = element, message = "$element must implement $this"
-            )
+            element.validationError("$element must implement $this")
         }
     }
 
     abstract fun parse(element: E): List<FactoryType>
+}
+
+private fun MethodMetadata.getNullableCardinality(paramName: String, paramDepth: Int): Cardinality =
+    if (getParamMeta(paramName, paramDepth).nullable) Cardinality.Optional
+    else Cardinality.Single
+
+private fun WildcardTypeName.firstUpperBoundsRawType(element: Element): Pair<TypeName, Boolean> {
+    if (lowerBounds.size > 0) {
+        element.validationError(
+            "Magnet supports single upper bounds class parameter only," +
+                " while lower bounds class parameter was found."
+        )
+    }
+
+    if (upperBounds.size > 1) {
+        element.validationError(
+            "Magnet supports single upper bounds class parameter only," +
+                " for example List<${upperBounds[0]}>"
+        )
+    }
+
+    return when (val type = upperBounds[0]) {
+        is ParameterizedTypeName -> type.rawType to true
+        is WildcardTypeName -> type.firstUpperBoundsRawType(element)
+        else -> type to false
+    }
+}
+
+private fun ParameterizedTypeName.firstArgumentRawType(element: Element): Pair<TypeName, Boolean> {
+    if (typeArguments.size > 1) {
+        element.validationError("Magnet supports type parametrized with a single argument only.")
+    }
+    return when (val argumentType = typeArguments.first()) {
+        is ParameterizedTypeName -> argumentType.rawType to true
+        is WildcardTypeName -> argumentType.firstUpperBoundsRawType(element)
+        else -> argumentType to false
+    }
+}
+
+private inline fun VariableElement.annotations(block: (Cardinality, String) -> Unit) {
+    var cardinality = Cardinality.Single
+    var classifier = Classifier.NONE
+    annotationMirrors.forEach { annotationMirror ->
+        if (annotationMirror.isOfAnnotationType<Classifier>()) {
+            val declaredClassifier: String? = annotationMirror.elementValues.values.firstOrNull()?.value.toString()
+            declaredClassifier?.let {
+                classifier = it.removeSurrounding("\"", "\"")
+            }
+
+        } else {
+            val annotationType = annotationMirror.annotationType.toString()
+            if (annotationType.endsWith(CLASS_NULLABLE)) {
+                cardinality = Cardinality.Optional
+            }
+        }
+    }
+    block(cardinality, classifier)
 }
 
 internal class TypesAttrExtractor(private val elements: Elements)
@@ -411,5 +457,4 @@ internal class TypesAttrExtractor(private val elements: Elements)
         typeMirror?.let { extractedTypes.add(it.toString()) }
         return p
     }
-
 }

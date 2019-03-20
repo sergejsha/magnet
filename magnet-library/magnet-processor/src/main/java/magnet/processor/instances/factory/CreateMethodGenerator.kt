@@ -1,13 +1,18 @@
 package magnet.processor.instances.factory
 
+import com.squareup.javapoet.ClassName
 import com.squareup.javapoet.CodeBlock
 import com.squareup.javapoet.MethodSpec
+import com.squareup.javapoet.TypeName
 import com.squareup.javapoet.TypeSpec
-import magnet.Classifier
+import magnet.internal.ManyLazy
+import magnet.internal.OptionalLazy
+import magnet.internal.SingleLazy
+import magnet.processor.instances.Cardinality
 import magnet.processor.instances.CreateMethod
 import magnet.processor.instances.CreateStatement
+import magnet.processor.instances.Expression
 import magnet.processor.instances.FactoryType
-import magnet.processor.instances.GetterMethod
 import magnet.processor.instances.MethodParameter
 import magnet.processor.instances.PARAM_SCOPE_NAME
 import magnet.processor.instances.StaticMethodCreateStatement
@@ -22,84 +27,25 @@ interface CreateMethodGenerator {
     fun generate(typeBuilder: TypeSpec.Builder)
 
     fun CodeBlock.Builder.addCreateParameterStatement(parameter: MethodParameter) {
-        val isScopeParameter = parameter.name == PARAM_SCOPE_NAME
-        if (!isScopeParameter) {
-            if (parameter.classifier == Classifier.NONE) {
-
-                if (parameter.method == GetterMethod.GET_MANY) {
-                    if (parameter.typeWrapper == null) {
-                        if (parameter.typeErased) {
-                            addStatement(
-                                "\$T ${parameter.name} = scope.${parameter.method.code}(\$T.class)",
-                                List::class.java,
-                                parameter.type
-                            )
-                        } else {
-                            addStatement(
-                                "\$T<\$T> ${parameter.name} = scope.${parameter.method.code}(\$T.class)",
-                                List::class.java,
-                                parameter.type,
-                                parameter.type
-                            )
-                        }
-                    } else {
-                        addStatement(
-                            "\$T<\$T<\$T>> ${parameter.name} = new \$T(scope, \$T.class, \$S)",
-                            parameter.typeWrapper.interfaceType,
-                            List::class.java,
-                            parameter.type,
-                            parameter.typeWrapper.implType,
-                            parameter.type,
-                            parameter.classifier
-                        )
-                    }
-
-                } else {
-                    if (parameter.typeWrapper == null) {
-                        addStatement(
-                            "\$T ${parameter.name} = scope.${parameter.method.code}(\$T.class)",
-                            parameter.type,
-                            parameter.type
-                        )
-
-                    } else {
-                        addStatement(
-                            "\$T<\$T> ${parameter.name} = new \$T(scope, \$T.class, \$S)",
-                            parameter.typeWrapper.interfaceType,
-                            parameter.type,
-                            parameter.typeWrapper.implType,
-                            parameter.type,
-                            parameter.classifier
-                        )
-                    }
-                }
-
-            } else {
-                if (parameter.method == GetterMethod.GET_MANY) {
-                    if (parameter.typeErased) {
-                        addStatement(
-                            "\$T ${parameter.name} = scope.${parameter.method.code}(\$T.class, \$S)",
-                            List::class.java,
-                            parameter.type,
-                            parameter.classifier
-                        )
-                    } else {
-                        addStatement(
-                            "\$T<\$T> ${parameter.name} = scope.${parameter.method.code}(\$T.class, \$S)",
-                            List::class.java,
-                            parameter.type,
-                            parameter.type,
-                            parameter.classifier
-                        )
-                    }
-                } else {
-                    addStatement(
-                        "\$T ${parameter.name} = scope.${parameter.method.code}(\$T.class, \$S)",
-                        parameter.type,
-                        parameter.type,
-                        parameter.classifier
-                    )
-                }
+        when (val expression = parameter.expression) {
+            is Expression.Getter -> {
+                addStatement(
+                    "\$T \$L = scope.${expression.getterName}(\$T.class, \$S)",
+                    parameter.returnType,
+                    parameter.name,
+                    parameter.parameterType,
+                    parameter.classifier
+                )
+            }
+            is Expression.LazyGetter -> {
+                addStatement(
+                    "\$T \$L = new \$T($PARAM_SCOPE_NAME, \$T.class, \$S)",
+                    parameter.returnType,
+                    parameter.name,
+                    expression.lazyGetterType,
+                    parameter.parameterType,
+                    parameter.classifier
+                )
             }
         }
     }
@@ -128,6 +74,20 @@ interface CreateMethodGenerator {
 
 }
 
+private val Expression.Getter.getterName: String
+    get() = when (cardinality) {
+        Cardinality.Single -> "getSingle"
+        Cardinality.Optional -> "getOptional"
+        Cardinality.Many -> "getMany"
+    }
+
+private val Expression.LazyGetter.lazyGetterType: TypeName
+    get() = when (cardinality) {
+        Cardinality.Single -> ClassName.get(SingleLazy::class.java)
+        Cardinality.Optional -> ClassName.get(OptionalLazy::class.java)
+        Cardinality.Many -> ClassName.get(ManyLazy::class.java)
+    }
+
 class DefaultCreateMethodGenerator : CreateMethodGenerator {
 
     private val customFactoryGenerator = CustomFactoryCreateMethodGenerator()
@@ -155,5 +115,4 @@ class DefaultCreateMethodGenerator : CreateMethodGenerator {
     override fun generate(typeBuilder: TypeSpec.Builder) {
         impl.generate(typeBuilder)
     }
-
 }

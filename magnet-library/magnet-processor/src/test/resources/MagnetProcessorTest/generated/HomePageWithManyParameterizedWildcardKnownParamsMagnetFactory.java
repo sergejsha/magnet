@@ -13,9 +13,9 @@ public final class HomePageWithManyParameterizedWildcardKnownParamsMagnetFactory
     @Override
     @SuppressWarnings("unchecked")
     public Page create(Scope scope) {
-        List variant1 = scope.getMany(WorkProcessor.class);
+        List variant1 = scope.getMany(WorkProcessor.class, "");
         List variant2 = scope.getMany(WorkProcessor.class, "global");
-        List variant3 = scope.getMany(WorkProcessor.class);
+        List variant3 = scope.getMany(WorkProcessor.class, "");
         List variant4 = scope.getMany(WorkProcessor.class, "global");
         return new HomePageWithManyParameterizedWildcardKnownParams(variant1, variant2, variant3, variant4);
     }

@@ -52,6 +52,10 @@ inline fun Element.eachAnnotationAttribute(
 class ValidationException(val element: Element, message: String) : Throwable(message)
 class CompilationException(val element: Element, message: String) : Throwable(message)
 
+fun Element.validationError(message: String): Nothing {
+    throw ValidationException(this, message)
+}
+
 class AnnotationValueExtractor(
     private val elements: Elements
 ) : SimpleAnnotationValueVisitor6<Void?, Void>() {
