@@ -13,4 +13,4 @@ before_install:
 - yes | sdkmanager "platforms;android-27"
 
 script:
-  - cd magnet-library && ./gradlew build test
+  - ./gradlew build test
