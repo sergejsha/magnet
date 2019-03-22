@@ -5,16 +5,22 @@ buildscript {
     repositories {
         maven { url 'https://maven.google.com' }
         jcenter()
+        mavenCentral()
     }
 
-    dependencies {}
+    dependencies {
+        classpath "com.android.tools.build:gradle:$android_build_version"
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+    }
 }
 
 allprojects {
+
     repositories {
-        maven { url 'https://maven.google.com' }
-        jcenter()
         mavenCentral()
+        jcenter()
+        //maven { url 'https://maven.google.com' }
+        //maven { url "https://kotlin.bintray.com/kotlinx/" }
     }
 
     configurations {
@@ -35,12 +41,12 @@ ext {
 ext.deps = [:]
 
 // open source
-ext.deps.android = 'com.google.android:android:4.1.1.4'
-ext.deps.javapoet = 'com.squareup:javapoet:1.11.1'
-ext.deps.leakcanary = 'com.squareup.leakcanary:leakcanary-android:1.6.3'
-ext.deps.rxandroid = 'io.reactivex.rxjava2:rxandroid:2.1.1'
 ext.deps.kotlinjdk8 = "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
 ext.deps.kotlinjdk7 = "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+ext.deps.javapoet = 'com.squareup:javapoet:1.11.1'
+ext.deps.android = 'com.google.android:android:4.1.1.4'
+ext.deps.rxandroid = 'io.reactivex.rxjava2:rxandroid:2.1.1'
+ext.deps.leakcanary = 'com.squareup.leakcanary:leakcanary-android:1.6.3'
 ext.deps.kotlinMetadata = 'org.jetbrains.kotlinx:kotlinx-metadata-jvm:0.0.5'
 ext.deps.annotations = 'org.jetbrains:annotations:16.0.1'
 

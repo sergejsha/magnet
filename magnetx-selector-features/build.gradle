@@ -4,14 +4,8 @@ apply plugin: 'kotlin-kapt'
 sourceCompatibility = toolsJavaVersion
 targetCompatibility = toolsJavaVersion
 
-buildscript {
-    repositories {
-        maven { url 'https://maven.google.com' }
-        mavenCentral()
-    }
-    dependencies {
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
-    }
+repositories {
+    maven { url 'https://maven.google.com' }
 }
 
 compileKotlin {

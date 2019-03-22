@@ -1,0 +1,8 @@
+include ':magnet',
+        ':magnet-kotlin',
+        ':magnet-processor',
+        ':magnetx-app',
+        ':magnetx-app-leakcanary',
+        ':magnetx-app-rxandroid',
+        ':magnetx-selector-android',
+        ':magnetx-selector-features'
