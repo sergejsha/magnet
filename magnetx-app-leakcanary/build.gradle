@@ -2,15 +2,8 @@ apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-kapt'
 
-buildscript {
-    repositories {
-        mavenCentral()
-        maven { url 'https://maven.google.com' }
-    }
-    dependencies {
-        classpath "com.android.tools.build:gradle:$android_build_version"
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
-    }
+repositories {
+    maven { url 'https://maven.google.com' }
 }
 
 android {

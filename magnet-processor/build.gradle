@@ -3,15 +3,6 @@ apply plugin: 'kotlin'
 sourceCompatibility = toolsJavaVersion
 targetCompatibility = toolsJavaVersion
 
-buildscript {
-    repositories {
-        mavenCentral()
-    }
-    dependencies {
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
-    }
-}
-
 compileKotlin {
     kotlinOptions {
         jvmTarget = toolsJavaVersion
