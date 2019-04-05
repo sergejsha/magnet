@@ -427,6 +427,40 @@ class MagnetProcessorTest {
     }
 
     @Test
+    fun generateFactory_Generics_ProvideTypeWithGeneric() {
+
+        val path = "Generics_ProvideTypeWithGeneric"
+        val compilation = Compiler.javac()
+            .withProcessors(MagnetProcessor())
+            .compile(
+                withResource("$path/UnderTest.java"),
+                withResource("$path/Type.java"),
+                withResource("$path/Parameter.java")
+            )
+
+        assertThat(compilation).succeededWithoutWarnings()
+        assertThat(compilation)
+            .generatedSourceFile("app/UnderTestProvideTypeMagnetFactory")
+            .hasSourceEquivalentTo(withResource("$path/expected/UnderTestProvideTypeMagnetFactory.java"))
+    }
+
+    @Test
+    fun generateFactory_Generics_ProvideTypeWithGeneric_NoClassifier() {
+
+        val path = "Generics_ProvideTypeWithGeneric_NoClassifier"
+        val compilation = Compiler.javac()
+            .withProcessors(MagnetProcessor())
+            .compile(
+                withResource("$path/UnderTest.java"),
+                withResource("$path/Type.java"),
+                withResource("$path/Parameter.java")
+            )
+
+        assertThat(compilation).failed()
+        assertThat(compilation).hadErrorContaining("must have 'classifier' value")
+    }
+
+    @Test
     fun generateFactory_Lazy_Constructor_SingleParameter_ParameterizedType() {
 
         val compilation = Compiler.javac()
