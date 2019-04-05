@@ -1,10 +1,14 @@
 package magnet.processor.instances
 
 import com.squareup.javapoet.ClassName
+import com.squareup.javapoet.ParameterizedTypeName
+import com.squareup.javapoet.TypeName
+import magnet.Classifier
 import magnet.Instance
 import magnet.processor.MagnetProcessorEnv
 import magnet.processor.common.CompilationException
 import magnet.processor.common.ValidationException
+import magnet.processor.common.validationError
 import magnet.processor.instances.kotlin.KotlinConstructorMetadata
 import magnet.processor.instances.kotlin.MethodMetadata
 import magnet.processor.instances.kotlin.NamedFunctionSelector
@@ -35,16 +39,24 @@ internal class FactoryFromMethodAnnotationParser(
         }
 
         val annotation = parseAnnotation(element)
-        val staticMethodReturnType = element.returnType
+        val staticMethodReturnType = TypeName.get(element.returnType)
 
         for (type in annotation.types) {
-            if (type.toString() != staticMethodReturnType.toString()) {
-                throw ValidationException(
-                    element = element,
-                    message = "Method must return instance"
-                        + " of ${type.reflectionName()} as declared"
-                        + " by ${Instance::class.java}"
-                )
+            if (type != staticMethodReturnType) {
+                if (staticMethodReturnType is ParameterizedTypeName) {
+                    if (annotation.classifier == Classifier.NONE) {
+                        element.validationError(
+                            "Method providing a parametrised type must have 'classifier' value" +
+                                " set in @${Instance::class.java.simpleName} annotation."
+                        )
+                    }
+                } else {
+                    element.validationError(
+                        "Method must return instance of ${type.reflectionName()} as declared" +
+                            " by @${Instance::class.java.simpleName} annotation." +
+                            " Returned type: $staticMethodReturnType."
+                    )
+                }
             }
         }
 
