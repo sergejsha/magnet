@@ -427,9 +427,9 @@ class MagnetProcessorTest {
     }
 
     @Test
-    fun generateFactory_Generics_ProvideTypeWithGeneric() {
+    fun generateFactory_Generics_ProvideTypeWithParameter() {
 
-        val path = "Generics_ProvideTypeWithGeneric"
+        val path = "Generics_ProvideTypeWithParameter"
         val compilation = Compiler.javac()
             .withProcessors(MagnetProcessor())
             .compile(
@@ -445,9 +445,9 @@ class MagnetProcessorTest {
     }
 
     @Test
-    fun generateFactory_Generics_ProvideTypeWithGeneric_NoClassifier() {
+    fun generateFactory_Generics_ProvideTypeWithParameter_NoClassifier() {
 
-        val path = "Generics_ProvideTypeWithGeneric_NoClassifier"
+        val path = "Generics_ProvideTypeWithParameter_NoClassifier"
         val compilation = Compiler.javac()
             .withProcessors(MagnetProcessor())
             .compile(
