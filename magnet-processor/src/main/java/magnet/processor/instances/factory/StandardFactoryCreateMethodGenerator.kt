@@ -8,6 +8,7 @@ import magnet.Scope
 import magnet.processor.instances.CreateMethod
 import magnet.processor.instances.FactoryType
 import magnet.processor.instances.MethodParameter
+import magnet.processor.instances.PARAM_SCOPE_NAME
 import javax.lang.model.element.Modifier
 
 class StandardFactoryCreateMethodGenerator : CreateMethodGenerator {
@@ -31,7 +32,7 @@ class StandardFactoryCreateMethodGenerator : CreateMethodGenerator {
             .methodBuilder("create")
             .addAnnotation(Override::class.java)
             .addModifiers(Modifier.PUBLIC)
-            .addParameter(Scope::class.java, "scope")
+            .addParameter(Scope::class.java, PARAM_SCOPE_NAME)
             .returns(factoryType.interfaceType)
         createMethodCodeBuilder = CodeBlock.builder()
     }

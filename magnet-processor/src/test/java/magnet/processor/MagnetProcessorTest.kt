@@ -501,6 +501,38 @@ class MagnetProcessorTest {
     }
 
     @Test
+    fun generateFactory_ScopeParameter_CustomName() {
+
+        val path = "ScopeParameter_CustomName"
+        val compilation = Compiler.javac()
+            .withProcessors(MagnetProcessor())
+            .compile(
+                withResource("$path/UnderTest.java")
+            )
+
+        assertThat(compilation).succeededWithoutWarnings()
+        assertThat(compilation)
+            .generatedSourceFile("app/UnderTestMagnetFactory")
+            .hasSourceEquivalentTo(withResource("$path/expected/UnderTestMagnetFactory.java"))
+    }
+
+    @Test
+    fun generateFactory_ScopeParameter_DefaultName() {
+
+        val path = "ScopeParameter_DefaultName"
+        val compilation = Compiler.javac()
+            .withProcessors(MagnetProcessor())
+            .compile(
+                withResource("$path/UnderTest.java")
+            )
+
+        assertThat(compilation).succeededWithoutWarnings()
+        assertThat(compilation)
+            .generatedSourceFile("app/UnderTestMagnetFactory")
+            .hasSourceEquivalentTo(withResource("$path/expected/UnderTestMagnetFactory.java"))
+    }
+
+    @Test
     fun generateFactory_StaticMethodNeedsDependencyWithClassifier() {
         val compilation = Compiler.javac()
             .withProcessors(MagnetProcessor())
