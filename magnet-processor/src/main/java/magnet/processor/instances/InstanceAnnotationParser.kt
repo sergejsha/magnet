@@ -99,7 +99,7 @@ internal abstract class AnnotationParser<in E : Element>(
         }
 
         return MethodParameter(
-            name = paramName,
+            name = if (paramExpression is Expression.Scope) PARAM_SCOPE_NAME else paramName,
             expression = paramExpression,
             returnType = paramReturnType,
             parameterType = paramParameterType,
