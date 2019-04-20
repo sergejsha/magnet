@@ -12,7 +12,6 @@ import magnet.Scoping
 import magnet.SelectorFilter
 import magnet.processor.MagnetProcessorEnv
 import magnet.processor.common.CompilationException
-import magnet.processor.common.ValidationException
 import magnet.processor.common.isOfAnnotationType
 import magnet.processor.common.validationError
 import magnet.processor.instances.disposer.DisposerAnnotationValidator
@@ -70,9 +69,8 @@ internal abstract class AnnotationParser<in E : Element>(
 
         val variableType = variable.asType()
         if (variableType.kind == TypeKind.TYPEVAR) {
-            throw ValidationException(
-                element = element,
-                message = "Constructor parameter '${variable.simpleName}' is specified using a generic" +
+            element.validationError(
+                "Constructor parameter '${variable.simpleName}' is specified using a generic" +
                     " type which is not supported by Magnet. Use a non-parameterized class or interface" +
                     " type instead. To inject current scope instance, use 'Scope' parameter type."
             )
@@ -86,7 +84,7 @@ internal abstract class AnnotationParser<in E : Element>(
         var paramExpression: Expression = Expression.Scope
         var paramParameterType: TypeName = paramType
         var paramClassifier: String = Classifier.NONE
-        var paramTypeErased: Boolean = false
+        var paramTypeErased = false
 
         paramParameterType.parseParamType(
             paramName, methodMetadata, variable
@@ -210,8 +208,7 @@ internal abstract class AnnotationParser<in E : Element>(
                                 "Lazy<List> must be parametrized with none nullable List type."
                             )
                         }
-                        val listArgumentType = argumentType.typeArguments.first()
-                        when (listArgumentType) {
+                        when (val listArgumentType = argumentType.typeArguments.first()) {
                             is ParameterizedTypeName -> {
                                 block(
                                     ParameterizedTypeName.get(listTypeName, listArgumentType),

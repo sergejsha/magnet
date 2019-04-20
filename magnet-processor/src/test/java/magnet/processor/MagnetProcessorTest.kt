@@ -533,6 +533,68 @@ class MagnetProcessorTest {
     }
 
     @Test
+    fun generateFactory_DefaultArguments_NoJvmOverloads() {
+
+        val path = "DefaultArguments_NoJvmOverloads"
+        val compilation = Compiler.javac()
+            .withProcessors(MagnetProcessor())
+            .compile(
+                withResource("$path/UnderTest.java")
+            )
+
+        assertThat(compilation).failed()
+        assertThat(compilation).hadErrorContaining("JvmOverloads")
+    }
+
+    @Test
+    fun generateFactory_DefaultArguments_JvmOverloads_AtTheEnd() {
+
+        val path = "DefaultArguments_JvmOverloads_AtTheEnd"
+        val compilation = Compiler.javac()
+            .withProcessors(MagnetProcessor())
+            .compile(
+                withResource("$path/UnderTest.java")
+            )
+
+        assertThat(compilation).succeededWithoutWarnings()
+        assertThat(compilation)
+            .generatedSourceFile("app/UnderTestMagnetFactory")
+            .hasSourceEquivalentTo(withResource("$path/expected/UnderTestMagnetFactory.java"))
+    }
+
+    @Test
+    fun generateFactory_DefaultArguments_JvmOverloads_InTheMiddle() {
+
+        val path = "DefaultArguments_JvmOverloads_InTheMiddle"
+        val compilation = Compiler.javac()
+            .withProcessors(MagnetProcessor())
+            .compile(
+                withResource("$path/UnderTest.java")
+            )
+
+        assertThat(compilation).succeededWithoutWarnings()
+        assertThat(compilation)
+            .generatedSourceFile("app/UnderTestMagnetFactory")
+            .hasSourceEquivalentTo(withResource("$path/expected/UnderTestMagnetFactory.java"))
+    }
+
+    @Test
+    fun generateFactory_DefaultArguments_JvmOverloads_Mixed() {
+
+        val path = "DefaultArguments_JvmOverloads_Mixed"
+        val compilation = Compiler.javac()
+            .withProcessors(MagnetProcessor())
+            .compile(
+                withResource("$path/UnderTest.java")
+            )
+
+        assertThat(compilation).succeededWithoutWarnings()
+        assertThat(compilation)
+            .generatedSourceFile("app/UnderTestMagnetFactory")
+            .hasSourceEquivalentTo(withResource("$path/expected/UnderTestMagnetFactory.java"))
+    }
+
+    @Test
     fun generateFactory_StaticMethodNeedsDependencyWithClassifier() {
         val compilation = Compiler.javac()
             .withProcessors(MagnetProcessor())
@@ -612,7 +674,7 @@ class MagnetProcessorTest {
             )
 
         assertThat(compilation).failed()
-        assertThat(compilation).hadErrorContaining("must have exactly one public or package-protected constructor")
+        assertThat(compilation).hadErrorContaining("must have exactly one public or package-private constructor")
     }
 
     @Test
@@ -626,7 +688,7 @@ class MagnetProcessorTest {
             )
 
         assertThat(compilation).failed()
-        assertThat(compilation).hadErrorContaining("must have exactly one public or package-protected constructor")
+        assertThat(compilation).hadErrorContaining("must have exactly one public or package-private constructor")
     }
 
     @Test

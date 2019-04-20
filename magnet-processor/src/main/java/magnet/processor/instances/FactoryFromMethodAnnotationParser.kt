@@ -9,9 +9,9 @@ import magnet.processor.MagnetProcessorEnv
 import magnet.processor.common.CompilationException
 import magnet.processor.common.ValidationException
 import magnet.processor.common.validationError
+import magnet.processor.instances.kotlin.ExecutableFunctionSelector
 import magnet.processor.instances.kotlin.KotlinConstructorMetadata
 import magnet.processor.instances.kotlin.MethodMetadata
-import magnet.processor.instances.kotlin.NamedFunctionSelector
 import javax.lang.model.element.Element
 import javax.lang.model.element.ExecutableElement
 import javax.lang.model.element.Modifier
@@ -75,7 +75,7 @@ internal class FactoryFromMethodAnnotationParser(
                 KotlinConstructorMetadata(
                     metadataAnnotation = it,
                     element = topmostElement,
-                    functionSelector = NamedFunctionSelector(element)
+                    functionSelector = ExecutableFunctionSelector(element)
                 )
             }
 

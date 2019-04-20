@@ -29,6 +29,7 @@ import kotlinx.metadata.KmVariance
 import kotlinx.metadata.jvm.KotlinClassHeader
 import kotlinx.metadata.jvm.KotlinClassMetadata
 import magnet.processor.common.CompilationException
+import magnet.processor.common.compilationError
 import javax.lang.model.element.ExecutableElement
 import javax.lang.model.element.TypeElement
 
@@ -43,24 +44,40 @@ data class ParamMeta(
 
 data class TypeMeta(
     val type: String,
-    val nullable: Boolean
+    val nullable: Boolean,
+    val default: Boolean
 )
 
 interface FunctionSelector {
     fun visitFunction(flags: Flags, name: String): Boolean
-    fun visitFunctionParameters(parameters: Map<String, ParamMeta>): Boolean
+    fun acceptFunctionParameters(parameters: Map<String, ParamMeta>): Boolean
 }
 
-object PrimaryConstructorSelector : FunctionSelector {
-    override fun visitFunction(flags: Flags, name: String) = flags.isPrimaryConstructor
-    override fun visitFunctionParameters(parameters: Map<String, ParamMeta>) = true
+object ConstructorWithDefaultArgumentsSelector : FunctionSelector {
+    private var count = Int.MAX_VALUE
+
+    override fun visitFunction(flags: Flags, name: String): Boolean {
+        count = Int.MAX_VALUE
+        return name == CONSTRUCTOR_NAME
+    }
+
+    override fun acceptFunctionParameters(parameters: Map<String, ParamMeta>): Boolean {
+        return if (count > parameters.size) {
+            count = parameters.size
+            true
+        } else false
+    }
 }
 
-class NamedFunctionSelector(private val element: ExecutableElement) : FunctionSelector {
+class ExecutableFunctionSelector(
+    private val element: ExecutableElement,
+    private val functionName: String = element.simpleName.toString()
+) : FunctionSelector {
+
     override fun visitFunction(flags: Flags, name: String) =
-        element.simpleName.toString() == name
+        functionName == name
 
-    override fun visitFunctionParameters(parameters: Map<String, ParamMeta>): Boolean {
+    override fun acceptFunctionParameters(parameters: Map<String, ParamMeta>): Boolean {
         if (parameters.size != element.parameters.size) {
             return false
         }
@@ -114,17 +131,14 @@ internal class KotlinConstructorMetadata(
     }
 
     override fun getParamMeta(paramName: String, typeDepth: Int): TypeMeta {
-
         val paramMeta = paramMetas[paramName]
-            ?: throw CompilationException(
-                element = element,
-                message = "Cannot find parameter '$paramName' in metadata of $element."
+            ?: element.compilationError(
+                "Cannot find parameter '$paramName' in metadata of $element." +
+                    " Available parameters: $paramMetas"
             )
-
         if (typeDepth >= paramMeta.types.size) {
-            throw CompilationException(
-                element = element,
-                message = "Cannot find TypeMeta depth of $typeDepth in ${paramMeta.types}."
+            element.compilationError(
+                "Cannot find TypeMeta depth of $typeDepth in ${paramMeta.types}."
             )
         }
         return paramMeta.types[typeDepth]
@@ -140,11 +154,13 @@ private class AnnotatedPackageVisitor(
     override fun visitFunction(flags: Flags, name: String): KmFunctionVisitor? {
         return if (functionSelector.visitFunction(flags, name)) {
             parameters.clear()
+
             object : KmFunctionVisitor() {
                 override fun visitValueParameter(flags: Flags, name: String): KmValueParameterVisitor? {
+                    val valueFlags = flags
                     return object : KmValueParameterVisitor() {
                         override fun visitType(flags: Flags): KmTypeVisitor? {
-                            return TypeExtractorVisitor(flags) { typeMeta ->
+                            return TypeExtractorVisitor(valueFlags, flags) { typeMeta ->
                                 parameters[name] = ParamMeta(name, typeMeta)
                             }
                         }
@@ -152,7 +168,7 @@ private class AnnotatedPackageVisitor(
                 }
 
                 override fun visitEnd() {
-                    if (!functionSelector.visitFunctionParameters(parameters)) {
+                    if (!functionSelector.acceptFunctionParameters(parameters)) {
                         parameters.clear()
                     }
                 }
@@ -167,13 +183,15 @@ private class AnnotatedClassVisitor(
     val parameters = mutableMapOf<String, ParamMeta>()
 
     override fun visitConstructor(flags: Flags): KmConstructorVisitor? {
-        return if (functionSelector.visitFunction(flags, "constructor")) {
+        return if (functionSelector.visitFunction(flags, CONSTRUCTOR_NAME)) {
             parameters.clear()
+
             object : KmConstructorVisitor() {
                 override fun visitValueParameter(flags: Flags, name: String): KmValueParameterVisitor? {
+                    val valueFlags = flags
                     return object : KmValueParameterVisitor() {
                         override fun visitType(flags: Flags): KmTypeVisitor? {
-                            return TypeExtractorVisitor(flags) { typeMeta ->
+                            return TypeExtractorVisitor(valueFlags, flags) { typeMeta ->
                                 parameters[name] = ParamMeta(name, typeMeta)
                             }
                         }
@@ -181,7 +199,7 @@ private class AnnotatedClassVisitor(
                 }
 
                 override fun visitEnd() {
-                    if (!functionSelector.visitFunctionParameters(parameters)) {
+                    if (!functionSelector.acceptFunctionParameters(parameters)) {
                         parameters.clear()
                     }
                 }
@@ -192,11 +210,13 @@ private class AnnotatedClassVisitor(
     override fun visitFunction(flags: Flags, name: String): KmFunctionVisitor? {
         return if (functionSelector.visitFunction(flags, name)) {
             parameters.clear()
+
             object : KmFunctionVisitor() {
                 override fun visitValueParameter(flags: Flags, name: String): KmValueParameterVisitor? {
+                    val valueFlags = flags
                     return object : KmValueParameterVisitor() {
                         override fun visitType(flags: Flags): KmTypeVisitor? {
-                            return TypeExtractorVisitor(flags) { typeMeta ->
+                            return TypeExtractorVisitor(valueFlags, flags) { typeMeta ->
                                 parameters[name] = ParamMeta(name, typeMeta)
                             }
                         }
@@ -204,7 +224,7 @@ private class AnnotatedClassVisitor(
                 }
 
                 override fun visitEnd() {
-                    if (!functionSelector.visitFunctionParameters(parameters)) {
+                    if (!functionSelector.acceptFunctionParameters(parameters)) {
                         parameters.clear()
                     }
                 }
@@ -214,17 +234,24 @@ private class AnnotatedClassVisitor(
 }
 
 class TypeExtractorVisitor(
-    private val flags: Flags,
+    private val valueFlags: Flags,
+    private val typeFlags: Flags,
     private val typeMeta: MutableList<TypeMeta> = mutableListOf(),
     private val onVisitEnd: OnVisitEnd? = null
 ) : KmTypeVisitor() {
 
     override fun visitClass(name: ClassName) {
-        typeMeta.add(TypeMeta(name, flags.isNullableType))
+        typeMeta.add(
+            TypeMeta(
+                type = name,
+                nullable = Flag.Type.IS_NULLABLE(typeFlags),
+                default = Flag.ValueParameter.DECLARES_DEFAULT_VALUE(valueFlags)
+            )
+        )
     }
 
     override fun visitArgument(flags: Flags, variance: KmVariance): KmTypeVisitor? =
-        TypeExtractorVisitor(flags, typeMeta)
+        TypeExtractorVisitor(valueFlags, flags, typeMeta)
 
     override fun visitEnd() {
         onVisitEnd?.invoke(typeMeta)
@@ -233,5 +260,4 @@ class TypeExtractorVisitor(
 
 typealias OnVisitEnd = (List<TypeMeta>) -> Unit
 
-internal val Flags.isPrimaryConstructor: Boolean get() = Flag.Constructor.IS_PRIMARY(this)
-internal val Flags.isNullableType: Boolean get() = Flag.Type.IS_NULLABLE(this)
+const val CONSTRUCTOR_NAME = "<init>"

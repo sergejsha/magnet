@@ -19,10 +19,14 @@ package magnet.processor.instances
 import com.squareup.javapoet.ClassName
 import magnet.Instance
 import magnet.processor.MagnetProcessorEnv
-import magnet.processor.common.ValidationException
+import magnet.processor.common.validationError
+import magnet.processor.instances.kotlin.CONSTRUCTOR_NAME
+import magnet.processor.instances.kotlin.ConstructorWithDefaultArgumentsSelector
+import magnet.processor.instances.kotlin.ExecutableFunctionSelector
 import magnet.processor.instances.kotlin.KotlinConstructorMetadata
 import magnet.processor.instances.kotlin.MethodMetadata
-import magnet.processor.instances.kotlin.PrimaryConstructorSelector
+import javax.lang.model.element.Element
+import javax.lang.model.element.ExecutableElement
 import javax.lang.model.element.Modifier
 import javax.lang.model.element.TypeElement
 import javax.lang.model.util.ElementFilter
@@ -78,25 +82,43 @@ internal class FactoryFromClassAnnotationParser(
 
     private fun parseCreateMethod(element: TypeElement): CreateMethod {
 
-        val constructors = ElementFilter
+        val (constructor, functionSelector) = ElementFilter
             .constructorsIn(element.enclosedElements)
             .filterNot { it.modifiers.contains(Modifier.PRIVATE) || it.modifiers.contains(Modifier.PROTECTED) }
-
-        if (constructors.size != 1) {
-            throw ValidationException(
-                element = element,
-                message = "Classes annotated with ${Instance::class.java} must have exactly one " +
-                    "public or package-protected constructor."
-            )
-        }
+            .let { constructors ->
+                when (constructors.size) {
+                    0 -> element.throwExactlyOneConstructorRequired()
+                    1 -> constructors[0].let { it to ExecutableFunctionSelector(it, CONSTRUCTOR_NAME) }
+                    else -> constructors.findDefaultConstructor() to ConstructorWithDefaultArgumentsSelector
+                }
+            }
 
         val methodParameters = mutableListOf<MethodParameter>()
         val methodMetadata: MethodMetadata? = element
             .getAnnotation(Metadata::class.java)
-            ?.let { KotlinConstructorMetadata(it, element, PrimaryConstructorSelector) }
+            ?.let {
+                KotlinConstructorMetadata(
+                    metadataAnnotation = it,
+                    element = element,
+                    functionSelector = functionSelector
+                )
+            }
 
-        constructors[0].parameters.forEach { variable ->
+        constructor.parameters.forEach { variable ->
             val methodParameter = parseMethodParameter(element, variable, methodMetadata)
+
+            methodMetadata?.let { metadata ->
+                metadata.getParamMeta(methodParameter.name, 0).let { paramMeta ->
+                    if (paramMeta.default && !constructor.hasJvmOverloads) {
+                        constructor.validationError(
+                            "Constructors with default arguments of a class annotated with ${Instance::class}" +
+                                " must have @JmvOverloads annotation." +
+                                " Example: ${element.simpleName} @JvmOverloads constructor(...)."
+                        )
+                    }
+                }
+            }
+
             methodParameters.add(methodParameter)
         }
 
@@ -106,6 +128,25 @@ internal class FactoryFromClassAnnotationParser(
     }
 
 }
+
+private fun List<ExecutableElement>.findDefaultConstructor(): ExecutableElement =
+    reduce { constructor, candidate ->
+        if (candidate.parameters.size < constructor.parameters.size) candidate
+        else constructor
+    }.apply {
+        if (!hasJvmOverloads) {
+            throwExactlyOneConstructorRequired()
+        }
+    }
+
+private val ExecutableElement.hasJvmOverloads
+    get() = getAnnotation(JvmOverloads::class.java) != null
+
+private fun Element.throwExactlyOneConstructorRequired(): Nothing =
+    validationError(
+        "Classes annotated with ${magnet.Instance::class.java} must have exactly one" +
+            " public or package-private constructor."
+    )
 
 private fun generateFactoryName(
     hasSiblingsTypes: Boolean, instanceType: ClassName, interfaceType: ClassName
