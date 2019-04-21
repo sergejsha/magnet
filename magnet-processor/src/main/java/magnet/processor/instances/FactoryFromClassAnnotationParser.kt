@@ -111,9 +111,9 @@ internal class FactoryFromClassAnnotationParser(
                 metadata.getParamMeta(methodParameter.name, 0).let { paramMeta ->
                     if (paramMeta.default && !constructor.hasJvmOverloads) {
                         constructor.validationError(
-                            "Constructors with default arguments of a class annotated with ${Instance::class}" +
+                            "Constructor with default arguments of a class annotated with ${Instance::class}" +
                                 " must have @JmvOverloads annotation." +
-                                " Example: ${element.simpleName} @JvmOverloads constructor(...)."
+                                " Use ${element.simpleName} @JvmOverloads constructor(...)."
                         )
                     }
                 }

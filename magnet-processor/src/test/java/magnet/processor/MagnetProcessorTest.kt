@@ -517,6 +517,22 @@ class MagnetProcessorTest {
     }
 
     @Test
+    fun generateFactory_ScopeParameter_CustomName_KotlinClass() {
+
+        val path = "ScopeParameter_CustomName_KotlinClass"
+        val compilation = Compiler.javac()
+            .withProcessors(MagnetProcessor())
+            .compile(
+                withResource("$path/UnderTest.java")
+            )
+
+        assertThat(compilation).succeededWithoutWarnings()
+        assertThat(compilation)
+            .generatedSourceFile("app/UnderTestMagnetFactory")
+            .hasSourceEquivalentTo(withResource("$path/expected/UnderTestMagnetFactory.java"))
+    }
+
+    @Test
     fun generateFactory_ScopeParameter_DefaultName() {
 
         val path = "ScopeParameter_DefaultName"
@@ -664,13 +680,13 @@ class MagnetProcessorTest {
     }
 
     @Test
-    fun generateFactory_FailOnAdditionalPackageProtectedConstructor() {
+    fun generateFactory_Constructor_Public_PackagePrivate() {
 
+        val path = "Constructor_Public_PackagePrivate"
         val compilation = Compiler.javac()
             .withProcessors(MagnetProcessor())
             .compile(
-                withResource("HomePageConstructorsWithAdditionalPackageProtected.java"),
-                withResource("Page.java")
+                withResource("$path/UnderTest.java")
             )
 
         assertThat(compilation).failed()
@@ -678,13 +694,13 @@ class MagnetProcessorTest {
     }
 
     @Test
-    fun generateFactory_FailWithNoPublicOrPackageProtectedConstructor() {
+    fun generateFactory_Constructor_Public_Public() {
 
+        val path = "Constructor_Public_Public"
         val compilation = Compiler.javac()
             .withProcessors(MagnetProcessor())
             .compile(
-                withResource("HomePageConstructorsWithNoPublicOrPackageProtected.java"),
-                withResource("Page.java")
+                withResource("$path/UnderTest.java")
             )
 
         assertThat(compilation).failed()
@@ -692,37 +708,108 @@ class MagnetProcessorTest {
     }
 
     @Test
-    fun generateFactory_AllowAdditionalPrivateConstructor() {
+    fun generateFactory_Constructor_Public_Protected() {
 
+        val path = "Constructor_Public_Protected"
         val compilation = Compiler.javac()
             .withProcessors(MagnetProcessor())
             .compile(
-                withResource("HomePageConstructorsWithAdditionalPrivate.java"),
-                withResource("Page.java")
+                withResource("$path/UnderTest.java")
             )
 
         assertThat(compilation).succeededWithoutWarnings()
-
         assertThat(compilation)
-            .generatedSourceFile("app/extension/HomePageConstructorsWithAdditionalPrivateMagnetFactory")
-            .hasSourceEquivalentTo(withResource("generated/HomePageConstructorsWithAdditionalPrivateMagnetFactory.java"))
+            .generatedSourceFile("app/UnderTestMagnetFactory")
+            .hasSourceEquivalentTo(withResource("$path/expected/UnderTestMagnetFactory.java"))
     }
 
     @Test
-    fun generateFactory_AllowAdditionalProtectedConstructor() {
+    fun generateFactory_Constructor_Public_Private() {
 
+        val path = "Constructor_Public_Private"
         val compilation = Compiler.javac()
             .withProcessors(MagnetProcessor())
             .compile(
-                withResource("HomePageConstructorsWithAdditionalProtected.java"),
-                withResource("Page.java")
+                withResource("$path/UnderTest.java")
+            )
+
+        assertThat(compilation).succeededWithoutWarnings()
+        assertThat(compilation)
+            .generatedSourceFile("app/UnderTestMagnetFactory")
+            .hasSourceEquivalentTo(withResource("$path/expected/UnderTestMagnetFactory.java"))
+    }
+
+    @Test
+    fun generateFactory_Constructor_PackagePrivate_PackagePrivate() {
+
+        val path = "Constructor_PackagePrivate_PackagePrivate"
+        val compilation = Compiler.javac()
+            .withProcessors(MagnetProcessor())
+            .compile(
+                withResource("$path/UnderTest.java")
+            )
+
+        assertThat(compilation).failed()
+        assertThat(compilation).hadErrorContaining("must have exactly one public or package-private constructor")
+    }
+
+    @Test
+    fun generateFactory_Constructor_Private() {
+
+        val path = "Constructor_Private"
+        val compilation = Compiler.javac()
+            .withProcessors(MagnetProcessor())
+            .compile(
+                withResource("$path/UnderTest.java")
+            )
+
+        assertThat(compilation).failed()
+        assertThat(compilation).hadErrorContaining("must have exactly one public or package-private constructor")
+    }
+
+    @Test
+    fun generateFactory_Constructor_Protected() {
+
+        val path = "Constructor_Protected"
+        val compilation = Compiler.javac()
+            .withProcessors(MagnetProcessor())
+            .compile(
+                withResource("$path/UnderTest.java")
+            )
+
+        assertThat(compilation).failed()
+        assertThat(compilation).hadErrorContaining("must have exactly one public or package-private constructor")
+    }
+
+    @Test
+    fun generateFactory_Constructor_PackagePrivate_Private() {
+
+        val path = "Constructor_PackagePrivate_Private"
+        val compilation = Compiler.javac()
+            .withProcessors(MagnetProcessor())
+            .compile(
+                withResource("$path/UnderTest.java")
             )
 
         assertThat(compilation).succeededWithoutWarnings()
 
         assertThat(compilation)
-            .generatedSourceFile("app/extension/HomePageConstructorsWithAdditionalProtectedMagnetFactory")
-            .hasSourceEquivalentTo(withResource("generated/HomePageConstructorsWithAdditionalProtectedMagnetFactory.java"))
+            .generatedSourceFile("app/UnderTestMagnetFactory")
+            .hasSourceEquivalentTo(withResource("$path/expected/UnderTestMagnetFactory.java"))
+    }
+
+    @Test
+    fun generateFactory_Constructor_Public_Public_Kotlin() {
+
+        val path = "Constructor_Public_Public_Kotlin"
+        val compilation = Compiler.javac()
+            .withProcessors(MagnetProcessor())
+            .compile(
+                withResource("$path/UnderTest.java")
+            )
+
+        assertThat(compilation).failed()
+        assertThat(compilation).hadErrorContaining("must have exactly one public or package-private constructor")
     }
 
     private fun withResource(name: String): JavaFileObject {

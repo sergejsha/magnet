@@ -6,6 +6,7 @@ import com.squareup.javapoet.MethodSpec
 import com.squareup.javapoet.TypeSpec
 import magnet.Scope
 import magnet.processor.instances.CreateMethod
+import magnet.processor.instances.Expression
 import magnet.processor.instances.FactoryType
 import magnet.processor.instances.MethodParameter
 import magnet.processor.instances.PARAM_SCOPE_NAME
@@ -40,7 +41,8 @@ class StandardFactoryCreateMethodGenerator : CreateMethodGenerator {
     override fun visitCreateMethodParameter(parameter: MethodParameter) {
         createMethodCodeBuilder?.let { builder ->
             builder.addCreateParameterStatement(parameter)
-            constructorParametersBuilder.append(parameter.name).append(", ")
+            val paramName = if (parameter.expression == Expression.Scope) PARAM_SCOPE_NAME else parameter.name
+            constructorParametersBuilder.append(paramName).append(", ")
         }
 
         createMethodBuilder?.let { builder ->
