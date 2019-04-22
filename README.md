@@ -89,16 +89,16 @@ The monitor should be implemented for [Stetho](https://github.com/facebook/steth
 Kotlin
 ```gradle
 dependencies {
-    api 'de.halfbit:magnet-kotlin:3.0'
-    kapt 'de.halfbit:magnet-processor:3.0'
+    api 'de.halfbit:magnet-kotlin:3.1'
+    kapt 'de.halfbit:magnet-processor:3.1'
 }
 ```
 
 Java
 ```gradle
 dependencies {
-    api 'de.halfbit:magnet:3.0'
-    annotationProcessor 'de.halfbit:magnet-processor:3.0'
+    api 'de.halfbit:magnet:3.1'
+    annotationProcessor 'de.halfbit:magnet-processor:3.1'
 }
 ```
 
