@@ -33,7 +33,7 @@ import magnet.processor.common.compilationError
 import javax.lang.model.element.ExecutableElement
 import javax.lang.model.element.TypeElement
 
-interface MethodMetadata {
+interface MethodMeta {
     fun getParamMeta(paramName: String, typeDepth: Int): TypeMeta
 }
 
@@ -94,7 +94,7 @@ internal class KotlinConstructorMetadata(
     private val metadataAnnotation: Metadata,
     private val element: TypeElement,
     private val functionSelector: FunctionSelector
-) : MethodMetadata {
+) : MethodMeta {
 
     private val paramMetas: Map<String, ParamMeta> by lazy {
         val metadata = with(metadataAnnotation) {

@@ -24,7 +24,7 @@ import magnet.processor.instances.kotlin.CONSTRUCTOR_NAME
 import magnet.processor.instances.kotlin.ConstructorWithDefaultArgumentsSelector
 import magnet.processor.instances.kotlin.ExecutableFunctionSelector
 import magnet.processor.instances.kotlin.KotlinConstructorMetadata
-import magnet.processor.instances.kotlin.MethodMetadata
+import magnet.processor.instances.kotlin.MethodMeta
 import javax.lang.model.element.Element
 import javax.lang.model.element.ExecutableElement
 import javax.lang.model.element.Modifier
@@ -94,7 +94,7 @@ internal class FactoryFromClassAnnotationParser(
             }
 
         val methodParameters = mutableListOf<MethodParameter>()
-        val methodMetadata: MethodMetadata? = element
+        val methodMeta: MethodMeta? = element
             .getAnnotation(Metadata::class.java)
             ?.let {
                 KotlinConstructorMetadata(
@@ -105,9 +105,9 @@ internal class FactoryFromClassAnnotationParser(
             }
 
         constructor.parameters.forEach { variable ->
-            val methodParameter = parseMethodParameter(element, variable, methodMetadata)
+            val methodParameter = parseMethodParameter(element, variable, methodMeta)
 
-            methodMetadata?.let { metadata ->
+            methodMeta?.let { metadata ->
                 metadata.getParamMeta(methodParameter.name, 0).let { paramMeta ->
                     if (paramMeta.default && !constructor.hasJvmOverloads) {
                         constructor.validationError(

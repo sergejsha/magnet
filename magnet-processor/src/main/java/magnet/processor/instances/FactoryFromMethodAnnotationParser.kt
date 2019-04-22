@@ -11,7 +11,7 @@ import magnet.processor.common.ValidationException
 import magnet.processor.common.validationError
 import magnet.processor.instances.kotlin.ExecutableFunctionSelector
 import magnet.processor.instances.kotlin.KotlinConstructorMetadata
-import magnet.processor.instances.kotlin.MethodMetadata
+import magnet.processor.instances.kotlin.MethodMeta
 import javax.lang.model.element.Element
 import javax.lang.model.element.ExecutableElement
 import javax.lang.model.element.Modifier
@@ -69,7 +69,7 @@ internal class FactoryFromMethodAnnotationParser(
             .append(staticMethodName.capitalize())
 
         val topmostElement = element.getTopmostTypeElement()
-        val methodMetadata: MethodMetadata? = topmostElement
+        val methodMeta: MethodMeta? = topmostElement
             .getAnnotation(Metadata::class.java)
             ?.let {
                 KotlinConstructorMetadata(
@@ -81,7 +81,7 @@ internal class FactoryFromMethodAnnotationParser(
 
         val methodParameters = mutableListOf<MethodParameter>()
         element.parameters.forEach { variable ->
-            val methodParameter = parseMethodParameter(element, variable, methodMetadata)
+            val methodParameter = parseMethodParameter(element, variable, methodMeta)
             methodParameters.add(methodParameter)
             uniqueFactoryNameBuilder.append(methodParameter.name.capitalize())
         }

@@ -17,7 +17,7 @@ import magnet.processor.common.validationError
 import magnet.processor.instances.disposer.DisposerAnnotationValidator
 import magnet.processor.instances.disposer.DisposerAttributeParser
 import magnet.processor.instances.factory.FactoryAttributeParser
-import magnet.processor.instances.kotlin.MethodMetadata
+import magnet.processor.instances.kotlin.MethodMeta
 import magnet.processor.instances.selector.SelectorAttributeParser
 import javax.lang.model.element.AnnotationValue
 import javax.lang.model.element.Element
@@ -64,7 +64,7 @@ internal abstract class AnnotationParser<in E : Element>(
     protected fun parseMethodParameter(
         element: Element,
         variable: VariableElement,
-        methodMetadata: MethodMetadata?
+        methodMeta: MethodMeta?
     ): MethodParameter {
 
         val variableType = variable.asType()
@@ -87,7 +87,7 @@ internal abstract class AnnotationParser<in E : Element>(
         var paramTypeErased = false
 
         paramParameterType.parseParamType(
-            paramName, methodMetadata, variable
+            paramName, methodMeta, variable
         ) { returnType, expression, parameterType, classifier, erased ->
             paramReturnType = returnType
             paramExpression = expression
@@ -108,7 +108,7 @@ internal abstract class AnnotationParser<in E : Element>(
 
     private fun TypeName.parseParamType(
         paramName: String,
-        methodMetadata: MethodMetadata?,
+        methodMeta: MethodMeta?,
         variable: VariableElement,
         block: (
             returnType: TypeName,
@@ -144,12 +144,12 @@ internal abstract class AnnotationParser<in E : Element>(
                     }
 
                     lazyTypeName -> {
-                        if (methodMetadata == null) variable.validationError(
+                        if (methodMeta == null) variable.validationError(
                             "Lazy can only be used with Kotlin classes."
                         )
 
                         parseLazyArgumentType(
-                            paramName, methodMetadata, variable
+                            paramName, methodMeta, variable
                         ) { returnType, cardinality, parameterType ->
                             paramReturnType = ParameterizedTypeName.get(lazyTypeName, returnType)
                             paramParameterType = parameterType
@@ -189,7 +189,7 @@ internal abstract class AnnotationParser<in E : Element>(
 
     private fun ParameterizedTypeName.parseLazyArgumentType(
         paramName: String,
-        methodMetadata: MethodMetadata,
+        methodMeta: MethodMeta,
         variable: VariableElement,
         block: (
             returnType: TypeName,
@@ -203,7 +203,7 @@ internal abstract class AnnotationParser<in E : Element>(
                 when (argumentType.rawType) {
                     lazyTypeName -> variable.validationError("Lazy cannot be parametrized with another Lazy type.")
                     listTypeName -> {
-                        if (methodMetadata.getParamMeta(paramName, 1).nullable) {
+                        if (methodMeta.getParamMeta(paramName, 1).nullable) {
                             variable.validationError(
                                 "Lazy<List> must be parametrized with none nullable List type."
                             )
@@ -217,7 +217,7 @@ internal abstract class AnnotationParser<in E : Element>(
                                 )
                             }
                             else -> {
-                                if (methodMetadata.getParamMeta(paramName, 2).nullable) {
+                                if (methodMeta.getParamMeta(paramName, 2).nullable) {
                                     variable.validationError(
                                         "Lazy<List<T>> must be parametrized with none nullable type."
                                     )
@@ -233,7 +233,7 @@ internal abstract class AnnotationParser<in E : Element>(
                     else -> {
                         block(
                             argumentType,
-                            methodMetadata.getNullableCardinality(paramName, 1),
+                            methodMeta.getNullableCardinality(paramName, 1),
                             argumentType.rawType
                         )
                     }
@@ -242,7 +242,7 @@ internal abstract class AnnotationParser<in E : Element>(
             else -> {
                 block(
                     argumentType,
-                    methodMetadata.getNullableCardinality(paramName, 1),
+                    methodMeta.getNullableCardinality(paramName, 1),
                     argumentType
                 )
             }
@@ -377,7 +377,7 @@ internal abstract class AnnotationParser<in E : Element>(
     abstract fun parse(element: E): List<FactoryType>
 }
 
-private fun MethodMetadata.getNullableCardinality(paramName: String, paramDepth: Int): Cardinality =
+private fun MethodMeta.getNullableCardinality(paramName: String, paramDepth: Int): Cardinality =
     if (getParamMeta(paramName, paramDepth).nullable) Cardinality.Optional
     else Cardinality.Single
 
