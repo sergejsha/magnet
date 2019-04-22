@@ -1,3 +1,19 @@
+/*
+ * Copyright (C) 2018-2019 Sergej Shafarenka, www.halfbit.de
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package magnet.processor.instances
 
 import com.squareup.javapoet.ClassName
@@ -9,8 +25,8 @@ import magnet.processor.MagnetProcessorEnv
 import magnet.processor.common.CompilationException
 import magnet.processor.common.ValidationException
 import magnet.processor.common.validationError
-import magnet.processor.instances.kotlin.ExecutableFunctionSelector
-import magnet.processor.instances.kotlin.KotlinConstructorMetadata
+import magnet.processor.instances.kotlin.DefaultMetadata
+import magnet.processor.instances.kotlin.MethodFunctionSelector
 import magnet.processor.instances.kotlin.MethodMeta
 import javax.lang.model.element.Element
 import javax.lang.model.element.ExecutableElement
@@ -72,10 +88,10 @@ internal class FactoryFromMethodAnnotationParser(
         val methodMeta: MethodMeta? = topmostElement
             .getAnnotation(Metadata::class.java)
             ?.let {
-                KotlinConstructorMetadata(
-                    metadataAnnotation = it,
+                DefaultMetadata(
+                    metadata = it,
                     element = topmostElement,
-                    functionSelector = ExecutableFunctionSelector(element)
+                    functionSelector = MethodFunctionSelector(element)
                 )
             }
 

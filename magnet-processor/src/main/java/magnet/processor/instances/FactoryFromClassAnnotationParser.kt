@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018 Sergej Shafarenka, www.halfbit.de
+ * Copyright (C) 2018-2019 Sergej Shafarenka, www.halfbit.de
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,14 +17,18 @@
 package magnet.processor.instances
 
 import com.squareup.javapoet.ClassName
+import kotlinx.metadata.Flag
+import kotlinx.metadata.Flags
 import magnet.Instance
 import magnet.processor.MagnetProcessorEnv
+import magnet.processor.common.compilationError
 import magnet.processor.common.validationError
 import magnet.processor.instances.kotlin.CONSTRUCTOR_NAME
-import magnet.processor.instances.kotlin.ConstructorWithDefaultArgumentsSelector
-import magnet.processor.instances.kotlin.ExecutableFunctionSelector
-import magnet.processor.instances.kotlin.KotlinConstructorMetadata
+import magnet.processor.instances.kotlin.DefaultMetadata
+import magnet.processor.instances.kotlin.FunctionSelector
 import magnet.processor.instances.kotlin.MethodMeta
+import magnet.processor.instances.kotlin.ParameterMeta
+import magnet.processor.instances.kotlin.hasParameters
 import javax.lang.model.element.Element
 import javax.lang.model.element.ExecutableElement
 import javax.lang.model.element.Modifier
@@ -82,65 +86,36 @@ internal class FactoryFromClassAnnotationParser(
 
     private fun parseCreateMethod(element: TypeElement): CreateMethod {
 
-        val (constructor, functionSelector) = ElementFilter
+        val constructors = ElementFilter
             .constructorsIn(element.enclosedElements)
-            .filterNot { it.modifiers.contains(Modifier.PRIVATE) || it.modifiers.contains(Modifier.PROTECTED) }
-            .let { constructors ->
-                when (constructors.size) {
-                    0 -> element.throwExactlyOneConstructorRequired()
-                    1 -> constructors[0].let { it to ExecutableFunctionSelector(it, CONSTRUCTOR_NAME) }
-                    else -> constructors.findDefaultConstructor() to ConstructorWithDefaultArgumentsSelector
-                }
+            .filterNot {
+                it.modifiers.contains(Modifier.PRIVATE)
+                    || it.modifiers.contains(Modifier.PROTECTED)
             }
 
-        val methodParameters = mutableListOf<MethodParameter>()
         val methodMeta: MethodMeta? = element
             .getAnnotation(Metadata::class.java)
             ?.let {
-                KotlinConstructorMetadata(
-                    metadataAnnotation = it,
+                DefaultMetadata(
+                    metadata = it,
                     element = element,
-                    functionSelector = functionSelector
+                    functionSelector = ConstructorFunctionSelector(element, constructors)
                 )
             }
 
-        constructor.parameters.forEach { variable ->
-            val methodParameter = parseMethodParameter(element, variable, methodMeta)
+        val methodParameters = mutableListOf<MethodParameter>().apply {
+            val constructor =
+                if (methodMeta == null) selectJavaConstructor(constructors, element)
+                else selectKotlinConstructor(methodMeta)
 
-            methodMeta?.let { metadata ->
-                metadata.getParamMeta(methodParameter.name, 0).let { paramMeta ->
-                    if (paramMeta.default && !constructor.hasJvmOverloads) {
-                        constructor.validationError(
-                            "Constructor with default arguments of a class annotated with ${Instance::class}" +
-                                " must have @JmvOverloads annotation." +
-                                " Use ${element.simpleName} @JvmOverloads constructor(...)."
-                        )
-                    }
-                }
+            for (parameter in constructor.parameters) {
+                add(parseMethodParameter(element, parameter, methodMeta))
             }
-
-            methodParameters.add(methodParameter)
         }
 
-        return CreateMethod(
-            methodParameters
-        )
+        return CreateMethod(methodParameters)
     }
-
 }
-
-private fun List<ExecutableElement>.findDefaultConstructor(): ExecutableElement =
-    reduce { constructor, candidate ->
-        if (candidate.parameters.size < constructor.parameters.size) candidate
-        else constructor
-    }.apply {
-        if (!hasJvmOverloads) {
-            throwExactlyOneConstructorRequired()
-        }
-    }
-
-private val ExecutableElement.hasJvmOverloads
-    get() = getAnnotation(JvmOverloads::class.java) != null
 
 private fun Element.throwExactlyOneConstructorRequired(): Nothing =
     validationError(
@@ -149,7 +124,9 @@ private fun Element.throwExactlyOneConstructorRequired(): Nothing =
     )
 
 private fun generateFactoryName(
-    hasSiblingsTypes: Boolean, instanceType: ClassName, interfaceType: ClassName
+    hasSiblingsTypes: Boolean,
+    instanceType: ClassName,
+    interfaceType: ClassName
 ): String =
     if (hasSiblingsTypes) "${instanceType.getFullName()}${interfaceType.getFullName()}$FACTORY_SUFFIX"
     else "${instanceType.getFullName()}$FACTORY_SUFFIX"
@@ -165,4 +142,46 @@ private fun ClassName.getFullName(): String {
         typeClassName = typeClassName.enclosingClassName()
     }
     return nameBuilder.toString()
+}
+
+private fun selectJavaConstructor(constructors: List<ExecutableElement>, element: TypeElement): ExecutableElement =
+    if (constructors.size == 1) constructors[0] else element.throwExactlyOneConstructorRequired()
+
+private fun selectKotlinConstructor(methodMeta: MethodMeta): ExecutableElement =
+    methodMeta.method
+
+private class ConstructorFunctionSelector(
+    private val element: TypeElement,
+    private val constructors: List<ExecutableElement>
+) : FunctionSelector {
+
+    override val function: ExecutableElement
+        get() = overloadConstructor
+            ?.let { return it }
+            ?: element.throwExactlyOneConstructorRequired()
+
+    private var overloadConstructor: ExecutableElement? = null
+
+    override fun visitFunction(flags: Flags, name: String): Boolean =
+        Flag.Constructor.IS_PRIMARY(flags) && name == CONSTRUCTOR_NAME
+
+    override fun acceptFunctionParameters(parameters: Map<String, ParameterMeta>): Map<String, ParameterMeta> {
+        val overloadedParameters = parameters.filter { it.value.types.firstOrNull()?.default != true }
+        overloadConstructor = constructors.find { it.hasParameters(overloadedParameters) }
+        if (overloadConstructor == null) {
+            val primaryConstructor = constructors.find { it.hasParameters(parameters) }
+                ?: element.compilationError(
+                    "Overloaded secondary constructor expected.\n" +
+                        " Primary constructor: $parameters\n" +
+                        " Secondary constructor: $overloadedParameters"
+                )
+
+            primaryConstructor.validationError(
+                "Constructor with default arguments in a class annotated with ${Instance::class}" +
+                    " must have @JmvOverloads annotation." +
+                    " Use: class ${element.simpleName} @JvmOverloads constructor(...)"
+            )
+        }
+        return overloadedParameters
+    }
 }

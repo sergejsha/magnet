@@ -1,3 +1,19 @@
+/*
+ * Copyright (C) 2018-2019 Sergej Shafarenka, www.halfbit.de
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package magnet.processor.instances
 
 import com.squareup.javapoet.ClassName
@@ -203,7 +219,7 @@ internal abstract class AnnotationParser<in E : Element>(
                 when (argumentType.rawType) {
                     lazyTypeName -> variable.validationError("Lazy cannot be parametrized with another Lazy type.")
                     listTypeName -> {
-                        if (methodMeta.getParamMeta(paramName, 1).nullable) {
+                        if (methodMeta.getTypeMeta(paramName, 1).nullable) {
                             variable.validationError(
                                 "Lazy<List> must be parametrized with none nullable List type."
                             )
@@ -217,7 +233,7 @@ internal abstract class AnnotationParser<in E : Element>(
                                 )
                             }
                             else -> {
-                                if (methodMeta.getParamMeta(paramName, 2).nullable) {
+                                if (methodMeta.getTypeMeta(paramName, 2).nullable) {
                                     variable.validationError(
                                         "Lazy<List<T>> must be parametrized with none nullable type."
                                     )
@@ -378,7 +394,7 @@ internal abstract class AnnotationParser<in E : Element>(
 }
 
 private fun MethodMeta.getNullableCardinality(paramName: String, paramDepth: Int): Cardinality =
-    if (getParamMeta(paramName, paramDepth).nullable) Cardinality.Optional
+    if (getTypeMeta(paramName, paramDepth).nullable) Cardinality.Optional
     else Cardinality.Single
 
 private fun WildcardTypeName.firstUpperBoundsRawType(element: Element): Pair<TypeName, Boolean> {

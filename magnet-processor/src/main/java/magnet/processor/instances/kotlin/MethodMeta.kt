@@ -34,10 +34,11 @@ import javax.lang.model.element.ExecutableElement
 import javax.lang.model.element.TypeElement
 
 interface MethodMeta {
-    fun getParamMeta(paramName: String, typeDepth: Int): TypeMeta
+    val method: ExecutableElement
+    fun getTypeMeta(parameterName: String, typeDepth: Int): TypeMeta
 }
 
-data class ParamMeta(
+data class ParameterMeta(
     val name: String,
     val types: List<TypeMeta>
 )
@@ -49,55 +50,46 @@ data class TypeMeta(
 )
 
 interface FunctionSelector {
+    val function: ExecutableElement
     fun visitFunction(flags: Flags, name: String): Boolean
-    fun acceptFunctionParameters(parameters: Map<String, ParamMeta>): Boolean
+    fun acceptFunctionParameters(parameters: Map<String, ParameterMeta>): Map<String, ParameterMeta>
 }
 
-object ConstructorWithDefaultArgumentsSelector : FunctionSelector {
-    private var count = Int.MAX_VALUE
-
-    override fun visitFunction(flags: Flags, name: String): Boolean {
-        count = Int.MAX_VALUE
-        return name == CONSTRUCTOR_NAME
-    }
-
-    override fun acceptFunctionParameters(parameters: Map<String, ParamMeta>): Boolean {
-        return if (count > parameters.size) {
-            count = parameters.size
-            true
-        } else false
-    }
-}
-
-class ExecutableFunctionSelector(
-    private val element: ExecutableElement,
-    private val functionName: String = element.simpleName.toString()
+internal class MethodFunctionSelector(
+    override val function: ExecutableElement
 ) : FunctionSelector {
 
     override fun visitFunction(flags: Flags, name: String) =
-        functionName == name
+        function.simpleName.toString() == name
 
-    override fun acceptFunctionParameters(parameters: Map<String, ParamMeta>): Boolean {
-        if (parameters.size != element.parameters.size) {
-            return false
+    override fun acceptFunctionParameters(parameters: Map<String, ParameterMeta>): Map<String, ParameterMeta> {
+        if (parameters.size != function.parameters.size) {
+            return emptyMap()
         }
-        parameters.values.forEachIndexed { index, paramMeta ->
-            if (element.parameters[index].simpleName.toString() != paramMeta.name) {
-                return false
-            }
-        }
-        return true
+        return if (function.hasParameters(parameters)) parameters else emptyMap()
     }
 }
 
-internal class KotlinConstructorMetadata(
-    private val metadataAnnotation: Metadata,
+fun ExecutableElement.hasParameters(parameters: Map<String, ParameterMeta>): Boolean {
+    if (parameters.values.size != this.parameters.size) return false
+    parameters.values.forEachIndexed { index, parameterMeta ->
+        if (this.parameters[index].simpleName.toString() != parameterMeta.name) {
+            return false
+        }
+    }
+    return true
+}
+
+internal class DefaultMetadata(
+    metadata: Metadata,
     private val element: TypeElement,
     private val functionSelector: FunctionSelector
 ) : MethodMeta {
 
-    private val paramMetas: Map<String, ParamMeta> by lazy {
-        val metadata = with(metadataAnnotation) {
+    override lateinit var method: ExecutableElement
+
+    private val parameterMetas: Map<String, ParameterMeta> =
+        with(metadata) {
             KotlinClassMetadata.read(
                 KotlinClassHeader(
                     kind,
@@ -110,50 +102,50 @@ internal class KotlinConstructorMetadata(
                     extraInt
                 )
             )
+        }.let { kotlinMetadata ->
+            when (kotlinMetadata) {
+                is KotlinClassMetadata.Class ->
+                    AnnotatedClassVisitor(functionSelector).let {
+                        kotlinMetadata.accept(it)
+                        method = functionSelector.function
+                        it.parameters
+                    }
+                is KotlinClassMetadata.FileFacade ->
+                    AnnotatedPackageVisitor(functionSelector).let {
+                        kotlinMetadata.accept(it)
+                        method = functionSelector.function
+                        it.parameters
+                    }
+                else -> throw CompilationException(
+                    element = element,
+                    message = "Unsupported KotlinClassMetadata of type $kotlinMetadata"
+                )
+            }
         }
 
-        when (metadata) {
-            is KotlinClassMetadata.Class ->
-                AnnotatedClassVisitor(functionSelector).let {
-                    metadata.accept(it)
-                    it.parameters
-                }
-            is KotlinClassMetadata.FileFacade ->
-                AnnotatedPackageVisitor(functionSelector).let {
-                    metadata.accept(it)
-                    it.parameters
-                }
-            else -> throw CompilationException(
-                element = element,
-                message = "Expecting 'KotlinClassMetadata.Class' while $metadata received."
-            )
-        }
-    }
-
-    override fun getParamMeta(paramName: String, typeDepth: Int): TypeMeta {
-        val paramMeta = paramMetas[paramName]
+    override fun getTypeMeta(parameterName: String, typeDepth: Int): TypeMeta {
+        val parameterMeta = parameterMetas[parameterName]
             ?: element.compilationError(
-                "Cannot find parameter '$paramName' in metadata of $element." +
-                    " Available parameters: $paramMetas"
+                "Cannot find parameter '$parameterName' in metadata of $element." +
+                    " Available parameters: $parameterMetas"
             )
-        if (typeDepth >= paramMeta.types.size) {
+        if (typeDepth >= parameterMeta.types.size) {
             element.compilationError(
-                "Cannot find TypeMeta depth of $typeDepth in ${paramMeta.types}."
+                "Cannot find TypeMeta depth of $typeDepth in ${parameterMeta.types}."
             )
         }
-        return paramMeta.types[typeDepth]
+        return parameterMeta.types[typeDepth]
     }
-
 }
 
 private class AnnotatedPackageVisitor(
     private val functionSelector: FunctionSelector
 ) : KmPackageVisitor() {
-    val parameters = mutableMapOf<String, ParamMeta>()
+    var parameters = emptyMap<String, ParameterMeta>()
 
     override fun visitFunction(flags: Flags, name: String): KmFunctionVisitor? {
         return if (functionSelector.visitFunction(flags, name)) {
-            parameters.clear()
+            val visitedParameters = mutableMapOf<String, ParameterMeta>()
 
             object : KmFunctionVisitor() {
                 override fun visitValueParameter(flags: Flags, name: String): KmValueParameterVisitor? {
@@ -161,16 +153,14 @@ private class AnnotatedPackageVisitor(
                     return object : KmValueParameterVisitor() {
                         override fun visitType(flags: Flags): KmTypeVisitor? {
                             return TypeExtractorVisitor(valueFlags, flags) { typeMeta ->
-                                parameters[name] = ParamMeta(name, typeMeta)
+                                visitedParameters[name] = ParameterMeta(name, typeMeta)
                             }
                         }
                     }
                 }
 
                 override fun visitEnd() {
-                    if (!functionSelector.acceptFunctionParameters(parameters)) {
-                        parameters.clear()
-                    }
+                    parameters = functionSelector.acceptFunctionParameters(visitedParameters)
                 }
             }
         } else null
@@ -180,11 +170,11 @@ private class AnnotatedPackageVisitor(
 private class AnnotatedClassVisitor(
     private val functionSelector: FunctionSelector
 ) : KmClassVisitor() {
-    val parameters = mutableMapOf<String, ParamMeta>()
+    var parameters = emptyMap<String, ParameterMeta>()
 
     override fun visitConstructor(flags: Flags): KmConstructorVisitor? {
         return if (functionSelector.visitFunction(flags, CONSTRUCTOR_NAME)) {
-            parameters.clear()
+            val visitedParameters = mutableMapOf<String, ParameterMeta>()
 
             object : KmConstructorVisitor() {
                 override fun visitValueParameter(flags: Flags, name: String): KmValueParameterVisitor? {
@@ -192,16 +182,14 @@ private class AnnotatedClassVisitor(
                     return object : KmValueParameterVisitor() {
                         override fun visitType(flags: Flags): KmTypeVisitor? {
                             return TypeExtractorVisitor(valueFlags, flags) { typeMeta ->
-                                parameters[name] = ParamMeta(name, typeMeta)
+                                visitedParameters[name] = ParameterMeta(name, typeMeta)
                             }
                         }
                     }
                 }
 
                 override fun visitEnd() {
-                    if (!functionSelector.acceptFunctionParameters(parameters)) {
-                        parameters.clear()
-                    }
+                    parameters = functionSelector.acceptFunctionParameters(visitedParameters)
                 }
             }
         } else null
@@ -209,7 +197,7 @@ private class AnnotatedClassVisitor(
 
     override fun visitFunction(flags: Flags, name: String): KmFunctionVisitor? {
         return if (functionSelector.visitFunction(flags, name)) {
-            parameters.clear()
+            val visitedParameters = mutableMapOf<String, ParameterMeta>()
 
             object : KmFunctionVisitor() {
                 override fun visitValueParameter(flags: Flags, name: String): KmValueParameterVisitor? {
@@ -217,23 +205,21 @@ private class AnnotatedClassVisitor(
                     return object : KmValueParameterVisitor() {
                         override fun visitType(flags: Flags): KmTypeVisitor? {
                             return TypeExtractorVisitor(valueFlags, flags) { typeMeta ->
-                                parameters[name] = ParamMeta(name, typeMeta)
+                                visitedParameters[name] = ParameterMeta(name, typeMeta)
                             }
                         }
                     }
                 }
 
                 override fun visitEnd() {
-                    if (!functionSelector.acceptFunctionParameters(parameters)) {
-                        parameters.clear()
-                    }
+                    parameters = functionSelector.acceptFunctionParameters(visitedParameters)
                 }
             }
         } else null
     }
 }
 
-class TypeExtractorVisitor(
+private class TypeExtractorVisitor(
     private val valueFlags: Flags,
     private val typeFlags: Flags,
     private val typeMeta: MutableList<TypeMeta> = mutableListOf(),
@@ -241,13 +227,15 @@ class TypeExtractorVisitor(
 ) : KmTypeVisitor() {
 
     override fun visitClass(name: ClassName) {
-        typeMeta.add(
-            TypeMeta(
-                type = name,
-                nullable = Flag.Type.IS_NULLABLE(typeFlags),
-                default = Flag.ValueParameter.DECLARES_DEFAULT_VALUE(valueFlags)
+        Flag.ValueParameter.DECLARES_DEFAULT_VALUE(valueFlags).let { default ->
+            typeMeta.add(
+                TypeMeta(
+                    type = name,
+                    nullable = Flag.Type.IS_NULLABLE(typeFlags),
+                    default = default
+                )
             )
-        )
+        }
     }
 
     override fun visitArgument(flags: Flags, variance: KmVariance): KmTypeVisitor? =
@@ -258,6 +246,5 @@ class TypeExtractorVisitor(
     }
 }
 
-typealias OnVisitEnd = (List<TypeMeta>) -> Unit
-
 const val CONSTRUCTOR_NAME = "<init>"
+private typealias OnVisitEnd = (List<TypeMeta>) -> Unit

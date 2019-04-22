@@ -549,20 +549,6 @@ class MagnetProcessorTest {
     }
 
     @Test
-    fun generateFactory_DefaultArguments_NoJvmOverloads() {
-
-        val path = "DefaultArguments_NoJvmOverloads"
-        val compilation = Compiler.javac()
-            .withProcessors(MagnetProcessor())
-            .compile(
-                withResource("$path/UnderTest.java")
-            )
-
-        assertThat(compilation).failed()
-        assertThat(compilation).hadErrorContaining("JvmOverloads")
-    }
-
-    @Test
     fun generateFactory_DefaultArguments_JvmOverloads_AtTheEnd() {
 
         val path = "DefaultArguments_JvmOverloads_AtTheEnd"

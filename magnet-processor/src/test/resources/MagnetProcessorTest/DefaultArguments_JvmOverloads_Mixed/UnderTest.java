@@ -1,7 +1,6 @@
 package app;
 
 import kotlin.Metadata;
-import kotlin.jvm.JvmOverloads;
 import magnet.Instance;
 import org.jetbrains.annotations.NotNull;
 
@@ -17,17 +16,14 @@ import org.jetbrains.annotations.NotNull;
 )
 public final class UnderTest {
 
-    @JvmOverloads
     public UnderTest(@NotNull String value1, @NotNull String value2, @NotNull String value3, @NotNull String value4) {
         super();
     }
 
-    @JvmOverloads
     public UnderTest(@NotNull String value1, @NotNull String value2, @NotNull String value3) {
         super();
     }
 
-    @JvmOverloads
     public UnderTest(@NotNull String value1, @NotNull String value3) {
         super();
     }
