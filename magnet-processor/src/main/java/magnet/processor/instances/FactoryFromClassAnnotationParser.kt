@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018 Sergej Shafarenka, www.halfbit.de
+ * Copyright (C) 2018-2019 Sergej Shafarenka, www.halfbit.de
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,12 +17,20 @@
 package magnet.processor.instances
 
 import com.squareup.javapoet.ClassName
+import kotlinx.metadata.Flag
+import kotlinx.metadata.Flags
 import magnet.Instance
 import magnet.processor.MagnetProcessorEnv
-import magnet.processor.common.ValidationException
-import magnet.processor.instances.kotlin.KotlinConstructorMetadata
-import magnet.processor.instances.kotlin.MethodMetadata
-import magnet.processor.instances.kotlin.PrimaryConstructorSelector
+import magnet.processor.common.compilationError
+import magnet.processor.common.validationError
+import magnet.processor.instances.kotlin.CONSTRUCTOR_NAME
+import magnet.processor.instances.kotlin.DefaultMetadata
+import magnet.processor.instances.kotlin.FunctionSelector
+import magnet.processor.instances.kotlin.MethodMeta
+import magnet.processor.instances.kotlin.ParameterMeta
+import magnet.processor.instances.kotlin.hasParameters
+import javax.lang.model.element.Element
+import javax.lang.model.element.ExecutableElement
 import javax.lang.model.element.Modifier
 import javax.lang.model.element.TypeElement
 import javax.lang.model.util.ElementFilter
@@ -80,35 +88,45 @@ internal class FactoryFromClassAnnotationParser(
 
         val constructors = ElementFilter
             .constructorsIn(element.enclosedElements)
-            .filterNot { it.modifiers.contains(Modifier.PRIVATE) || it.modifiers.contains(Modifier.PROTECTED) }
+            .filterNot {
+                it.modifiers.contains(Modifier.PRIVATE)
+                    || it.modifiers.contains(Modifier.PROTECTED)
+            }
 
-        if (constructors.size != 1) {
-            throw ValidationException(
-                element = element,
-                message = "Classes annotated with ${Instance::class.java} must have exactly one " +
-                    "public or package-protected constructor."
-            )
-        }
-
-        val methodParameters = mutableListOf<MethodParameter>()
-        val methodMetadata: MethodMetadata? = element
+        val methodMeta: MethodMeta? = element
             .getAnnotation(Metadata::class.java)
-            ?.let { KotlinConstructorMetadata(it, element, PrimaryConstructorSelector) }
+            ?.let {
+                DefaultMetadata(
+                    metadata = it,
+                    element = element,
+                    functionSelector = ConstructorFunctionSelector(element, constructors)
+                )
+            }
 
-        constructors[0].parameters.forEach { variable ->
-            val methodParameter = parseMethodParameter(element, variable, methodMetadata)
-            methodParameters.add(methodParameter)
+        val methodParameters = mutableListOf<MethodParameter>().apply {
+            val constructor =
+                if (methodMeta == null) selectJavaConstructor(constructors, element)
+                else selectKotlinConstructor(methodMeta)
+
+            for (parameter in constructor.parameters) {
+                add(parseMethodParameter(element, parameter, methodMeta))
+            }
         }
 
-        return CreateMethod(
-            methodParameters
-        )
+        return CreateMethod(methodParameters)
     }
-
 }
 
+private fun Element.throwExactlyOneConstructorRequired(): Nothing =
+    validationError(
+        "Classes annotated with ${magnet.Instance::class.java} must have exactly one" +
+            " public or package-private constructor."
+    )
+
 private fun generateFactoryName(
-    hasSiblingsTypes: Boolean, instanceType: ClassName, interfaceType: ClassName
+    hasSiblingsTypes: Boolean,
+    instanceType: ClassName,
+    interfaceType: ClassName
 ): String =
     if (hasSiblingsTypes) "${instanceType.getFullName()}${interfaceType.getFullName()}$FACTORY_SUFFIX"
     else "${instanceType.getFullName()}$FACTORY_SUFFIX"
@@ -124,4 +142,46 @@ private fun ClassName.getFullName(): String {
         typeClassName = typeClassName.enclosingClassName()
     }
     return nameBuilder.toString()
+}
+
+private fun selectJavaConstructor(constructors: List<ExecutableElement>, element: TypeElement): ExecutableElement =
+    if (constructors.size == 1) constructors[0] else element.throwExactlyOneConstructorRequired()
+
+private fun selectKotlinConstructor(methodMeta: MethodMeta): ExecutableElement =
+    methodMeta.method
+
+private class ConstructorFunctionSelector(
+    private val element: TypeElement,
+    private val constructors: List<ExecutableElement>
+) : FunctionSelector {
+
+    override val function: ExecutableElement
+        get() = overloadConstructor
+            ?.let { return it }
+            ?: element.throwExactlyOneConstructorRequired()
+
+    private var overloadConstructor: ExecutableElement? = null
+
+    override fun visitFunction(flags: Flags, name: String): Boolean =
+        Flag.Constructor.IS_PRIMARY(flags) && name == CONSTRUCTOR_NAME
+
+    override fun acceptFunctionParameters(parameters: Map<String, ParameterMeta>): Map<String, ParameterMeta> {
+        val overloadedParameters = parameters.filter { it.value.types.firstOrNull()?.default != true }
+        overloadConstructor = constructors.find { it.hasParameters(overloadedParameters) }
+        if (overloadConstructor == null) {
+            val primaryConstructor = constructors.find { it.hasParameters(parameters) }
+                ?: element.compilationError(
+                    "Overloaded secondary constructor expected.\n" +
+                        " Primary constructor: $parameters\n" +
+                        " Secondary constructor: $overloadedParameters"
+                )
+
+            primaryConstructor.validationError(
+                "Constructor with default arguments in a class annotated with ${Instance::class}" +
+                    " must have @JmvOverloads annotation." +
+                    " Use: class ${element.simpleName} @JvmOverloads constructor(...)"
+            )
+        }
+        return overloadedParameters
+    }
 }

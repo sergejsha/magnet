@@ -1,3 +1,19 @@
+/*
+ * Copyright (C) 2018-2019 Sergej Shafarenka, www.halfbit.de
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package magnet.processor.instances
 
 import com.squareup.javapoet.ClassName
@@ -12,13 +28,12 @@ import magnet.Scoping
 import magnet.SelectorFilter
 import magnet.processor.MagnetProcessorEnv
 import magnet.processor.common.CompilationException
-import magnet.processor.common.ValidationException
 import magnet.processor.common.isOfAnnotationType
 import magnet.processor.common.validationError
 import magnet.processor.instances.disposer.DisposerAnnotationValidator
 import magnet.processor.instances.disposer.DisposerAttributeParser
 import magnet.processor.instances.factory.FactoryAttributeParser
-import magnet.processor.instances.kotlin.MethodMetadata
+import magnet.processor.instances.kotlin.MethodMeta
 import magnet.processor.instances.selector.SelectorAttributeParser
 import javax.lang.model.element.AnnotationValue
 import javax.lang.model.element.Element
@@ -65,14 +80,13 @@ internal abstract class AnnotationParser<in E : Element>(
     protected fun parseMethodParameter(
         element: Element,
         variable: VariableElement,
-        methodMetadata: MethodMetadata?
+        methodMeta: MethodMeta?
     ): MethodParameter {
 
         val variableType = variable.asType()
         if (variableType.kind == TypeKind.TYPEVAR) {
-            throw ValidationException(
-                element = element,
-                message = "Constructor parameter '${variable.simpleName}' is specified using a generic" +
+            element.validationError(
+                "Constructor parameter '${variable.simpleName}' is specified using a generic" +
                     " type which is not supported by Magnet. Use a non-parameterized class or interface" +
                     " type instead. To inject current scope instance, use 'Scope' parameter type."
             )
@@ -86,10 +100,10 @@ internal abstract class AnnotationParser<in E : Element>(
         var paramExpression: Expression = Expression.Scope
         var paramParameterType: TypeName = paramType
         var paramClassifier: String = Classifier.NONE
-        var paramTypeErased: Boolean = false
+        var paramTypeErased = false
 
         paramParameterType.parseParamType(
-            paramName, methodMetadata, variable
+            paramName, methodMeta, variable
         ) { returnType, expression, parameterType, classifier, erased ->
             paramReturnType = returnType
             paramExpression = expression
@@ -99,7 +113,7 @@ internal abstract class AnnotationParser<in E : Element>(
         }
 
         return MethodParameter(
-            name = if (paramExpression is Expression.Scope) PARAM_SCOPE_NAME else paramName,
+            name = paramName,
             expression = paramExpression,
             returnType = paramReturnType,
             parameterType = paramParameterType,
@@ -110,7 +124,7 @@ internal abstract class AnnotationParser<in E : Element>(
 
     private fun TypeName.parseParamType(
         paramName: String,
-        methodMetadata: MethodMetadata?,
+        methodMeta: MethodMeta?,
         variable: VariableElement,
         block: (
             returnType: TypeName,
@@ -146,12 +160,12 @@ internal abstract class AnnotationParser<in E : Element>(
                     }
 
                     lazyTypeName -> {
-                        if (methodMetadata == null) variable.validationError(
+                        if (methodMeta == null) variable.validationError(
                             "Lazy can only be used with Kotlin classes."
                         )
 
                         parseLazyArgumentType(
-                            paramName, methodMetadata, variable
+                            paramName, methodMeta, variable
                         ) { returnType, cardinality, parameterType ->
                             paramReturnType = ParameterizedTypeName.get(lazyTypeName, returnType)
                             paramParameterType = parameterType
@@ -191,7 +205,7 @@ internal abstract class AnnotationParser<in E : Element>(
 
     private fun ParameterizedTypeName.parseLazyArgumentType(
         paramName: String,
-        methodMetadata: MethodMetadata,
+        methodMeta: MethodMeta,
         variable: VariableElement,
         block: (
             returnType: TypeName,
@@ -205,13 +219,12 @@ internal abstract class AnnotationParser<in E : Element>(
                 when (argumentType.rawType) {
                     lazyTypeName -> variable.validationError("Lazy cannot be parametrized with another Lazy type.")
                     listTypeName -> {
-                        if (methodMetadata.getParamMeta(paramName, 1).nullable) {
+                        if (methodMeta.getTypeMeta(paramName, 1).nullable) {
                             variable.validationError(
                                 "Lazy<List> must be parametrized with none nullable List type."
                             )
                         }
-                        val listArgumentType = argumentType.typeArguments.first()
-                        when (listArgumentType) {
+                        when (val listArgumentType = argumentType.typeArguments.first()) {
                             is ParameterizedTypeName -> {
                                 block(
                                     ParameterizedTypeName.get(listTypeName, listArgumentType),
@@ -220,7 +233,7 @@ internal abstract class AnnotationParser<in E : Element>(
                                 )
                             }
                             else -> {
-                                if (methodMetadata.getParamMeta(paramName, 2).nullable) {
+                                if (methodMeta.getTypeMeta(paramName, 2).nullable) {
                                     variable.validationError(
                                         "Lazy<List<T>> must be parametrized with none nullable type."
                                     )
@@ -236,7 +249,7 @@ internal abstract class AnnotationParser<in E : Element>(
                     else -> {
                         block(
                             argumentType,
-                            methodMetadata.getNullableCardinality(paramName, 1),
+                            methodMeta.getNullableCardinality(paramName, 1),
                             argumentType.rawType
                         )
                     }
@@ -245,7 +258,7 @@ internal abstract class AnnotationParser<in E : Element>(
             else -> {
                 block(
                     argumentType,
-                    methodMetadata.getNullableCardinality(paramName, 1),
+                    methodMeta.getNullableCardinality(paramName, 1),
                     argumentType
                 )
             }
@@ -380,8 +393,8 @@ internal abstract class AnnotationParser<in E : Element>(
     abstract fun parse(element: E): List<FactoryType>
 }
 
-private fun MethodMetadata.getNullableCardinality(paramName: String, paramDepth: Int): Cardinality =
-    if (getParamMeta(paramName, paramDepth).nullable) Cardinality.Optional
+private fun MethodMeta.getNullableCardinality(paramName: String, paramDepth: Int): Cardinality =
+    if (getTypeMeta(paramName, paramDepth).nullable) Cardinality.Optional
     else Cardinality.Single
 
 private fun WildcardTypeName.firstUpperBoundsRawType(element: Element): Pair<TypeName, Boolean> {

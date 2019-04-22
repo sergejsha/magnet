@@ -56,6 +56,10 @@ fun Element.validationError(message: String): Nothing {
     throw ValidationException(this, message)
 }
 
+fun Element.compilationError(message: String): Nothing {
+    throw CompilationException(this, message)
+}
+
 class AnnotationValueExtractor(
     private val elements: Elements
 ) : SimpleAnnotationValueVisitor6<Void?, Void>() {
