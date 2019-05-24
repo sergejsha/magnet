@@ -213,7 +213,7 @@ internal abstract class AnnotationParser<in E : Element>(
             parameterType: TypeName
         ) -> Unit
     ) {
-        when (val argumentType = typeArguments.first()) {
+        when (val argumentType = typeArguments.first().withoutWildcards(variable)) {
             scopeTypeName -> variable.validationError("Lazy cannot be parametrized with Scope type.")
             is ParameterizedTypeName -> {
                 when (argumentType.rawType) {
@@ -224,7 +224,7 @@ internal abstract class AnnotationParser<in E : Element>(
                                 "Lazy<List> must be parametrized with none nullable List type."
                             )
                         }
-                        when (val listArgumentType = argumentType.typeArguments.first()) {
+                        when (val listArgumentType = argumentType.typeArguments.first().withoutWildcards(variable)) {
                             is ParameterizedTypeName -> {
                                 block(
                                     ParameterizedTypeName.get(listTypeName, listArgumentType),
@@ -397,7 +397,22 @@ private fun MethodMeta.getNullableCardinality(paramName: String, paramDepth: Int
     if (getTypeMeta(paramName, paramDepth).nullable) Cardinality.Optional
     else Cardinality.Single
 
+private fun TypeName.withoutWildcards(element: Element): TypeName =
+    if (this is WildcardTypeName) {
+        checkBounds(element)
+        upperBounds.first()
+    } else this
+
 private fun WildcardTypeName.firstUpperBoundsRawType(element: Element): Pair<TypeName, Boolean> {
+    checkBounds(element)
+    return when (val type = upperBounds.first()) {
+        is ParameterizedTypeName -> type.rawType to true
+        is WildcardTypeName -> type.firstUpperBoundsRawType(element)
+        else -> type to false
+    }
+}
+
+private fun WildcardTypeName.checkBounds(element: Element) {
     if (lowerBounds.size > 0) {
         element.validationError(
             "Magnet supports single upper bounds class parameter only," +
@@ -408,14 +423,8 @@ private fun WildcardTypeName.firstUpperBoundsRawType(element: Element): Pair<Typ
     if (upperBounds.size > 1) {
         element.validationError(
             "Magnet supports single upper bounds class parameter only," +
-                " for example List<${upperBounds[0]}>"
+                " for example List<${upperBounds.first()}>"
         )
-    }
-
-    return when (val type = upperBounds[0]) {
-        is ParameterizedTypeName -> type.rawType to true
-        is WildcardTypeName -> type.firstUpperBoundsRawType(element)
-        else -> type to false
     }
 }
 
