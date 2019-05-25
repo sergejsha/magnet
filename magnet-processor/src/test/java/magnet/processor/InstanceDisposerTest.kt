@@ -73,5 +73,4 @@ class InstanceDisposerTest {
         CompilationSubject.assertThat(compilation).failed()
         CompilationSubject.assertThat(compilation).hadErrorContaining("UNSCOPED")
     }
-
 }

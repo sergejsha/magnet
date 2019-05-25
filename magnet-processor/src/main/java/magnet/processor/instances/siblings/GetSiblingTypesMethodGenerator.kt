@@ -72,5 +72,4 @@ internal class GetSiblingTypesMethodGenerator : AspectGenerator {
         constBuilder?.let { classBuilder.addField(it) }
         getSiblingTypes?.let { classBuilder.addMethod(it) }
     }
-
 }

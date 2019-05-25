@@ -1,0 +1,30 @@
+configurations {
+    ktlint
+}
+
+dependencies {
+    ktlint 'com.pinterest:ktlint:0.32.0'
+}
+
+def reportsDir = "$buildDir/reports/ktlint"
+
+tasks.register("ktlint", JavaExec) {
+    group = "Verification"
+    description = "Checks Kotlin code style."
+    classpath = configurations.ktlint
+    main = "com.pinterest.ktlint.Main"
+    args = [
+            "--reporter=plain,output=$reportsDir/klint.txt",
+            "--reporter=checkstyle,output=$reportsDir/klint.xml",
+            "src/**/*.kt"
+    ]
+}
+check.configure { dependsOn ktlint }
+
+tasks.register("ktlintFormat", JavaExec) {
+    group = "Verification"
+    description = "Fix Kotlin code style deviations."
+    classpath = configurations.ktlint
+    main = "com.pinterest.ktlint.Main"
+    args = ["-F", "src/**/*.kt"]
+}

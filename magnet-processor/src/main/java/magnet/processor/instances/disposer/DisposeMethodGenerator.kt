@@ -27,5 +27,4 @@ internal class DisposeMethodGenerator {
     fun generate(typeBuilder: TypeSpec.Builder) {
         methodBuilder?.let { typeBuilder.addMethod(it.build()) }
     }
-
 }

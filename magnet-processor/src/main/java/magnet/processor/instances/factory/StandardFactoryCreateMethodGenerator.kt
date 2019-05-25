@@ -56,7 +56,6 @@ class StandardFactoryCreateMethodGenerator : CreateMethodGenerator {
                 )
             }
         }
-
     }
 
     override fun exitCreateMethod() {
@@ -80,6 +79,4 @@ class StandardFactoryCreateMethodGenerator : CreateMethodGenerator {
             typeBuilder.addMethod(builder.build())
         }
     }
-
 }
-

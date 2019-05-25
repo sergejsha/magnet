@@ -71,5 +71,4 @@ class FactoryIndexCodeGenerator : FactoryTypeVisitor, CodeGenerator {
         factoryType.accept(this)
         return CodeWriter(factoryIndexClassName.packageName(), factoryIndexTypeSpec)
     }
-
 }

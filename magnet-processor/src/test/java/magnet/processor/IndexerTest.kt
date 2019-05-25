@@ -71,5 +71,4 @@ class IndexerTest {
             Inst("CType", "two", factory)
         )
     }
-
 }

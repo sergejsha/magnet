@@ -48,7 +48,6 @@ internal class InstanceIndexGenerator {
             return CodeBlock.builder()
                 .addStatement("\$T[] factories = new \$T[0]", InstanceFactory::class.java, InstanceFactory::class.java)
                 .build()
-
         } else {
             val builder = CodeBlock.builder()
                 .add("\$T[] factories = new \$T[] {", InstanceFactory::class.java, InstanceFactory::class.java)
@@ -64,7 +63,6 @@ internal class InstanceIndexGenerator {
                 .build()
         }
     }
-
 }
 
 private fun ClassName.toQualifiedName(): String =

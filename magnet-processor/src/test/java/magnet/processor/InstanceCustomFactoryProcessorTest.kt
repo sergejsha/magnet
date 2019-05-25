@@ -25,7 +25,6 @@ class InstanceCustomFactoryProcessorTest {
         CompilationSubject.assertThat(compilation)
             .generatedSourceFile("test/Implementation1MagnetFactory")
             .hasSourceEquivalentTo(withResource("expected/Implementation1MagnetFactory.java"))
-
     }
 
     @Test
@@ -42,7 +41,6 @@ class InstanceCustomFactoryProcessorTest {
         CompilationSubject.assertThat(compilation)
             .generatedSourceFile("test/Implementation2MagnetFactory")
             .hasSourceEquivalentTo(withResource("expected/Implementation2MagnetFactory.java"))
-
     }
 
     @Test
@@ -59,8 +57,5 @@ class InstanceCustomFactoryProcessorTest {
         CompilationSubject.assertThat(compilation)
             .generatedSourceFile("test/Implementation3MagnetFactory")
             .hasSourceEquivalentTo(withResource("expected/Implementation3MagnetFactory.java"))
-
     }
-
-
 }

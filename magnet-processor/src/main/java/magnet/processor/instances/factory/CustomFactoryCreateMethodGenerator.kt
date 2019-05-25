@@ -1,4 +1,4 @@
-package magnet.processor.instances.factory;
+package magnet.processor.instances.factory
 
 import com.squareup.javapoet.ClassName
 import com.squareup.javapoet.CodeBlock
@@ -46,7 +46,6 @@ class CustomFactoryCreateMethodGenerator : CreateMethodGenerator {
         instantiateMethodCodeBuilder = CodeBlock
             .builder()
     }
-
 
     override fun visitCreateMethodParameter(parameter: MethodParameter) {
         instantiateMethodCodeBuilder.addCreateParameterStatement(parameter)
@@ -107,5 +106,4 @@ class CustomFactoryCreateMethodGenerator : CreateMethodGenerator {
                     .build()
             )
     }
-
 }

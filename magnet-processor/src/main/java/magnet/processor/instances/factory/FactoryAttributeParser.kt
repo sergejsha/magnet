@@ -16,5 +16,4 @@ class FactoryAttributeParser(
         val factoryTypeElement = extractor.getTypeElement(value)
         return TypeName.get(factoryTypeElement.asType())
     }
-
 }

@@ -25,8 +25,6 @@ class GenerateRegistryForInstanceFactoriesTest {
         CompilationSubject.assertThat(compilation)
             .generatedSourceFile("magnet/internal/MagnetIndexer")
             .hasSourceEquivalentTo(withResource("expected/MagnetIndexer2.java"))
-
-
     }
 
     @Test
@@ -45,7 +43,6 @@ class GenerateRegistryForInstanceFactoriesTest {
         CompilationSubject.assertThat(compilation)
             .generatedSourceFile("magnet/internal/MagnetIndexer")
             .hasSourceEquivalentTo(withResource("expected/MagnetIndexer1.java"))
-
     }
 
     @Test
@@ -63,7 +60,6 @@ class GenerateRegistryForInstanceFactoriesTest {
         CompilationSubject.assertThat(compilation)
             .generatedSourceFile("magnet/internal/MagnetIndexer")
             .hasSourceEquivalentTo(withResource("expected/MagnetIndexer7.java"))
-
     }
 
     @Test
@@ -83,7 +79,6 @@ class GenerateRegistryForInstanceFactoriesTest {
         CompilationSubject.assertThat(compilation)
             .generatedSourceFile("magnet/internal/MagnetIndexer")
             .hasSourceEquivalentTo(withResource("expected/MagnetIndexer3.java"))
-
     }
 
     @Test
@@ -103,7 +98,6 @@ class GenerateRegistryForInstanceFactoriesTest {
         CompilationSubject.assertThat(compilation)
             .generatedSourceFile("magnet/internal/MagnetIndexer")
             .hasSourceEquivalentTo(withResource("expected/MagnetIndexer5.java"))
-
     }
 
     @Test
@@ -123,7 +117,6 @@ class GenerateRegistryForInstanceFactoriesTest {
         CompilationSubject.assertThat(compilation)
             .generatedSourceFile("magnet/internal/MagnetIndexer")
             .hasSourceEquivalentTo(withResource("expected/MagnetIndexer4.java"))
-
     }
 
     @Test
@@ -144,8 +137,5 @@ class GenerateRegistryForInstanceFactoriesTest {
         CompilationSubject.assertThat(compilation)
             .generatedSourceFile("magnet/internal/MagnetIndexer")
             .hasSourceEquivalentTo(withResource("expected/MagnetIndexer6.java"))
-
     }
-
-
 }

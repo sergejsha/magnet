@@ -53,9 +53,7 @@ class InstanceProcessor(
         }
 
         return true
-
     }
-
 }
 
 private fun factoryName(factoryType: FactoryType): String = factoryType.factoryType.simpleName()

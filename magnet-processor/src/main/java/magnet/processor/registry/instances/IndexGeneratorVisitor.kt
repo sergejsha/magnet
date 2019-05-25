@@ -86,7 +86,7 @@ class IndexGeneratorVisitor : IndexVisitor {
             return
         }
 
-        val targetsName = "ranges${sectionIndex}"
+        val targetsName = "ranges$sectionIndex"
 
         targetsBuilder.addStatement(
             "\$L.put(\$S, new \$T(\$L, \$L, \$S))",
@@ -98,5 +98,4 @@ class IndexGeneratorVisitor : IndexVisitor {
             range.classifier
         )
     }
-
 }

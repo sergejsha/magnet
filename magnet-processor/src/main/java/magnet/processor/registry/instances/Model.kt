@@ -15,7 +15,6 @@ class Model private constructor() {
                 it.accept(visitor)
             }
         }
-
     }
 
     class Inst(
@@ -88,5 +87,4 @@ class Model private constructor() {
         fun visit(section: Section)
         fun visit(range: Range)
     }
-
 }

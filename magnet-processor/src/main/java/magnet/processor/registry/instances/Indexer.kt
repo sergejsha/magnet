@@ -26,15 +26,10 @@ class Indexer(
 
     fun index(instances: List<Inst>): Index {
         val sorted = instances.sortedWith(comparator)
-
         val indexer = SectionsCreatorVisitor()
         sorted.forEach {
             it.accept(indexer)
         }
-
         return Index(sorted, indexer.sections)
     }
-
 }
-
-

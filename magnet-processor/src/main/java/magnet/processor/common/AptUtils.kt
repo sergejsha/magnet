@@ -87,5 +87,4 @@ class AnnotationValueExtractor(
         value.accept(this, null)
         return this.value as TypeElement
     }
-
 }

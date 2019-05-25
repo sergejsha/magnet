@@ -36,7 +36,6 @@ class RegistryGenerator {
     fun generate(registry: Model.Registry): CodeWriter {
 
         val instanceFactoriesIndex = instanceIndexGenerator.generate(registry)
-
         val registryClassName = ClassName.bestGuess(REGISTRY_CLASS_NAME)
         val factoryRegistryClassName = ClassName.get(INSTANCE_MANAGER_PACKAGE, INSTANCE_MANAGER_NAME)
 
@@ -58,5 +57,4 @@ class RegistryGenerator {
         val packageName = registryClassName.packageName()
         return CodeWriter(packageName, typeSpec)
     }
-
 }

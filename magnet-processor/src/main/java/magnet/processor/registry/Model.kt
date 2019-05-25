@@ -13,11 +13,4 @@ class Model private constructor() {
         val instanceType: ClassName,
         val classifier: String
     )
-
-    class ScopeFactory(
-        val factoryClass: ClassName,
-        val instanceType: ClassName
-    )
-
 }
-

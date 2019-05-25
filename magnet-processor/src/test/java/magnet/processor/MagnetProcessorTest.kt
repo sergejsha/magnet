@@ -136,7 +136,6 @@ class MagnetProcessorTest {
 
         assertThat(compilation).succeeded()
         com.google.common.truth.Truth.assertThat(compilation.generatedFiles().size).isEqualTo(2)
-
     }
 
     @Test
@@ -156,7 +155,6 @@ class MagnetProcessorTest {
         assertThat(compilation)
             .generatedSourceFile("app/extension/HomePageWithClassifierParamsMagnetFactory")
             .hasSourceEquivalentTo(withResource("generated/HomePageWithClassifierParamsMagnetFactory.java"))
-
     }
 
     @Test
@@ -175,7 +173,6 @@ class MagnetProcessorTest {
         assertThat(compilation)
             .generatedSourceFile("app/extension/HomePageWithManyParamsMagnetFactory")
             .hasSourceEquivalentTo(withResource("generated/HomePageWithManyParamsMagnetFactory.java"))
-
     }
 
     @Test
@@ -194,7 +191,6 @@ class MagnetProcessorTest {
         assertThat(compilation)
             .generatedSourceFile("app/extension/HomePageWithManyParameterizedParamsMagnetFactory")
             .hasSourceEquivalentTo(withResource("generated/HomePageWithManyParameterizedParamsMagnetFactory.java"))
-
     }
 
     @Test
@@ -213,7 +209,6 @@ class MagnetProcessorTest {
         assertThat(compilation)
             .generatedSourceFile("app/extension/HomePageWithManyParameterizedWildcardOutParamsMagnetFactory")
             .hasSourceEquivalentTo(withResource("generated/HomePageWithManyParameterizedWildcardOutParamsMagnetFactory.java"))
-
     }
 
     @Test
@@ -232,7 +227,6 @@ class MagnetProcessorTest {
         assertThat(compilation)
             .generatedSourceFile("app/extension/HomePageWithManyParameterizedWildcardInParamsMagnetFactory")
             .hasSourceEquivalentTo(withResource("generated/HomePageWithManyParameterizedWildcardInParamsMagnetFactory.java"))
-
     }
 
     @Test
@@ -253,7 +247,6 @@ class MagnetProcessorTest {
         assertThat(compilation)
             .generatedSourceFile("app/extension/HomePageWithManyParameterizedWildcardKnownParamsMagnetFactory")
             .hasSourceEquivalentTo(withResource("generated/HomePageWithManyParameterizedWildcardKnownParamsMagnetFactory.java"))
-
     }
 
     @Test
@@ -272,7 +265,6 @@ class MagnetProcessorTest {
         assertThat(compilation)
             .generatedSourceFile("app/extension/HomePageWithManyWildcardParamsMagnetFactory")
             .hasSourceEquivalentTo(withResource("generated/HomePageWithManyWildcardParamsMagnetFactory.java"))
-
     }
 
     @Test
@@ -292,7 +284,6 @@ class MagnetProcessorTest {
         assertThat(compilation)
             .generatedSourceFile("app/extension/utils/HomePageWithStaticConstructorSingleCreateRepositoriesMagnetFactory")
             .hasSourceEquivalentTo(withResource("generated/HomePageWithStaticConstructorSingleCreateRepositoriesMagnetFactory.java"))
-
     }
 
     @Test
@@ -692,7 +683,6 @@ class MagnetProcessorTest {
 
         assertThat(compilation).succeededWithoutWarnings()
         com.google.common.truth.Truth.assertThat(compilation.generatedFiles().size).isEqualTo(4)
-
     }
 
     @Test
@@ -709,7 +699,6 @@ class MagnetProcessorTest {
         assertThat(compilation)
             .generatedSourceFile("app/extension/ExecutorImplMagnetFactory")
             .hasSourceEquivalentTo(withResource("generated/ForInterfaceWithGenericType_ExecutorMagnetFactory.java"))
-
     }
 
     @Test
@@ -727,7 +716,6 @@ class MagnetProcessorTest {
         assertThat(compilation)
             .generatedSourceFile("app/extension/ExecutorMasterMagnetFactory")
             .hasSourceEquivalentTo(withResource("generated/DependentOnInterfaceWithGenericType_ExecutorMagnetFactory.java"))
-
     }
 
     @Test
@@ -866,5 +854,4 @@ class MagnetProcessorTest {
     private fun withResource(name: String): JavaFileObject {
         return JavaFileObjects.forResource(javaClass.simpleName + '/' + name)
     }
-
 }

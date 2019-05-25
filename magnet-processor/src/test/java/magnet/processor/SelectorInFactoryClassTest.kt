@@ -123,5 +123,4 @@ class SelectorInFactoryClassTest {
 
     private fun withResource(name: String): JavaFileObject =
         JavaFileObjects.forResource(javaClass.simpleName + '/' + name)
-
 }

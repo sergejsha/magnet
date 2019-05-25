@@ -448,7 +448,6 @@ private inline fun VariableElement.annotations(block: (Cardinality, String) -> U
             declaredClassifier?.let {
                 classifier = it.removeSurrounding("\"", "\"")
             }
-
         } else {
             val annotationType = annotationMirror.annotationType.toString()
             if (annotationType.endsWith(CLASS_NULLABLE)) {
@@ -459,8 +458,8 @@ private inline fun VariableElement.annotations(block: (Cardinality, String) -> U
     block(cardinality, classifier)
 }
 
-internal class TypesAttrExtractor(private val elements: Elements)
-    : SimpleAnnotationValueVisitor6<Void?, Void>() {
+internal class TypesAttrExtractor(private val elements: Elements) :
+    SimpleAnnotationValueVisitor6<Void?, Void>() {
 
     private val extractedTypes = mutableListOf<String>()
 
