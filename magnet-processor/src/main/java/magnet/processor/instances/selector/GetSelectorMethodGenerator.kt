@@ -55,5 +55,4 @@ internal class GetSelectorMethodGenerator : AspectGenerator {
             .initializer(checkNotNull(constantInitializer).build())
             .build()
     }
-
 }

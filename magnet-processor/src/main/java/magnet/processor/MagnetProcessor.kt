@@ -77,7 +77,6 @@ class MagnetProcessor : AbstractProcessor() {
             Registry::class.java.name
         )
     }
-
 }
 
 class MagnetProcessorEnv(
@@ -111,5 +110,4 @@ class MagnetProcessorEnv(
                 " Message: ${e.message ?: "none."}"
         )
     }
-
 }

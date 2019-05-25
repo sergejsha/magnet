@@ -87,5 +87,4 @@ class SiblingTypesTest {
 
     private fun withResource(name: String): JavaFileObject =
         JavaFileObjects.forResource(javaClass.simpleName + '/' + name)
-
 }

@@ -16,5 +16,4 @@ internal class DisposerAnnotationValidator : AnnotationValidator {
             )
         }
     }
-
 }

@@ -13,11 +13,11 @@ class SelectorAttributeParser : AttributeParser<String> {
         if (selector.isEmpty()) return null
 
         val parsedSelector = selector.split(DELIMITER)
-        var isSelectorInvalid: Boolean = parsedSelector.size < 4
-            || parsedSelector[0].isEmpty()
-            || parsedSelector[1].isEmpty()
-            || parsedSelector[2] !in OPERATORS
-            || parsedSelector[3].isEmpty()
+        var isSelectorInvalid: Boolean = parsedSelector.size < 4 ||
+            parsedSelector[0].isEmpty() ||
+            parsedSelector[1].isEmpty() ||
+            parsedSelector[2] !in OPERATORS ||
+            parsedSelector[3].isEmpty()
 
         if (!isSelectorInvalid) {
             isSelectorInvalid = when (parsedSelector[2]) {
@@ -47,5 +47,4 @@ class SelectorAttributeParser : AttributeParser<String> {
         private val DELIMITER = Regex("[?!\\s|.]+")
         private val OPERATORS = arrayListOf(">", "<", ">=", "<=", "==", "!=", "in", "!in")
     }
-
 }

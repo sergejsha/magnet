@@ -38,12 +38,14 @@ class RegistryParser(
         )
     }
 
-    private inline fun AnnotatedConstruct.annotationValues(block: (
-        factoryType: ClassName,
-        factoryClass: ClassName,
-        instanceType: ClassName,
-        classifier: String
-    ) -> Unit) {
+    private inline fun AnnotatedConstruct.annotationValues(
+        block: (
+            factoryType: ClassName,
+            factoryClass: ClassName,
+            instanceType: ClassName,
+            classifier: String
+        ) -> Unit
+    ) {
 
         var factoryType: TypeElement? = null
         var factoryClass: TypeElement? = null
@@ -73,7 +75,6 @@ class RegistryParser(
             requireNotNull(classifier)
         )
     }
-
 }
 
 private fun ClassName.isOfType(type: Class<*>): Boolean =

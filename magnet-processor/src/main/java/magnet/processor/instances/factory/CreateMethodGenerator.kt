@@ -71,7 +71,6 @@ interface CreateMethodGenerator {
         }
         return this
     }
-
 }
 
 private val Expression.Getter.getterName: String

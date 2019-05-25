@@ -161,5 +161,4 @@ class FactoryTypeCodeGenerator : FactoryTypeVisitor, CodeGenerator {
         factoryType.accept(this)
         return CodeWriter(this.factoryClassName!!.packageName(), factoryTypeSpec!!)
     }
-
 }

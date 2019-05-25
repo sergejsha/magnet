@@ -89,8 +89,8 @@ internal class FactoryFromClassAnnotationParser(
         val constructors = ElementFilter
             .constructorsIn(element.enclosedElements)
             .filterNot {
-                it.modifiers.contains(Modifier.PRIVATE)
-                    || it.modifiers.contains(Modifier.PROTECTED)
+                it.modifiers.contains(Modifier.PRIVATE) ||
+                    it.modifiers.contains(Modifier.PROTECTED)
             }
 
         val methodMeta: MethodMeta? = element

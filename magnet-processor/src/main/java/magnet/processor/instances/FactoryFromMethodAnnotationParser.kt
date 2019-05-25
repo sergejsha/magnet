@@ -141,7 +141,6 @@ internal class FactoryFromMethodAnnotationParser(
             )
         }
     }
-
 }
 
 private fun Element.getTopmostTypeElement(): TypeElement {

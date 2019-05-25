@@ -32,5 +32,4 @@ class CommonModel private constructor() {
         object Optional : Cardinality()
         object Many : Cardinality()
     }
-
 }

@@ -41,8 +41,8 @@ class SectionsCreatorVisitor : InstVisitor {
         }
 
         currentRange?.let {
-            if (it.type == inst.type
-                && it.classifier == inst.classifier) {
+            if (it.type == inst.type &&
+                it.classifier == inst.classifier) {
                 it.impls.add(inst)
                 return
             }
@@ -70,5 +70,4 @@ class SectionsCreatorVisitor : InstVisitor {
         }
         return 0
     }
-
 }

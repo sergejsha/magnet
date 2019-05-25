@@ -29,7 +29,6 @@ class RegistryProcessor(
 
     private val registryParser by lazy { RegistryParser(env.annotation) }
     private val magnetIndexerGenerator by lazy { RegistryGenerator() }
-
     private var generateRegistryOnNextRound = false
 
     fun process(roundEnv: RoundEnvironment): Boolean {

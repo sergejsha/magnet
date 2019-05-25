@@ -25,7 +25,6 @@ class InstanceIndexProcessorTest {
         CompilationSubject.assertThat(compilation)
             .generatedSourceFile("magnet.index/app_test_Implementation1MagnetFactory")
             .hasSourceEquivalentTo(withResource("generated/app_test_Implementation1MagnetFactory.java"))
-
     }
 
     @Test
@@ -41,8 +40,5 @@ class InstanceIndexProcessorTest {
         CompilationSubject.assertThat(compilation)
             .generatedSourceFile("magnet.index/app_test_Implementation2MagnetFactory")
             .hasSourceEquivalentTo(withResource("generated/app_test_Implementation2MagnetFactory.java"))
-
     }
-
-
 }

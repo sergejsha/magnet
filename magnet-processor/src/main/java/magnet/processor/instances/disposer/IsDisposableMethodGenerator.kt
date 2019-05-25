@@ -23,5 +23,4 @@ internal class IsDisposableMethodGenerator {
     fun generate(typeBuilder: TypeSpec.Builder) {
         methodBuilder?.let { typeBuilder.addMethod(it.build()) }
     }
-
 }

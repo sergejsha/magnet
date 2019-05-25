@@ -24,7 +24,6 @@ class MagnetProcessorFactoryNamesTest {
         CompilationSubject.assertThat(compilation)
             .generatedSourceFile("test/Delegate1MagnetFactory")
             .hasSourceEquivalentTo(withResource("generated/Delegate1MagnetFactory.java"))
-
     }
 
     @Test
@@ -40,7 +39,5 @@ class MagnetProcessorFactoryNamesTest {
         CompilationSubject.assertThat(compilation)
             .generatedSourceFile("test/Interface1DelegateMagnetFactory")
             .hasSourceEquivalentTo(withResource("generated/Interface1DelegateMagnetFactory.java"))
-
     }
-
 }
