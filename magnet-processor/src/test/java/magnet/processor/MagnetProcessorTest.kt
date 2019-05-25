@@ -366,6 +366,19 @@ class MagnetProcessorTest {
     }
 
     @Test
+    fun generateFactory_Lazy_Constructor_OptionalParameter_Wildcard() {
+        val root = "Lazy_Constructor_OptionalParameter_Wildcard"
+        val compilation = Compiler.javac()
+            .withProcessors(MagnetProcessor())
+            .compile(withResource("$root/UnderTest.java"))
+
+        assertThat(compilation).succeededWithoutWarnings()
+        assertThat(compilation)
+            .generatedSourceFile("app/UnderTestMagnetFactory")
+            .hasSourceEquivalentTo(withResource("$root/expected/UnderTestMagnetFactory.java"))
+    }
+
+    @Test
     fun generateFactory_Lazy_Constructor_SingleParameter() {
 
         val compilation = Compiler.javac()
@@ -379,6 +392,19 @@ class MagnetProcessorTest {
     }
 
     @Test
+    fun generateFactory_Lazy_Constructor_SingleParameter_Wildcard() {
+        val root = "Lazy_Constructor_SingleParameter_Wildcard"
+        val compilation = Compiler.javac()
+            .withProcessors(MagnetProcessor())
+            .compile(withResource("$root/UnderTest.java"))
+
+        assertThat(compilation).succeededWithoutWarnings()
+        assertThat(compilation)
+            .generatedSourceFile("app/UnderTestMagnetFactory")
+            .hasSourceEquivalentTo(withResource("$root/expected/UnderTestMagnetFactory.java"))
+    }
+
+    @Test
     fun generateFactory_Lazy_Constructor_ManyParameter() {
 
         val compilation = Compiler.javac()
@@ -389,6 +415,19 @@ class MagnetProcessorTest {
         assertThat(compilation)
             .generatedSourceFile("app/UnderTestMagnetFactory")
             .hasSourceEquivalentTo(withResource("Lazy_Constructor_ManyParameter/expected/UnderTestMagnetFactory.java"))
+    }
+
+    @Test
+    fun generateFactory_Lazy_Constructor_ManyParameter_Wildcard() {
+        val root = "Lazy_Constructor_ManyParameter_Wildcard"
+        val compilation = Compiler.javac()
+            .withProcessors(MagnetProcessor())
+            .compile(withResource("$root/UnderTest.java"))
+
+        assertThat(compilation).succeededWithoutWarnings()
+        assertThat(compilation)
+            .generatedSourceFile("app/UnderTestMagnetFactory")
+            .hasSourceEquivalentTo(withResource("$root/expected/UnderTestMagnetFactory.java"))
     }
 
     @Test
@@ -424,6 +463,19 @@ class MagnetProcessorTest {
         assertThat(compilation)
             .generatedSourceFile("app/UnderTestProvideUnderTestDepMagnetFactory")
             .hasSourceEquivalentTo(withResource("Lazy_Method_SingleParameter/expected/UnderTestProvideUnderTestDepMagnetFactory.java"))
+    }
+
+    @Test
+    fun generateFactory_Lazy_Method_SingleParameter_Wildcard() {
+        val root = "Lazy_Method_SingleParameter_Wildcard"
+        val compilation = Compiler.javac()
+            .withProcessors(MagnetProcessor())
+            .compile(withResource("$root/UnderTest.java"))
+
+        assertThat(compilation).succeededWithoutWarnings()
+        assertThat(compilation)
+            .generatedSourceFile("app/UnderTestProvideUnderTestDepMagnetFactory")
+            .hasSourceEquivalentTo(withResource("$root/expected/UnderTestProvideUnderTestDepMagnetFactory.java"))
     }
 
     @Test
@@ -487,6 +539,19 @@ class MagnetProcessorTest {
         assertThat(compilation)
             .generatedSourceFile("app/UnderTestProvideUnderTestDepMagnetFactory")
             .hasSourceEquivalentTo(withResource("Lazy_Method_OptionalParameter/expected/UnderTestProvideUnderTestDepMagnetFactory.java"))
+    }
+
+    @Test
+    fun generateFactory_Lazy_Method_OptionalParameter_Wildcard() {
+        val root = "Lazy_Method_OptionalParameter_Wildcard"
+        val compilation = Compiler.javac()
+            .withProcessors(MagnetProcessor())
+            .compile(withResource("$root/UnderTest.java"))
+
+        assertThat(compilation).succeededWithoutWarnings()
+        assertThat(compilation)
+            .generatedSourceFile("app/UnderTestProvideUnderTestDepMagnetFactory")
+            .hasSourceEquivalentTo(withResource("$root/expected/UnderTestProvideUnderTestDepMagnetFactory.java"))
     }
 
     @Test
