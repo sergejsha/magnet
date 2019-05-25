@@ -1,4 +1,5 @@
 [![Build Status](https://travis-ci.org/beworker/magnet.svg?branch=master)](https://travis-ci.org/beworker/magnet)
+![](https://img.shields.io/badge/production-ready-brightgreen.svg)
 [![Kotlin version badge](https://img.shields.io/badge/kotlin-1.3.30-blue.svg)](http://kotlinlang.org/)
 [![Maven Central](http://img.shields.io/maven-central/v/de.halfbit/magnet.svg)](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22de.halfbit%22%20a%3A%22magnet%22)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](http://www.apache.org/licenses/LICENSE-2.0)
@@ -88,17 +89,23 @@ The monitor should be implemented for [Stetho](https://github.com/facebook/steth
 
 Kotlin
 ```gradle
+repositories {
+    mavenCentral()
+}
 dependencies {
-    api 'de.halfbit:magnet-kotlin:3.1'
-    kapt 'de.halfbit:magnet-processor:3.1'
+    api 'de.halfbit:magnet-kotlin:<version>'
+    kapt 'de.halfbit:magnet-processor:<version>'
 }
 ```
 
 Java
 ```gradle
+repositories {
+    mavenCentral()
+}
 dependencies {
-    api 'de.halfbit:magnet:3.1'
-    annotationProcessor 'de.halfbit:magnet-processor:3.1'
+    api 'de.halfbit:magnet:<version>'
+    annotationProcessor 'de.halfbit:magnet-processor:<version>'
 }
 ```
 
