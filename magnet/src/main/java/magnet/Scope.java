@@ -16,6 +16,7 @@
 
 package magnet;
 
+import magnet.diagnostic.ScopeVisitor;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -122,4 +123,6 @@ public interface Scope {
     /** Disposes this and all children scopes. Notifies instances with {@link Instance#disposer()}. */
     void dispose();
 
+    /** Visits all instances and child scopes of this scope */
+    void accept(ScopeVisitor visitor);
 }

@@ -20,6 +20,7 @@ import magnet.Classifier;
 import magnet.Scope;
 import magnet.Scoping;
 import magnet.SelectorFilter;
+import magnet.diagnostic.ScopeVisitor;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -392,6 +393,36 @@ final class MagnetScope implements Scope, FactoryFilter, InstanceBucket.OnInstan
             return type.getName();
         }
         return classifier + "@" + type.getName();
+    }
+
+    @Override
+    public void accept(ScopeVisitor visitor) {
+        acceptActual(visitor);
+    }
+
+    private boolean acceptActual(ScopeVisitor visitor) {
+        if (disposed) return true;
+
+        int visit = visitor.onEnterScope(this, parent);
+        if ((visit & ScopeVisitor.VISIT_INSTANCES) > 0) {
+            Collection<InstanceBucket> buckets = this.instanceBuckets.values();
+            for (InstanceBucket bucket : buckets) {
+                if (!bucket.accept(visitor)) {
+                    break;
+                }
+            }
+        }
+
+        if ((visit & ScopeVisitor.VISIT_SUBSCOPES) > 0) {
+            WeakScopeReference scopeRef = this.childrenScopes;
+            while (scopeRef != null) {
+                MagnetScope scope = scopeRef.get();
+                if (scope != null && !scope.acceptActual(visitor)) break;
+                scopeRef = scopeRef.next;
+            }
+        }
+
+        return visitor.onExitScope(this);
     }
 
     private final static class InstantiationContext {

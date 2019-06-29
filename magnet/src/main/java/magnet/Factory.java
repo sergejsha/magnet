@@ -33,6 +33,7 @@ public interface Factory<T> {
 
     /** Instantiator creates new instance of given type using {@code new} operator. */
     interface Instantiator<T> {
+        @NotNull
         T instantiate(Scope scope);
     }
 

@@ -1,6 +1,7 @@
 package magnet.internal;
 
 import magnet.Scope;
+import magnet.diagnostic.ScopeVisitor;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -74,6 +75,10 @@ public class InstrumentedInstanceScope implements Scope, FactoryFilter {
 
     @Override public void dispose() {
         scope.dispose();
+    }
+
+    @Override public void accept(ScopeVisitor visitor) {
+        scope.accept(visitor);
     }
 
     @Override public boolean filter(InstanceFactory factory) { return scope.filter(factory); }

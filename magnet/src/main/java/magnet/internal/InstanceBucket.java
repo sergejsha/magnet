@@ -16,13 +16,12 @@
 
 package magnet.internal;
 
+import magnet.Scoping;
+import magnet.diagnostic.ScopeVisitor;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 /* Subject to change. For internal use only. */
 @SuppressWarnings("unchecked") final class InstanceBucket<T> {
@@ -128,6 +127,14 @@ import java.util.List;
         return single;
     }
 
+    public boolean accept(ScopeVisitor visitor) {
+        if (instance instanceof SingleObjectInstance) {
+            return ((SingleObjectInstance) instance).accept(visitor);
+        } else {
+            return ((MultiObjectInstance) instance).accept(visitor);
+        }
+    }
+
     interface Instance<T> {
         boolean hasObjectWithFactory(InstanceFactory<T> factory);
     }
@@ -146,9 +153,17 @@ import java.util.List;
             this.object = object;
             this.classifier = classifier;
         }
+
+        public boolean accept(ScopeVisitor visitor) {
+            if (this instanceof InjectedInstance) {
+                return visitor.onInstance((InjectedInstance) this);
+            } else {
+                return visitor.onInstance((BoundInstance) this);
+            }
+        }
     }
 
-    static class BoundInstance<T> extends SingleObjectInstance<T> {
+    static class BoundInstance<T> extends SingleObjectInstance<T> implements magnet.diagnostic.Instance {
         BoundInstance(
             @NotNull Class<T> objectType,
             @NotNull T object,
@@ -160,9 +175,29 @@ import java.util.List;
         @Override public boolean hasObjectWithFactory(InstanceFactory<T> factory) {
             return factory == null;
         }
+
+        @Override public @NotNull Scoping getScoping() {
+            return Scoping.DIRECT;
+        }
+
+        @Override public @NotNull String getClassifier() {
+            return classifier;
+        }
+
+        @Override public @NotNull Class<?> getType() {
+            return objectType;
+        }
+
+        @Override public @NotNull Object getValue() {
+            return object;
+        }
+
+        @Override public @NotNull Provision getProvision() {
+            return Provision.BOUND;
+        }
     }
 
-    static class InjectedInstance<T> extends SingleObjectInstance<T> {
+    static class InjectedInstance<T> extends SingleObjectInstance<T> implements magnet.diagnostic.Instance {
         @NotNull final InstanceFactory<T> factory;
 
         InjectedInstance(
@@ -177,6 +212,26 @@ import java.util.List;
 
         @Override public boolean hasObjectWithFactory(InstanceFactory<T> factory) {
             return factory == this.factory;
+        }
+
+        @Override public @NotNull Scoping getScoping() {
+            return factory.getScoping();
+        }
+
+        @Override public @NotNull String getClassifier() {
+            return classifier;
+        }
+
+        @Override public @NotNull Class<?> getType() {
+            return objectType;
+        }
+
+        @Override public @NotNull Object getValue() {
+            return object;
+        }
+
+        @Override public @NotNull Provision getProvision() {
+            return Provision.INJECTED;
         }
     }
 
@@ -217,6 +272,16 @@ import java.util.List;
         @Override public boolean hasObjectWithFactory(InstanceFactory<T> factory) {
             //noinspection SuspiciousMethodCalls
             return instances.containsKey(factory.getClass());
+        }
+
+        public boolean accept(ScopeVisitor visitor) {
+            Collection<SingleObjectInstance<T>> singleObjectInstances = instances.values();
+            boolean takeNext = true;
+            for (SingleObjectInstance<T> instance : singleObjectInstances) {
+                takeNext = instance.accept(visitor);
+                if (!takeNext) break;
+            }
+            return takeNext;
         }
     }
 
