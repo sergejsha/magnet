@@ -17,7 +17,7 @@
 package magnet.internal;
 
 import magnet.Scoping;
-import magnet.diagnostic.ScopeVisitor;
+import magnet.inspection.ScopeVisitor;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -163,7 +163,7 @@ import java.util.*;
         }
     }
 
-    static class BoundInstance<T> extends SingleObjectInstance<T> implements magnet.diagnostic.Instance {
+    static class BoundInstance<T> extends SingleObjectInstance<T> implements magnet.inspection.Instance {
         BoundInstance(
             @NotNull Class<T> objectType,
             @NotNull T object,
@@ -188,7 +188,7 @@ import java.util.*;
             return objectType;
         }
 
-        @Override public @NotNull Object getValue() {
+        @Override public @NotNull Object getObject() {
             return object;
         }
 
@@ -197,7 +197,7 @@ import java.util.*;
         }
     }
 
-    static class InjectedInstance<T> extends SingleObjectInstance<T> implements magnet.diagnostic.Instance {
+    static class InjectedInstance<T> extends SingleObjectInstance<T> implements magnet.inspection.Instance {
         @NotNull final InstanceFactory<T> factory;
 
         InjectedInstance(
@@ -226,7 +226,7 @@ import java.util.*;
             return objectType;
         }
 
-        @Override public @NotNull Object getValue() {
+        @Override public @NotNull Object getObject() {
             return object;
         }
 

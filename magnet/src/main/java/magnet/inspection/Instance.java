@@ -1,4 +1,4 @@
-package magnet.diagnostic;
+package magnet.inspection;
 
 import magnet.Scoping;
 import org.jetbrains.annotations.NotNull;
@@ -17,7 +17,7 @@ public interface Instance {
     Class<?> getType();
 
     @NotNull
-    Object getValue();
+    Object getObject();
 
     @NotNull
     Provision getProvision();

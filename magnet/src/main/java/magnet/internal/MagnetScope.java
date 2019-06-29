@@ -20,7 +20,7 @@ import magnet.Classifier;
 import magnet.Scope;
 import magnet.Scoping;
 import magnet.SelectorFilter;
-import magnet.diagnostic.ScopeVisitor;
+import magnet.inspection.ScopeVisitor;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 

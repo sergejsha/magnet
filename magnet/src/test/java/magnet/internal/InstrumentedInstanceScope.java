@@ -1,7 +1,7 @@
 package magnet.internal;
 
 import magnet.Scope;
-import magnet.diagnostic.ScopeVisitor;
+import magnet.inspection.ScopeVisitor;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 

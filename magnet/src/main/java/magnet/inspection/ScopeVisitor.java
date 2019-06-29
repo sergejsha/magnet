@@ -1,4 +1,4 @@
-package magnet.diagnostic;
+package magnet.inspection;
 
 import magnet.Scope;
 import org.jetbrains.annotations.NotNull;
