@@ -14,11 +14,11 @@ class ScopeWriter(private val writer: PrintStream) : ScopeVisitor {
 
     override fun onEnterScope(scope: Scope, parent: Scope?): Boolean {
         if (currentScope != null) {
-            val indentScope = "   ".repeat(level)
+            val indentScope = "   ".repeat(level - 1)
             writer.println("$indentScope [$level] $currentScope")
 
             instances.sortWith(compareBy({ it.provision }, { it.scoping }, { it.type.name }))
-            val indentInstance = "   ".repeat(level + 1)
+            val indentInstance = "   ".repeat(level)
             for (instance in instances) {
                 val line = when (instance.provision) {
                     Instance.Provision.BOUND -> instance.renderBound()
