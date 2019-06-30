@@ -32,17 +32,17 @@ import static com.google.common.truth.Truth.assertThat;
 @RunWith(JUnit4.class)
 public class MagnetScopingTopmostDependsOnUnscopedTest {
 
-    private InstrumentedInstanceScope scope1;
-    private InstrumentedInstanceScope scope2;
-    private InstrumentedInstanceScope scope3;
+    private InstrumentedScope scope1;
+    private InstrumentedScope scope2;
+    private InstrumentedScope scope3;
 
     @Before
     public void before() {
         InstanceManager instanceManager = new StubInstanceManager();
 
-        scope1 = new InstrumentedInstanceScope(new MagnetScope(null, instanceManager));
-        scope2 = (InstrumentedInstanceScope) scope1.createSubscope();
-        scope3 = (InstrumentedInstanceScope) scope2.createSubscope();
+        scope1 = new InstrumentedScope(new MagnetScope(null, instanceManager));
+        scope2 = (InstrumentedScope) scope1.createSubscope();
+        scope3 = (InstrumentedScope) scope2.createSubscope();
     }
 
     private interface MenuItem {}

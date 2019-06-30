@@ -32,9 +32,9 @@ import static com.google.common.truth.Truth.assertThat;
 @RunWith(JUnit4.class)
 public class MagnetScope_ManyInstancesInMultipleScopesTest {
 
-    private InstrumentedInstanceScope scope1;
-    private InstrumentedInstanceScope scope2;
-    private InstrumentedInstanceScope scope3;
+    private InstrumentedScope scope1;
+    private InstrumentedScope scope2;
+    private InstrumentedScope scope3;
 
     private InstanceImpl1Factory factory1 = new InstanceImpl1Factory();
     private InstanceImpl2Factory factory2 = new InstanceImpl2Factory();
@@ -42,13 +42,13 @@ public class MagnetScope_ManyInstancesInMultipleScopesTest {
 
     @Before
     public void before() {
-        scope1 = new InstrumentedInstanceScope(new MagnetScope(null, new StubInstanceManager()));
+        scope1 = new InstrumentedScope(new MagnetScope(null, new StubInstanceManager()));
         scope1.instrumentObjectIntoScope(factory1, InstanceType.class, new InstanceImpl1(), Classifier.NONE);
 
-        scope2 = (InstrumentedInstanceScope) scope1.createSubscope();
+        scope2 = (InstrumentedScope) scope1.createSubscope();
         scope2.instrumentObjectIntoScope(factory2, InstanceType.class, new InstanceImpl2(), Classifier.NONE);
 
-        scope3 = (InstrumentedInstanceScope) scope2.createSubscope();
+        scope3 = (InstrumentedScope) scope2.createSubscope();
     }
 
     @Test

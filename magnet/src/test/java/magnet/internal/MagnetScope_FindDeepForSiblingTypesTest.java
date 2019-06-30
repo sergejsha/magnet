@@ -64,13 +64,13 @@ public class MagnetScope_FindDeepForSiblingTypesTest {
     @Test
     public void getMany_collectsAlsoSiblingInstancesFromScope() {
         // given
-        InstrumentedInstanceScope scope0 = new InstrumentedInstanceScope(
+        InstrumentedScope scope0 = new InstrumentedScope(
             new MagnetScope(null, instanceManager)
         );
         scope0.instrumentObjectIntoScope(factory21, Interface.class, instance2, Classifier.NONE);
         scope0.instrumentObjectIntoScope(factory22, SiblingInterface.class, instance2, Classifier.NONE);
 
-        InstrumentedInstanceScope scope1 = (InstrumentedInstanceScope) scope0.createSubscope();
+        InstrumentedScope scope1 = (InstrumentedScope) scope0.createSubscope();
         scope1.instrumentObjectIntoScope(factory1, Interface.class, instance1, Classifier.NONE);
 
         // when

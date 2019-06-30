@@ -33,15 +33,15 @@ import static com.google.common.truth.Truth.assertThat;
 @RunWith(JUnit4.class)
 public class MagnetScope_GetManyTest {
 
-    private InstrumentedInstanceScope scope1;
-    private InstrumentedInstanceScope scope2;
+    private InstrumentedScope scope1;
+    private InstrumentedScope scope2;
 
     @Before
     public void before() {
-        scope1 = new InstrumentedInstanceScope(
+        scope1 = new InstrumentedScope(
             new MagnetScope(null, new StubInstanceManager()));
 
-        scope2 = (InstrumentedInstanceScope) scope1
+        scope2 = (InstrumentedScope) scope1
             .createSubscope()
             .bind(Dependency2.class, new Dependency2());
     }
