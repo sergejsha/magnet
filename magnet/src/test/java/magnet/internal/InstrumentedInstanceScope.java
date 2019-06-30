@@ -77,8 +77,8 @@ public class InstrumentedInstanceScope implements Scope, FactoryFilter {
         scope.dispose();
     }
 
-    @Override public void accept(ScopeVisitor visitor) {
-        scope.accept(visitor);
+    @Override public void accept(ScopeVisitor visitor, int depth) {
+        scope.accept(visitor, depth);
     }
 
     @Override public boolean filter(InstanceFactory factory) { return scope.filter(factory); }

@@ -123,6 +123,6 @@ public interface Scope {
     /** Disposes this and all children scopes. Notifies instances with {@link Instance#disposer()}. */
     void dispose();
 
-    /** Visits all instances and child scopes of this scope */
-    void accept(ScopeVisitor visitor);
+    /** Visits all instances and child scopes of given depth.*/
+    void accept(ScopeVisitor visitor, int depth);
 }

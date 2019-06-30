@@ -396,15 +396,14 @@ final class MagnetScope implements Scope, FactoryFilter, InstanceBucket.OnInstan
     }
 
     @Override
-    public void accept(ScopeVisitor visitor) {
-        acceptActual(visitor);
+    public void accept(ScopeVisitor visitor, int depth) {
+        acceptActual(visitor, depth, 0);
     }
 
-    private boolean acceptActual(ScopeVisitor visitor) {
-        if (disposed) return true;
+    private void acceptActual(ScopeVisitor visitor, int depth, int level) {
+        if (disposed) return;
 
-        int visit = visitor.onEnterScope(this, parent);
-        if ((visit & ScopeVisitor.VISIT_INSTANCES) > 0) {
+        if (visitor.onEnterScope(this, parent)) {
             Collection<InstanceBucket> buckets = this.instanceBuckets.values();
             for (InstanceBucket bucket : buckets) {
                 if (!bucket.accept(visitor)) {
@@ -413,16 +412,16 @@ final class MagnetScope implements Scope, FactoryFilter, InstanceBucket.OnInstan
             }
         }
 
-        if ((visit & ScopeVisitor.VISIT_SUBSCOPES) > 0) {
+        if (level < depth) {
             WeakScopeReference scopeRef = this.childrenScopes;
             while (scopeRef != null) {
                 MagnetScope scope = scopeRef.get();
-                if (scope != null && !scope.acceptActual(visitor)) break;
+                if (scope != null) scope.acceptActual(visitor, depth, level + 1);
                 scopeRef = scopeRef.next;
             }
         }
 
-        return visitor.onExitScope(this);
+        visitor.onExitScope(this);
     }
 
     private final static class InstantiationContext {
@@ -456,7 +455,7 @@ final class MagnetScope implements Scope, FactoryFilter, InstanceBucket.OnInstan
 
             Instantiation[] objects = instantiations.toArray(new Instantiation[0]);
             StringBuilder builder = new StringBuilder()
-                .append("Magnet failed because of unresolved circular dependency: ");
+                .append("Dependency injection failed because of unresolved circular dependency: ");
             for (int i = objects.length; i-- > 0; ) {
                 builder.append(objects[i].key).append(" -> ");
             }
