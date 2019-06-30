@@ -17,7 +17,7 @@ public interface Instance {
     Class<?> getType();
 
     @NotNull
-    Object getObject();
+    Object getValue();
 
     @NotNull
     Provision getProvision();

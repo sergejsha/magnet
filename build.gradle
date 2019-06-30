@@ -45,6 +45,7 @@ ext.deps.javapoet = 'com.squareup:javapoet:1.11.1'
 ext.deps.android = 'com.google.android:android:4.1.1.4'
 ext.deps.rxandroid = 'io.reactivex.rxjava2:rxandroid:2.1.1'
 ext.deps.leakcanary = 'com.squareup.leakcanary:leakcanary-android:1.6.3'
+ext.deps.stetho = 'com.facebook.stetho:stetho:1.5.1'
 ext.deps.kotlinMetadata = 'org.jetbrains.kotlinx:kotlinx-metadata-jvm:0.0.5'
 ext.deps.annotations = 'org.jetbrains:annotations:16.0.1'
 

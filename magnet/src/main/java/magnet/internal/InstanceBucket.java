@@ -188,7 +188,7 @@ import java.util.*;
             return objectType;
         }
 
-        @Override public @NotNull Object getObject() {
+        @Override public @NotNull Object getValue() {
             return object;
         }
 
@@ -226,7 +226,7 @@ import java.util.*;
             return objectType;
         }
 
-        @Override public @NotNull Object getObject() {
+        @Override public @NotNull Object getValue() {
             return object;
         }
 

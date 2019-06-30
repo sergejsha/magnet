@@ -15,7 +15,7 @@ public class OnInstance {
     public OnInstance(Instance instance) {
         this.provision = instance.getProvision();
         this.type = instance.getType();
-        this.object = instance.getObject();
+        this.object = instance.getValue();
         this.classifier = instance.getClassifier();
         this.scoping = instance.getScoping();
     }

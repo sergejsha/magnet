@@ -1,0 +1,33 @@
+apply plugin: 'com.android.library'
+apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-kapt'
+
+repositories {
+    maven { url 'https://maven.google.com' }
+}
+
+android {
+    compileSdkVersion 28
+    defaultConfig {
+        minSdkVersion 15
+        targetSdkVersion 28
+        versionCode 0
+        versionName "0"
+    }
+}
+
+dependencies {
+    compileOnly deps.android
+    compileOnly deps.stetho
+    implementation deps.kotlinjdk8
+    implementation project(':magnet')
+    kapt project(':magnet-processor')
+    api project(':magnetx-app')
+}
+
+tasks.withType(Javadoc).all {
+    excludes = ['**/*.kt']
+}
+
+apply from: rootProject.file('build-maven-push.gradle')
+
