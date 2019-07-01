@@ -21,7 +21,11 @@ import magnet.inspection.ScopeVisitor;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
 
 /* Subject to change. For internal use only. */
 @SuppressWarnings("unchecked") final class InstanceBucket<T> {

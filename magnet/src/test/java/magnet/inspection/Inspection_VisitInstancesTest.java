@@ -41,15 +41,15 @@ public class Inspection_VisitInstancesTest {
     @Before
     public void before() {
         scopeA = (InstrumentedScope) new InstrumentedScope(Magnet.createRootScope())
-            .instrumentObjectIntoScope(injectedTopMostFactory, InjectedTopMost.class, injectedTopMost, Classifier.NONE)
-            .instrumentObjectIntoScope(injectedTopMostFactory, InjectedTopMost.class, injectedTopMost, classifierA)
-            .instrumentObjectIntoScope(injectedTopMostFactory, InjectedTopMost.class, injectedTopMost, classifierB)
-            .bind(Bound.class, bound)
-            .bind(Bound.class, boundA, classifierA);
+                .instrumentObjectIntoScope(injectedTopMostFactory, InjectedTopMost.class, injectedTopMost, Classifier.NONE)
+                .instrumentObjectIntoScope(injectedTopMostFactory, InjectedTopMost.class, injectedTopMost, classifierA)
+                .instrumentObjectIntoScope(injectedTopMostFactory, InjectedTopMost.class, injectedTopMost, classifierB)
+                .bind(Bound.class, bound)
+                .bind(Bound.class, boundA, classifierA);
 
         scopeB = (InstrumentedScope) ((InstrumentedScope) scopeA.createSubscope())
-            .instrumentObjectIntoScope(injectedDirectFactory, InjectedDirect.class, injectedDirect, Classifier.NONE)
-            .bind(Bound.class, boundB, classifierB);
+                .instrumentObjectIntoScope(injectedDirectFactory, InjectedDirect.class, injectedDirect, Classifier.NONE)
+                .bind(Bound.class, boundB, classifierB);
     }
 
     @Test
@@ -57,19 +57,21 @@ public class Inspection_VisitInstancesTest {
         visitor = new ObservableScopeVisitor();
         scopeA.accept(visitor, Integer.MAX_VALUE);
 
+        assertThat(visitor.visited).hasSize(11);
+
         assertThat(visitor.visited.get(0)).isEqualTo(new OnEnterScope(scopeA.scope, null));
         assertThat(visitor.visited.subList(1, 6)).containsExactly(
-            new OnInstance(INJECTED, InjectedTopMost.class, injectedTopMost, Classifier.NONE, Scoping.TOPMOST),
-            new OnInstance(INJECTED, InjectedTopMost.class, injectedTopMost, classifierA, Scoping.TOPMOST),
-            new OnInstance(INJECTED, InjectedTopMost.class, injectedTopMost, classifierB, Scoping.TOPMOST),
-            new OnInstance(BOUND, Bound.class, bound, Classifier.NONE, Scoping.DIRECT),
-            new OnInstance(BOUND, Bound.class, boundA, classifierA, Scoping.DIRECT)
+                new OnInstance(INJECTED, InjectedTopMost.class, injectedTopMost, Classifier.NONE, Scoping.TOPMOST),
+                new OnInstance(INJECTED, InjectedTopMost.class, injectedTopMost, classifierA, Scoping.TOPMOST),
+                new OnInstance(INJECTED, InjectedTopMost.class, injectedTopMost, classifierB, Scoping.TOPMOST),
+                new OnInstance(BOUND, Bound.class, bound, Classifier.NONE, Scoping.DIRECT),
+                new OnInstance(BOUND, Bound.class, boundA, classifierA, Scoping.DIRECT)
         );
 
         assertThat(visitor.visited.get(6)).isEqualTo(new OnEnterScope(scopeB.scope, scopeA.scope));
         assertThat(visitor.visited.subList(7, 9)).containsExactly(
-            new OnInstance(INJECTED, InjectedDirect.class, injectedDirect, Classifier.NONE, Scoping.DIRECT),
-            new OnInstance(BOUND, Bound.class, boundB, classifierB, Scoping.DIRECT)
+                new OnInstance(INJECTED, InjectedDirect.class, injectedDirect, Classifier.NONE, Scoping.DIRECT),
+                new OnInstance(BOUND, Bound.class, boundB, classifierB, Scoping.DIRECT)
         );
 
         assertThat(visitor.visited.get(9)).isEqualTo(new OnExitScope(scopeB.scope));
@@ -81,13 +83,15 @@ public class Inspection_VisitInstancesTest {
         visitor = new ObservableScopeVisitor();
         scopeA.accept(visitor, 0);
 
+        assertThat(visitor.visited).hasSize(7);
+
         assertThat(visitor.visited.get(0)).isEqualTo(new OnEnterScope(scopeA.scope, null));
         assertThat(visitor.visited.subList(1, 6)).containsExactly(
-            new OnInstance(INJECTED, InjectedTopMost.class, injectedTopMost, Classifier.NONE, Scoping.TOPMOST),
-            new OnInstance(INJECTED, InjectedTopMost.class, injectedTopMost, classifierA, Scoping.TOPMOST),
-            new OnInstance(INJECTED, InjectedTopMost.class, injectedTopMost, classifierB, Scoping.TOPMOST),
-            new OnInstance(BOUND, Bound.class, bound, Classifier.NONE, Scoping.DIRECT),
-            new OnInstance(BOUND, Bound.class, boundA, classifierA, Scoping.DIRECT)
+                new OnInstance(INJECTED, InjectedTopMost.class, injectedTopMost, Classifier.NONE, Scoping.TOPMOST),
+                new OnInstance(INJECTED, InjectedTopMost.class, injectedTopMost, classifierA, Scoping.TOPMOST),
+                new OnInstance(INJECTED, InjectedTopMost.class, injectedTopMost, classifierB, Scoping.TOPMOST),
+                new OnInstance(BOUND, Bound.class, bound, Classifier.NONE, Scoping.DIRECT),
+                new OnInstance(BOUND, Bound.class, boundA, classifierA, Scoping.DIRECT)
         );
 
         assertThat(visitor.visited.get(6)).isEqualTo(new OnExitScope(scopeA.scope));
@@ -96,7 +100,8 @@ public class Inspection_VisitInstancesTest {
     @Test
     public void visitScope_onEnterScope_skipAllInstances() {
         visitor = new ObservableScopeVisitor() {
-            @Override public boolean onEnterScope(@NotNull Scope scope, @Nullable Scope parent) {
+            @Override
+            public boolean onEnterScope(@NotNull Scope scope, @Nullable Scope parent) {
                 super.onEnterScope(scope, parent);
                 return false;
             }
@@ -104,8 +109,8 @@ public class Inspection_VisitInstancesTest {
         scopeA.accept(visitor, 0);
 
         assertThat(visitor.visited).containsExactly(
-            new OnEnterScope(scopeA.scope, null),
-            new OnExitScope(scopeA.scope)
+                new OnEnterScope(scopeA.scope, null),
+                new OnExitScope(scopeA.scope)
         ).inOrder();
     }
 
@@ -113,6 +118,7 @@ public class Inspection_VisitInstancesTest {
     public void visitScope_onInstance_skipAfterSecondInstance() {
         visitor = new ObservableScopeVisitor() {
             private int count = 0;
+
             @Override
             public boolean onInstance(@NotNull Instance instance) {
                 super.onInstance(instance);
@@ -121,27 +127,38 @@ public class Inspection_VisitInstancesTest {
         };
         scopeA.accept(visitor, 0);
 
+        assertThat(visitor.visited).hasSize(6);
+
         assertThat(visitor.visited.subList(1, 3)).containsExactly(
-            new OnInstance(INJECTED, InjectedTopMost.class, injectedTopMost, classifierB, Scoping.TOPMOST),
-            new OnInstance(INJECTED, InjectedTopMost.class, injectedTopMost, classifierA, Scoping.TOPMOST)
+                new OnInstance(INJECTED, InjectedTopMost.class, injectedTopMost, classifierB, Scoping.TOPMOST),
+                new OnInstance(INJECTED, InjectedTopMost.class, injectedTopMost, classifierA, Scoping.TOPMOST)
         );
     }
 
-    private static class Bound {}
-    private static class InjectedTopMost {}
-    private static class InjectedDirect {}
+    private static class Bound {
+    }
+
+    private static class InjectedTopMost {
+    }
+
+    private static class InjectedDirect {
+    }
 
     private class InjectedTopMostFactory extends InstanceFactory<InjectedTopMost> {
-        @Override public InjectedTopMost create(Scope scope) {
+        @Override
+        public InjectedTopMost create(Scope scope) {
             return injectedTopMost;
         }
     }
+
     private class InjectedDirectFactory extends InstanceFactory<InjectedDirect> {
-        @Override public InjectedDirect create(Scope scope) {
+        @Override
+        public InjectedDirect create(Scope scope) {
             return injectedDirect;
         }
 
-        @Override public Scoping getScoping() {
+        @Override
+        public Scoping getScoping() {
             return Scoping.DIRECT;
         }
     }

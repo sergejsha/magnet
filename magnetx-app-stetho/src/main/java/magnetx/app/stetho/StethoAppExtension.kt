@@ -14,34 +14,28 @@
  * limitations under the License.
  */
 
-package magnetx
+package magnetx.app.stetho
 
 import android.app.Application
 import android.content.Context
 import com.facebook.stetho.Stetho
 import magnet.Instance
-import magnet.Scope
 import magnet.Scoping
+import magnetx.AppExtension
 
 @Instance(
     type = AppExtension::class,
     scoping = Scoping.UNSCOPED
 )
-class InspectionAppExtension(
+class StethoAppExtension(
     private val application: Application,
-    private val scope: Scope,
-    private val stethoInitializers: List<StethoInitializer>
+    private val stethoInitializers: List<Initializer>
 ) : AppExtension {
 
     override fun onCreate() {
         Stetho.initialize(
             Stetho
                 .newInitializerBuilder(application)
-                .enableDumpapp {
-                    Stetho.DefaultDumperPluginsBuilder(application)
-                        .provide(InspectionDumpPlugin(scope))
-                        .finish()
-                }
                 .also {
                     for (stethoInitializer in stethoInitializers) {
                         stethoInitializer.initialize(it, application)
@@ -50,12 +44,12 @@ class InspectionAppExtension(
                 .build()
         )
     }
-}
 
-/**
- * All provided instances of this interface will be called in order to initialize Stetho builder.
- * Implement it if you want to add stetho plugins or configuration besides magnet inspection one.
- */
-interface StethoInitializer {
-    fun initialize(builder: Stetho.InitializerBuilder, context: Context)
+    /**
+     * Implement this interface and annotate in with unscoped {@link Instance}
+     * to participate on initializing Stetho on application launch.
+     */
+    interface Initializer {
+        fun initialize(builder: Stetho.InitializerBuilder, context: Context)
+    }
 }

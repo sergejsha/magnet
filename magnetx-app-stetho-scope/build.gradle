@@ -19,10 +19,12 @@ android {
 dependencies {
     compileOnly deps.android
     compileOnly deps.stetho
-    implementation deps.kotlinjdk8
+
     implementation project(':magnet')
+    implementation project(':magnetx-app-stetho')
+
+    implementation deps.kotlinjdk8
     kapt project(':magnet-processor')
-    api project(':magnetx-app')
 }
 
 tasks.withType(Javadoc).all {

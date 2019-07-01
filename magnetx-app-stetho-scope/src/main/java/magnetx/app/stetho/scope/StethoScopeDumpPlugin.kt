@@ -1,4 +1,4 @@
-package magnetx
+package magnetx.app.stetho.scope
 
 import com.facebook.stetho.dumpapp.ArgsHelper
 import com.facebook.stetho.dumpapp.DumpUsageException
@@ -7,7 +7,7 @@ import com.facebook.stetho.dumpapp.DumperPlugin
 import magnet.Scope
 import java.io.PrintStream
 
-internal class InspectionDumpPlugin(
+internal class StethoScopeDumpPlugin(
     private val scope: Scope
 ) : DumperPlugin {
 
@@ -31,12 +31,12 @@ internal class InspectionDumpPlugin(
 
     private fun doDumpScopes(args: Iterator<String>, writer: PrintStream) {
         val depth = ArgsHelper.nextOptionalArg(args, null)?.toInt() ?: Integer.MAX_VALUE
-        scope.accept(ScopeWriter(writer), depth)
+        scope.accept(ScopeDumper(writer), depth)
     }
 
     private fun doUsage(writer: PrintStream) {
         with(writer) {
-            println("Usage: dumpapp scope <depth?>")
+            println("Usage: dumpapp scope <depth>")
             println()
         }
     }

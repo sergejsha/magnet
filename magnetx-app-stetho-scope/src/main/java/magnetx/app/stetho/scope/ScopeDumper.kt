@@ -1,4 +1,4 @@
-package magnetx
+package magnetx.app.stetho.scope
 
 import magnet.Classifier
 import magnet.Scope
@@ -6,7 +6,7 @@ import magnet.inspection.Instance
 import magnet.inspection.ScopeVisitor
 import java.io.PrintStream
 
-class ScopeWriter(private val writer: PrintStream) : ScopeVisitor {
+internal class ScopeDumper(private val writer: PrintStream) : ScopeVisitor {
 
     private val instances = mutableListOf<Instance>()
     private var currentScope: Scope? = null
@@ -44,9 +44,9 @@ class ScopeWriter(private val writer: PrintStream) : ScopeVisitor {
 }
 
 private fun Instance.renderBound(): String =
-    if (classifier == Classifier.NONE) "$provision ${type.name} $value"
-    else "$provision ${type.name}/$classifier $value"
+    if (classifier == Classifier.NONE) "$provision ${type.simpleName} $value"
+    else "$provision ${type.name}@$classifier $value"
 
 private fun Instance.renderInjected(): String =
-    if (classifier == Classifier.NONE) "$provision $scoping ${type.name} $value"
-    else "$provision $scoping ${type.name}/$classifier $value"
+    if (classifier == Classifier.NONE) "$scoping ${type.simpleName} $value"
+    else "$scoping ${type.simpleName}@$classifier $value"
