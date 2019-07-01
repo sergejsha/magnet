@@ -13,21 +13,7 @@ internal class ScopeDumper(private val writer: PrintStream) : ScopeVisitor {
     private var level = 0
 
     override fun onEnterScope(scope: Scope, parent: Scope?): Boolean {
-        if (currentScope != null) {
-            val indentScope = "   ".repeat(level - 1)
-            writer.println("$indentScope [$level] $currentScope")
-
-            instances.sortWith(compareBy({ it.provision }, { it.scoping }, { it.type.name }))
-            val indentInstance = "   ".repeat(level)
-            for (instance in instances) {
-                val line = when (instance.provision) {
-                    Instance.Provision.BOUND -> instance.renderBound()
-                    Instance.Provision.INJECTED -> instance.renderInjected()
-                }
-                writer.println("$indentInstance $line")
-            }
-            instances.clear()
-        }
+        currentScope?.let { instances.dump(it, level, writer) }
         currentScope = scope
         level++
         return true
@@ -39,8 +25,26 @@ internal class ScopeDumper(private val writer: PrintStream) : ScopeVisitor {
     }
 
     override fun onExitScope(scope: Scope) {
+        currentScope?.let { instances.dump(it, level, writer) }
+        currentScope = null
         level--
     }
+}
+
+private fun MutableList<Instance>.dump(scope: Scope, level: Int, writer: PrintStream) {
+    val indentScope = "   ".repeat(level - 1)
+    writer.println("$indentScope [$level] $scope")
+
+    sortWith(compareBy({ it.provision }, { it.scoping }, { it.type.name }))
+    val indentInstance = "   ".repeat(level)
+    for (instance in this) {
+        val line = when (instance.provision) {
+            Instance.Provision.BOUND -> instance.renderBound()
+            Instance.Provision.INJECTED -> instance.renderInjected()
+        }
+        writer.println("$indentInstance $line")
+    }
+    clear()
 }
 
 private fun Instance.renderBound(): String =
