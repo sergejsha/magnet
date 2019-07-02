@@ -119,7 +119,7 @@ public interface Scope {
     /** Creates a new child scope of this scope. */
     @NotNull Scope createSubscope();
 
-    /** Disposes this and all children scopes. Notifies instances with {@link Instance#disposer()}. */
+    /** Disposes this and all children scopes. Notifies instances with {@link magnet.Instance#disposer()}. */
     void dispose();
 
     /** Visits all instances and child scopes of given depth (use {@code Integer.MAX_VALUE} for visiting all scopes). */
