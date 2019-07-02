@@ -1,10 +1,10 @@
-package magnet.inspection;
+package magnet.internal;
 
 import magnet.Magnet;
 import magnet.Scope;
-import magnet.inspection.events.ObservableScopeVisitor;
-import magnet.inspection.events.OnEnterScope;
-import magnet.inspection.events.OnExitScope;
+import magnet.internal.events.ObservableScopeVisitor;
+import magnet.internal.events.OnEnterScope;
+import magnet.internal.events.OnExitScope;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -33,16 +33,16 @@ public class Inspection_VisitScopesTest {
     public void visitRootScope_DepthUnlimited() {
         scopeA.accept(visitor, Integer.MAX_VALUE);
         assertThat(visitor.visited).containsExactly(
-                new OnEnterScope(scopeA, null),
-                new OnEnterScope(scopeC, scopeA),
-                new OnExitScope(scopeC),
-                new OnEnterScope(scopeB, scopeA),
-                new OnEnterScope(scopeB2, scopeB),
-                new OnExitScope(scopeB2),
-                new OnEnterScope(scopeB1, scopeB),
-                new OnExitScope(scopeB1),
-                new OnExitScope(scopeB),
-                new OnExitScope(scopeA)
+            new OnEnterScope(scopeA, null),
+            new OnEnterScope(scopeC, scopeA),
+            new OnExitScope(scopeC),
+            new OnEnterScope(scopeB, scopeA),
+            new OnEnterScope(scopeB2, scopeB),
+            new OnExitScope(scopeB2),
+            new OnEnterScope(scopeB1, scopeB),
+            new OnExitScope(scopeB1),
+            new OnExitScope(scopeB),
+            new OnExitScope(scopeA)
         ).inOrder();
     }
 
@@ -50,8 +50,8 @@ public class Inspection_VisitScopesTest {
     public void visitRootScope_Depth0() {
         scopeA.accept(visitor, 0);
         assertThat(visitor.visited).containsExactly(
-                new OnEnterScope(scopeA, null),
-                new OnExitScope(scopeA)
+            new OnEnterScope(scopeA, null),
+            new OnExitScope(scopeA)
         ).inOrder();
     }
 
@@ -59,12 +59,12 @@ public class Inspection_VisitScopesTest {
     public void visitRootScope_Depth1() {
         scopeA.accept(visitor, 1);
         assertThat(visitor.visited).containsExactly(
-                new OnEnterScope(scopeA, null),
-                new OnEnterScope(scopeC, scopeA),
-                new OnExitScope(scopeC),
-                new OnEnterScope(scopeB, scopeA),
-                new OnExitScope(scopeB),
-                new OnExitScope(scopeA)
+            new OnEnterScope(scopeA, null),
+            new OnEnterScope(scopeC, scopeA),
+            new OnExitScope(scopeC),
+            new OnEnterScope(scopeB, scopeA),
+            new OnExitScope(scopeB),
+            new OnExitScope(scopeA)
         ).inOrder();
     }
 
@@ -72,8 +72,8 @@ public class Inspection_VisitScopesTest {
     public void visitChildScope_Depth0() {
         scopeB.accept(visitor, 0);
         assertThat(visitor.visited).containsExactly(
-                new OnEnterScope(scopeB, scopeA),
-                new OnExitScope(scopeB)
+            new OnEnterScope(scopeB, scopeA),
+            new OnExitScope(scopeB)
         ).inOrder();
     }
 
@@ -81,12 +81,12 @@ public class Inspection_VisitScopesTest {
     public void visitChildScope_Depth1() {
         scopeB.accept(visitor, 1);
         assertThat(visitor.visited).containsExactly(
-                new OnEnterScope(scopeB, scopeA),
-                new OnEnterScope(scopeB2, scopeB),
-                new OnExitScope(scopeB2),
-                new OnEnterScope(scopeB1, scopeB),
-                new OnExitScope(scopeB1),
-                new OnExitScope(scopeB)
+            new OnEnterScope(scopeB, scopeA),
+            new OnEnterScope(scopeB2, scopeB),
+            new OnExitScope(scopeB2),
+            new OnEnterScope(scopeB1, scopeB),
+            new OnExitScope(scopeB1),
+            new OnExitScope(scopeB)
         ).inOrder();
     }
 }

@@ -20,12 +20,18 @@ import magnet.Classifier;
 import magnet.Scope;
 import magnet.Scoping;
 import magnet.SelectorFilter;
-import magnet.inspection.ScopeVisitor;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.lang.ref.WeakReference;
-import java.util.*;
+import java.util.ArrayDeque;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /* Subject to change. For internal use only. */
 final class MagnetScope implements Scope, FactoryFilter, InstanceBucket.OnInstanceListener {
@@ -396,11 +402,11 @@ final class MagnetScope implements Scope, FactoryFilter, InstanceBucket.OnInstan
     }
 
     @Override
-    public void accept(ScopeVisitor visitor, int depth) {
-        acceptActual(visitor, depth, 0);
+    public void accept(Visitor visitor, int depth) {
+        acceptAtLevel(0, visitor, depth);
     }
 
-    private void acceptActual(ScopeVisitor visitor, int depth, int level) {
+    private void acceptAtLevel(int level, Visitor visitor, int depth) {
         if (disposed) return;
 
         if (visitor.onEnterScope(this, parent)) {
@@ -416,7 +422,7 @@ final class MagnetScope implements Scope, FactoryFilter, InstanceBucket.OnInstan
             WeakScopeReference scopeRef = this.childrenScopes;
             while (scopeRef != null) {
                 MagnetScope scope = scopeRef.get();
-                if (scope != null) scope.acceptActual(visitor, depth, level + 1);
+                if (scope != null) scope.acceptAtLevel(level + 1, visitor, depth);
                 scopeRef = scopeRef.next;
             }
         }

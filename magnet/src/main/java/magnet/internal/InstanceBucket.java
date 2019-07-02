@@ -16,8 +16,8 @@
 
 package magnet.internal;
 
+import magnet.Scope;
 import magnet.Scoping;
-import magnet.inspection.ScopeVisitor;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -31,7 +31,7 @@ import java.util.List;
 @SuppressWarnings("unchecked") final class InstanceBucket<T> {
 
     @NotNull private final OnInstanceListener listener;
-    @NotNull private Instance instance;
+    @NotNull private InstanceBucket.Instance instance;
     private final int scopeDepth;
 
     InstanceBucket(
@@ -131,7 +131,7 @@ import java.util.List;
         return single;
     }
 
-    public boolean accept(ScopeVisitor visitor) {
+    public boolean accept(Scope.Visitor visitor) {
         if (instance instanceof SingleObjectInstance) {
             return ((SingleObjectInstance) instance).accept(visitor);
         } else {
@@ -158,7 +158,7 @@ import java.util.List;
             this.classifier = classifier;
         }
 
-        public boolean accept(ScopeVisitor visitor) {
+        public boolean accept(Scope.Visitor visitor) {
             if (this instanceof InjectedInstance) {
                 return visitor.onInstance((InjectedInstance) this);
             } else {
@@ -167,7 +167,7 @@ import java.util.List;
         }
     }
 
-    static class BoundInstance<T> extends SingleObjectInstance<T> implements magnet.inspection.Instance {
+    static class BoundInstance<T> extends SingleObjectInstance<T> implements Scope.Visitor.Instance {
         BoundInstance(
             @NotNull Class<T> objectType,
             @NotNull T object,
@@ -201,7 +201,7 @@ import java.util.List;
         }
     }
 
-    static class InjectedInstance<T> extends SingleObjectInstance<T> implements magnet.inspection.Instance {
+    static class InjectedInstance<T> extends SingleObjectInstance<T> implements Scope.Visitor.Instance {
         @NotNull final InstanceFactory<T> factory;
 
         InjectedInstance(
@@ -278,7 +278,7 @@ import java.util.List;
             return instances.containsKey(factory.getClass());
         }
 
-        public boolean accept(ScopeVisitor visitor) {
+        public boolean accept(Scope.Visitor visitor) {
             Collection<SingleObjectInstance<T>> singleObjectInstances = instances.values();
             boolean takeNext = true;
             for (SingleObjectInstance<T> instance : singleObjectInstances) {

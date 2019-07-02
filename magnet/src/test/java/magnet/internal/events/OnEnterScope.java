@@ -1,4 +1,4 @@
-package magnet.inspection.events;
+package magnet.internal.events;
 
 import magnet.Scope;
 import org.jetbrains.annotations.NotNull;
