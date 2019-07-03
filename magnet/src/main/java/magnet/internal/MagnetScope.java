@@ -24,7 +24,14 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.lang.ref.WeakReference;
-import java.util.*;
+import java.util.ArrayDeque;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /* Subject to change. For internal use only. */
 final class MagnetScope implements Scope, FactoryFilter, InstanceBucket.OnInstanceListener {
@@ -394,6 +401,35 @@ final class MagnetScope implements Scope, FactoryFilter, InstanceBucket.OnInstan
         return classifier + "@" + type.getName();
     }
 
+    @Override
+    public void accept(Visitor visitor, int depth) {
+        acceptAtLevel(0, visitor, depth);
+    }
+
+    private void acceptAtLevel(int level, Visitor visitor, int depth) {
+        if (disposed) return;
+
+        if (visitor.onEnterScope(this, parent)) {
+            Collection<InstanceBucket> buckets = this.instanceBuckets.values();
+            for (InstanceBucket bucket : buckets) {
+                if (!bucket.accept(visitor)) {
+                    break;
+                }
+            }
+        }
+
+        if (level < depth) {
+            WeakScopeReference scopeRef = this.childrenScopes;
+            while (scopeRef != null) {
+                MagnetScope scope = scopeRef.get();
+                if (scope != null) scope.acceptAtLevel(level + 1, visitor, depth);
+                scopeRef = scopeRef.next;
+            }
+        }
+
+        visitor.onExitScope(this);
+    }
+
     private final static class InstantiationContext {
         private final ArrayDeque<Instantiation> instantiations = new ArrayDeque<>();
         private Instantiation currentInstantiation;
@@ -425,7 +461,7 @@ final class MagnetScope implements Scope, FactoryFilter, InstanceBucket.OnInstan
 
             Instantiation[] objects = instantiations.toArray(new Instantiation[0]);
             StringBuilder builder = new StringBuilder()
-                .append("Magnet failed because of unresolved circular dependency: ");
+                .append("Dependency injection failed because of unresolved circular dependency: ");
             for (int i = objects.length; i-- > 0; ) {
                 builder.append(objects[i].key).append(" -> ");
             }

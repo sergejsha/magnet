@@ -32,22 +32,22 @@ import static com.google.common.truth.Truth.assertThat;
 @RunWith(JUnit4.class)
 public class MagnetScopingDirectTest {
 
-    private InstrumentedInstanceScope scope1;
-    private InstrumentedInstanceScope scope2;
-    private InstrumentedInstanceScope scope3;
+    private InstrumentedScope scope1;
+    private InstrumentedScope scope2;
+    private InstrumentedScope scope3;
 
     @Before
     public void before() {
         InstanceManager instanceManager = new StubInstanceManager();
-        scope1 = (InstrumentedInstanceScope) new InstrumentedInstanceScope(
+        scope1 = (InstrumentedScope) new InstrumentedScope(
             new MagnetScope(null, instanceManager))
             .bind(Dependency1.class, new Dependency1());
 
-        scope2 = (InstrumentedInstanceScope) scope1
+        scope2 = (InstrumentedScope) scope1
             .createSubscope()
             .bind(Dependency2.class, new Dependency2());
 
-        scope3 = (InstrumentedInstanceScope) scope2
+        scope3 = (InstrumentedScope) scope2
             .createSubscope()
             .bind(Dependency3.class, new Dependency3());
     }

@@ -29,7 +29,7 @@ public class MagnetScope_DisposeTest {
 
     @Test
     public void disposeSingleScope_NoClassifier() {
-        InstrumentedInstanceScope scope = new InstrumentedInstanceScope(
+        InstrumentedScope scope = new InstrumentedScope(
             new MagnetScope(null, instanceManager)
         );
         when(factory1.isDisposable()).thenReturn(true);
@@ -47,7 +47,7 @@ public class MagnetScope_DisposeTest {
 
     @Test
     public void disposeSingleScope_WithClassifiers() {
-        InstrumentedInstanceScope scope = new InstrumentedInstanceScope(
+        InstrumentedScope scope = new InstrumentedScope(
             new MagnetScope(null, instanceManager)
         );
         when(factory1.isDisposable()).thenReturn(true);
@@ -66,11 +66,11 @@ public class MagnetScope_DisposeTest {
     @Test
     public void disposingParentScope_DisposesChildrenScopes() {
         MagnetScope parentScope;
-        InstrumentedInstanceScope parent = new InstrumentedInstanceScope(parentScope = new MagnetScope(null, instanceManager));
+        InstrumentedScope parent = new InstrumentedScope(parentScope = new MagnetScope(null, instanceManager));
         when(factory1.isDisposable()).thenReturn(true);
         parent.instrumentObjectIntoScope(factory1, Interface.class, instance1, Classifier.NONE);
 
-        InstrumentedInstanceScope child = new InstrumentedInstanceScope((MagnetScope) parentScope.createSubscope());
+        InstrumentedScope child = new InstrumentedScope((MagnetScope) parentScope.createSubscope());
         when(factory2.isDisposable()).thenReturn(true);
         child.instrumentObjectIntoScope(factory2, Interface.class, instance2, Classifier.NONE);
         child.instrumentObjectIntoScope(factory3, Interface.class, instance3, Classifier.NONE);
@@ -85,10 +85,10 @@ public class MagnetScope_DisposeTest {
     @Test
     public void disposingChildScope_KeepsParentScopes() {
         MagnetScope parentScope;
-        InstrumentedInstanceScope parent = new InstrumentedInstanceScope(parentScope = new MagnetScope(null, instanceManager));
+        InstrumentedScope parent = new InstrumentedScope(parentScope = new MagnetScope(null, instanceManager));
         parent.instrumentObjectIntoScope(factory1, Interface.class, instance1, Classifier.NONE);
 
-        InstrumentedInstanceScope child = new InstrumentedInstanceScope((MagnetScope) parentScope.createSubscope());
+        InstrumentedScope child = new InstrumentedScope((MagnetScope) parentScope.createSubscope());
         when(factory2.isDisposable()).thenReturn(true);
         child.instrumentObjectIntoScope(factory2, Interface.class, instance2, Classifier.NONE);
 
@@ -100,7 +100,7 @@ public class MagnetScope_DisposeTest {
 
     @Test(expected = IllegalStateException.class)
     public void disposedScopeThrowsException() {
-        InstrumentedInstanceScope scope = new InstrumentedInstanceScope(
+        InstrumentedScope scope = new InstrumentedScope(
             new MagnetScope(null, instanceManager)
         );
         when(factory1.isDisposable()).thenReturn(true);
@@ -113,7 +113,7 @@ public class MagnetScope_DisposeTest {
 
     @Test
     public void disposeChildScope_InReversOrdered() {
-        InstrumentedInstanceScope scope = new InstrumentedInstanceScope(
+        InstrumentedScope scope = new InstrumentedScope(
             new MagnetScope(null, instanceManager)
         );
         when(factory1.isDisposable()).thenReturn(true);
@@ -139,10 +139,10 @@ public class MagnetScope_DisposeTest {
         when(factory3.isDisposable()).thenReturn(true);
 
         MagnetScope parentScope;
-        InstrumentedInstanceScope parent = new InstrumentedInstanceScope(parentScope = new MagnetScope(null, instanceManager));
+        InstrumentedScope parent = new InstrumentedScope(parentScope = new MagnetScope(null, instanceManager));
         parent.instrumentObjectIntoScope(factory1, Interface.class, instance1, Classifier.NONE);
 
-        InstrumentedInstanceScope child = new InstrumentedInstanceScope((MagnetScope) parentScope.createSubscope());
+        InstrumentedScope child = new InstrumentedScope((MagnetScope) parentScope.createSubscope());
         when(factory2.isDisposable()).thenReturn(true);
         child.instrumentObjectIntoScope(factory2, Interface.class, instance2, Classifier.NONE);
 
@@ -160,12 +160,12 @@ public class MagnetScope_DisposeTest {
     public void disposeFirstChildThenParentScopes() {
 
         when(factory1.isDisposable()).thenReturn(true);
-        InstrumentedInstanceScope parent =
-            new InstrumentedInstanceScope(new MagnetScope(null, instanceManager))
+        InstrumentedScope parent =
+            new InstrumentedScope(new MagnetScope(null, instanceManager))
                 .instrumentObjectIntoScope(factory1, Interface.class, instance1, Classifier.NONE);
 
         when(factory2.isDisposable()).thenReturn(true);
-        InstrumentedInstanceScope child =
+        InstrumentedScope child =
             parent.createInstrumentedSubscope()
                 .instrumentObjectIntoScope(factory2, Interface.class, instance2, Classifier.NONE);
 
@@ -180,7 +180,7 @@ public class MagnetScope_DisposeTest {
     @Test
     public void disposeMultipleChildScopes_123() {
 
-        InstrumentedInstanceScope[] child = prepareMultipleChildrenScopes();
+        InstrumentedScope[] child = prepareMultipleChildrenScopes();
 
         child[1].dispose();
         child[2].dispose();
@@ -197,7 +197,7 @@ public class MagnetScope_DisposeTest {
     @Test
     public void disposeMultipleChildScopes_132() {
 
-        InstrumentedInstanceScope[] child = prepareMultipleChildrenScopes();
+        InstrumentedScope[] child = prepareMultipleChildrenScopes();
 
         child[1].dispose();
         child[3].dispose();
@@ -214,7 +214,7 @@ public class MagnetScope_DisposeTest {
     @Test
     public void disposeMultipleChildScopes_213() {
 
-        InstrumentedInstanceScope[] child = prepareMultipleChildrenScopes();
+        InstrumentedScope[] child = prepareMultipleChildrenScopes();
 
         child[2].dispose();
         child[1].dispose();
@@ -231,7 +231,7 @@ public class MagnetScope_DisposeTest {
     @Test
     public void disposeMultipleChildScopes_231() {
 
-        InstrumentedInstanceScope[] child = prepareMultipleChildrenScopes();
+        InstrumentedScope[] child = prepareMultipleChildrenScopes();
 
         child[2].dispose();
         child[3].dispose();
@@ -248,7 +248,7 @@ public class MagnetScope_DisposeTest {
     @Test
     public void disposeMultipleChildScopes_312() {
 
-        InstrumentedInstanceScope[] child = prepareMultipleChildrenScopes();
+        InstrumentedScope[] child = prepareMultipleChildrenScopes();
 
         child[3].dispose();
         child[1].dispose();
@@ -265,7 +265,7 @@ public class MagnetScope_DisposeTest {
     @Test
     public void disposeMultipleChildScopes_321() {
 
-        InstrumentedInstanceScope[] child = prepareMultipleChildrenScopes();
+        InstrumentedScope[] child = prepareMultipleChildrenScopes();
 
         child[3].dispose();
         child[2].dispose();
@@ -279,29 +279,29 @@ public class MagnetScope_DisposeTest {
         order.verify(factory1, times(1)).dispose(instance1);
     }
 
-    private InstrumentedInstanceScope[] prepareMultipleChildrenScopes() {
+    private InstrumentedScope[] prepareMultipleChildrenScopes() {
 
         when(factory1.isDisposable()).thenReturn(true);
-        InstrumentedInstanceScope parent =
-            new InstrumentedInstanceScope(new MagnetScope(null, instanceManager))
+        InstrumentedScope parent =
+            new InstrumentedScope(new MagnetScope(null, instanceManager))
                 .instrumentObjectIntoScope(factory1, Interface.class, instance1, Classifier.NONE);
 
         when(factory2.isDisposable()).thenReturn(true);
-        InstrumentedInstanceScope child1 =
+        InstrumentedScope child1 =
             parent.createInstrumentedSubscope()
                 .instrumentObjectIntoScope(factory2, Interface.class, instance2, Classifier.NONE);
 
         when(factory3.isDisposable()).thenReturn(true);
-        InstrumentedInstanceScope child2 =
+        InstrumentedScope child2 =
             parent.createInstrumentedSubscope()
                 .instrumentObjectIntoScope(factory3, Interface.class, instance3, Classifier.NONE);
 
         when(factory4.isDisposable()).thenReturn(true);
-        InstrumentedInstanceScope child3 =
+        InstrumentedScope child3 =
             parent.createInstrumentedSubscope()
                 .instrumentObjectIntoScope(factory4, Interface.class, instance4, Classifier.NONE);
 
-        return new InstrumentedInstanceScope[]{parent, child1, child2, child3};
+        return new InstrumentedScope[]{parent, child1, child2, child3};
 
     }
 

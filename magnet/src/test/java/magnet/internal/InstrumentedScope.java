@@ -8,12 +8,16 @@ import java.util.Collections;
 import java.util.List;
 
 /** Used for testing MagnetScopeContainer. */
-public class InstrumentedInstanceScope implements Scope, FactoryFilter {
+public class InstrumentedScope implements Scope, FactoryFilter {
 
-    private final MagnetScope scope;
+    public final MagnetScope scope;
 
-    InstrumentedInstanceScope(MagnetScope scope) {
+    public InstrumentedScope(MagnetScope scope) {
         this.scope = scope;
+    }
+
+    public InstrumentedScope(Scope scope) {
+        this.scope = (MagnetScope) scope;
     }
 
     @Nullable
@@ -69,11 +73,15 @@ public class InstrumentedInstanceScope implements Scope, FactoryFilter {
     @NotNull
     @Override
     public Scope createSubscope() {
-        return new InstrumentedInstanceScope((MagnetScope) scope.createSubscope());
+        return new InstrumentedScope((MagnetScope) scope.createSubscope());
     }
 
     @Override public void dispose() {
         scope.dispose();
+    }
+
+    @Override public void accept(Visitor visitor, int depth) {
+        scope.accept(visitor, depth);
     }
 
     @Override public boolean filter(InstanceFactory factory) { return scope.filter(factory); }
@@ -91,7 +99,7 @@ public class InstrumentedInstanceScope implements Scope, FactoryFilter {
     }
 
     /** Injects given object right into the scope, as I would be injected using given factory. */
-    @SuppressWarnings("unchecked") <T> InstrumentedInstanceScope instrumentObjectIntoScope(
+    @SuppressWarnings("unchecked") public <T> InstrumentedScope instrumentObjectIntoScope(
         InstanceFactory<T> factory, Class<T> objectType, T object, String classifier
     ) {
         String key = MagnetScope.key(objectType, classifier);
@@ -107,8 +115,8 @@ public class InstrumentedInstanceScope implements Scope, FactoryFilter {
         return this;
     }
 
-    InstrumentedInstanceScope createInstrumentedSubscope() {
-        return new InstrumentedInstanceScope((MagnetScope) scope.createSubscope());
+    InstrumentedScope createInstrumentedSubscope() {
+        return new InstrumentedScope((MagnetScope) scope.createSubscope());
     }
 
 }
