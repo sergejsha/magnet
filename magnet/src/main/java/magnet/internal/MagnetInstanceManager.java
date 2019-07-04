@@ -17,6 +17,7 @@
 package magnet.internal;
 
 import magnet.Registry;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.Method;
@@ -26,7 +27,7 @@ import java.util.List;
 import java.util.Map;
 
 /* Subject to change. For internal use only. */
-final class MagnetInstanceManager implements InstanceManager {
+@SuppressWarnings("unchecked") final class MagnetInstanceManager implements InstanceManager {
 
     private InstanceFactory[] factories;
     private Map<Class, Object> index;
@@ -57,8 +58,7 @@ final class MagnetInstanceManager implements InstanceManager {
     }
 
     @Override
-    @SuppressWarnings("unchecked")
-    public <T> @Nullable InstanceFactory getInstanceFactory(
+    public <T> @Nullable InstanceFactory<T> getInstanceFactory(
         Class<T> instanceType, String classifier, Class<InstanceFactory<T>> factoryType
     ) {
         Range range = getOptionalRange(instanceType, classifier);
@@ -75,7 +75,6 @@ final class MagnetInstanceManager implements InstanceManager {
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     public <T> @Nullable InstanceFactory<T> getFilteredInstanceFactory(
         Class<T> type, String classifier, FactoryFilter factoryFilter
     ) {
@@ -98,9 +97,12 @@ final class MagnetInstanceManager implements InstanceManager {
             if (factoryFilter.filter(candidate)) {
                 if (factory != null) {
                     throw new IllegalStateException(
-                        String.format("Multiple implementations of type %s (classifier: %s) can be injected," +
+                        String.format(
+                            "Multiple implementations of type %s (classifier: %s) can be injected," +
                                 " while single implementation is expected. Overloaded factories: %s, %s",
-                            type, classifier, factory, candidate));
+                            type, classifier, factory, candidate
+                        )
+                    );
                 }
                 factory = candidate;
             }
@@ -110,8 +112,7 @@ final class MagnetInstanceManager implements InstanceManager {
     }
 
     @Override
-    @SuppressWarnings("unchecked")
-    public <T> List<InstanceFactory<T>> getManyInstanceFactories(
+    public <T> @NotNull List<InstanceFactory<T>> getManyInstanceFactories(
         Class<T> type, String classifier, FactoryFilter factoryFilter
     ) {
         Object indexed = index.get(type);
@@ -136,7 +137,6 @@ final class MagnetInstanceManager implements InstanceManager {
         return Collections.emptyList();
     }
 
-    @SuppressWarnings("unchecked")
     private Range getOptionalRange(Class<?> type, String classifier) {
         Object indexed = index.get(type);
 
@@ -158,11 +158,10 @@ final class MagnetInstanceManager implements InstanceManager {
         }
 
         throw new IllegalStateException(
-            String.format(
-                "Unsupported index type: %s", indexed.getClass()));
+            String.format("Unsupported index type: %s", indexed.getClass())
+        );
     }
 
-    @SuppressWarnings("unchecked")
     private <T> List<InstanceFactory<T>> factoriesFromRange(Range range, FactoryFilter factoryFilter) {
         List<InstanceFactory<T>> filteredFactories = null;
         for (int index = range.getFrom(), afterLast = range.getFrom() + range.getCount(); index < afterLast; index++) {
@@ -185,5 +184,4 @@ final class MagnetInstanceManager implements InstanceManager {
         System.arraycopy(this.factories, range.getFrom(), factories, 0, range.getCount());
         return new ImmutableArrayList<>(factories);
     }
-
 }

@@ -1,6 +1,7 @@
 package magnet.internal;
 
 import magnet.Scope;
+import magnet.Visitor;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -20,60 +21,46 @@ public class InstrumentedScope implements Scope, FactoryFilter {
         this.scope = (MagnetScope) scope;
     }
 
-    @Nullable
-    @Override
-    public <T> T getOptional(@NotNull Class<T> type) {
+    @Override public <T> @Nullable T getOptional(@NotNull Class<T> type) {
         return scope.getOptional(type);
     }
 
-    @Nullable
-    @Override
-    public <T> T getOptional(@NotNull Class<T> type, @NotNull String classifier) {
+    @Override public <T> @Nullable T getOptional(@NotNull Class<T> type, @NotNull String classifier) {
         return scope.getOptional(type, classifier);
     }
 
-    @Override
-    @NotNull
-    public <T> T getSingle(@NotNull Class<T> type) {
+    @Override public <T> @NotNull T getSingle(@NotNull Class<T> type) {
         return scope.getSingle(type);
     }
 
-    @NotNull
-    @Override
-    public <T> T getSingle(@NotNull Class<T> type, @NotNull String classifier) {
+    @Override public <T> @NotNull T getSingle(@NotNull Class<T> type, @NotNull String classifier) {
         return scope.getSingle(type, classifier);
     }
 
-    @NotNull
-    @Override
-    public <T> List<T> getMany(@NotNull Class<T> type) {
+    @Override public <T> @NotNull List<T> getMany(@NotNull Class<T> type) {
         return scope.getMany(type);
     }
 
-    @NotNull
-    @Override
-    public <T> List<T> getMany(@NotNull Class<T> type, @NotNull String classifier) {
+    @Override public <T> @NotNull List<T> getMany(@NotNull Class<T> type, @NotNull String classifier) {
         return scope.getMany(type, classifier);
     }
 
-    @NotNull
-    @Override
-    public <T> Scope bind(@NotNull Class<T> type, @NotNull T instance) {
+    @Override public <T> @NotNull Scope bind(@NotNull Class<T> type, @NotNull T instance) {
         scope.bind(type, instance);
         return this;
     }
 
-    @NotNull
-    @Override
-    public <T> Scope bind(@NotNull Class<T> type, @NotNull T instance, @NotNull String classifier) {
+    @Override public <T> @NotNull Scope bind(@NotNull Class<T> type, @NotNull T instance, @NotNull String classifier) {
         scope.bind(type, instance, classifier);
         return this;
     }
 
-    @NotNull
-    @Override
-    public Scope createSubscope() {
+    @Override public @NotNull Scope createSubscope() {
         return new InstrumentedScope((MagnetScope) scope.createSubscope());
+    }
+
+    @Override public @NotNull Scope limit(String... limits) {
+        return scope.limit(limits);
     }
 
     @Override public void dispose() {
@@ -107,7 +94,7 @@ public class InstrumentedScope implements Scope, FactoryFilter {
         if (existing == null) {
             scope.instanceBuckets.put(
                 key,
-                new InstanceBucket(scope.depth, factory, objectType, object, classifier, scope)
+                new InstanceBucket(scope, factory, objectType, object, classifier, scope)
             );
         } else {
             existing.registerObject(factory, objectType, object, classifier);

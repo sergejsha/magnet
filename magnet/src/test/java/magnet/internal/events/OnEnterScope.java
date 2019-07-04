@@ -1,16 +1,15 @@
 package magnet.internal.events;
 
-import magnet.Scope;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Objects;
 
 public class OnEnterScope {
-    private final Scope scope;
-    private final Scope parent;
+    private final @NotNull Object scope;
+    private final @Nullable Object parent;
 
-    public OnEnterScope(@NotNull Scope scope, @Nullable Scope parent) {
+    public OnEnterScope(@NotNull Object scope, @Nullable Object parent) {
         this.scope = scope;
         this.parent = parent;
     }
@@ -21,7 +20,7 @@ public class OnEnterScope {
         if (o == null || getClass() != o.getClass()) return false;
         OnEnterScope that = (OnEnterScope) o;
         return scope.equals(that.scope) &&
-                Objects.equals(parent, that.parent);
+            Objects.equals(parent, that.parent);
     }
 
     @Override

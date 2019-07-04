@@ -27,6 +27,7 @@ import magnet.processor.instances.disposer.DisposeMethodGenerator
 import magnet.processor.instances.disposer.IsDisposableMethodGenerator
 import magnet.processor.instances.factory.CreateMethodGenerator
 import magnet.processor.instances.factory.DefaultCreateMethodGenerator
+import magnet.processor.instances.limit.GetLimitMethodGenerator
 import magnet.processor.instances.scoping.GetScopingMethodGenerator
 import magnet.processor.instances.selector.GetSelectorMethodGenerator
 import magnet.processor.instances.siblings.GetSiblingTypesMethodGenerator
@@ -64,6 +65,7 @@ class FactoryTypeCodeGenerator : FactoryTypeVisitor, CodeGenerator {
 
     private val aspectGetSiblingTypes = Aspect(GetSiblingTypesMethodGenerator())
     private val aspectGetScoping = Aspect(GetScopingMethodGenerator())
+    private val aspectGetLimit = Aspect(GetLimitMethodGenerator())
     private val aspectGetSelector = Aspect(GetSelectorMethodGenerator())
     private val createMethodGenerator: CreateMethodGenerator = DefaultCreateMethodGenerator()
     private val isDisposableMethodGenerator = IsDisposableMethodGenerator()
@@ -91,6 +93,10 @@ class FactoryTypeCodeGenerator : FactoryTypeVisitor, CodeGenerator {
 
     override fun visit(method: GetScopingMethod) {
         aspectGetScoping.visit { visit(method) }
+    }
+
+    override fun visit(method: GetLimitMethod) {
+        aspectGetLimit.visit { visit(method) }
     }
 
     override fun enterSiblingTypesMethod(method: GetSiblingTypesMethod) {
@@ -130,6 +136,7 @@ class FactoryTypeCodeGenerator : FactoryTypeVisitor, CodeGenerator {
         createMethodGenerator.generate(classBuilder)
 
         aspectGetScoping.generate(classBuilder)
+        aspectGetLimit.generate(classBuilder)
         aspectGetSiblingTypes.generate(classBuilder)
         aspectGetSelector.generate(classBuilder)
         isDisposableMethodGenerator.generate(classBuilder)

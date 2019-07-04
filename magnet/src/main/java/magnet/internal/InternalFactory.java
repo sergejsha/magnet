@@ -26,12 +26,11 @@ public final class InternalFactory {
 
     private InternalFactory() {}
 
-    @NotNull
-    public static Scope createRootScope() {
-        return new MagnetScope(
-            /* parent = */ null,
-            /* instanceManager = */ INSTANCE_MANAGER
-        );
+    static @NotNull Scope createRootScope(@NotNull InstanceManager instanceManager) {
+        return new MagnetScope(null, instanceManager);
     }
 
+    public static @NotNull Scope createRootScope() {
+        return new MagnetScope(null, INSTANCE_MANAGER);
+    }
 }

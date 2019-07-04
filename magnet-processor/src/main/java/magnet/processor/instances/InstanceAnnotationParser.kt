@@ -50,6 +50,7 @@ private const val ATTR_TYPE = "type"
 private const val ATTR_TYPES = "types"
 private const val ATTR_SCOPING = "scoping"
 private const val ATTR_CLASSIFIER = "classifier"
+private const val ATTR_LIMIT = "limit"
 private const val ATTR_DISABLED = "disabled"
 
 interface AttributeParser<R> {
@@ -271,6 +272,7 @@ internal abstract class AnnotationParser<in E : Element>(
         var interfaceTypeElements: List<TypeElement>? = null
         var scoping = Scoping.TOPMOST.name
         var classifier = Classifier.NONE
+        var limit = ""
         var selector = SelectorFilter.DEFAULT_SELECTOR
         var factory: TypeName? = null
         var disposer: String? = null
@@ -300,6 +302,7 @@ internal abstract class AnnotationParser<in E : Element>(
                         }
                         ATTR_SCOPING -> scoping = entryValue
                         ATTR_CLASSIFIER -> classifier = entryValue
+                        ATTR_LIMIT -> limit = entryValue
                         ATTR_DISABLED -> disabled = entryValue.toBoolean()
 
                         selectorAttributeParser.attrName -> selector =
@@ -325,12 +328,19 @@ internal abstract class AnnotationParser<in E : Element>(
         }
 
         val declaredTypeElements: List<TypeElement> =
-            verifyTypeDeclaration(interfaceTypeElement, interfaceTypeElements, scoping, element)
+            verifyTypeDeclaration(
+                interfaceTypeElement,
+                interfaceTypeElements,
+                scoping,
+                limit,
+                element
+            )
 
         return Annotation(
             types = declaredTypeElements.map { ClassName.get(it) },
             classifier = classifier,
             scoping = scoping,
+            limit = limit,
             selector = selector,
             factory = factory,
             disposer = disposer,
@@ -346,6 +356,7 @@ internal abstract class AnnotationParser<in E : Element>(
         interfaceTypeElement: TypeElement?,
         interfaceTypeElements: List<TypeElement>?,
         scoping: String,
+        limit: String,
         element: Element
     ): List<TypeElement> {
         val isTypeDeclared = interfaceTypeElement != null
@@ -360,6 +371,16 @@ internal abstract class AnnotationParser<in E : Element>(
         if (isTypeDeclared && areTypesDeclared) {
             element.validationError(
                 "${Instance::class.java} must declare either 'type' or 'types' property, not both."
+            )
+        }
+
+        if (limit == "*") {
+            element.validationError(
+                "Limit must not use reserved '*' value. Use another constant."
+            )
+        } else if (limit.isNotEmpty() && scoping != Scoping.TOPMOST.name) {
+            element.validationError(
+                "Limit can only be used with Scoping.TOPMOST. Actual scoping: Scoping.$scoping"
             )
         }
 

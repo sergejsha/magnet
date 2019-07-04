@@ -23,9 +23,7 @@ public final class Magnet {
 
     private Magnet() { }
 
-    @NotNull
-    public static Scope createRootScope() {
+    public static @NotNull Scope createRootScope() {
         return InternalFactory.createRootScope();
     }
-
 }

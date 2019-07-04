@@ -16,8 +16,8 @@
 
 package magnet.internal;
 
-import magnet.Scope;
 import magnet.Scoping;
+import magnet.Visitor;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -30,27 +30,26 @@ import java.util.List;
 /* Subject to change. For internal use only. */
 @SuppressWarnings("unchecked") final class InstanceBucket<T> {
 
-    @NotNull private final OnInstanceListener listener;
-    @NotNull private InstanceBucket.Instance instance;
-    private final int scopeDepth;
+    private @NotNull final OnInstanceListener listener;
+    private @NotNull InstanceBucket.Instance instance;
+    private @NotNull MagnetScope scope;
 
     InstanceBucket(
-        int scopeDepth,
+        @NotNull MagnetScope scope,
         @Nullable InstanceFactory<T> factory,
         @NotNull Class<T> objectType,
         @NotNull T object,
         @NotNull String classifier,
         @NotNull OnInstanceListener listener
     ) {
-        this.scopeDepth = scopeDepth;
+        this.scope = scope;
         this.listener = listener;
         this.instance = createSingleInstance(factory, objectType, object, classifier);
     }
 
-    int getScopeDepth() { return scopeDepth; }
+    @NotNull MagnetScope getScope() { return scope; }
 
-    @NotNull
-    T getSingleInstance() {
+    @NotNull T getSingleInstance() {
         if (instance instanceof InjectedInstance) {
             return ((InjectedInstance<T>) instance).object;
         } else if (instance instanceof BoundInstance) {
@@ -66,8 +65,7 @@ import java.util.List;
         );
     }
 
-    @Nullable
-    T getOptional(@Nullable Class<InstanceFactory<T>> factoryType) {
+    @Nullable T getOptional(@Nullable Class<InstanceFactory<T>> factoryType) {
         if (instance instanceof InjectedInstance) {
             InjectedInstance<T> single = (InjectedInstance<T>) instance;
             if (single.factory.getClass() == factoryType) {
@@ -84,8 +82,7 @@ import java.util.List;
         return (T) ((MultiObjectInstance) instance).getOptional(factoryType);
     }
 
-    @NotNull
-    List<T> getMany() {
+    @NotNull List<T> getMany() {
         if (instance instanceof InjectedInstance) {
             return Collections.singletonList(((InjectedInstance<T>) instance).object);
         } else if (instance instanceof BoundInstance) {
@@ -115,7 +112,7 @@ import java.util.List;
         return instance.hasObjectWithFactory(factory);
     }
 
-    @NotNull private InstanceBucket.SingleObjectInstance<T> createSingleInstance(
+    private @NotNull InstanceBucket.SingleObjectInstance<T> createSingleInstance(
         @Nullable InstanceFactory<T> factory,
         @NotNull Class<T> objectType,
         @NotNull T object,
@@ -131,7 +128,7 @@ import java.util.List;
         return single;
     }
 
-    public boolean accept(Scope.Visitor visitor) {
+    public boolean accept(Visitor visitor) {
         if (instance instanceof SingleObjectInstance) {
             return ((SingleObjectInstance) instance).accept(visitor);
         } else {
@@ -144,9 +141,9 @@ import java.util.List;
     }
 
     static abstract class SingleObjectInstance<T> implements Instance<T> {
-        @NotNull final Class<T> objectType;
-        @NotNull final T object;
-        @NotNull final String classifier;
+        final @NotNull Class<T> objectType;
+        final @NotNull T object;
+        final @NotNull String classifier;
 
         SingleObjectInstance(
             @NotNull Class<T> objectType,
@@ -158,7 +155,7 @@ import java.util.List;
             this.classifier = classifier;
         }
 
-        public boolean accept(Scope.Visitor visitor) {
+        public boolean accept(Visitor visitor) {
             if (this instanceof InjectedInstance) {
                 return visitor.onInstance((InjectedInstance) this);
             } else {
@@ -167,7 +164,7 @@ import java.util.List;
         }
     }
 
-    static class BoundInstance<T> extends SingleObjectInstance<T> implements Scope.Visitor.Instance {
+    static class BoundInstance<T> extends SingleObjectInstance<T> implements Visitor.Instance {
         BoundInstance(
             @NotNull Class<T> objectType,
             @NotNull T object,
@@ -176,32 +173,16 @@ import java.util.List;
             super(objectType, object, classifier);
         }
 
-        @Override public boolean hasObjectWithFactory(InstanceFactory<T> factory) {
-            return factory == null;
-        }
-
-        @Override public @NotNull Scoping getScoping() {
-            return Scoping.DIRECT;
-        }
-
-        @Override public @NotNull String getClassifier() {
-            return classifier;
-        }
-
-        @Override public @NotNull Class<?> getType() {
-            return objectType;
-        }
-
-        @Override public @NotNull Object getValue() {
-            return object;
-        }
-
-        @Override public @NotNull Provision getProvision() {
-            return Provision.BOUND;
-        }
+        @Override public boolean hasObjectWithFactory(InstanceFactory<T> factory) { return factory == null; }
+        @Override public @NotNull Scoping getScoping() { return Scoping.DIRECT; }
+        @Override public @NotNull String getClassifier() { return classifier; }
+        @Override public @NotNull String getLimit() { return ""; }
+        @Override public @NotNull Class<?> getType() { return objectType; }
+        @Override public @NotNull Object getValue() { return object; }
+        @Override public @NotNull Visitor.Provision getProvision() { return Visitor.Provision.BOUND; }
     }
 
-    static class InjectedInstance<T> extends SingleObjectInstance<T> implements Scope.Visitor.Instance {
+    static class InjectedInstance<T> extends SingleObjectInstance<T> implements Visitor.Instance {
         @NotNull final InstanceFactory<T> factory;
 
         InjectedInstance(
@@ -214,33 +195,17 @@ import java.util.List;
             this.factory = factory;
         }
 
-        @Override public boolean hasObjectWithFactory(InstanceFactory<T> factory) {
-            return factory == this.factory;
-        }
-
-        @Override public @NotNull Scoping getScoping() {
-            return factory.getScoping();
-        }
-
-        @Override public @NotNull String getClassifier() {
-            return classifier;
-        }
-
-        @Override public @NotNull Class<?> getType() {
-            return objectType;
-        }
-
-        @Override public @NotNull Object getValue() {
-            return object;
-        }
-
-        @Override public @NotNull Provision getProvision() {
-            return Provision.INJECTED;
-        }
+        @Override public boolean hasObjectWithFactory(InstanceFactory<T> factory) { return factory == this.factory; }
+        @Override public @NotNull Scoping getScoping() { return factory.getScoping(); }
+        @Override public @NotNull String getClassifier() { return classifier; }
+        @Override public @NotNull String getLimit() { return factory.getLimit(); }
+        @Override public @NotNull Class<?> getType() { return objectType; }
+        @Override public @NotNull Object getValue() { return object; }
+        @Override public @NotNull Visitor.Provision getProvision() { return Visitor.Provision.INJECTED; }
     }
 
     private static class MultiObjectInstance<T> implements Instance<T> {
-        @NotNull private final HashMap<Class<InstanceFactory<T>>, SingleObjectInstance<T>> instances;
+        private final @NotNull HashMap<Class<InstanceFactory<T>>, SingleObjectInstance<T>> instances;
 
         MultiObjectInstance(@NotNull InstanceBucket.SingleObjectInstance<T> single) {
             instances = new HashMap<>(8);
@@ -278,7 +243,7 @@ import java.util.List;
             return instances.containsKey(factory.getClass());
         }
 
-        public boolean accept(Scope.Visitor visitor) {
+        public boolean accept(Visitor visitor) {
             Collection<SingleObjectInstance<T>> singleObjectInstances = instances.values();
             boolean takeNext = true;
             for (SingleObjectInstance<T> instance : singleObjectInstances) {
@@ -292,5 +257,4 @@ import java.util.List;
     interface OnInstanceListener {
         <T> void onInstanceCreated(SingleObjectInstance<T> instance);
     }
-
 }

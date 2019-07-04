@@ -20,22 +20,22 @@ public class InstanceBucketTest {
     @Mock private Interface1 instance2;
 
     @Mock private InstanceBucket.OnInstanceListener listener;
+    @Mock private MagnetScope scope;
 
     @Test
     @SuppressWarnings("unchecked")
-    public void test_getScopeDepth() {
+    public void test_getScope() {
         InstanceBucket<String> instances = new InstanceBucket(
-            1, factory1, Interface1.class, instance1, Classifier.NONE, listener
+            scope, factory1, Interface1.class, instance1, Classifier.NONE, listener
         );
-        int depth = instances.getScopeDepth();
-        assertThat(depth).isEqualTo(1);
+        assertThat(instances.getScope()).isSameAs(scope);
     }
 
     @Test
     @SuppressWarnings("unchecked")
     public void test_getInstances_SingleItem() {
         InstanceBucket<Interface1> instances = new InstanceBucket(
-            1, factory1, Interface1.class, instance1, Classifier.NONE, listener
+            scope, factory1, Interface1.class, instance1, Classifier.NONE, listener
         );
         List<Interface1> result = instances.getMany();
         assertThat(result).containsExactly(instance1);
@@ -45,7 +45,7 @@ public class InstanceBucketTest {
     @SuppressWarnings("unchecked")
     public void test_getInstances_ManyItems() {
         InstanceBucket<Interface1> instances = new InstanceBucket(
-            1, factory1, Interface1.class, instance1, Classifier.NONE, listener
+            scope, factory1, Interface1.class, instance1, Classifier.NONE, listener
         );
         instances.registerObject(factory2, Interface1.class, instance2, Classifier.NONE);
         List<Interface1> result = instances.getMany();
@@ -56,7 +56,7 @@ public class InstanceBucketTest {
     @SuppressWarnings("unchecked")
     public void test_getSingleInstance() {
         InstanceBucket<Interface1> instances = new InstanceBucket(
-            1, factory1, Interface1.class, instance1, Classifier.NONE, listener
+            scope, factory1, Interface1.class, instance1, Classifier.NONE, listener
         );
         Interface1 result = instances.getSingleInstance();
         assertThat(result).isSameAs(instance1);

@@ -110,11 +110,14 @@ public interface Scope {
     /** Returns a list of objects or empty list, if no objects were found. */
     @NotNull <T> List<T> getMany(@NotNull Class<T> type, @NotNull String classifier);
 
-    /** Bind given instance into this scope. */
+    /** Binds given instance into this scope. */
     @NotNull <T> Scope bind(@NotNull Class<T> type, @NotNull T instance);
 
-    /** Bind given instance into this scope. */
+    /** Binds given instance into this scope. */
     @NotNull <T> Scope bind(@NotNull Class<T> type, @NotNull T instance, @NotNull String classifier);
+
+    /** Sets given limits to this scope. */
+    @NotNull Scope limit(String... limits);
 
     /** Creates a new child scope of this scope. */
     @NotNull Scope createSubscope();
@@ -125,47 +128,4 @@ public interface Scope {
     /** Visits all instances and child scopes of given depth (use {@code Integer.MAX_VALUE} for visiting all scopes). */
     void accept(Visitor visitor, int depth);
 
-    /**
-     * Implementation of this interface should be used with {@link #accept(magnet.Scope.Visitor, int)}
-     * for iterating though instances and subscopes of a scope. Scope visiting begins with iterating through
-     * all instances and then through all subscopes.
-     */
-    interface Visitor {
-
-        interface Instance {
-            enum Provision {BOUND, INJECTED}
-
-            @NotNull Scoping getScoping();
-            @NotNull String getClassifier();
-            @NotNull Class<?> getType();
-            @NotNull Object getValue();
-            @NotNull Scope.Visitor.Instance.Provision getProvision();
-        }
-
-        /**
-         * Called when new scope is entered.
-         *
-         * @param scope  entered scope.
-         * @param parent parent scope of the entered scope.
-         * @return <code>true</code> to visit instances of this scope, <code>false</code> to skip instances.
-         */
-        boolean onEnterScope(@NotNull Scope scope, @Nullable Scope parent);
-
-        /**
-         * Called when visiting new instance between {@link #onEnterScope(magnet.Scope, magnet.Scope)}
-         * and {@link #onExitScope(magnet.Scope)} calls.
-         *
-         * @param instance visited instance.
-         * @return <code>true</code> to visit the next instance in the scope or <code>false</code>
-         * to skip all other instances in this scope.
-         */
-        boolean onInstance(@NotNull Scope.Visitor.Instance instance);
-
-        /**
-         * Called when previously entered scope is exited.
-         *
-         * @param scope exited scope.
-         */
-        void onExitScope(@NotNull Scope scope);
-    }
 }

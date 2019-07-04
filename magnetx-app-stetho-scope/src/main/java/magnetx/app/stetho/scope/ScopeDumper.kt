@@ -17,11 +17,12 @@
 package magnetx.app.stetho.scope
 
 import magnet.Classifier
-import magnet.Scope
-import magnet.Scope.Visitor.Instance
+import magnet.Visitor
+import magnet.Visitor.Instance
+import magnet.Visitor.Scope
 import java.io.PrintStream
 
-internal class ScopeDumper(private val writer: PrintStream) : Scope.Visitor {
+internal class ScopeDumper(private val writer: PrintStream) : Visitor {
 
     private val instances = mutableListOf<Instance>()
     private var currentScope: Scope? = null
@@ -48,14 +49,15 @@ internal class ScopeDumper(private val writer: PrintStream) : Scope.Visitor {
 
 private fun MutableList<Instance>.dump(scope: Scope, level: Int, writer: PrintStream) {
     val indentScope = "   ".repeat(level - 1)
-    writer.println("$indentScope [$level] $scope")
+    val limits = scope.limits?.let { "<${it.joinToString(", ")}> " } ?: ""
+    writer.println("$indentScope [$level] $limits$scope")
 
-    sortWith(compareBy({ it.provision }, { it.scoping }, { it.type.name }))
+    sortWith(compareBy({ it.provision }, { it.scoping }, { it.limit }, { it.type.name }))
     val indentInstance = "   ".repeat(level)
     for (instance in this) {
         val line = when (instance.provision) {
-            Instance.Provision.BOUND -> instance.renderBound()
-            Instance.Provision.INJECTED -> instance.renderInjected()
+            Visitor.Provision.BOUND -> instance.renderBound()
+            Visitor.Provision.INJECTED -> instance.renderInjected()
         }
         writer.println("$indentInstance $line")
     }
@@ -66,6 +68,9 @@ private fun Instance.renderBound(): String =
     if (classifier == Classifier.NONE) "$provision ${type.simpleName} $value"
     else "$provision ${type.name}@$classifier $value"
 
-private fun Instance.renderInjected(): String =
-    if (classifier == Classifier.NONE) "$scoping ${type.simpleName} $value"
-    else "$scoping ${type.simpleName}@$classifier $value"
+private fun Instance.renderInjected(): String {
+    val renderedScoping = if (limit.isNotEmpty()) "<$limit>" else scoping.toString()
+    return if (classifier == Classifier.NONE) "$renderedScoping ${type.simpleName} $value"
+    else "$renderedScoping ${type.simpleName}@$classifier $value"
+}
+

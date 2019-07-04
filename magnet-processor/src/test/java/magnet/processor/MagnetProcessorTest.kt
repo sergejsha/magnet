@@ -546,6 +546,65 @@ class MagnetProcessorTest {
     }
 
     @Test
+    fun generateFactory_Limit_NotEmpty_GenerateGetter() {
+        val root = "Limit_NotEmpty_HasGetter"
+        val compilation = Compiler.javac()
+            .withProcessors(MagnetProcessor())
+            .compile(withResource("$root/UnderTest.java"))
+
+        assertThat(compilation).succeededWithoutWarnings()
+        assertThat(compilation)
+            .generatedSourceFile("app/UnderTestMagnetFactory")
+            .hasSourceEquivalentTo(withResource("$root/expected/UnderTestMagnetFactory.java"))
+    }
+
+    @Test
+    fun generateFactory_Limit_Empty_NoGetter() {
+        val root = "Limit_Empty_NoGetter"
+        val compilation = Compiler.javac()
+            .withProcessors(MagnetProcessor())
+            .compile(withResource("$root/UnderTest.java"))
+
+        assertThat(compilation).succeededWithoutWarnings()
+        assertThat(compilation)
+            .generatedSourceFile("app/UnderTestMagnetFactory")
+            .hasSourceEquivalentTo(withResource("$root/expected/UnderTestMagnetFactory.java"))
+    }
+
+    @Test
+    fun generateFactory_Limit_ReservedAsterix_Fails() {
+        val root = "Limit_ReservedAsterisks_Fails"
+        val compilation = Compiler.javac()
+            .withProcessors(MagnetProcessor())
+            .compile(withResource("$root/UnderTest.java"))
+
+        assertThat(compilation).failed()
+        assertThat(compilation).hadErrorContaining("Use another constant")
+    }
+
+    @Test
+    fun generateFactory_Limit_ScopingDirect_Fails() {
+        val root = "Limit_ScopingDirect_Fails"
+        val compilation = Compiler.javac()
+            .withProcessors(MagnetProcessor())
+            .compile(withResource("$root/UnderTest.java"))
+
+        assertThat(compilation).failed()
+        assertThat(compilation).hadErrorContaining("Limit can only be used with Scoping.TOPMOST")
+    }
+
+    @Test
+    fun generateFactory_Limit_ScopingUnscoped_Fails() {
+        val root = "Limit_ScopingUnscoped_Fails"
+        val compilation = Compiler.javac()
+            .withProcessors(MagnetProcessor())
+            .compile(withResource("$root/UnderTest.java"))
+
+        assertThat(compilation).failed()
+        assertThat(compilation).hadErrorContaining("Limit can only be used with Scoping.TOPMOST")
+    }
+
+    @Test
     fun generateFactory_Lazy_Method_NoKotlinMetadata() {
 
         val compilation = Compiler.javac()

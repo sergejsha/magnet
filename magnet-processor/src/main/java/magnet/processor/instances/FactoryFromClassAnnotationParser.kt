@@ -63,6 +63,7 @@ internal class FactoryFromClassAnnotationParser(
 
             val selectorAttributes = selectorAttributeParser.convert(annotation.selector, element)
             val getSelectorMethod = if (selectorAttributes == null) null else GetSelectorMethod(selectorAttributes)
+            val getLimitMethod = if (annotation.limit.isEmpty()) null else GetLimitMethod(annotation.limit)
 
             val factoryName = generateFactoryName(hasSiblingTypes, instanceType, it)
             FactoryType(
@@ -78,6 +79,7 @@ internal class FactoryFromClassAnnotationParser(
                 createStatement = TypeCreateStatement(instanceType),
                 createMethod = parseCreateMethod(element),
                 getScopingMethod = GetScopingMethod(annotation.scoping),
+                getLimitMethod = getLimitMethod,
                 getSelectorMethod = getSelectorMethod,
                 getSiblingTypesMethod = getSiblingTypesMethod
             )

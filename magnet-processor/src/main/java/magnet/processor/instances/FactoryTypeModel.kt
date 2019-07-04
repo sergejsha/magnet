@@ -31,6 +31,7 @@ interface FactoryTypeVisitor {
     fun exitCreateMethod(createMethod: CreateMethod) {}
 
     fun visit(method: GetScopingMethod) {}
+    fun visit(method: GetLimitMethod) {}
 
     fun enterSiblingTypesMethod(method: GetSiblingTypesMethod) {}
     fun visitSiblingType(type: ClassName) {}
@@ -47,6 +48,7 @@ class Annotation(
     val types: List<ClassName>,
     val classifier: String,
     val scoping: String,
+    val limit: String,
     val selector: String,
     val factory: TypeName?,
     val disposer: String?,
@@ -66,6 +68,7 @@ class FactoryType(
     val createStatement: CreateStatement,
     val createMethod: CreateMethod,
     val getScopingMethod: GetScopingMethod,
+    val getLimitMethod: GetLimitMethod?,
     val getSelectorMethod: GetSelectorMethod?,
     val getSiblingTypesMethod: GetSiblingTypesMethod?
 ) {
@@ -73,6 +76,7 @@ class FactoryType(
         visitor.enterFactoryClass(this)
         createMethod.accept(visitor)
         getScopingMethod.accept(visitor)
+        getLimitMethod?.accept(visitor)
         getSiblingTypesMethod?.accept(visitor)
         getSelectorMethod?.accept(visitor)
         visitor.exitFactoryClass(this)
@@ -126,6 +130,12 @@ data class MethodParameter(
 }
 
 class GetScopingMethod(val scoping: String) {
+    fun accept(visitor: FactoryTypeVisitor) {
+        visitor.visit(this)
+    }
+}
+
+class GetLimitMethod(val limit: String) {
     fun accept(visitor: FactoryTypeVisitor) {
         visitor.visit(this)
     }
