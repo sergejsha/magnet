@@ -48,7 +48,7 @@ class Annotation(
     val types: List<ClassName>,
     val classifier: String,
     val scoping: String,
-    val limit: String,
+    val limitedTo: String,
     val selector: String,
     val factory: TypeName?,
     val disposer: String?,

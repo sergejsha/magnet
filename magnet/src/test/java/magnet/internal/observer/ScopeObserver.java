@@ -80,8 +80,8 @@ public class ScopeObserver implements Visitor {
             if (instances.size() != instanceTypes.length) {
                 throw new IllegalStateException(
                     String.format(
-                        "Expect %s number of instances, while found %s. Actual instances: %s",
-                        instanceTypes.length, instances.size(), instances.toString()
+                        "Expect %s number of instances in %s, while found %s. Actual instances: %s",
+                        instanceTypes.length, scope, instances.size(), instances.toString()
                     )
                 );
             }

@@ -7,7 +7,7 @@ import magnet.Scoping;
 @Instance(
     type = UnderTest.class,
     scoping = Scoping.UNSCOPED,
-    limit = "activity"
+    limitedTo = "activity"
 )
 public class UnderTest {
     public UnderTest(Scope scope) {

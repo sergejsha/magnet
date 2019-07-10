@@ -24,7 +24,7 @@ public class Scope_LimitWithDependencyTest {
     @Mock private Scope scopeD;
 
     @Test
-    public void test_instanceMovesDown_ifDependencyLimitLiesBelow() {
+    public void test_dependingInstance_respectsDependencyLimit() {
         // given
         scopeA = InternalFactory.createRootScope(new MapInstanceManager());
         scopeB = scopeA.createSubscope().limit(LIMIT_ONE);
@@ -44,7 +44,7 @@ public class Scope_LimitWithDependencyTest {
     }
 
     @Test
-    public void test_instancesLay_whereThereLimitsLies() {
+    public void test_dependingInstance_respectsOwnLimit() {
         // given
         scopeA = InternalFactory.createRootScope(new MapInstanceManager());
         scopeB = scopeA.createSubscope().limit(LIMIT_TWO);
@@ -64,7 +64,7 @@ public class Scope_LimitWithDependencyTest {
     }
 
     @Test
-    public void test_instancesCollocated_ifDependencyLimitsCollocated() {
+    public void test_dependingInstance_isCollocatedWithDependency() {
         // given
         scopeA = InternalFactory.createRootScope(new MapInstanceManager());
         scopeB = scopeA.createSubscope().limit(LIMIT_ONE, LIMIT_TWO);

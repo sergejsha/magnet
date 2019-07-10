@@ -5,7 +5,7 @@ import magnet.Scope;
 
 @Instance(
     type = UnderTest.class,
-    limit = "*"
+    limitedTo = "*"
 )
 public class UnderTest {
     public UnderTest(Scope scope) {

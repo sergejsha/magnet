@@ -75,8 +75,8 @@ public class Scope_LimitTest {
         observer.assetThat(scopeC).hasNoInstances();
     }
 
-    @Test
-    public void test_limitedInstance_settlesInUnlimitedTopScope() {
+    @Test(expected = IllegalStateException.class)
+    public void test_limitedInstance_fails_ifNoLimitFound() {
         // given
         scopeA = InternalFactory.createRootScope(new HashMapInstanceManager());
         scopeB = scopeA.createSubscope();
@@ -84,17 +84,20 @@ public class Scope_LimitTest {
 
         // when
         scopeC.getSingle(Limited.class);
-
-        // then
-        ScopeObserver observer = new ScopeObserver();
-        scopeA.accept(observer, Integer.MAX_VALUE);
-        observer.assetThat(scopeA).hasInstanceTypes(Limited.class);
-        observer.assetThat(scopeB).hasNoInstances();
-        observer.assetThat(scopeC).hasNoInstances();
     }
 
-    @Test
-    public void test_limitedInstance_ignoresUnmatchedLimit() {
+    @Test(expected = IllegalStateException.class)
+    public void test_limitedInstance_fails_ifQueriedAtParentUnlimitedScope() {
+        // given
+        scopeA = InternalFactory.createRootScope(new HashMapInstanceManager());
+        scopeB = scopeA.createSubscope().limit(LIMIT);
+
+        // when
+        scopeA.getSingle(Limited.class);
+    }
+
+    @Test(expected = IllegalStateException.class)
+    public void test_limitedInstance_fails_ifNoMatchingLimitFound() {
         // given
         scopeA = InternalFactory.createRootScope(new HashMapInstanceManager());
         scopeB = scopeA.createSubscope().limit("limit-two");
@@ -102,13 +105,6 @@ public class Scope_LimitTest {
 
         // when
         scopeC.getSingle(Limited.class);
-
-        // then
-        ScopeObserver observer = new ScopeObserver();
-        scopeA.accept(observer, Integer.MAX_VALUE);
-        observer.assetThat(scopeA).hasInstanceTypes(Limited.class);
-        observer.assetThat(scopeB).hasNoInstances();
-        observer.assetThat(scopeC).hasNoInstances();
     }
 
     @Test

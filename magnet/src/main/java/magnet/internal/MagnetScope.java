@@ -162,7 +162,7 @@ final class MagnetScope implements Scope, Visitor.Scope, FactoryFilter, Instance
         if (this.limits != null) {
             throw new IllegalStateException(
                 String.format(
-                    "Cannot set limits '%s' because they can only be applied once." +
+                    "Cannot set limits '%s' because limits can only be applied once." +
                         " Current limits '%s'", Arrays.toString(limits), Arrays.toString(this.limits))
             );
         }
@@ -322,7 +322,10 @@ final class MagnetScope implements Scope, Visitor.Scope, FactoryFilter, Instance
         if (factory.getScoping() == Scoping.DIRECT) objectDepth = this.depth;
 
         @NotNull String objectLimit = factory.getLimit();
-        if (objectLimit.length() > 0) objectDepth = findLimitedObjectDepth(objectLimit, objectDepth);
+        if (objectLimit.length() > 0) {
+            objectDepth = findLimitedObjectDepth(objectLimit, objectDepth);
+            if (objectDepth < 0) throwLimitNotFound(object, objectType, classifier, objectLimit);
+        }
 
         instantiationContext.onDependencyFound(objectDepth);
 
@@ -373,15 +376,15 @@ final class MagnetScope implements Scope, Visitor.Scope, FactoryFilter, Instance
         while (scope != null) {
             if (objectDepth > scope.depth) {
                 return objectDepth;
-            } else if (scope.isLimitedTo(limit)) {
+            } else if (scope.hasLimit(limit)) {
                 return scope.depth;
             }
             scope = scope.parent;
         }
-        return objectDepth;
+        return -1;
     }
 
-    private boolean isLimitedTo(@NotNull String limit) {
+    private boolean hasLimit(@NotNull String limit) {
         if (limit.length() == 0 || limits == null) {
             return false;
         }
@@ -472,6 +475,47 @@ final class MagnetScope implements Scope, Visitor.Scope, FactoryFilter, Instance
         return limits;
     }
 
+    private <T> void throwLimitNotFound(T object, Class<T> objectType, String classifier, String objectLimit) {
+        StringBuilder logDetail = new StringBuilder("\nQueried instance:");
+
+        logDetail
+            .append("\n\tobject : ").append(object)
+            .append("\n\ttype : ").append(objectType.getName());
+
+        if (classifier.length() > 0) {
+            logDetail
+                .append("\n\tclassifier: '").append(classifier).append("'");
+        }
+
+        logDetail
+            .append("\n\tlimit : '").append(objectLimit).append("' <- required limit");
+
+        logDetail.append("\n\nSearched scopes:\n\t-> ");
+        @Nullable MagnetScope scope = this;
+        while (scope != null) {
+            String scopeName = scope.toString();
+            if (scope.limits != null) {
+                logDetail.append('(');
+                for (String limit : scope.limits) {
+                    logDetail.append("'").append(limit).append("', ");
+                }
+                logDetail.setLength(logDetail.length() - 2);
+                logDetail.append(") ").append(scope.toString());
+            } else logDetail.append(scopeName);
+            logDetail.append("\n\t-> ");
+            scope = scope.parent;
+        }
+        logDetail.setLength(logDetail.length() - 5);
+        logDetail.append(" <root scope>");
+
+        throw new IllegalStateException(
+            String.format(
+                "Cannot register instance because no scope with limit '%s' has been found.\n%s",
+                objectLimit, logDetail
+            )
+        );
+    }
+
     private final static class InstantiationContext {
         private final ArrayDeque<Instantiation> instantiations = new ArrayDeque<>();
         private Instantiation currentInstantiation;
@@ -544,5 +588,4 @@ final class MagnetScope implements Scope, Visitor.Scope, FactoryFilter, Instance
             this.next = next;
         }
     }
-
 }
