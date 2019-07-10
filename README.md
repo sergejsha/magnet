@@ -78,7 +78,7 @@ Custom selectors are easy to write. For more details checkout [magnetx-selector-
 
 # Scope inspection
 
-Dynamic instance binding into scopes is the power of Magnet which comes with its costs - a necessity to see how instances are allocated are runtime. Fortunately Magnet delivers a Stetho powered scope dumper extension. See [this Wiki page](https://github.com/beworker/magnet/wiki/Scope-Inspection) to learn how to configure and use it.
+Dynamic instance binding into scopes is the power of Magnet, which comes with its costs - a necessity to see how instances are  allocated at runtime. Fortunately Magnet has an easy to use Stetho powered scope dumper extension for this purpose. See [this Wiki page](https://github.com/beworker/magnet/wiki/Scope-Inspection) to learn how to configure and use it.
 
 # Gradle
 
