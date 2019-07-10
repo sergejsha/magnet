@@ -76,14 +76,9 @@ Custom selectors are easy to write. For more details checkout [magnetx-selector-
 4. [Hierarchical Scopes][2]
 5. [How to inject Android ViewModels][4]
 
-# Help wanted
+# Scope inspection
 
-The power of Magnet - dynamic injection of instances into scopes - can also become its weakness when you, as a developer, want to see how instances are injected at runtime. For this purpose Magnet needs a visual dependency monitor which can show
-* a graph of current runtime scopes
-* the instances kept in the scopes
-* the IN and OUT dependencies for a selected instance.
-
-The monitor should be implemented for [Stetho](https://github.com/facebook/stetho) or [Flipper](https://github.com/facebook/flipper) or any other reasonable debugging tool of your choice. If you are an expecienced Java/Kotlin developer willing to contribute, you like Magnet and you have capacity for the task - please welcome on board. Your help is warmly appreciated.
+Dynamic instance binding into scopes is the power of Magnet which comes with its costs - a necessity to see how instances are allocated are runtime. Fortunately Magnet delivers a Stetho powered scope dumper extension. See [this Wiki page](https://github.com/beworker/magnet/wiki/Scope-Inspection) to learn how to configure and use it.
 
 # Gradle
 
