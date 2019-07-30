@@ -101,6 +101,14 @@ public @interface Instance {
     Scoping scoping() default Scoping.TOPMOST;
 
     /**
+     * Limit tag to be used with {@link Scoping#TOPMOST} algorithm. If a limit tag is
+     * preset then the instance will be placed at or below the scope having same limit
+     * tag applied to it. If multiple scopes have the same limit tag, then the closest scope
+     * to the scope where the instance gets requested is used.
+     */
+    String limitedTo() default "";
+
+    /**
      * <b>Experimental.</b> Magnet will only create instance of the annotated class if
      * this selector expression is true after evaluation. Magnet currently support single
      * type of expression:

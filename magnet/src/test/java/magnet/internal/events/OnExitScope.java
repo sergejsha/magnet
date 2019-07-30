@@ -1,13 +1,13 @@
 package magnet.internal.events;
 
-import magnet.Scope;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
 
 public class OnExitScope {
-    private final Scope scope;
+    private final @NotNull Object scope;
 
-    public OnExitScope(Scope scope) {
+    public OnExitScope(@NotNull Object scope) {
         this.scope = scope;
     }
 

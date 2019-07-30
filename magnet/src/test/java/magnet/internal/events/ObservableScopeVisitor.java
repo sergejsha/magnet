@@ -1,6 +1,6 @@
 package magnet.internal.events;
 
-import magnet.Scope;
+import magnet.Visitor;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -8,13 +8,13 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class ObservableScopeVisitor implements Scope.Visitor {
+public class ObservableScopeVisitor implements Visitor {
 
     public List<Object> visited = new ArrayList<>();
     private List<OnInstance> instances = new ArrayList<>();
 
     @Override
-    public boolean onEnterScope(@NotNull Scope scope, @Nullable Scope parent) {
+    public boolean onEnterScope(@NotNull Visitor.Scope scope, @Nullable Visitor.Scope parent) {
         flushInstances();
         visited.add(new OnEnterScope(scope, parent));
         return true;
@@ -27,7 +27,7 @@ public class ObservableScopeVisitor implements Scope.Visitor {
     }
 
     @Override
-    public void onExitScope(@NotNull Scope scope) {
+    public void onExitScope(@NotNull Visitor.Scope scope) {
         flushInstances();
         visited.add(new OnExitScope(scope));
     }

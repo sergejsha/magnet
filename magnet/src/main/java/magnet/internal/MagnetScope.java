@@ -20,6 +20,7 @@ import magnet.Classifier;
 import magnet.Scope;
 import magnet.Scoping;
 import magnet.SelectorFilter;
+import magnet.Visitor;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -34,33 +35,31 @@ import java.util.List;
 import java.util.Map;
 
 /* Subject to change. For internal use only. */
-final class MagnetScope implements Scope, FactoryFilter, InstanceBucket.OnInstanceListener {
+final class MagnetScope implements Scope, Visitor.Scope, FactoryFilter, InstanceBucket.OnInstanceListener {
 
     private static final byte CARDINALITY_OPTIONAL = 0;
     private static final byte CARDINALITY_SINGLE = 1;
     private static final byte CARDINALITY_MANY = 2;
 
-    @Nullable private final MagnetScope parent;
-    @NotNull private final InstanceManager instanceManager;
+    private final @Nullable MagnetScope parent;
+    private final @NotNull InstanceManager instanceManager;
+    private final int depth;
 
-    @Nullable private WeakScopeReference childrenScopes;
-    @Nullable private List<InstanceBucket.InjectedInstance> disposables;
+    private @Nullable WeakScopeReference childrenScopes;
+    private @Nullable List<InstanceBucket.InjectedInstance> disposables;
+    private @Nullable String[] limits;
     private boolean disposed = false;
 
     /** Visible for testing */
-    final int depth;
-
-    /** Visible for testing */
-    @NotNull final Map<String, InstanceBucket> instanceBuckets;
+    final @NotNull Map<String, InstanceBucket> instanceBuckets;
 
     @SuppressWarnings("AnonymousHasLambdaAlternative")
-    @NotNull
-    private final ThreadLocal<InstantiationContext> instantiationContext = new ThreadLocal<InstantiationContext>() {
-        @Override
-        protected InstantiationContext initialValue() {
-            return new InstantiationContext();
-        }
-    };
+    private final @NotNull ThreadLocal<InstantiationContext> instantiationContext =
+        new ThreadLocal<InstantiationContext>() {
+            @Override protected InstantiationContext initialValue() {
+                return new InstantiationContext();
+            }
+        };
 
     MagnetScope(@Nullable MagnetScope parent, @NotNull InstanceManager instanceManager) {
         this.depth = parent == null ? 0 : parent.depth + 1;
@@ -70,30 +69,26 @@ final class MagnetScope implements Scope, FactoryFilter, InstanceBucket.OnInstan
     }
 
     @Override
-    @Nullable
-    public <T> T getOptional(@NotNull Class<T> type) {
+    public <T> @Nullable T getOptional(@NotNull Class<T> type) {
         checkNotDisposed();
         InstanceFactory<T> factory = instanceManager.getFilteredInstanceFactory(type, Classifier.NONE, this);
         return findOrInjectOptional(type, Classifier.NONE, factory, CARDINALITY_OPTIONAL);
     }
 
     @Override
-    @Nullable
-    public <T> T getOptional(@NotNull Class<T> type, @NotNull String classifier) {
+    public <T> @Nullable T getOptional(@NotNull Class<T> type, @NotNull String classifier) {
         checkNotDisposed();
         InstanceFactory<T> factory = instanceManager.getFilteredInstanceFactory(type, classifier, this);
         return findOrInjectOptional(type, classifier, factory, CARDINALITY_OPTIONAL);
     }
 
     @Override
-    @NotNull
-    public <T> T getSingle(@NotNull Class<T> type) {
+    public <T> @NotNull T getSingle(@NotNull Class<T> type) {
         return getSingle(type, Classifier.NONE);
     }
 
     @Override
-    @NotNull
-    public <T> T getSingle(@NotNull Class<T> type, @NotNull String classifier) {
+    public <T> @NotNull T getSingle(@NotNull Class<T> type, @NotNull String classifier) {
         checkNotDisposed();
         InstanceFactory<T> factory = instanceManager.getFilteredInstanceFactory(type, classifier, this);
         T object = findOrInjectOptional(type, classifier, factory, CARDINALITY_SINGLE);
@@ -109,35 +104,31 @@ final class MagnetScope implements Scope, FactoryFilter, InstanceBucket.OnInstan
     }
 
     @Override
-    @NotNull
-    public <T> List<T> getMany(@NotNull Class<T> type) {
+    public <T> @NotNull List<T> getMany(@NotNull Class<T> type) {
         checkNotDisposed();
         return getManyObjects(type, Classifier.NONE);
     }
 
     @Override
-    @NotNull
-    public <T> List<T> getMany(@NotNull Class<T> type, @NotNull String classifier) {
+    public <T> @NotNull List<T> getMany(@NotNull Class<T> type, @NotNull String classifier) {
         checkNotDisposed();
         return getManyObjects(type, classifier);
     }
 
     @Override
-    @NotNull
-    public <T> Scope bind(@NotNull Class<T> type, @NotNull T object) {
+    public <T> @NotNull Scope bind(@NotNull Class<T> type, @NotNull T object) {
         bind(type, object, Classifier.NONE);
         return this;
     }
 
     @Override
-    @NotNull
-    public <T> Scope bind(@NotNull Class<T> type, @NotNull T object, @NotNull String classifier) {
+    public <T> @NotNull Scope bind(@NotNull Class<T> type, @NotNull T object, @NotNull String classifier) {
         checkNotDisposed();
         final String key = key(type, classifier);
         Object existing = instanceBuckets.put(
             key,
             new InstanceBucket<>(
-                /* depth = */ depth,
+                /* scope = */ this,
                 /* factory = */ null,
                 /* instanceType = */ type,
                 /* instance = */ object,
@@ -147,21 +138,42 @@ final class MagnetScope implements Scope, FactoryFilter, InstanceBucket.OnInstan
         );
         if (existing != null) {
             throw new IllegalStateException(
-                String.format("Instance of type %s already registered. Existing instance %s, new instance %s",
-                    key, existing, object));
+                String.format(
+                    "Instance of type %s already registered. Existing instance %s, new instance %s",
+                    key, existing, object
+                )
+            );
         }
         return this;
     }
 
     @Override
-    @NotNull
-    public Scope createSubscope() {
+    public @NotNull Scope createSubscope() {
         checkNotDisposed();
 
         MagnetScope child = new MagnetScope(this, instanceManager);
         childrenScopes = new WeakScopeReference(child, childrenScopes);
 
         return child;
+    }
+
+    @Override
+    public @NotNull Scope limit(String... limits) {
+        if (this.limits != null) {
+            throw new IllegalStateException(
+                String.format(
+                    "Cannot set limits '%s' because limits can only be applied once." +
+                        " Current limits '%s'", Arrays.toString(limits), Arrays.toString(this.limits))
+            );
+        }
+        for (String limit : limits) {
+            if (limit.length() == 0 || limit.equals("*")) {
+                throw new IllegalStateException("Limit must not be empty or be a '*'");
+            }
+        }
+        Arrays.sort(limits);
+        this.limits = limits;
+        return this;
     }
 
     @Override
@@ -239,15 +251,16 @@ final class MagnetScope implements Scope, FactoryFilter, InstanceBucket.OnInstan
         SelectorFilter selectorFilter = getOptional(SelectorFilter.class, selector[0]);
         if (selectorFilter == null) {
             throw new IllegalStateException(
-                String.format("Factory %s requires selector '%s', which implementation is not available in the scope." +
+                String.format(
+                    "Factory %s requires selector '%s', which implementation is not available in the scope." +
                         " Make sure to add corresponding %s implementation to the classpath.",
-                    factory, Arrays.toString(selector), SelectorFilter.class));
+                    factory, Arrays.toString(selector), SelectorFilter.class)
+            );
         }
         return selectorFilter.filter(selector);
     }
 
-    @NotNull
-    private <T> List<T> getManyObjects(Class<T> type, String classifier) {
+    private <T> @NotNull List<T> getManyObjects(Class<T> type, String classifier) {
         List<InstanceFactory<T>> factories = instanceManager.getManyInstanceFactories(type, classifier, this);
         if (factories.size() == 0) return Collections.emptyList();
 
@@ -259,9 +272,8 @@ final class MagnetScope implements Scope, FactoryFilter, InstanceBucket.OnInstan
         return objects;
     }
 
-    @Nullable
     @SuppressWarnings("unchecked")
-    private <T> T findOrInjectOptional(
+    private <T> @Nullable T findOrInjectOptional(
         @NotNull Class<T> objectType,
         @NotNull String classifier,
         @Nullable InstanceFactory<T> factory,
@@ -270,9 +282,9 @@ final class MagnetScope implements Scope, FactoryFilter, InstanceBucket.OnInstan
         @NotNull InstantiationContext instantiationContext = this.instantiationContext.get();
         @NotNull String key = key(objectType, classifier);
 
-        InstanceBucket<T> deepInstance = findDeepInstanceBucket(key, factory);
+        InstanceBucket<T> deepInstanceBucket = findDeepInstanceBucket(key, factory);
         if (factory == null) {
-            if (deepInstance == null) {
+            if (deepInstanceBucket == null) {
                 if (cardinality == CARDINALITY_SINGLE) {
                     throw new IllegalStateException(
                         String.format(
@@ -281,21 +293,21 @@ final class MagnetScope implements Scope, FactoryFilter, InstanceBucket.OnInstan
                 }
                 return null;
             }
-            instantiationContext.onDependencyFound(deepInstance.getScopeDepth());
-            return deepInstance.getSingleInstance();
+            instantiationContext.onDependencyFound(deepInstanceBucket.getScope().depth);
+            return deepInstanceBucket.getSingleInstance();
         }
 
         boolean keepInScope = factory.getScoping() != Scoping.UNSCOPED;
         if (keepInScope) {
-            if (deepInstance != null) {
+            if (deepInstanceBucket != null) {
                 boolean isSingleOrOptional = cardinality != CARDINALITY_MANY;
 
                 if (isSingleOrOptional) {
-                    instantiationContext.onDependencyFound(deepInstance.getScopeDepth());
-                    return deepInstance.getSingleInstance();
+                    instantiationContext.onDependencyFound(deepInstanceBucket.getScope().depth);
+                    return deepInstanceBucket.getSingleInstance();
                 }
 
-                T object = deepInstance.getOptional((Class<InstanceFactory<T>>) factory.getClass());
+                T object = deepInstanceBucket.getOptional((Class<InstanceFactory<T>>) factory.getClass());
                 if (object != null) {
                     return object;
                 }
@@ -308,15 +320,22 @@ final class MagnetScope implements Scope, FactoryFilter, InstanceBucket.OnInstan
 
         int objectDepth = instantiationContext.onEndInstantiation();
         if (factory.getScoping() == Scoping.DIRECT) objectDepth = this.depth;
+
+        @NotNull String objectLimit = factory.getLimit();
+        if (objectLimit.length() > 0) {
+            objectDepth = findLimitedObjectDepth(objectLimit, objectDepth);
+            if (objectDepth < 0) throwLimitNotFound(object, objectType, classifier, objectLimit);
+        }
+
         instantiationContext.onDependencyFound(objectDepth);
 
         if (keepInScope) {
 
-            boolean canUseDeepInstances = deepInstance != null
-                && deepInstance.getScopeDepth() == objectDepth;
+            boolean canRegisterAtDeepInstanceBucket = deepInstanceBucket != null
+                && deepInstanceBucket.getScope().depth == objectDepth;
 
-            if (canUseDeepInstances) {
-                deepInstance.registerObject(factory, objectType, object, classifier);
+            if (canRegisterAtDeepInstanceBucket) {
+                deepInstanceBucket.registerObject(factory, objectType, object, classifier);
 
             } else {
                 registerInstanceInScope(
@@ -352,6 +371,26 @@ final class MagnetScope implements Scope, FactoryFilter, InstanceBucket.OnInstan
         return object;
     }
 
+    private int findLimitedObjectDepth(String limit, int objectDepth) {
+        @Nullable MagnetScope scope = this;
+        while (scope != null) {
+            if (objectDepth > scope.depth) {
+                return objectDepth;
+            } else if (scope.hasLimit(limit)) {
+                return scope.depth;
+            }
+            scope = scope.parent;
+        }
+        return -1;
+    }
+
+    private boolean hasLimit(@NotNull String limit) {
+        if (limit.length() == 0 || limits == null) {
+            return false;
+        }
+        return Arrays.binarySearch(limits, limit) > -1;
+    }
+
     private <T> void registerInstanceInScope(
         @NotNull String key,
         int depth,
@@ -365,7 +404,7 @@ final class MagnetScope implements Scope, FactoryFilter, InstanceBucket.OnInstan
             if (bucket == null) {
                 instanceBuckets.put(
                     key,
-                    new InstanceBucket<>(depth, factory, objectType, object, classifier, this)
+                    new InstanceBucket<>(this, factory, objectType, object, classifier, this)
                 );
             } else {
                 bucket.registerObject(factory, objectType, object, classifier);
@@ -409,16 +448,18 @@ final class MagnetScope implements Scope, FactoryFilter, InstanceBucket.OnInstan
     private void acceptAtLevel(int level, Visitor visitor, int depth) {
         if (disposed) return;
 
+        boolean visitScopes = true;
         if (visitor.onEnterScope(this, parent)) {
             Collection<InstanceBucket> buckets = this.instanceBuckets.values();
             for (InstanceBucket bucket : buckets) {
                 if (!bucket.accept(visitor)) {
+                    visitScopes = false;
                     break;
                 }
             }
         }
 
-        if (level < depth) {
+        if (visitScopes && level < depth) {
             WeakScopeReference scopeRef = this.childrenScopes;
             while (scopeRef != null) {
                 MagnetScope scope = scopeRef.get();
@@ -428,6 +469,51 @@ final class MagnetScope implements Scope, FactoryFilter, InstanceBucket.OnInstan
         }
 
         visitor.onExitScope(this);
+    }
+
+    @Override public @Nullable String[] getLimits() {
+        return limits;
+    }
+
+    private <T> void throwLimitNotFound(T object, Class<T> objectType, String classifier, String objectLimit) {
+        StringBuilder logDetail = new StringBuilder("\nQueried instance:");
+
+        logDetail
+            .append("\n\tobject : ").append(object)
+            .append("\n\ttype : ").append(objectType.getName());
+
+        if (classifier.length() > 0) {
+            logDetail
+                .append("\n\tclassifier: '").append(classifier).append("'");
+        }
+
+        logDetail
+            .append("\n\tlimit : '").append(objectLimit).append("' <- required limit");
+
+        logDetail.append("\n\nSearched scopes:\n\t-> ");
+        @Nullable MagnetScope scope = this;
+        while (scope != null) {
+            String scopeName = scope.toString();
+            if (scope.limits != null) {
+                logDetail.append('(');
+                for (String limit : scope.limits) {
+                    logDetail.append("'").append(limit).append("', ");
+                }
+                logDetail.setLength(logDetail.length() - 2);
+                logDetail.append(") ").append(scope.toString());
+            } else logDetail.append(scopeName);
+            logDetail.append("\n\t-> ");
+            scope = scope.parent;
+        }
+        logDetail.setLength(logDetail.length() - 5);
+        logDetail.append(" <root scope>");
+
+        throw new IllegalStateException(
+            String.format(
+                "Cannot register instance because no scope with limit '%s' has been found.\n%s",
+                objectLimit, logDetail
+            )
+        );
     }
 
     private final static class InstantiationContext {
@@ -502,5 +588,4 @@ final class MagnetScope implements Scope, FactoryFilter, InstanceBucket.OnInstan
             this.next = next;
         }
     }
-
 }

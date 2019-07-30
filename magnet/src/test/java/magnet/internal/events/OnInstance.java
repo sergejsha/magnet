@@ -1,8 +1,8 @@
 package magnet.internal.events;
 
-import magnet.Scope.Visitor.Instance;
-import magnet.Scope.Visitor.Instance.Provision;
 import magnet.Scoping;
+import magnet.Visitor.Instance;
+import magnet.Visitor.Provision;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;

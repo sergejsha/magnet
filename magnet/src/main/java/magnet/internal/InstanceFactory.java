@@ -24,6 +24,7 @@ public abstract class InstanceFactory<T> {
 
     public abstract T create(Scope scope);
     public Scoping getScoping() { return Scoping.TOPMOST; }
+    public String getLimit() { return ""; }
     public Class[] getSiblingTypes() { return null; }
     public String[] getSelector() { return null; }
 
@@ -33,5 +34,4 @@ public abstract class InstanceFactory<T> {
             String.format("Instance %s is not disposable", instance)
         );
     }
-
 }

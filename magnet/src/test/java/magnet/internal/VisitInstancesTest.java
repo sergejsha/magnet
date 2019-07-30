@@ -4,6 +4,7 @@ import magnet.Classifier;
 import magnet.Magnet;
 import magnet.Scope;
 import magnet.Scoping;
+import magnet.Visitor;
 import magnet.internal.events.ObservableScopeVisitor;
 import magnet.internal.events.OnEnterScope;
 import magnet.internal.events.OnExitScope;
@@ -14,10 +15,10 @@ import org.junit.Before;
 import org.junit.Test;
 
 import static com.google.common.truth.Truth.assertThat;
-import static magnet.Scope.Visitor.Instance.Provision.BOUND;
-import static magnet.Scope.Visitor.Instance.Provision.INJECTED;
+import static magnet.Visitor.Provision.BOUND;
+import static magnet.Visitor.Provision.INJECTED;
 
-public class Inspection_VisitInstancesTest {
+public class VisitInstancesTest {
 
     private InstrumentedScope scopeA;
     private InstrumentedScope scopeB;
@@ -89,7 +90,7 @@ public class Inspection_VisitInstancesTest {
     public void visitScope_onEnterScope_skipAllInstances() {
         visitor = new ObservableScopeVisitor() {
             @Override
-            public boolean onEnterScope(@NotNull Scope scope, @Nullable Scope parent) {
+            public boolean onEnterScope(@NotNull Visitor.Scope scope, @Nullable Visitor.Scope parent) {
                 super.onEnterScope(scope, parent);
                 return false;
             }
@@ -117,11 +118,8 @@ public class Inspection_VisitInstancesTest {
 
         assertThat(visitor.visited).containsExactly(
             new OnEnterScope(scopeA.scope, null),
-            new OnInstance(BOUND, Bound.class, bound, Classifier.NONE, Scoping.DIRECT),
             new OnInstance(INJECTED, InjectedTopMost.class, injectedTopMost, classifierA, Scoping.TOPMOST),
-            new OnEnterScope(scopeB.scope, scopeA.scope),
-            new OnInstance(INJECTED, InjectedDirect.class, injectedDirect, Classifier.NONE, Scoping.DIRECT),
-            new OnExitScope(scopeB.scope),
+            new OnInstance(INJECTED, InjectedTopMost.class, injectedTopMost, classifierB, Scoping.TOPMOST),
             new OnExitScope(scopeA.scope)
         ).inOrder();
     }
