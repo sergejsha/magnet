@@ -320,12 +320,21 @@ final class MagnetScope implements Scope, Visitor.Scope, FactoryFilter, Instance
         T object = factory.create(this);
 
         int objectDepth = instantiationContext.onEndInstantiation();
-        if (factory.getScoping() == Scoping.DIRECT) objectDepth = this.depth;
+        Scoping objectScoping = factory.getScoping();
 
         @NotNull String objectLimit = factory.getLimit();
         if (objectLimit.length() > 0) {
-            objectDepth = findLimitedObjectDepth(objectLimit, objectDepth);
+            if (objectScoping == Scoping.TOPMOST) {
+                objectDepth = findTopMostLimitedObjectDepth(objectLimit, objectDepth);
+
+            } else if (objectScoping == Scoping.DIRECT) {
+                objectDepth = findDirectLimitedObjectDepth(objectLimit, objectDepth, object, objectType, classifier);
+            }
+
             if (objectDepth < 0) throwLimitNotFound(object, objectType, classifier, objectLimit);
+
+        } else {
+            if (objectScoping == Scoping.DIRECT) objectDepth = this.depth;
         }
 
         instantiationContext.onDependencyFound(objectDepth);
@@ -372,17 +381,37 @@ final class MagnetScope implements Scope, Visitor.Scope, FactoryFilter, Instance
         return object;
     }
 
-    private int findLimitedObjectDepth(String limit, int objectDepth) {
+    private int findTopMostLimitedObjectDepth(String objectLimit, int objectDepth) {
         @Nullable MagnetScope scope = this;
         while (scope != null) {
             if (objectDepth > scope.depth) {
                 return objectDepth;
-            } else if (scope.hasLimit(limit)) {
+            } else if (scope.hasLimit(objectLimit)) {
                 return scope.depth;
             }
             scope = scope.parent;
         }
         return -1;
+    }
+
+    private <T> int findDirectLimitedObjectDepth(
+            String objectLimit, int objectDepth, T object, Class<T> objectType, String classifier
+    ) {
+        @Nullable MagnetScope scope = this;
+        int limitingScopeDepth = -1;
+        while (scope != null) {
+            if (scope.hasLimit(objectLimit)) {
+                limitingScopeDepth = scope.depth;
+                break;
+            }
+            scope = scope.parent;
+        }
+
+        if (limitingScopeDepth < objectDepth) {
+            throwCannotAllocateDirectInLimitingScope(object, objectType, classifier, objectLimit);
+        }
+
+        return limitingScopeDepth;
     }
 
     private boolean hasLimit(@NotNull String limit) {
@@ -474,6 +503,17 @@ final class MagnetScope implements Scope, Visitor.Scope, FactoryFilter, Instance
 
     @Override public @Nullable String[] getLimits() {
         return limits;
+    }
+
+    private <T> void throwCannotAllocateDirectInLimitingScope(
+            T object, Class<T> objectType, String classifier, String objectLimit
+    ) {
+        throw new IllegalStateException(
+                String.format(
+                        "Cannot allocate DIRECT scoped instance in scope with limit '%s'.",
+                        limit()
+                )
+        );
     }
 
     private <T> void throwLimitNotFound(T object, Class<T> objectType, String classifier, String objectLimit) {

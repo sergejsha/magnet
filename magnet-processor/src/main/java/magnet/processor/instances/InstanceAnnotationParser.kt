@@ -378,9 +378,9 @@ internal abstract class AnnotationParser<in E : Element>(
             element.validationError(
                 "Limit must not use reserved '*' value. Use another constant."
             )
-        } else if (limit.isNotEmpty() && scoping != Scoping.TOPMOST.name) {
+        } else if (limit.isNotEmpty() && scoping == Scoping.UNSCOPED.name) {
             element.validationError(
-                "Limit can only be used with Scoping.TOPMOST. Actual scoping: Scoping.$scoping"
+                "Limit can only be used with Scoping.TOPMOST and Scoping.DIRECT. Current scoping: Scoping.$scoping"
             )
         }
 
