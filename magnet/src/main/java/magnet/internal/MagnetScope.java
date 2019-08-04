@@ -407,7 +407,7 @@ final class MagnetScope implements Scope, Visitor.Scope, FactoryFilter, Instance
             scope = scope.parent;
         }
 
-        if (limitingScopeDepth < objectDepth) {
+        if (limitingScopeDepth > -1 && limitingScopeDepth < objectDepth) {
             throwCannotAllocateDirectInLimitingScope(object, objectType, classifier, objectLimit);
         }
 
