@@ -309,6 +309,7 @@ final class MagnetScope implements Scope, Visitor.Scope, FactoryFilter, Instance
 
                 T object = deepInstanceBucket.getOptional((Class<InstanceFactory<T>>) factory.getClass());
                 if (object != null) {
+                    instantiationContext.onDependencyFound(deepInstanceBucket.getScope().depth);
                     return object;
                 }
             }
