@@ -71,7 +71,7 @@ public class Scope_LimitDirectScoping_SingleInstanceTest {
     @Test
     public void test_GetFromAboveLimitedScope() {
         expected.expect(RuntimeException.class);
-        expected.expectMessage("Cannot allocate");
+        expected.expectMessage("Cannot register instance");
 
         // given
         scopeA = InternalFactory.createRootScope(new HashMapInstanceManager());
