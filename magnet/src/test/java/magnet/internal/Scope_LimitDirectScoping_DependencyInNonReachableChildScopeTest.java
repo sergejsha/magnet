@@ -1,7 +1,5 @@
 package magnet.internal;
 
-import magnet.Scope;
-import magnet.Scoping;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.junit.Rule;
@@ -14,27 +12,27 @@ import org.mockito.Mock;
 import java.util.HashMap;
 import java.util.List;
 
+import magnet.Scope;
+import magnet.Scoping;
+
 @RunWith(JUnit4.class)
-public class Scope_LimitDirectScoping_CannotAllocateTest {
+public class Scope_LimitDirectScoping_DependencyInNonReachableChildScopeTest {
 
     // Scopes: A <- B<limit> <- C { Bound2 }
-    // Instances: Dep1<limit>(DIRECT) -> Dep2 -> Bound2
-    // When: getSingle<Dep1>
-    // Expected: Fail
+    // Instances: DIRECT Dep1<limit> -> Dep2 -> Bound2
 
-    @Rule
-    public ExpectedException expected = ExpectedException.none();
+    public @Rule ExpectedException expected = ExpectedException.none();
 
     private final static String LIMIT = "limit";
 
-    @Mock private Scope scopeA;
-    @Mock private Scope scopeB;
-    @Mock private Scope scopeC;
+    private @Mock Scope scopeA;
+    private @Mock Scope scopeB;
+    private @Mock Scope scopeC;
 
     @Test
     public void test() {
-        expected.expect(RuntimeException.class);
-        expected.expectMessage("Cannot allocate");
+        expected.expect(RegistrationException.class);
+        expected.expectMessage("non-reachable child scope");
 
         // given
         scopeA = InternalFactory.createRootScope(new HashMapInstanceManager());
@@ -45,7 +43,8 @@ public class Scope_LimitDirectScoping_CannotAllocateTest {
         scopeC.getSingle(Dep1.class);
     }
 
-    @SuppressWarnings("unchecked") private static class HashMapInstanceManager implements InstanceManager {
+    @SuppressWarnings("unchecked")
+    private static class HashMapInstanceManager implements InstanceManager {
         private HashMap<Class, InstanceFactory> factories = new HashMap<>();
 
         HashMapInstanceManager() {
@@ -53,12 +52,12 @@ public class Scope_LimitDirectScoping_CannotAllocateTest {
             factories.put(Dep2.class, new Dep2Factory());
         }
 
-        @Override @Nullable public <T> InstanceFactory<T> getInstanceFactory(
+        @Override public <T> @Nullable InstanceFactory<T> getInstanceFactory(
             Class<T> instanceType, String classifier, Class<InstanceFactory<T>> factoryType) {
             return factories.get(instanceType);
         }
 
-        @Override @Nullable public <T> InstanceFactory<T> getFilteredInstanceFactory(
+        @Override public <T> @Nullable InstanceFactory<T> getFilteredInstanceFactory(
             Class<T> type, String classifier, FactoryFilter factoryFilter) {
             return factories.get(type);
         }
@@ -69,14 +68,15 @@ public class Scope_LimitDirectScoping_CannotAllocateTest {
         }
     }
 
-    private static class Bound2 { }
-
+    private static class Bound2 {}
     private static class Dep1 {}
+
     private static class Dep1Factory extends InstanceFactory<Dep1> {
         @Override public Dep1 create(Scope scope) {
             scope.getSingle(Dep2.class);
             return new Dep1();
         }
+
         @Override public Scoping getScoping() { return Scoping.DIRECT; }
         @Override public String getLimit() { return LIMIT; }
     }

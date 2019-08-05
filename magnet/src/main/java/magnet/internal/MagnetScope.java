@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018 Sergej Shafarenka, www.halfbit.de
+ * Copyright (C) 2018-2019 Sergej Shafarenka, www.halfbit.de
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,11 +16,6 @@
 
 package magnet.internal;
 
-import magnet.Classifier;
-import magnet.Scope;
-import magnet.Scoping;
-import magnet.SelectorFilter;
-import magnet.Visitor;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -33,6 +28,12 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import magnet.Classifier;
+import magnet.Scope;
+import magnet.Scoping;
+import magnet.SelectorFilter;
+import magnet.Visitor;
 
 /* Subject to change. For internal use only. */
 final class MagnetScope implements Scope, Visitor.Scope, FactoryFilter, InstanceBucket.OnInstanceListener {
@@ -50,7 +51,6 @@ final class MagnetScope implements Scope, Visitor.Scope, FactoryFilter, Instance
     private @Nullable String[] limits;
     private boolean disposed = false;
 
-    /** Visible for testing */
     final @NotNull Map<String, InstanceBucket> instanceBuckets;
 
     @SuppressWarnings("AnonymousHasLambdaAlternative")
@@ -162,7 +162,7 @@ final class MagnetScope implements Scope, Visitor.Scope, FactoryFilter, Instance
         if (this.limits != null) {
             throw new IllegalStateException(
                 String.format(
-                    "Cannot set limits '%s' because limits can only be applied once." +
+                    "Cannot set limits to '%s' because they must only be applied once." +
                         " Current limits '%s'", Arrays.toString(limits), Arrays.toString(this.limits))
             );
         }
@@ -293,7 +293,7 @@ final class MagnetScope implements Scope, Visitor.Scope, FactoryFilter, Instance
                 }
                 return null;
             }
-            instantiationContext.onDependencyFound(deepInstanceBucket.getScope().depth);
+            instantiationContext.onDependencyFound(deepInstanceBucket.getScope().depth, key);
             return deepInstanceBucket.getSingleInstance();
         }
 
@@ -303,13 +303,13 @@ final class MagnetScope implements Scope, Visitor.Scope, FactoryFilter, Instance
                 boolean isSingleOrOptional = cardinality != CARDINALITY_MANY;
 
                 if (isSingleOrOptional) {
-                    instantiationContext.onDependencyFound(deepInstanceBucket.getScope().depth);
+                    instantiationContext.onDependencyFound(deepInstanceBucket.getScope().depth, key);
                     return deepInstanceBucket.getSingleInstance();
                 }
 
                 T object = deepInstanceBucket.getOptional((Class<InstanceFactory<T>>) factory.getClass());
                 if (object != null) {
-                    instantiationContext.onDependencyFound(deepInstanceBucket.getScope().depth);
+                    instantiationContext.onDependencyFound(deepInstanceBucket.getScope().depth, key);
                     return object;
                 }
             }
@@ -319,7 +319,8 @@ final class MagnetScope implements Scope, Visitor.Scope, FactoryFilter, Instance
 
         T object = factory.create(this);
 
-        int objectDepth = instantiationContext.onEndInstantiation();
+        Instantiation instantiation = instantiationContext.onEndInstantiation();
+        int objectDepth = instantiation.dependencyDepth;
         Scoping objectScoping = factory.getScoping();
 
         @NotNull String objectLimit = factory.getLimit();
@@ -328,7 +329,9 @@ final class MagnetScope implements Scope, Visitor.Scope, FactoryFilter, Instance
                 objectDepth = findTopMostLimitedObjectDepth(objectLimit, objectDepth);
 
             } else if (objectScoping == Scoping.DIRECT) {
-                objectDepth = findDirectLimitedObjectDepth(objectLimit, objectDepth, object, objectType, classifier);
+                objectDepth = findDirectLimitedObjectDepth(
+                    objectLimit, objectDepth, object, objectType, classifier, instantiation
+                );
             }
 
             if (objectDepth < 0) throwLimitNotFound(object, objectType, classifier, objectLimit);
@@ -337,7 +340,7 @@ final class MagnetScope implements Scope, Visitor.Scope, FactoryFilter, Instance
             if (objectScoping == Scoping.DIRECT) objectDepth = this.depth;
         }
 
-        instantiationContext.onDependencyFound(objectDepth);
+        instantiationContext.onDependencyFound(objectDepth, key);
 
         if (keepInScope) {
 
@@ -395,7 +398,8 @@ final class MagnetScope implements Scope, Visitor.Scope, FactoryFilter, Instance
     }
 
     private <T> int findDirectLimitedObjectDepth(
-            String objectLimit, int objectDepth, T object, Class<T> objectType, String classifier
+        String objectLimit, int objectDepth, T object, Class<T> objectType, String classifier,
+        Instantiation instantiation
     ) {
         @Nullable MagnetScope scope = this;
         int limitingScopeDepth = -1;
@@ -408,7 +412,17 @@ final class MagnetScope implements Scope, Visitor.Scope, FactoryFilter, Instance
         }
 
         if (limitingScopeDepth > -1 && limitingScopeDepth < objectDepth) {
-            throwCannotAllocateDirectInLimitingScope(object, objectType, classifier, objectLimit);
+            StringBuilder logDetails = new StringBuilder();
+            buildInstanceDetails(logDetails, object, objectType, classifier, objectLimit);
+
+            throw new RegistrationException(
+                "Cannot register instance in limiting scope [depth: %s] because its" +
+                    " dependency '%s' is located in non-reachable child scope [depth: %s].\n%s",
+                limitingScopeDepth,
+                instantiation.dependencyKey,
+                instantiation.dependencyDepth,
+                logDetails
+            );
         }
 
         return limitingScopeDepth;
@@ -461,7 +475,6 @@ final class MagnetScope implements Scope, Visitor.Scope, FactoryFilter, Instance
         return parent.findDeepInstanceBucket(key, factory);
     }
 
-    /** Visible for testing */
     @NotNull
     static String key(Class<?> type, String classifier) {
         if (classifier == null || classifier.length() == 0) {
@@ -505,31 +518,27 @@ final class MagnetScope implements Scope, Visitor.Scope, FactoryFilter, Instance
         return limits;
     }
 
-    private <T> void throwCannotAllocateDirectInLimitingScope(
-            T object, Class<T> objectType, String classifier, String objectLimit
+    private static <T> void buildInstanceDetails(
+        StringBuilder builder, T object, Class<T> objectType, String classifier, String objectLimit
     ) {
-        throw new IllegalStateException(
-                String.format(
-                        "Cannot allocate DIRECT scoped instance in scope with limit '%s'.",
-                        limit()
-                )
-        );
-    }
-
-    private <T> void throwLimitNotFound(T object, Class<T> objectType, String classifier, String objectLimit) {
-        StringBuilder logDetail = new StringBuilder("\nQueried instance:");
-
-        logDetail
+        builder
+            .append("Instance:")
             .append("\n\tobject : ").append(object)
             .append("\n\ttype : ").append(objectType.getName());
 
         if (classifier.length() > 0) {
-            logDetail
+            builder
                 .append("\n\tclassifier: '").append(classifier).append("'");
         }
 
-        logDetail
-            .append("\n\tlimit : '").append(objectLimit).append("' <- required limit");
+        builder
+            .append("\n\tlimit : '").append(objectLimit).append("'");
+    }
+
+    private <T> void throwLimitNotFound(T object, Class<T> objectType, String classifier, String objectLimit) {
+        StringBuilder logDetail = new StringBuilder();
+        buildInstanceDetails(logDetail, object, objectType, classifier, objectLimit);
+        logDetail.append(" <- required limit");
 
         logDetail.append("\n\nSearched scopes:\n\t-> ");
         @Nullable MagnetScope scope = this;
@@ -549,11 +558,9 @@ final class MagnetScope implements Scope, Visitor.Scope, FactoryFilter, Instance
         logDetail.setLength(logDetail.length() - 5);
         logDetail.append(" <root scope>");
 
-        throw new IllegalStateException(
-            String.format(
-                "Cannot register instance because no scope with limit '%s' has been found.\n%s",
-                objectLimit, logDetail
-            )
+        throw new RegistrationException(
+            "Cannot register instance because no scope with limit '%s' has been found.\n%s",
+            objectLimit, logDetail
         );
     }
 
@@ -571,16 +578,17 @@ final class MagnetScope implements Scope, Visitor.Scope, FactoryFilter, Instance
             }
         }
 
-        int onEndInstantiation() {
-            int resultDepth = currentInstantiation.depth;
+        @NotNull Instantiation onEndInstantiation() {
+            Instantiation instantiation = currentInstantiation;
             currentInstantiation = instantiations.isEmpty() ? null : instantiations.pollFirst();
-            return resultDepth;
+            return instantiation;
         }
 
-        void onDependencyFound(int dependencyDepth) {
+        void onDependencyFound(int dependencyDepth, @NotNull String dependencyKey) {
             if (currentInstantiation == null) return;
-            if (dependencyDepth > currentInstantiation.depth) {
-                currentInstantiation.depth = dependencyDepth;
+            if (dependencyDepth > currentInstantiation.dependencyDepth) {
+                currentInstantiation.dependencyDepth = dependencyDepth;
+                currentInstantiation.dependencyKey = dependencyKey;
             }
         }
 
@@ -600,7 +608,8 @@ final class MagnetScope implements Scope, Visitor.Scope, FactoryFilter, Instance
 
     private final static class Instantiation {
         final String key;
-        int depth;
+        int dependencyDepth;
+        @Nullable String dependencyKey;
 
         Instantiation(String key) {
             this.key = key;
@@ -621,9 +630,7 @@ final class MagnetScope implements Scope, Visitor.Scope, FactoryFilter, Instance
     }
 
     private final static class WeakScopeReference extends WeakReference<MagnetScope> {
-        @Nullable
-        private WeakScopeReference next;
-
+        private @Nullable WeakScopeReference next;
         WeakScopeReference(MagnetScope referent, @Nullable WeakScopeReference next) {
             super(referent);
             this.next = next;

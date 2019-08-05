@@ -1,8 +1,5 @@
 package magnet.internal;
 
-import magnet.Scope;
-import magnet.Scoping;
-import magnet.internal.observer.ScopeObserver;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.junit.Rule;
@@ -15,17 +12,23 @@ import org.mockito.Mock;
 import java.util.HashMap;
 import java.util.List;
 
+import magnet.Scope;
+import magnet.Scoping;
+import magnet.internal.observer.ScopeObserver;
+
 @RunWith(JUnit4.class)
 public class Scope_LimitDirectScoping_InstanceWithDependencyTest {
 
-    @Rule
-    public ExpectedException expected = ExpectedException.none();
+    // Scopes: A <- B<limit> <- C { Bound2 }
+    // Instances: Dep2 -> { DIRECT Dep1<limit>, Bound2 }
+
+    public @Rule ExpectedException expected = ExpectedException.none();
 
     private final static String LIMIT = "limit";
 
-    @Mock private Scope scopeA;
-    @Mock private Scope scopeB;
-    @Mock private Scope scopeC;
+    private @Mock Scope scopeA;
+    private @Mock Scope scopeB;
+    private @Mock Scope scopeC;
 
     @Test
     public void test_GetFromUnderLimitedScope() {
@@ -47,7 +50,7 @@ public class Scope_LimitDirectScoping_InstanceWithDependencyTest {
 
     @Test
     public void test_GetFromLimitedScope() {
-        expected.expect(RuntimeException.class);
+        expected.expect(IllegalStateException.class);
         expected.expectMessage("not found in scopes");
 
         // given
@@ -59,7 +62,8 @@ public class Scope_LimitDirectScoping_InstanceWithDependencyTest {
         scopeB.getSingle(Dep2.class);
     }
 
-    @SuppressWarnings("unchecked") private static class HashMapInstanceManager implements InstanceManager {
+    @SuppressWarnings("unchecked")
+    private static class HashMapInstanceManager implements InstanceManager {
         private HashMap<Class, InstanceFactory> factories = new HashMap<>();
 
         HashMapInstanceManager() {
@@ -67,12 +71,12 @@ public class Scope_LimitDirectScoping_InstanceWithDependencyTest {
             factories.put(Dep2.class, new Dep2Factory());
         }
 
-        @Override @Nullable public <T> InstanceFactory<T> getInstanceFactory(
+        @Override public <T> @Nullable InstanceFactory<T> getInstanceFactory(
             Class<T> instanceType, String classifier, Class<InstanceFactory<T>> factoryType) {
             return factories.get(instanceType);
         }
 
-        @Override @Nullable public <T> InstanceFactory<T> getFilteredInstanceFactory(
+        @Override public <T> @Nullable InstanceFactory<T> getFilteredInstanceFactory(
             Class<T> type, String classifier, FactoryFilter factoryFilter) {
             return factories.get(type);
         }
@@ -83,7 +87,7 @@ public class Scope_LimitDirectScoping_InstanceWithDependencyTest {
         }
     }
 
-    private static class Bound2 { }
+    private static class Bound2 {}
 
     private static class Dep1 {}
     private static class Dep1Factory extends InstanceFactory<Dep1> {
