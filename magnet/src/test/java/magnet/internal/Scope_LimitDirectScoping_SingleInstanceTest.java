@@ -68,7 +68,7 @@ public class Scope_LimitDirectScoping_SingleInstanceTest {
 
     @Test
     public void test_GetFromAboveLimitedScope() {
-        expected.expect(RegistrationException.class);
+        expected.expect(IllegalStateException.class);
         expected.expectMessage("Cannot register instance");
 
         // given

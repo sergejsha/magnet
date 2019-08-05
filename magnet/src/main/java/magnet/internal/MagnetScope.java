@@ -415,13 +415,15 @@ final class MagnetScope implements Scope, Visitor.Scope, FactoryFilter, Instance
             StringBuilder logDetails = new StringBuilder();
             buildInstanceDetails(logDetails, object, objectType, classifier, objectLimit);
 
-            throw new RegistrationException(
-                "Cannot register instance in limiting scope [depth: %s] because its" +
-                    " dependency '%s' is located in non-reachable child scope [depth: %s].\n%s",
-                limitingScopeDepth,
-                instantiation.dependencyKey,
-                instantiation.dependencyDepth,
-                logDetails
+            throw new IllegalStateException(
+                String.format(
+                    "Cannot register instance in limiting scope [depth: %s] because its" +
+                        " dependency '%s' is located in non-reachable child scope [depth: %s].\n%s",
+                    limitingScopeDepth,
+                    instantiation.dependencyKey,
+                    instantiation.dependencyDepth,
+                    logDetails
+                )
             );
         }
 
@@ -558,9 +560,11 @@ final class MagnetScope implements Scope, Visitor.Scope, FactoryFilter, Instance
         logDetail.setLength(logDetail.length() - 5);
         logDetail.append(" <root scope>");
 
-        throw new RegistrationException(
-            "Cannot register instance because no scope with limit '%s' has been found.\n%s",
-            objectLimit, logDetail
+        throw new IllegalStateException(
+            String.format(
+                "Cannot register instance because no scope with limit '%s' has been found.\n%s",
+                objectLimit, logDetail
+            )
         );
     }
 

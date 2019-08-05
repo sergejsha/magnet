@@ -31,7 +31,7 @@ public class Scope_LimitDirectScoping_DependencyInNonReachableChildScopeTest {
 
     @Test
     public void test() {
-        expected.expect(RegistrationException.class);
+        expected.expect(IllegalStateException.class);
         expected.expectMessage("non-reachable child scope");
 
         // given
