@@ -69,7 +69,7 @@ public class Scope_LimitDirectScoping_SingleInstanceTest {
     @Test
     public void test_GetFromAboveLimitedScope() {
         expected.expect(IllegalStateException.class);
-        expected.expectMessage("Cannot register instance");
+        expected.expectMessage("no scope with limit");
 
         // given
         scopeA = InternalFactory.createRootScope(new HashMapInstanceManager());
