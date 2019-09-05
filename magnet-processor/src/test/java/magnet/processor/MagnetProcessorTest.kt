@@ -583,14 +583,16 @@ class MagnetProcessorTest {
     }
 
     @Test
-    fun generateFactory_Limit_ScopingDirect_Fails() {
-        val root = "Limit_ScopingDirect_Fails"
+    fun generateFactory_Limit_ScopingDirect_GeneratesGetter() {
+        val root = "Limit_ScopingDirect_GeneratesGetter"
         val compilation = Compiler.javac()
             .withProcessors(MagnetProcessor())
             .compile(withResource("$root/UnderTest.java"))
 
-        assertThat(compilation).failed()
-        assertThat(compilation).hadErrorContaining("Limit can only be used with Scoping.TOPMOST")
+        assertThat(compilation).succeededWithoutWarnings()
+        assertThat(compilation)
+                .generatedSourceFile("app/UnderTestMagnetFactory")
+                .hasSourceEquivalentTo(withResource("$root/expected/UnderTestMagnetFactory.java"))
     }
 
     @Test
