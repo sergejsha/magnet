@@ -75,6 +75,7 @@ Custom selectors are easy to write. For more details checkout [magnetx-selector-
 3. [Dependency Inversion][1]
 4. [Hierarchical Scopes][2]
 5. [How to inject Android ViewModels][4]
+6. [Magnet – an alternative to Dagger][5]
 
 # Scope inspection
 
@@ -130,3 +131,4 @@ limitations under the License.
 [2]: https://github.com/beworker/magnet/wiki/Dependency-auto-scoping
 [3]: https://github.com/beworker/g1
 [4]: https://github.com/beworker/magnet/issues/69#issuecomment-468033997
+[5]: https://www.thomaskeller.biz/blog/2019/10/09/magnet-an-alternative-to-dagger/
