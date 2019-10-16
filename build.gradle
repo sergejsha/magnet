@@ -33,7 +33,7 @@ allprojects {
 ext {
     appJavaVersion = JavaVersion.VERSION_1_8
     toolsJavaVersion = JavaVersion.VERSION_1_8
-    kotlinExtJavaVersion = JavaVersion.VERSION_1_6
+    kotlinExtJavaVersion = JavaVersion.VERSION_1_8
 }
 
 ext.deps = [:]
@@ -46,13 +46,13 @@ ext.deps.android = 'com.google.android:android:4.1.1.4'
 ext.deps.rxandroid = 'io.reactivex.rxjava2:rxandroid:2.1.1'
 ext.deps.leakcanary = 'com.squareup.leakcanary:leakcanary-android:1.6.3'
 ext.deps.stetho = 'com.facebook.stetho:stetho:1.5.1'
-ext.deps.kotlinMetadata = 'org.jetbrains.kotlinx:kotlinx-metadata-jvm:0.0.5'
+ext.deps.kotlinMetadata = 'org.jetbrains.kotlinx:kotlinx-metadata-jvm:0.1.0'
 ext.deps.annotations = 'org.jetbrains:annotations:16.0.1'
 
 // testing
 ext.deps.junit = 'junit:junit:4.12'
 ext.deps.jsr305 = 'com.google.code.findbugs:jsr305:3.0.2'
-ext.deps.mockito = 'org.mockito:mockito-core:2.11.0'
-ext.deps.mockitoKotlin = 'com.nhaarman.mockitokotlin2:mockito-kotlin:2.1.0'
+ext.deps.mockito = 'org.mockito:mockito-core:2.28.2'
+ext.deps.mockitoKotlin = 'com.nhaarman.mockitokotlin2:mockito-kotlin:2.2.0'
 ext.deps.truth = 'com.google.truth:truth:0.37'
 ext.deps.compileTesting = 'com.google.testing.compile:compile-testing:0.15'
