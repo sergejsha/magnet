@@ -116,6 +116,16 @@ For more information refer to Magnet documentation.
 - Extensible - some `magnetx` extensions are available
 - Customizable - custom factories and instance selectors
 
+# Why Magnet?
+
+Magnet was crafted with simplicity and development speed in mind. It lets developers spend less time on DI configuration and do more other stuff, also more mistakes when used inattentively. Magnet let you write highly modular code where modules can be added/removed in build scripts without necessity to adapt source code. It might be interesting for individual and teams of professional developers, who know very well why they want to do DI Magnet way.
+
+# Why not Magnet?
+
+If compile time consistency validation is your highest priority, I recommend using awesome [Dagger2](https://github.com/google/dagger) instead. You will spend more time on DI configuration but Dagger2 lets you keep it highly consistent and error prone (in most cases) very early in the development cycle - at compile time.
+
+Peace and love you all.
+
 # Gradle
 
 Kotlin
@@ -147,16 +157,6 @@ dependencies {
 ```
 -keep class magnet.internal.MagnetIndexer { *; }
 ```
-
-# Why Magnet?
-
-Magnet was crafted with simplicity and development speed in mind. It lets developers spend less time on DI configuration and do more other stuff, also more mistakes when used inattentively. Magnet let you write highly modular code where modules can be added/removed in build scripts without necessity to adapt source code. It might be interesting for individual and teams of professional developers, who know very well why they want to do DI Magnet way.
-
-# Why not Magnet?
-
-If compile time consistency validation is your highest priority, I recommend using awesome [Dagger2](https://github.com/google/dagger) instead. You will spend more time on DI configuration but Dagger2 lets you keep it highly consistent and error prone (in most cases) very early in the development cycle - at compile time.
-
-Peace and love you all.
 
 # License
 
