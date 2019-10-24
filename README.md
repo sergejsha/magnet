@@ -4,113 +4,162 @@
 [![Maven Central](http://img.shields.io/maven-central/v/de.halfbit/magnet.svg)](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22de.halfbit%22%20a%3A%22magnet%22)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](http://www.apache.org/licenses/LICENSE-2.0)
 
-<img src="documentation/images/magnet.png" width="100" />
-<hr1> 
+# Magnet
 
-Magnet is a concise dependency injection and [dependency inversion][1] library for Android, designed for highly modular applications. Magnet operates on hierarchical dependency scopes where a child scope extends its parent scope by keeping a reference to it.
+Magnet is a concise, scope tree based Dependency Injection (DI) library designed for highly modular Android applications. It consists of two parts: an annotation processor (Kotlin) and a reflection free runtime library (Java + Kotlin).
 
-<img src="documentation/images/scopes.png" width="680" />
+# Design
 
-An instance is typically injected within a scope. Instance can depend on other instances whithin the same or a parent scope. Magnet will take care for injecting and keeping the instance in the right scope, where all required instance dependencies can be satisfied. Thus you don't have to declare any modules and componets, and then bind them together. You just define dependencies in your class constructor, optionally declare how to scope the instance and Magnet will do the rest. 
+Magnet defines and opetates on two core concepts: `Scopes` and `Instances`.
 
-Here is a slightly simplified example of how Magnet would build Dagger's coffe maker.
-
-```kotlin
-interface Pump
-interface Heater
-
-@Instance(type = Pump::class)
-internal class Thermosiphon(private val heater: Heater) : Pump
-
-@Instance(type = Heater::class)
-internal class ElectricHeater(): Heater
-
-@Instance(type = CoffeeMaker::class)
-class CoffeeMaker(
-   private val heater: Heater,
-   private val pump: Pump
-)
-
-val scope = Magnet.createScope()
-val coffeeMaker: CoffeeMaker = scope.getSingle()
+```
+diagram 0: to be added
 ```
 
-This desing makes dependency injection so easy that it becomes hard not to use it.
+`Scope` is a container for instances. Scopes can be combined into a hierarchical tree by referencing parent scopes. The most top scope of the tree hierarchy, which has no parent scope, is called the root scope.
 
-# Unique features
+`Instance` is a concrete occurance of an injected type. Instances can be allocated in scopes (scoped instances) or outside of scopes (unscoped instances).
 
-1. Magnet does not force you to use any generated classes in your code. This dramatically improves user experience when code does not compile due to an error. Delevoper will see a single error at a single location and not hundreds of errors at all places, where generated code is referenced. If you used dagger, you know what I mean. 
+# The Dependency Rule
 
-2. Magnet is capable of injecting annotated classes from **compiled** libraries. This means you can extend funtionality of your application by just adding libraries as a dependency to the compilation. No source modification is necessary. See how [magnetx-app-leakcanary](magnet-extensions/magnetx-app-leakcanary) and [magnetx-app-rxandroid](magnet-extensions/magnetx-app-rxandroid) leverage this feature.
+Scopes depend on each other using the strong dependency rule - *scope dependency can only point torwards its parent scope*. The dependency direction between two scopes enforces the direction of dependencies between instances allocated in those scopes. Instances allocated in a parent scope can know nothing about instances allocated in its child scopes. This simple design rule helps preventing memory leaks and allows safe disposal of child scopes and garbage collecting instances allocated there.
 
-3. Magnet has a concept of extensible declarative injection selectors, which gives you additional control over when instances should be injected and when not. The example down below injects `AudioFocusImplLegacy` implementation of `AudioFocus` interface, if current Android API level is less than 26 and `AudioFocusImpl26` one otherwise.
+# Getting Started
+
+In the example below we will compose a very naive `MediaPlayer` which loads media using a `MediaLoader` and then plays it.
 
 ```kotlin
-interface AudioFocus
+fun main() {
+   val rootScope = MagnetScope.createRootScope()
+   val playerScope = rootScope.createSubscope {
+      bind(Uri.parse("https://my-media-file"))
+   }
+   
+   // mark 1
+   val mediaPlayer = playerScope.getSingle<MediaPlayer>()
+   mediaPlayer.playWhenReady()
+   
+   // mark 2
+   Thread.sleep(5000)
+   playerScope.dispose()
+   
+   // mark 3
+}
 
-@Instance(
-    type = AudioFocus::class,
-    selector = "android.api < 26"
-)
-internal class AudioFocusLegacy : AudioFocus
+// MediaPlayer.kt
+interface MediaPlayer {
+   fun playWhenReady()
+}
 
-@Instance(
-    type = AudioFocus::class,
-    selector = "android.api >= 26"
-)
-internal class AudioFocusV26: AudioFocus
+@Instance(type = MediaPlayer::class, disposer = "dispose")
+internal class DefaultMediaPlayer(
+   private val assetId: Uri,
+   private val mediaLoader: MediaLoader
+) : MediaPlayer {
+   override fun playWhenReady() { ... }
+   fun dispose() { ... }
+}
 
-val scope = Magnet.createScope()
-val audioFocus: AudioFocus = scope.getSingle()
+// MediaLoader.kt
+interface MediaLoader {
+   fun load(mediaUri: Uri): Single<Media>
+}
+
+@Instance(type = MediaLoader::class)
+internal class DefaultMediaLoader() : MediaLoader {
+   override fun load(mediaUri: Uri): Single<Media> { ... }
+}
 ```
 
-Custom selectors are easy to write. For more details checkout [magnetx-selector-android](magnet-extensions/magnetx-selector-android) or [magnetx-selector-features](magnet-extensions/magnetx-selector-features) modules.
+The diagram below shows how Magnet manages the scope hierarchy when different marks of the main function are reached.
 
-4. Magnet supports dependency inversion between app modules. See [sample app][3] for more detail.
+At `Mark 1`, scopes are created
+
+```
+diagram 1: to be added
+```
+
+At `Mark 2`, player is created
+
+```
+diagram 2: to be added
+```
+
+At `Mark 3`, player scope (with player instance) is disposed
+
+```
+diagam 3: to be added
+```
+
+For more information refer to Magnet documentation.
 
 # Documentation
 
 1. [Developer Guide](https://www.halfbit.de/magnet/developer-guide/)
-2. [Sample application][3]
-3. [Dependency Inversion][1]
-4. [Hierarchical Scopes][2]
-5. [How to inject Android ViewModels][4]
-6. [Magnet – an alternative to Dagger][5]
+2. [Sample Application](https://github.com/beworker/g1)
+3. [Hierarchical Scopes](https://github.com/beworker/magnet/wiki/Dependency-auto-scoping)
+4. [Scope Inspection](https://github.com/beworker/magnet/wiki/Scope-Inspection)
+5. [How to Inject Android ViewModels](https://github.com/beworker/magnet/issues/69#issuecomment-468033997)
+6. [Blog: Magnet - an alternative to Dagger](https://www.thomaskeller.biz/blog/2019/10/09/magnet-an-alternative-to-dagger/)
 
-# Scope inspection
+# Features
 
-Dynamic instance binding into scopes is the power of Magnet, which comes with its costs - a necessity to see how instances are  allocated at runtime. Fortunately Magnet has an easy to use Stetho powered scope dumper extension for this purpose. See [this Wiki page](https://github.com/beworker/magnet/wiki/Scope-Inspection) to learn how to configure and use it.
+- Minimalistic API
+- Auto-scoping of instances
+- Hierarchical, disposable scopes
+- Kotlin friendly annotation
+- Injection into Kotlin constructors with default arguments
+- Injection from binary libraries
+- Dependency inversion
+- No direct references to Magnet generated code
+- No reflection for injection, apt generated factory classes
+- Extensible - some `magnetx` extensions are available
+- Customizable - custom factories and instance selectors
 
 # Gradle
 
 Kotlin
+
 ```gradle
 repositories {
-    mavenCentral()
+   mavenCentral()
 }
 dependencies {
-    api 'de.halfbit:magnet-kotlin:<version>'
-    kapt 'de.halfbit:magnet-processor:<version>'
+   api 'de.halfbit:magnet-kotlin:<version>'
+   kapt 'de.halfbit:magnet-processor:<version>'
 }
 ```
 
 Java
+
 ```gradle
 repositories {
-    mavenCentral()
+   mavenCentral()
 }
 dependencies {
-    api 'de.halfbit:magnet:<version>'
-    annotationProcessor 'de.halfbit:magnet-processor:<version>'
+   api 'de.halfbit:magnet-kotlin:<version>'
+   annotationProcessor 'de.halfbit:magnet-processor:<version>'
 }
 ```
 
 # Proguard & R8
-```proguard 
+
+```
 -keep class magnet.internal.MagnetIndexer { *; }
 ```
 
+# Why Magnet?
+
+Magnet was crafted with simplicity and development speed in mind. It lets developers spend less time on DI configuration and do more other stuff, also more mistakes when used inattentively. Magnet let you write highly modular code where modules can be added/removed in build scripts without necessity to adapt source code. It might be interesting for individual and teams of professional developers, who know very well why they want to do DI Magnet way.
+
+# Why not Magnet?
+
+If compile time consistency validation is your highest priority, I recommend using awesome [Dagger2](https://github.com/google/dagger) instead. You will spend more time on DI configuration but Dagger2 lets you keep it highly consistent and error prone (in most cases) very early in the development cycle - at compile time.
+
+Peace and love you all.
+
 # License
+
 ```
 Copyright 2018-2019 Sergej Shafarenka, www.halfbit.de
 
@@ -126,9 +175,3 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 ```
-
-[1]: https://github.com/beworker/magnet/wiki/Dependency-inversion
-[2]: https://github.com/beworker/magnet/wiki/Dependency-auto-scoping
-[3]: https://github.com/beworker/g1
-[4]: https://github.com/beworker/magnet/issues/69#issuecomment-468033997
-[5]: https://www.thomaskeller.biz/blog/2019/10/09/magnet-an-alternative-to-dagger/
