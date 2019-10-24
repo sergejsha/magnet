@@ -26,7 +26,7 @@ Scopes depend on each other using the strong dependency rule - *scope dependency
 
 # Getting Started
 
-In the example below we will compose a very naive `MediaPlayer` which loads media using a `MediaLoader` and then plays it.
+In the example below we will compose a very naive `MediaPlayer` which loads media using a `MediaLoader` and then plays the media.
 
 ```kotlin
 fun main() {
