@@ -89,7 +89,7 @@ For more information refer to Magnet documentation.
 
 1. [Developer Guide](https://www.halfbit.de/magnet/developer-guide/)
 2. [Sample Application](https://github.com/beworker/g1)
-3. [Hierarchical Scopes](https://github.com/beworker/magnet/wiki/Dependency-auto-scoping)
+3. [Dependency auto-scoping](https://github.com/beworker/magnet/wiki/Dependency-auto-scoping)
 4. [Scope Inspection](https://github.com/beworker/magnet/wiki/Scope-Inspection)
 5. [How to Inject Android ViewModels](https://github.com/beworker/magnet/issues/69#issuecomment-468033997)
 6. [Blog: Magnet - an alternative to Dagger](https://www.thomaskeller.biz/blog/2019/10/09/magnet-an-alternative-to-dagger/)
