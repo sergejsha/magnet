@@ -139,7 +139,7 @@ repositories {
    mavenCentral()
 }
 dependencies {
-   api 'de.halfbit:magnet-kotlin:<version>'
+   api 'de.halfbit:magnet:<version>'
    annotationProcessor 'de.halfbit:magnet-processor:<version>'
 }
 ```
