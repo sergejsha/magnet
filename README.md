@@ -12,7 +12,7 @@ Magnet is a concise, scope tree based Dependency Injection (DI) library designed
 
 Magnet defines and opetates on two core concepts: `Scopes` and `Instances`.
 
-<img height="400" src="https://github.com/beworker/magnet/blob/master/documentation/images/readme-diagram.png" />
+<img height="400" src="https://raw.githubusercontent.com/beworker/magnet/ada00da2f91dc1cc5b28c3010809d1a46aaf043a/documentation/images/readme-diagram.png" />
 
 `Scope` is a container for instances. Scopes can be combined into a hierarchical tree by referencing parent scopes. The most top scope of the tree hierarchy, which has no parent scope, is called the root scope.
 
