@@ -116,7 +116,7 @@ Magnet was crafted with simplicity and development speed in mind. It lets develo
 
 If compile time consistency validation is your highest priority, I recommend using awesome [Dagger2](https://github.com/google/dagger) instead. You will spend more time on DI configuration but Dagger2 lets you keep it highly consistent and error prone (in most cases) very early in the development cycle - at compile time.
 
-Peace and love you all.
+Peace ✌️ and love you all.
 
 # Gradle
 
