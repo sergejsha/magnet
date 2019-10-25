@@ -1,10 +1,10 @@
+# 🧲 Magnet
+
 [![Build Status](https://travis-ci.org/beworker/magnet.svg?branch=master)](https://travis-ci.org/beworker/magnet)
 ![](https://img.shields.io/badge/production-ready-brightgreen.svg)
 [![Kotlin version badge](https://img.shields.io/badge/kotlin-1.3.30-blue.svg)](http://kotlinlang.org/)
 [![Maven Central](http://img.shields.io/maven-central/v/de.halfbit/magnet.svg)](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22de.halfbit%22%20a%3A%22magnet%22)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](http://www.apache.org/licenses/LICENSE-2.0)
-
-# 🧲 Magnet
 
 Magnet is a concise, scope tree based Dependency Injection (DI) library designed for highly modular Android applications. It consists of two parts: an annotation processor (Kotlin) and a reflection free runtime library (Java + Kotlin).
 
