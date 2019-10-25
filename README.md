@@ -77,7 +77,7 @@ At `Mark 1`, two scopes are created and the `Uri` instance gets bound into the `
 
 <img height="400" src="https://github.com/beworker/magnet/blob/master/documentation/images/readme-mark1.png" />
 
-At `Mark 2`, `mediaPlayer` and `mediaLoader` instances get allocated in respective scopes. `mediaPlayer` is allocated in the `playerScope` because one of its dependencies, the `Uri`,  is located in `playerScope`. Magnet cannot move `mediaPlayer` up to the `rootScope` because this would break the dependency rule described above. `mediaLoader` has no dependencies, that's why it is allocated in the `rootScope`. This instance allocation logic is called auto-scoping. See developer documentation for more detail.
+At `Mark 2`, `mediaPlayer` and `mediaLoader` instances get allocated in respective scopes. `mediaPlayer` is allocated in the `playerScope` because one of its dependencies, the `Uri`,  is located in `playerScope`. Magnet cannot move `mediaPlayer` up to the `rootScope` because this would break the dependency rule described above. `mediaLoader` has no dependencies, that's why it is allocated in the `rootScope`. This instance allocation logic is specific to Magnet DI and is called auto-scoping. See developer documentation for more detail.
 
 <img height="400" src="https://github.com/beworker/magnet/blob/master/documentation/images/readme-mark2.png" />
 
