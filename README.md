@@ -4,7 +4,7 @@
 [![Maven Central](http://img.shields.io/maven-central/v/de.halfbit/magnet.svg)](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22de.halfbit%22%20a%3A%22magnet%22)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](http://www.apache.org/licenses/LICENSE-2.0)
 
-# Magnet
+# 🧲 Magnet
 
 Magnet is a concise, scope tree based Dependency Injection (DI) library designed for highly modular Android applications. It consists of two parts: an annotation processor (Kotlin) and a reflection free runtime library (Java + Kotlin).
 
@@ -73,15 +73,15 @@ The diagram below shows how Magnet manages the scope hierarchy when different ma
 
 At `Mark 1`, two scopes are created and the `Uri` instance gets bound into the `playerScope`.
 
-<img height="400" src="https://github.com/beworker/magnet/blob/master/documentation/images/readme-mark1.png" />
+<img width="450" src="https://github.com/beworker/magnet/blob/master/documentation/images/readme-mark1.png" />
 
 At `Mark 2`, `mediaPlayer` and `mediaLoader` instances get allocated in respective scopes. `mediaPlayer` is allocated in the `playerScope` because one of its dependencies, the `Uri`,  is located in `playerScope`. Magnet cannot move `mediaPlayer` up to the `rootScope` because this would break the dependency rule described above. `mediaLoader` has no dependencies, that's why it is allocated in the `rootScope`. This instance allocation logic is specific to Magnet DI and is called auto-scoping. See developer documentation for more detail.
 
-<img height="400" src="https://github.com/beworker/magnet/blob/master/documentation/images/readme-mark2.png" />
+<img width="450" src="https://github.com/beworker/magnet/blob/master/documentation/images/readme-mark2.png" />
 
 At `Mark 3`, the `playerScope` gets disposed and all its instances are garbage collected.
 
-<img height="190" src="https://github.com/beworker/magnet/blob/master/documentation/images/readme-mark3.png" />
+<img width="450" src="https://github.com/beworker/magnet/blob/master/documentation/images/readme-mark3.png" />
 
 For more information refer to Magnet documentation.
 
@@ -89,7 +89,7 @@ For more information refer to Magnet documentation.
 
 1. [Developer Guide](https://www.halfbit.de/magnet/developer-guide/)
 2. [Sample Application](https://github.com/beworker/g1)
-3. [Hierarchical Scopes](https://github.com/beworker/magnet/wiki/Dependency-auto-scoping)
+3. [Dependency auto-scoping](https://github.com/beworker/magnet/wiki/Dependency-auto-scoping)
 4. [Scope Inspection](https://github.com/beworker/magnet/wiki/Scope-Inspection)
 5. [How to Inject Android ViewModels](https://github.com/beworker/magnet/issues/69#issuecomment-468033997)
 6. [Blog: Magnet - an alternative to Dagger](https://www.thomaskeller.biz/blog/2019/10/09/magnet-an-alternative-to-dagger/)
@@ -110,13 +110,13 @@ For more information refer to Magnet documentation.
 
 # Why Magnet?
 
-Magnet was crafted with simplicity and development speed in mind. It lets developers spend less time on DI configuration and do more other stuff, also more mistakes when used inattentively. Magnet let you write highly modular code where modules can be added/removed in build scripts without necessity to adapt source code. It might be interesting for individual and teams of professional developers, who know very well why they want to do DI Magnet way.
+Magnet was crafted with simplicity and development speed in mind. It lets developers spend less time on DI configuration and do more other stuff, also more mistakes when used inattentively. Magnet motivates you writing highly modular apps because it makes DI so simple. It can even inject instances from the libraries added in build scripts without necessity to adapt source code. Magnet might be interesting for individual and teams of professional developers, who know very well why they want to do DI this way.
 
 # Why not Magnet?
 
 If compile time consistency validation is your highest priority, I recommend using awesome [Dagger2](https://github.com/google/dagger) instead. You will spend more time on DI configuration but Dagger2 lets you keep it highly consistent and error prone (in most cases) very early in the development cycle - at compile time.
 
-Peace and love you all.
+Peace ✌️ and love you all.
 
 # Gradle
 
@@ -139,7 +139,7 @@ repositories {
    mavenCentral()
 }
 dependencies {
-   api 'de.halfbit:magnet-kotlin:<version>'
+   api 'de.halfbit:magnet:<version>'
    annotationProcessor 'de.halfbit:magnet-processor:<version>'
 }
 ```
