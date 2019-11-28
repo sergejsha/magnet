@@ -16,8 +16,6 @@
 
 package magnet.internal;
 
-import magnet.Scoping;
-import magnet.Visitor;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -27,12 +25,16 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
-/* Subject to change. For internal use only. */
-@SuppressWarnings("unchecked") final class InstanceBucket<T> {
+import magnet.Scoping;
+import magnet.Visitor;
 
-    private @NotNull final OnInstanceListener listener;
-    private @NotNull InstanceBucket.Instance instance;
-    private @NotNull MagnetScope scope;
+/* Subject to change. For internal use only. */
+@SuppressWarnings("unchecked")
+final class InstanceBucket<T> {
+
+    @NotNull private final OnInstanceListener listener;
+    @NotNull private InstanceBucket.Instance instance;
+    @NotNull private MagnetScope scope;
 
     InstanceBucket(
         @NotNull MagnetScope scope,
@@ -108,7 +110,7 @@ import java.util.List;
         }
     }
 
-    boolean hasInstanceWithFactory(InstanceFactory<T> factory) {
+    boolean hasInstanceWithFactory(@Nullable InstanceFactory<T> factory) {
         return instance.hasObjectWithFactory(factory);
     }
 
@@ -137,7 +139,7 @@ import java.util.List;
     }
 
     interface Instance<T> {
-        boolean hasObjectWithFactory(InstanceFactory<T> factory);
+        boolean hasObjectWithFactory(@Nullable InstanceFactory<T> factory);
     }
 
     static abstract class SingleObjectInstance<T> implements Instance<T> {
@@ -165,21 +167,21 @@ import java.util.List;
     }
 
     static class BoundInstance<T> extends SingleObjectInstance<T> implements Visitor.Instance {
-        BoundInstance(
-            @NotNull Class<T> objectType,
-            @NotNull T object,
-            @NotNull String classifier
-        ) {
+        BoundInstance(@NotNull Class<T> objectType, @NotNull T object, @NotNull String classifier) {
             super(objectType, object, classifier);
         }
 
-        @Override public boolean hasObjectWithFactory(InstanceFactory<T> factory) { return factory == null; }
+        @Override public boolean hasObjectWithFactory(@Nullable InstanceFactory<T> factory) {
+            return true;
+        }
         @Override public @NotNull Scoping getScoping() { return Scoping.DIRECT; }
         @Override public @NotNull String getClassifier() { return classifier; }
         @Override public @NotNull String getLimit() { return ""; }
         @Override public @NotNull Class<?> getType() { return objectType; }
         @Override public @NotNull Object getValue() { return object; }
-        @Override public @NotNull Visitor.Provision getProvision() { return Visitor.Provision.BOUND; }
+        @Override public @NotNull Visitor.Provision getProvision() {
+            return Visitor.Provision.BOUND;
+        }
     }
 
     static class InjectedInstance<T> extends SingleObjectInstance<T> implements Visitor.Instance {
@@ -195,13 +197,17 @@ import java.util.List;
             this.factory = factory;
         }
 
-        @Override public boolean hasObjectWithFactory(InstanceFactory<T> factory) { return factory == this.factory; }
+        @Override public boolean hasObjectWithFactory(@Nullable InstanceFactory<T> factory) {
+            return factory == this.factory;
+        }
         @Override public @NotNull Scoping getScoping() { return factory.getScoping(); }
         @Override public @NotNull String getClassifier() { return classifier; }
         @Override public @NotNull String getLimit() { return factory.getLimit(); }
         @Override public @NotNull Class<?> getType() { return objectType; }
         @Override public @NotNull Object getValue() { return object; }
-        @Override public @NotNull Visitor.Provision getProvision() { return Visitor.Provision.INJECTED; }
+        @Override public @NotNull Visitor.Provision getProvision() {
+            return Visitor.Provision.INJECTED;
+        }
     }
 
     private static class MultiObjectInstance<T> implements Instance<T> {
@@ -238,9 +244,8 @@ import java.util.List;
             instances.put(factoryType, single);
         }
 
-        @Override public boolean hasObjectWithFactory(InstanceFactory<T> factory) {
-            //noinspection SuspiciousMethodCalls
-            return instances.containsKey(factory.getClass());
+        @Override public boolean hasObjectWithFactory(@Nullable InstanceFactory<T> factory) {
+            return instances.containsKey(factory == null ? null : factory.getClass());
         }
 
         public boolean accept(Visitor visitor) {

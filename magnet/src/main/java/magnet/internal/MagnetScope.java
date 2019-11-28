@@ -71,14 +71,16 @@ final class MagnetScope implements Scope, Visitor.Scope, FactoryFilter, Instance
     @Override
     public <T> @Nullable T getOptional(@NotNull Class<T> type) {
         checkNotDisposed();
-        InstanceFactory<T> factory = instanceManager.getFilteredInstanceFactory(type, Classifier.NONE, this);
+        InstanceFactory<T> factory = instanceManager
+            .getFilteredInstanceFactory(type, Classifier.NONE, this);
         return findOrInjectOptional(type, Classifier.NONE, factory, CARDINALITY_OPTIONAL);
     }
 
     @Override
     public <T> @Nullable T getOptional(@NotNull Class<T> type, @NotNull String classifier) {
         checkNotDisposed();
-        InstanceFactory<T> factory = instanceManager.getFilteredInstanceFactory(type, classifier, this);
+        InstanceFactory<T> factory = instanceManager
+            .getFilteredInstanceFactory(type, classifier, this);
         return findOrInjectOptional(type, classifier, factory, CARDINALITY_OPTIONAL);
     }
 
@@ -90,7 +92,8 @@ final class MagnetScope implements Scope, Visitor.Scope, FactoryFilter, Instance
     @Override
     public <T> @NotNull T getSingle(@NotNull Class<T> type, @NotNull String classifier) {
         checkNotDisposed();
-        InstanceFactory<T> factory = instanceManager.getFilteredInstanceFactory(type, classifier, this);
+        @Nullable InstanceFactory<T> factory = instanceManager
+            .getFilteredInstanceFactory(type, classifier, this);
         T object = findOrInjectOptional(type, classifier, factory, CARDINALITY_SINGLE);
         if (object == null) {
             throw new IllegalStateException(
@@ -122,7 +125,9 @@ final class MagnetScope implements Scope, Visitor.Scope, FactoryFilter, Instance
     }
 
     @Override
-    public <T> @NotNull Scope bind(@NotNull Class<T> type, @NotNull T object, @NotNull String classifier) {
+    public <T> @NotNull Scope bind(
+        @NotNull Class<T> type, @NotNull T object, @NotNull String classifier
+    ) {
         checkNotDisposed();
         final String key = key(type, classifier);
         Object existing = instanceBuckets.put(
@@ -470,8 +475,10 @@ final class MagnetScope implements Scope, Visitor.Scope, FactoryFilter, Instance
 
     @Nullable
     @SuppressWarnings("unchecked")
-    private <T> InstanceBucket<T> findDeepInstanceBucket(String key, InstanceFactory<T> factory) {
-        InstanceBucket<T> bucket = (InstanceBucket<T>) instanceBuckets.get(key);
+    private <T> InstanceBucket<T> findDeepInstanceBucket(
+        @NotNull String key, @Nullable InstanceFactory<T> factory
+    ) {
+        @Nullable InstanceBucket<T> bucket = (InstanceBucket<T>) instanceBuckets.get(key);
         if (bucket != null && bucket.hasInstanceWithFactory(factory)) return bucket;
         if (parent == null) return null;
         return parent.findDeepInstanceBucket(key, factory);
