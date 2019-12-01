@@ -110,7 +110,7 @@ For more information refer to Magnet documentation.
 
 # Why Magnet?
 
-Magnet was crafted with simplicity and development speed in mind. It lets developers spend less time on DI configuration and do more other stuff, also more mistakes when used inattentively. Magnet motivates you writing highly modular apps because it makes DI so simple. It can even inject instances from the libraries added in build scripts without necessity to adapt source code. Magnet could be interesting for those, who needs an easy to configure and simple DI.
+Magnet was crafted with simplicity and development speed in mind. It lets developers spend less time on DI configuration and do more other stuff, also more mistakes when used inattentively. Magnet motivates you writing highly modular apps because it makes DI so simple. It can even inject instances from the libraries added in build scripts without necessity to adapt source code. Magnet could be interesting for those, who needs an easy to configure and simple DI with more runtime control.
 
 # Why not Magnet?
 
