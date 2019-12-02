@@ -3,8 +3,8 @@ package magnet.processor.instances.scoping
 import com.squareup.javapoet.MethodSpec
 import com.squareup.javapoet.TypeSpec
 import magnet.Scoping
-import magnet.processor.instances.GetScopingMethod
 import magnet.processor.instances.AspectGenerator
+import magnet.processor.instances.GetScopingMethod
 import javax.lang.model.element.Modifier
 
 internal class GetScopingMethodGenerator : AspectGenerator {
