@@ -88,11 +88,12 @@ For more information refer to Magnet documentation.
 # Documentation
 
 1. [Developer Guide](https://www.halfbit.de/magnet/developer-guide/)
-2. [Sample Application](https://github.com/beworker/g1)
-3. [Dependency auto-scoping](https://github.com/beworker/magnet/wiki/Dependency-auto-scoping)
-4. [Scope Inspection](https://github.com/beworker/magnet/wiki/Scope-Inspection)
-5. [How to Inject Android ViewModels](https://github.com/beworker/magnet/issues/69#issuecomment-468033997)
-6. [Blog: Magnet - an alternative to Dagger](https://www.thomaskeller.biz/blog/2019/10/09/magnet-an-alternative-to-dagger/)
+2. [Dependency auto-scoping](https://github.com/beworker/magnet/wiki/Dependency-auto-scoping)
+3. [Scope Inspection](https://github.com/beworker/magnet/wiki/Scope-Inspection)
+4. [How to Inject Android ViewModels](https://github.com/beworker/magnet/issues/69#issuecomment-468033997)
+5. [Blog: Magnet - an alternative to Dagger](https://www.thomaskeller.biz/blog/2019/10/09/magnet-an-alternative-to-dagger/)
+6. [Co2Monitor sample app](https://github.com/beworker/co2monitor/tree/master/android-client)
+7. [Another sample app](https://github.com/beworker/g1)
 
 # Features
 
@@ -110,7 +111,7 @@ For more information refer to Magnet documentation.
 
 # Why Magnet?
 
-Magnet was crafted with simplicity and development speed in mind. It lets developers spend less time on DI configuration and do more other stuff, also more mistakes when used inattentively. Magnet motivates you writing highly modular apps because it makes DI so simple. It can even inject instances from the libraries added in build scripts without necessity to adapt source code. Magnet could be interesting for those, who needs an easy to configure and simple DI.
+Magnet was crafted with simplicity and development speed in mind. It lets developers spend less time on DI configuration and do more other stuff, also more mistakes when used inattentively. Magnet motivates you writing highly modular apps because it makes DI so simple. It can even inject instances from the libraries added in build scripts without necessity to adapt source code. Magnet could be interesting for those, who needs an easy to configure and simple DI with more runtime control.
 
 # Why not Magnet?
 
