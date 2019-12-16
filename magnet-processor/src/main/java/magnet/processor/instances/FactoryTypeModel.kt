@@ -44,17 +44,6 @@ interface FactoryTypeVisitor {
     fun exitFactoryClass(factory: FactoryType) {}
 }
 
-class Annotation(
-    val types: List<ClassName>,
-    val classifier: String,
-    val scoping: String,
-    val limitedTo: String,
-    val selector: String,
-    val factory: TypeName?,
-    val disposer: String?,
-    val disabled: Boolean
-)
-
 class FactoryType(
     val element: Element,
     val interfaceType: ClassName,

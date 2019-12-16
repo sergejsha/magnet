@@ -2,7 +2,11 @@ package magnet.processor.instances
 
 import magnet.Instance
 import magnet.processor.MagnetProcessorEnv
-import magnet.processor.instances.indexes.FactoryIndexCodeGenerator
+import magnet.processor.instances.aspects.index.FactoryIndexCodeGenerator
+import magnet.processor.instances.generator.CodeWriter
+import magnet.processor.instances.generator.FactoryTypeCodeGenerator
+import magnet.processor.instances.parser.AnnotatedMethodInstanceParser
+import magnet.processor.instances.parser.ClassInstanceParser
 import javax.annotation.processing.RoundEnvironment
 import javax.lang.model.util.ElementFilter
 
@@ -10,8 +14,8 @@ class InstanceProcessor(
     private val env: MagnetProcessorEnv
 ) {
 
-    private val factoryFromClassAnnotationParser = FactoryFromClassAnnotationParser(env)
-    private val factoryFromMethodAnnotationParser = FactoryFromMethodAnnotationParser(env)
+    private val factoryFromClassAnnotationParser = ClassInstanceParser(env)
+    private val factoryFromMethodAnnotationParser = AnnotatedMethodInstanceParser(env)
     private val factoryTypeCodeGenerator = FactoryTypeCodeGenerator()
     private val factoryIndexCodeGenerator = FactoryIndexCodeGenerator()
 

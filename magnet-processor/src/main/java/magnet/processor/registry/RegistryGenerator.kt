@@ -21,7 +21,7 @@ import com.squareup.javapoet.MethodSpec
 import com.squareup.javapoet.ParameterSpec
 import com.squareup.javapoet.TypeSpec
 import magnet.internal.Generated
-import magnet.processor.instances.CodeWriter
+import magnet.processor.instances.generator.CodeWriter
 import magnet.processor.registry.instances.InstanceIndexGenerator
 import javax.lang.model.element.Modifier
 
