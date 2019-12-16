@@ -27,39 +27,31 @@ import magnet.Scope
 import magnet.Scoping
 import magnet.processor.MagnetProcessorEnv
 import magnet.processor.common.CompilationException
+import magnet.processor.common.KotlinMethodMetadata
 import magnet.processor.common.isOfAnnotationType
 import magnet.processor.common.throwValidationError
-import magnet.processor.common.verifyInheritance
 import magnet.processor.instances.Cardinality
 import magnet.processor.instances.Expression
 import magnet.processor.instances.FactoryType
 import magnet.processor.instances.MethodParameter
 import magnet.processor.instances.aspects.disposer.DisposerAnnotationValidator
-import magnet.processor.common.KotlinMethodMetadata
-import javax.lang.model.element.AnnotationValue
 import javax.lang.model.element.Element
 import javax.lang.model.element.TypeElement
 import javax.lang.model.element.VariableElement
 import javax.lang.model.type.TypeKind
-import javax.lang.model.type.TypeMirror
-import javax.lang.model.util.Elements
-import javax.lang.model.util.SimpleAnnotationValueVisitor6
 
 const val FACTORY_SUFFIX = "MagnetFactory"
 private const val CLASS_NULLABLE = ".Nullable"
-private const val ATTR_TYPE = "type"
-private const val ATTR_TYPES = "types"
 
 interface AnnotationValidator {
-    fun validate(instance: ParsedInstance, element: Element)
+    fun validate(instance: ParserInstance, element: Element)
 }
 
 internal abstract class InstanceParser<in E : Element>(
     private val env: MagnetProcessorEnv,
-    private val verifyInheritance: Boolean
+    private val isTypeInheritanceEnforced: Boolean
 ) {
 
-    private val typesAttrExtractor = TypesAttrExtractor(env.elements)
     private val validators = listOf<AnnotationValidator>(DisposerAnnotationValidator())
 
     private val scopeTypeName = ClassName.get(Scope::class.java)
@@ -254,21 +246,11 @@ internal abstract class InstanceParser<in E : Element>(
         }
     }
 
-    protected fun parseAnnotation(element: Element): ParsedInstance {
+    protected fun parseAnnotation(element: Element): ParserInstance {
 
-        var interfaceTypeElement: TypeElement? = null
-        var interfaceTypeElements: List<TypeElement>? = null
         var scope = AttributeParser.Scope(
-            instance = ParsedInstance(
-                types = emptyList(),
-                classifier = Classifier.NONE,
-                scoping = Scoping.TOPMOST.name,
-                limitedTo = "",
-                selector = null,
-                factory = null,
-                disposer = null,
-                disabled = false
-            ),
+            isTypeInheritanceEnforced = isTypeInheritanceEnforced,
+            instance = ParserInstance(),
             element = element,
             env = env
         )
@@ -283,26 +265,7 @@ internal abstract class InstanceParser<in E : Element>(
                         scope = scope.copy(instance = annotation)
 
                     } else {
-                        // todo, unknown attribute
-                        val entryValue = entry.value.value.toString()
-
-                        when (entryName) {
-                            ATTR_TYPE -> {
-                                env.elements.getTypeElement(entryValue)?.let {
-                                    if (verifyInheritance) it.verifyInheritance(element, env.types)
-                                    interfaceTypeElement = it
-                                }
-                            }
-                            ATTR_TYPES -> {
-                                entry.value.accept(typesAttrExtractor, null)
-                                interfaceTypeElements = typesAttrExtractor.extractValue()
-                                if (verifyInheritance) {
-                                    for (typeElement in interfaceTypeElements) {
-                                        if (verifyInheritance) typeElement.verifyInheritance(element, env.types)
-                                    }
-                                }
-                            }
-                        }
+                        // fixme, unknown attribute - fail
                     }
                 }
             }
@@ -310,8 +273,8 @@ internal abstract class InstanceParser<in E : Element>(
 
         val declaredTypeElements: List<TypeElement> =
             verifyTypeDeclaration(
-                interfaceTypeElement,
-                interfaceTypeElements,
+                scope.instance.declaredType,
+                scope.instance.declaredTypes,
                 scope.instance.scoping,
                 scope.instance.limitedTo,
                 element
@@ -446,26 +409,4 @@ private inline fun VariableElement.annotations(block: (Cardinality, String) -> U
         }
     }
     block(cardinality, classifier)
-}
-
-internal class TypesAttrExtractor(private val elements: Elements) :
-    SimpleAnnotationValueVisitor6<Void?, Void>() {
-
-    private val extractedTypes = mutableListOf<String>()
-
-    fun extractValue(): List<TypeElement> {
-        val value = extractedTypes.map { elements.getTypeElement(it) }
-        extractedTypes.clear()
-        return value
-    }
-
-    override fun visitArray(values: MutableList<out AnnotationValue>?, p: Void?): Void? {
-        values?.let { for (value in values) value.accept(this, p) }
-        return p
-    }
-
-    override fun visitType(typeMirror: TypeMirror?, p: Void?): Void? {
-        typeMirror?.let { extractedTypes.add(it.toString()) }
-        return p
-    }
 }

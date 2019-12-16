@@ -8,20 +8,23 @@ import magnet.processor.instances.aspects.factory.FactoryAttributeParser
 import magnet.processor.instances.aspects.limitedto.LimitedToAttributeParser
 import magnet.processor.instances.aspects.scoping.ScopingAttributeParser
 import magnet.processor.instances.aspects.selector.SelectorAttributeParser
+import magnet.processor.instances.aspects.type.TypeAttributeParser
+import magnet.processor.instances.aspects.type.TypesAttributeParser
 import javax.lang.model.element.AnnotationValue
 import javax.lang.model.element.Element
 
 abstract class AttributeParser(val name: String) {
 
     data class Scope(
-        val instance: ParsedInstance,
+        val isTypeInheritanceEnforced: Boolean,
+        val instance: ParserInstance,
         val element: Element,
         val env: MagnetProcessorEnv
     )
 
-    abstract fun Scope.parse(value: AnnotationValue, element: Element): ParsedInstance
+    abstract fun Scope.parse(value: AnnotationValue, element: Element): ParserInstance
 
-    fun parseInScope(scope: Scope, value: AnnotationValue, element: Element): ParsedInstance =
+    fun parseInScope(scope: Scope, value: AnnotationValue, element: Element): ParserInstance =
         scope.parse(value, element)
 
     object Registry {
@@ -35,6 +38,8 @@ abstract class AttributeParser(val name: String) {
             register(LimitedToAttributeParser)
             register(ScopingAttributeParser)
             register(SelectorAttributeParser)
+            register(TypeAttributeParser)
+            register(TypesAttributeParser)
         }
 
         private fun register(parser: AttributeParser) {

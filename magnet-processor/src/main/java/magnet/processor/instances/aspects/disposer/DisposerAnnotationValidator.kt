@@ -2,13 +2,13 @@ package magnet.processor.instances.aspects.disposer
 
 import magnet.Scoping
 import magnet.processor.common.ValidationException
-import magnet.processor.instances.parser.ParsedInstance
+import magnet.processor.instances.parser.ParserInstance
 import magnet.processor.instances.parser.AnnotationValidator
 import javax.lang.model.element.Element
 
 internal class DisposerAnnotationValidator : AnnotationValidator {
 
-    override fun validate(instance: ParsedInstance, element: Element) {
+    override fun validate(instance: ParserInstance, element: Element) {
         if (instance.disposer != null && instance.scoping == Scoping.UNSCOPED.name) {
             throw ValidationException(
                 element = element,
