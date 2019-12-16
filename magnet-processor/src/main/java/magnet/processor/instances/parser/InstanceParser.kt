@@ -261,8 +261,8 @@ internal abstract class InstanceParser<in E : Element>(
                     val entryName = entry.key.simpleName.toString()
                     val parser = AttributeParser.Registry.getAttributeParser(entryName)
                     if (parser != null) {
-                        val annotation = parser.parseInScope(scope, entry.value, element)
-                        scope = scope.copy(instance = annotation)
+                        val instance = parser.parseInScope(scope, entry.value, element)
+                        scope = scope.copy(instance = instance)
 
                     } else {
                         // fixme, unknown attribute - fail
@@ -280,18 +280,19 @@ internal abstract class InstanceParser<in E : Element>(
                 element
             )
 
-        val annotation = scope.instance.copy(
+        val instance = scope.instance.copy(
             types = declaredTypeElements.map { ClassName.get(it) }
         )
 
+        // fixme: separate validators
         for (validator in validators) {
             validator.validate(
-                instance = annotation,
+                instance = instance,
                 element = element
             )
         }
 
-        return annotation
+        return instance
     }
 
     private fun verifyTypeDeclaration(
