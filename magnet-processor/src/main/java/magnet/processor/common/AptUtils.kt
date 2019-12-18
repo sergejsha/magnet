@@ -23,11 +23,12 @@ import javax.lang.model.element.TypeElement
 import javax.lang.model.type.TypeMirror
 import javax.lang.model.util.Elements
 import javax.lang.model.util.SimpleAnnotationValueVisitor6
+import javax.lang.model.util.Types
 
 inline fun <reified T> AnnotationMirror.isOfAnnotationType(): Boolean =
     this.annotationType.toString() == T::class.java.name
 
-inline fun <reified A> Element.eachAnnotationAttributeOf(
+inline fun <reified A> Element.eachAttributeOf(
     block: (name: String, value: AnnotationValue) -> Unit
 ) {
     for (annotationMirror in annotationMirrors) {
@@ -39,24 +40,24 @@ inline fun <reified A> Element.eachAnnotationAttributeOf(
     }
 }
 
-inline fun Element.eachAnnotationAttribute(
-    block: (name: String, value: AnnotationValue) -> Unit
-) {
-    for (annotationMirror in annotationMirrors) {
-        for (entry in annotationMirror.elementValues.entries) {
-            block(entry.key.simpleName.toString(), entry.value)
-        }
+fun TypeElement.verifyInheritance(element: Element, types: Types) {
+    val isTypeImplemented = types.isAssignable(
+        element.asType(),
+        types.getDeclaredType(this)
+    )
+    if (!isTypeImplemented) {
+        element.throwValidationError("$element must implement $this")
     }
 }
 
 class ValidationException(val element: Element, message: String) : Throwable(message)
 class CompilationException(val element: Element, message: String) : Throwable(message)
 
-fun Element.validationError(message: String): Nothing {
+fun Element.throwValidationError(message: String): Nothing {
     throw ValidationException(this, message)
 }
 
-fun Element.compilationError(message: String): Nothing {
+fun Element.throwCompilationError(message: String): Nothing {
     throw CompilationException(this, message)
 }
 
