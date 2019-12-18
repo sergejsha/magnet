@@ -9,8 +9,6 @@ object FactoryAttributeParser : AttributeParser("factory") {
     override fun Scope.parse(value: AnnotationValue, element: Element) =
         instance.copy(factory = parseFactoryType(value))
 
-    private fun Scope.parseFactoryType(value: AnnotationValue): TypeName? {
-        val factoryTypeElement = env.annotation.getTypeElement(value)
-        return TypeName.get(factoryTypeElement.asType())
-    }
+    private fun Scope.parseFactoryType(value: AnnotationValue): TypeName? =
+        TypeName.get(env.annotation.getTypeElement(value).asType())
 }

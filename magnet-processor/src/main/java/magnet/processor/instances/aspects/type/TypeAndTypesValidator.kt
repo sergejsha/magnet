@@ -14,17 +14,15 @@ object TypeAndTypesValidator : AspectValidator {
         val isTypeDeclared = declaredType != null
         val areTypesDeclared = declaredTypes?.isNotEmpty() ?: false
 
-        if (!isTypeDeclared && !areTypesDeclared) {
+        if (!isTypeDeclared && !areTypesDeclared)
             element.throwValidationError(
                 "${Instance::class.java} must declare either 'type' or 'types' property."
             )
-        }
 
-        if (isTypeDeclared && areTypesDeclared) {
+        if (isTypeDeclared && areTypesDeclared)
             element.throwValidationError(
                 "${Instance::class.java} must declare either 'type' or 'types' property, not both."
             )
-        }
 
         if (declaredType != null) {
             val types = arrayListOf(declaredType)
@@ -35,12 +33,11 @@ object TypeAndTypesValidator : AspectValidator {
         }
 
         if (declaredTypes != null) {
-            if (scoping == Scoping.UNSCOPED.name) {
+            if (scoping == Scoping.UNSCOPED.name)
                 element.throwValidationError(
                     "types() property must be used with scoped instances only. Set " +
                         "scoping to Scoping.DIRECT or Scoping.TOPMOST."
                 )
-            }
             return copy(
                 types = declaredTypes.map { ClassName.get(it) }
             )

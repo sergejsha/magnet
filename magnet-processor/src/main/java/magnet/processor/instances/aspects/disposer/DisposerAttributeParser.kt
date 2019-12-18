@@ -1,6 +1,6 @@
 package magnet.processor.instances.aspects.disposer
 
-import magnet.processor.common.ValidationException
+import magnet.processor.common.throwValidationError
 import magnet.processor.instances.parser.AttributeParser
 import javax.lang.model.element.AnnotationValue
 import javax.lang.model.element.Element
@@ -15,12 +15,8 @@ object DisposerAttributeParser : AttributeParser("disposer") {
 
     private fun Scope.parseMethodName(value: AnnotationValue, element: Element): String {
 
-        if (element.kind != ElementKind.CLASS) {
-            throw ValidationException(
-                element = element,
-                message = "Disposer can be defined for annotated class only."
-            )
-        }
+        if (element.kind != ElementKind.CLASS)
+            element.throwValidationError("Disposer can be defined for annotated class only.")
 
         val methodName = env.annotation
             .getStringValue(value)
@@ -28,32 +24,17 @@ object DisposerAttributeParser : AttributeParser("disposer") {
 
         val methodElement = element.enclosedElements
             .find { it.kind == ElementKind.METHOD && it.simpleName.toString() == methodName }
-            ?: throw ValidationException(
-                element = element,
-                message = "Instance must declare disposer method $methodName()."
-            )
+            ?: element.throwValidationError("Instance must declare disposer method $methodName().")
 
         val returnType = (methodElement as ExecutableElement).returnType
-        if (returnType.kind != TypeKind.VOID) {
-            throw ValidationException(
-                element = element,
-                message = "Disposer method $methodName() must return void."
-            )
-        }
+        if (returnType.kind != TypeKind.VOID)
+            element.throwValidationError("Disposer method $methodName() must return void.")
 
-        if (methodElement.parameters.size != 0) {
-            throw ValidationException(
-                element = element,
-                message = "Disposer method $methodName() must have no parameters."
-            )
-        }
+        if (methodElement.parameters.size != 0)
+            element.throwValidationError("Disposer method $methodName() must have no parameters.")
 
-        if (methodElement.modifiers.contains(Modifier.PRIVATE)) {
-            throw ValidationException(
-                element = element,
-                message = "Disposer method $methodName() must not be 'private'."
-            )
-        }
+        if (methodElement.modifiers.contains(Modifier.PRIVATE))
+            element.throwValidationError("Disposer method $methodName() must not be 'private'.")
 
         return methodName
     }
