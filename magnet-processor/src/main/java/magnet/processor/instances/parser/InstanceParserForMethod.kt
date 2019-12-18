@@ -23,6 +23,9 @@ import magnet.Classifier
 import magnet.Instance
 import magnet.processor.MagnetProcessorEnv
 import magnet.processor.common.CompilationException
+import magnet.processor.common.DefaultKotlinMethodMetadata
+import magnet.processor.common.KotlinMethodMetadata
+import magnet.processor.common.MethodFunctionSelector
 import magnet.processor.common.ValidationException
 import magnet.processor.common.throwValidationError
 import magnet.processor.instances.CreateMethod
@@ -33,9 +36,6 @@ import magnet.processor.instances.GetSelectorMethod
 import magnet.processor.instances.GetSiblingTypesMethod
 import magnet.processor.instances.MethodParameter
 import magnet.processor.instances.StaticMethodCreateStatement
-import magnet.processor.common.DefaultKotlinMethodMetadata
-import magnet.processor.common.MethodFunctionSelector
-import magnet.processor.common.KotlinMethodMetadata
 import javax.lang.model.element.Element
 import javax.lang.model.element.ExecutableElement
 import javax.lang.model.element.Modifier
@@ -62,13 +62,13 @@ internal class AnnotatedMethodInstanceParser(
             )
         }
 
-        val annotation = parseAnnotation(element)
+        val instance = parseInstance(element)
         val staticMethodReturnType = TypeName.get(element.returnType)
 
-        for (type in annotation.types) {
+        for (type in instance.types) {
             if (type != staticMethodReturnType) {
                 if (staticMethodReturnType is ParameterizedTypeName) {
-                    if (annotation.classifier == Classifier.NONE) {
+                    if (instance.classifier == Classifier.NONE) {
                         element.throwValidationError(
                             "Method providing a parametrised type must have 'classifier' value" +
                                 " set in @${Instance::class.java.simpleName} annotation."
@@ -111,13 +111,13 @@ internal class AnnotatedMethodInstanceParser(
         }
 
         val instanceFullName = uniqueFactoryNameBuilder.toString()
-        return annotation.types.map {
+        return instance.types.map {
 
-            val isSingleTypeFactory = annotation.types.size == 1
+            val isSingleTypeFactory = instance.types.size == 1
             val getSiblingTypesMethod = if (isSingleTypeFactory) {
                 null
             } else {
-                val types = annotation.types - it
+                val types = instance.types - it
                 val siblingTypes = mutableListOf<ClassName>()
                 for (type in types) {
                     siblingTypes.add(type)
@@ -127,24 +127,24 @@ internal class AnnotatedMethodInstanceParser(
                 GetSiblingTypesMethod(siblingTypes)
             }
 
-            val selectorAttributes = annotation.selector
+            val selectorAttributes = instance.selector
             val getSelectorMethod = if (selectorAttributes == null) null else GetSelectorMethod(selectorAttributes)
-            val getLimitMethod = if (annotation.limitedTo.isEmpty()) null else GetLimitMethod(annotation.limitedTo)
+            val getLimitMethod = if (instance.limitedTo.isEmpty()) null else GetLimitMethod(instance.limitedTo)
 
             val factoryFullName = generateFactoryName(isSingleTypeFactory, instanceFullName, it)
             FactoryType(
                 element = element,
                 interfaceType = it,
-                classifier = annotation.classifier,
-                scoping = annotation.scoping,
-                disposerMethodName = annotation.disposer,
-                disabled = annotation.disabled,
-                customFactoryType = annotation.factory,
+                classifier = instance.classifier,
+                scoping = instance.scoping,
+                disposerMethodName = instance.disposer,
+                disabled = instance.disabled,
+                customFactoryType = instance.factory,
                 implementationType = null,
                 factoryType = ClassName.bestGuess(factoryFullName),
                 createStatement = StaticMethodCreateStatement(staticMethodClassName, staticMethodName),
                 createMethod = CreateMethod(methodParameters),
-                getScopingMethod = GetScopingMethod(annotation.scoping),
+                getScopingMethod = GetScopingMethod(instance.scoping),
                 getLimitMethod = getLimitMethod,
                 getSelectorMethod = getSelectorMethod,
                 getSiblingTypesMethod = getSiblingTypesMethod

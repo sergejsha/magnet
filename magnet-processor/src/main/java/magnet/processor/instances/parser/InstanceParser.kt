@@ -24,35 +24,29 @@ import com.squareup.javapoet.WildcardTypeName
 import magnet.Classifier
 import magnet.Instance
 import magnet.Scope
-import magnet.Scoping
 import magnet.processor.MagnetProcessorEnv
-import magnet.processor.common.CompilationException
 import magnet.processor.common.KotlinMethodMetadata
+import magnet.processor.common.eachAttributeOf
 import magnet.processor.common.isOfAnnotationType
+import magnet.processor.common.throwCompilationError
 import magnet.processor.common.throwValidationError
 import magnet.processor.instances.Cardinality
 import magnet.processor.instances.Expression
 import magnet.processor.instances.FactoryType
 import magnet.processor.instances.MethodParameter
-import magnet.processor.instances.aspects.disposer.DisposerAnnotationValidator
+import magnet.processor.instances.parser.AspectValidator.Registry.VALIDATORS
+import magnet.processor.instances.parser.AttributeParser.Registry.PARSERS
 import javax.lang.model.element.Element
-import javax.lang.model.element.TypeElement
 import javax.lang.model.element.VariableElement
 import javax.lang.model.type.TypeKind
 
 const val FACTORY_SUFFIX = "MagnetFactory"
 private const val CLASS_NULLABLE = ".Nullable"
 
-interface AnnotationValidator {
-    fun validate(instance: ParserInstance, element: Element)
-}
-
 internal abstract class InstanceParser<in E : Element>(
     private val env: MagnetProcessorEnv,
     private val isTypeInheritanceEnforced: Boolean
 ) {
-
-    private val validators = listOf<AnnotationValidator>(DisposerAnnotationValidator())
 
     private val scopeTypeName = ClassName.get(Scope::class.java)
     private val listTypeName = ClassName.get(List::class.java)
@@ -246,7 +240,7 @@ internal abstract class InstanceParser<in E : Element>(
         }
     }
 
-    protected fun parseAnnotation(element: Element): ParserInstance {
+    protected fun parseInstance(element: Element): ParserInstance {
 
         var scope = AttributeParser.Scope(
             isTypeInheritanceEnforced = isTypeInheritanceEnforced,
@@ -255,93 +249,25 @@ internal abstract class InstanceParser<in E : Element>(
             env = env
         )
 
-        for (annotationMirror in element.annotationMirrors) {
-            if (annotationMirror.isOfAnnotationType<Instance>()) {
-                for (entry in annotationMirror.elementValues.entries) {
-                    val entryName = entry.key.simpleName.toString()
-                    val parser = AttributeParser.Registry.getAttributeParser(entryName)
-                    if (parser != null) {
-                        val instance = parser.parseInScope(scope, entry.value, element)
-                        scope = scope.copy(instance = instance)
-
-                    } else {
-                        // fixme, unknown attribute - fail
-                    }
-                }
-            }
+        element.eachAttributeOf<Instance> { name, value ->
+            PARSERS[name]?.apply {
+                scope = scope.copy(
+                    instance = scope.parse(value, element)
+                )
+            } ?: element.throwCompilationError(
+                "Unsupported attribute '$name'." +
+                    " Do you use the same versions of magnet processor and runtime libraries?"
+            )
         }
 
-        val declaredTypeElements: List<TypeElement> =
-            verifyTypeDeclaration(
-                scope.instance.declaredType,
-                scope.instance.declaredTypes,
-                scope.instance.scoping,
-                scope.instance.limitedTo,
-                element
-            )
-
-        val instance = scope.instance.copy(
-            types = declaredTypeElements.map { ClassName.get(it) }
-        )
-
-        // fixme: separate validators
-        for (validator in validators) {
-            validator.validate(
-                instance = instance,
-                element = element
-            )
+        var instance = scope.instance
+        for (validator in VALIDATORS) {
+            with(validator) {
+                instance = instance.validate(element)
+            }
         }
 
         return instance
-    }
-
-    private fun verifyTypeDeclaration(
-        interfaceTypeElement: TypeElement?,
-        interfaceTypeElements: List<TypeElement>?,
-        scoping: String,
-        limit: String,
-        element: Element
-    ): List<TypeElement> {
-        val isTypeDeclared = interfaceTypeElement != null
-        val areTypesDeclared = interfaceTypeElements?.isNotEmpty() ?: false
-
-        if (!isTypeDeclared && !areTypesDeclared) {
-            element.throwValidationError(
-                "${Instance::class.java} must declare either 'type' or 'types' property."
-            )
-        }
-
-        if (isTypeDeclared && areTypesDeclared) {
-            element.throwValidationError(
-                "${Instance::class.java} must declare either 'type' or 'types' property, not both."
-            )
-        }
-
-        if (limit == "*") {
-            element.throwValidationError(
-                "Limit must not use reserved '*' value. Use another constant."
-            )
-        } else if (limit.isNotEmpty() && scoping == Scoping.UNSCOPED.name) {
-            element.throwValidationError(
-                "Limit can only be used with Scoping.TOPMOST and Scoping.DIRECT. Current scoping: Scoping.$scoping"
-            )
-        }
-
-        if (interfaceTypeElement != null) {
-            return arrayListOf(interfaceTypeElement)
-        }
-
-        if (interfaceTypeElements != null) {
-            if (scoping == Scoping.UNSCOPED.name) {
-                element.throwValidationError(
-                    "types() property must be used with scoped instances only. Set " +
-                        "scoping to Scoping.DIRECT or Scoping.TOPMOST."
-                )
-            }
-            return interfaceTypeElements
-        }
-
-        throw CompilationException(element = element, message = "Cannot verify type declaration.")
     }
 
     abstract fun parse(element: E): List<FactoryType>

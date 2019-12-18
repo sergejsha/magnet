@@ -579,7 +579,7 @@ class MagnetProcessorTest {
             .compile(withResource("$root/UnderTest.java"))
 
         assertThat(compilation).failed()
-        assertThat(compilation).hadErrorContaining("Use another constant")
+        assertThat(compilation).hadErrorContaining("Use another value")
     }
 
     @Test
@@ -591,8 +591,8 @@ class MagnetProcessorTest {
 
         assertThat(compilation).succeededWithoutWarnings()
         assertThat(compilation)
-                .generatedSourceFile("app/UnderTestMagnetFactory")
-                .hasSourceEquivalentTo(withResource("$root/expected/UnderTestMagnetFactory.java"))
+            .generatedSourceFile("app/UnderTestMagnetFactory")
+            .hasSourceEquivalentTo(withResource("$root/expected/UnderTestMagnetFactory.java"))
     }
 
     @Test

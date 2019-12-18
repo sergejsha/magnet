@@ -123,12 +123,12 @@ internal class DefaultKotlinMethodMetadata(
 
     override fun getTypeMeta(parameterName: String, typeDepth: Int): TypeMeta {
         val parameterMeta = parameterMetas[parameterName]
-            ?: element.compilationError(
+            ?: element.throwCompilationError(
                 "Cannot find parameter '$parameterName' in metadata of $element." +
                     " Available parameters: $parameterMetas"
             )
         if (typeDepth >= parameterMeta.types.size) {
-            element.compilationError(
+            element.throwCompilationError(
                 "Cannot find TypeMeta depth of $typeDepth in ${parameterMeta.types}."
             )
         }

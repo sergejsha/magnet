@@ -28,6 +28,18 @@ import javax.lang.model.util.Types
 inline fun <reified T> AnnotationMirror.isOfAnnotationType(): Boolean =
     this.annotationType.toString() == T::class.java.name
 
+inline fun <reified A> Element.eachAttributeOf(
+    block: (name: String, value: AnnotationValue) -> Unit
+) {
+    for (annotationMirror in annotationMirrors) {
+        if (annotationMirror.isOfAnnotationType<A>()) {
+            for (entry in annotationMirror.elementValues.entries) {
+                block(entry.key.simpleName.toString(), entry.value)
+            }
+        }
+    }
+}
+
 fun TypeElement.verifyInheritance(element: Element, types: Types) {
     val isTypeImplemented = types.isAssignable(
         element.asType(),
@@ -45,7 +57,7 @@ fun Element.throwValidationError(message: String): Nothing {
     throw ValidationException(this, message)
 }
 
-fun Element.compilationError(message: String): Nothing {
+fun Element.throwCompilationError(message: String): Nothing {
     throw CompilationException(this, message)
 }
 

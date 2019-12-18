@@ -21,7 +21,7 @@ import kotlinx.metadata.Flag
 import kotlinx.metadata.Flags
 import magnet.Instance
 import magnet.processor.MagnetProcessorEnv
-import magnet.processor.common.compilationError
+import magnet.processor.common.throwCompilationError
 import magnet.processor.common.throwValidationError
 import magnet.processor.instances.CreateMethod
 import magnet.processor.instances.FactoryType
@@ -49,15 +49,15 @@ internal class ClassInstanceParser(
 
     override fun parse(element: TypeElement): List<FactoryType> {
 
-        val annotation = parseAnnotation(element)
+        val instance = parseInstance(element)
         val instanceType = ClassName.get(element)
         val instancePackage = instanceType.packageName()
 
-        return annotation.types.map {
+        return instance.types.map {
 
-            val hasSiblingTypes = annotation.types.size > 1
+            val hasSiblingTypes = instance.types.size > 1
             val getSiblingTypesMethod = if (hasSiblingTypes) {
-                val types = annotation.types - it
+                val types = instance.types - it
                 val siblingTypes = mutableListOf<ClassName>()
                 for (type in types) {
                     siblingTypes.add(type)
@@ -69,24 +69,24 @@ internal class ClassInstanceParser(
                 null
             }
 
-            val selectorAttributes = annotation.selector
+            val selectorAttributes = instance.selector
             val getSelectorMethod = if (selectorAttributes == null) null else GetSelectorMethod(selectorAttributes)
-            val getLimitMethod = if (annotation.limitedTo.isEmpty()) null else GetLimitMethod(annotation.limitedTo)
+            val getLimitMethod = if (instance.limitedTo.isEmpty()) null else GetLimitMethod(instance.limitedTo)
 
             val factoryName = generateFactoryName(hasSiblingTypes, instanceType, it)
             FactoryType(
                 element = element,
                 interfaceType = it,
-                classifier = annotation.classifier,
-                scoping = annotation.scoping,
-                disposerMethodName = annotation.disposer,
-                disabled = annotation.disabled,
-                customFactoryType = annotation.factory,
+                classifier = instance.classifier,
+                scoping = instance.scoping,
+                disposerMethodName = instance.disposer,
+                disabled = instance.disabled,
+                customFactoryType = instance.factory,
                 implementationType = instanceType,
                 factoryType = ClassName.bestGuess("$instancePackage.$factoryName"),
                 createStatement = TypeCreateStatement(instanceType),
                 createMethod = parseCreateMethod(element),
-                getScopingMethod = GetScopingMethod(annotation.scoping),
+                getScopingMethod = GetScopingMethod(instance.scoping),
                 getLimitMethod = getLimitMethod,
                 getSelectorMethod = getSelectorMethod,
                 getSiblingTypesMethod = getSiblingTypesMethod
@@ -180,7 +180,7 @@ private class ConstructorFunctionSelector(
         overloadConstructor = constructors.find { it.hasParameters(overloadedParameters) }
         if (overloadConstructor == null) {
             val primaryConstructor = constructors.find { it.hasParameters(parameters) }
-                ?: element.compilationError(
+                ?: element.throwCompilationError(
                     "Overloaded secondary constructor expected.\n" +
                         " Primary constructor: $parameters\n" +
                         " Secondary constructor: $overloadedParameters"

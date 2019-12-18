@@ -24,28 +24,17 @@ abstract class AttributeParser(val name: String) {
 
     abstract fun Scope.parse(value: AnnotationValue, element: Element): ParserInstance
 
-    fun parseInScope(scope: Scope, value: AnnotationValue, element: Element): ParserInstance =
-        scope.parse(value, element)
-
     object Registry {
-        private val parsers: MutableMap<String, AttributeParser> = mutableMapOf()
-
-        init {
-            register(ClassifierAttributeParser)
-            register(DisabledAttributeParser)
-            register(DisposerAttributeParser)
-            register(FactoryAttributeParser)
-            register(LimitedToAttributeParser)
-            register(ScopingAttributeParser)
-            register(SelectorAttributeParser)
-            register(TypeAttributeParser)
-            register(TypesAttributeParser)
-        }
-
-        private fun register(parser: AttributeParser) {
-            parsers[parser.name] = parser
-        }
-
-        fun getAttributeParser(name: String): AttributeParser? = parsers[name]
+        val PARSERS = mutableMapOf(
+            ClassifierAttributeParser.name to ClassifierAttributeParser,
+            DisabledAttributeParser.name to DisabledAttributeParser,
+            DisposerAttributeParser.name to DisposerAttributeParser,
+            FactoryAttributeParser.name to FactoryAttributeParser,
+            LimitedToAttributeParser.name to LimitedToAttributeParser,
+            ScopingAttributeParser.name to ScopingAttributeParser,
+            SelectorAttributeParser.name to SelectorAttributeParser,
+            TypeAttributeParser.name to TypeAttributeParser,
+            TypesAttributeParser.name to TypesAttributeParser
+        )
     }
 }

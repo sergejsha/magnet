@@ -1,19 +1,16 @@
 package magnet.processor.instances.aspects.disposer
 
 import magnet.Scoping
-import magnet.processor.common.ValidationException
+import magnet.processor.common.throwValidationError
+import magnet.processor.instances.parser.AspectValidator
 import magnet.processor.instances.parser.ParserInstance
-import magnet.processor.instances.parser.AnnotationValidator
 import javax.lang.model.element.Element
 
-internal class DisposerAnnotationValidator : AnnotationValidator {
-
-    override fun validate(instance: ParserInstance, element: Element) {
-        if (instance.disposer != null && instance.scoping == Scoping.UNSCOPED.name) {
-            throw ValidationException(
-                element = element,
-                message = "Disposer cannot be used with UNSCOPED instances."
-            )
+object DisposerValidator : AspectValidator {
+    override fun ParserInstance.validate(element: Element): ParserInstance {
+        if (disposer != null && scoping == Scoping.UNSCOPED.name) {
+            element.throwValidationError("Disposer cannot be used with UNSCOPED instances.")
         }
+        return this
     }
 }
