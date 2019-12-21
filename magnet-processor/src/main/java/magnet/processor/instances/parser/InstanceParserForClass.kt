@@ -64,9 +64,7 @@ internal class InstanceParserForClass(
                     siblingTypes.add(ClassName.bestGuess("$instancePackage.$factoryName"))
                 }
                 GetSiblingTypesMethod(siblingTypes)
-            } else {
-                null
-            }
+            } else null
 
             val selectorAttributes = instance.selector
             val getSelectorMethod = if (selectorAttributes == null) null else GetSelectorMethod(selectorAttributes)

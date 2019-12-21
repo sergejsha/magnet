@@ -26,7 +26,6 @@ import magnet.processor.common.CompilationException
 import magnet.processor.common.DefaultKotlinMethodMetadata
 import magnet.processor.common.KotlinMethodMetadata
 import magnet.processor.common.MethodFunctionSelector
-import magnet.processor.common.ValidationException
 import magnet.processor.common.throwValidationError
 import magnet.processor.instances.CreateMethod
 import magnet.processor.instances.FactoryType
@@ -46,23 +45,20 @@ internal class InstanceParserForMethod(
     env: MagnetProcessorEnv
 ) : InstanceParser<ExecutableElement>(env, false) {
 
+    override fun ExecutableElement.onBeforeParsing() {
+        if (!modifiers.contains(Modifier.STATIC))
+            throwValidationError(
+                "Method annotated by ${Instance::class.java} must be 'static'"
+            )
+
+        if (modifiers.contains(Modifier.PRIVATE))
+            throwValidationError(
+                "Method annotated by ${Instance::class.java} must not be 'private'"
+            )
+    }
+
     override fun generateFactories(instance: ParserInstance<ExecutableElement>): List<FactoryType> {
         val element = instance.element
-
-        if (!element.modifiers.contains(Modifier.STATIC)) {
-            throw ValidationException(
-                element = element,
-                message = "Method annotated by ${Instance::class.java} must be 'static'"
-            )
-        }
-
-        if (element.modifiers.contains(Modifier.PRIVATE)) {
-            throw ValidationException(
-                element = element,
-                message = "Method annotated by ${Instance::class.java} must not be 'private'"
-            )
-        }
-
         val staticMethodReturnType = TypeName.get(element.returnType)
         for (type in instance.types) {
             if (type != staticMethodReturnType) {
@@ -113,9 +109,7 @@ internal class InstanceParserForMethod(
         return instance.types.map {
 
             val isSingleTypeFactory = instance.types.size == 1
-            val getSiblingTypesMethod = if (isSingleTypeFactory) {
-                null
-            } else {
+            val getSiblingTypesMethod = if (isSingleTypeFactory) null else {
                 val types = instance.types - it
                 val siblingTypes = mutableListOf<ClassName>()
                 for (type in types) {

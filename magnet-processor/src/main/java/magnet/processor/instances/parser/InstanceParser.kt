@@ -53,6 +53,9 @@ internal abstract class InstanceParser<E : Element>(
     private val lazyTypeName = ClassName.get(Lazy::class.java)
 
     fun E.parse(): List<FactoryType> {
+
+        onBeforeParsing()
+
         var scope = AttributeParser.Scope(
             isTypeInheritanceEnforced = isTypeInheritanceEnforced,
             instance = ParserInstance(this),
@@ -80,6 +83,7 @@ internal abstract class InstanceParser<E : Element>(
         return generateFactories(instance)
     }
 
+    protected open fun E.onBeforeParsing() {}
     protected abstract fun generateFactories(instance: ParserInstance<E>): List<FactoryType>
 
     protected fun parseMethodParameter(
