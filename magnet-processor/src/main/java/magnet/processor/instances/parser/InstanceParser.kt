@@ -96,8 +96,9 @@ internal abstract class InstanceParser<E : Element>(
         if (variableType.kind == TypeKind.TYPEVAR) {
             element.throwValidationError(
                 "Constructor parameter '${variable.simpleName}' is specified using a generic" +
-                    " type which is not supported by Magnet. Use a non-parameterized class or interface" +
-                    " type instead. To inject current scope instance, use 'Scope' parameter type."
+                    " type which is not supported by Magnet. Use a non-parameterized class or" +
+                    " interface type instead. To inject current scope into an instance," +
+                    " add 'scope: Scope' to the constructor parameters."
             )
         }
 
