@@ -7,7 +7,7 @@ import magnet.processor.instances.parser.ParserInstance
 import javax.lang.model.element.Element
 
 object LimitedToValidator : AspectValidator {
-    override fun ParserInstance.validate(element: Element): ParserInstance {
+    override fun <E : Element> ParserInstance<E>.validate(): ParserInstance<E> {
         if (limitedTo == "*") {
             element.throwValidationError(
                 "Limit must not use reserved '*' value. Use another value."

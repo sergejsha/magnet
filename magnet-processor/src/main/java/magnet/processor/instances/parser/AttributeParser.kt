@@ -15,17 +15,17 @@ import javax.lang.model.element.Element
 
 abstract class AttributeParser(val name: String) {
 
-    data class Scope(
+    data class Scope<E : Element>(
         val isTypeInheritanceEnforced: Boolean,
-        val instance: ParserInstance,
+        val instance: ParserInstance<E>,
         val element: Element,
         val env: MagnetProcessorEnv
     )
 
-    abstract fun Scope.parse(value: AnnotationValue, element: Element): ParserInstance
+    abstract fun <E : Element> Scope<E>.parse(value: AnnotationValue): ParserInstance<E>
 
     object Registry {
-        val PARSERS = mutableMapOf(
+        val PARSERS = mapOf(
             ClassifierAttributeParser.name to ClassifierAttributeParser,
             DisabledAttributeParser.name to DisabledAttributeParser,
             DisposerAttributeParser.name to DisposerAttributeParser,

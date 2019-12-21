@@ -2,15 +2,16 @@ package magnet.processor.instances.aspects.selector
 
 import magnet.processor.common.ValidationException
 import magnet.processor.instances.parser.AttributeParser
+import magnet.processor.instances.parser.ParserInstance
 import javax.lang.model.element.AnnotationValue
 import javax.lang.model.element.Element
 
 object SelectorAttributeParser : AttributeParser("selector") {
 
-    override fun Scope.parse(value: AnnotationValue, element: Element) =
-        instance.copy(selector = parse(value.value.toString(), element))
+    override fun <E : Element> Scope<E>.parse(value: AnnotationValue): ParserInstance<E> =
+        instance.copy(selector = parse(value.value.toString()))
 
-    private fun parse(selector: String, element: Element): List<String>? {
+    private fun <E : Element> Scope<E>.parse(selector: String): List<String>? {
         if (selector.isEmpty()) return null
 
         val parsedSelector = selector.split(DELIMITER)

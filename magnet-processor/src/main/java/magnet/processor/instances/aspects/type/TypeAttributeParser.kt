@@ -7,7 +7,7 @@ import javax.lang.model.element.AnnotationValue
 import javax.lang.model.element.Element
 
 object TypeAttributeParser : AttributeParser("type") {
-    override fun Scope.parse(value: AnnotationValue, element: Element): ParserInstance =
+    override fun <E : Element> Scope<E>.parse(value: AnnotationValue): ParserInstance<E> =
         env.elements.getTypeElement(value.value.toString())?.let {
             if (isTypeInheritanceEnforced) it.verifyInheritance(element, env.types)
             instance.copy(declaredType = it)

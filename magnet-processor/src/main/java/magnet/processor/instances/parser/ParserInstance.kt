@@ -4,9 +4,11 @@ import com.squareup.javapoet.ClassName
 import com.squareup.javapoet.TypeName
 import magnet.Classifier
 import magnet.Scoping
+import javax.lang.model.element.Element
 import javax.lang.model.element.TypeElement
 
-data class ParserInstance(
+data class ParserInstance<E : Element>(
+    val element: E,
     val declaredType: TypeElement? = null,
     val declaredTypes: List<TypeElement>? = null,
     val types: List<ClassName> = emptyList(),

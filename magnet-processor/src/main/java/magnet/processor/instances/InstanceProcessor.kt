@@ -5,8 +5,8 @@ import magnet.processor.MagnetProcessorEnv
 import magnet.processor.instances.aspects.index.FactoryIndexCodeGenerator
 import magnet.processor.instances.generator.CodeWriter
 import magnet.processor.instances.generator.FactoryTypeCodeGenerator
-import magnet.processor.instances.parser.AnnotatedMethodInstanceParser
-import magnet.processor.instances.parser.ClassInstanceParser
+import magnet.processor.instances.parser.InstanceParserForClass
+import magnet.processor.instances.parser.InstanceParserForMethod
 import javax.annotation.processing.RoundEnvironment
 import javax.lang.model.util.ElementFilter
 
@@ -14,8 +14,8 @@ class InstanceProcessor(
     private val env: MagnetProcessorEnv
 ) {
 
-    private val factoryFromClassAnnotationParser = ClassInstanceParser(env)
-    private val factoryFromMethodAnnotationParser = AnnotatedMethodInstanceParser(env)
+    private val factoryFromClassAnnotationParser = InstanceParserForClass(env)
+    private val factoryFromMethodAnnotationParser = InstanceParserForMethod(env)
     private val factoryTypeCodeGenerator = FactoryTypeCodeGenerator()
     private val factoryIndexCodeGenerator = FactoryIndexCodeGenerator()
 
@@ -28,7 +28,7 @@ class InstanceProcessor(
 
         val factoryTypes = mutableListOf<FactoryType>()
         ElementFilter.typesIn(annotatedElements).forEach { element ->
-            val parsedFactoryTypes = factoryFromClassAnnotationParser.parse(element)
+            val parsedFactoryTypes = with(factoryFromClassAnnotationParser) { element.parse() }
             for (factoryType in parsedFactoryTypes) {
                 if (!factoryType.disabled) {
                     factoryTypes.add(factoryType)
@@ -36,7 +36,7 @@ class InstanceProcessor(
             }
         }
         ElementFilter.methodsIn(annotatedElements).forEach { element ->
-            val parsedFactoryTypes = factoryFromMethodAnnotationParser.parse(element)
+            val parsedFactoryTypes = with(factoryFromMethodAnnotationParser) { element.parse() }
             for (factoryType in parsedFactoryTypes) {
                 if (!factoryType.disabled) {
                     factoryTypes.add(factoryType)

@@ -43,7 +43,7 @@ import javax.lang.model.type.TypeKind
 const val FACTORY_SUFFIX = "MagnetFactory"
 private const val CLASS_NULLABLE = ".Nullable"
 
-internal abstract class InstanceParser<in E : Element>(
+internal abstract class InstanceParser<E : Element>(
     private val env: MagnetProcessorEnv,
     private val isTypeInheritanceEnforced: Boolean
 ) {
@@ -51,6 +51,36 @@ internal abstract class InstanceParser<in E : Element>(
     private val scopeTypeName = ClassName.get(Scope::class.java)
     private val listTypeName = ClassName.get(List::class.java)
     private val lazyTypeName = ClassName.get(Lazy::class.java)
+
+    fun E.parse(): List<FactoryType> {
+        var scope = AttributeParser.Scope(
+            isTypeInheritanceEnforced = isTypeInheritanceEnforced,
+            instance = ParserInstance(this),
+            element = this,
+            env = env
+        )
+        eachAttributeOf<Instance> { name, value ->
+            PARSERS[name]?.apply {
+                scope = scope.copy(
+                    instance = scope.parse(value)
+                )
+            } ?: throwCompilationError(
+                "Unsupported attribute '$name'." +
+                    " Do you use the same versions of magnet processor and runtime libraries?"
+            )
+        }
+
+        var instance = scope.instance
+        for (validator in VALIDATORS) {
+            with(validator) {
+                instance = instance.validate()
+            }
+        }
+
+        return generateFactories(instance)
+    }
+
+    protected abstract fun generateFactories(instance: ParserInstance<E>): List<FactoryType>
 
     protected fun parseMethodParameter(
         element: Element,
@@ -239,38 +269,6 @@ internal abstract class InstanceParser<in E : Element>(
             }
         }
     }
-
-    protected fun parseInstance(element: Element): ParserInstance {
-
-        var scope = AttributeParser.Scope(
-            isTypeInheritanceEnforced = isTypeInheritanceEnforced,
-            instance = ParserInstance(),
-            element = element,
-            env = env
-        )
-
-        element.eachAttributeOf<Instance> { name, value ->
-            PARSERS[name]?.apply {
-                scope = scope.copy(
-                    instance = scope.parse(value, element)
-                )
-            } ?: element.throwCompilationError(
-                "Unsupported attribute '$name'." +
-                    " Do you use the same versions of magnet processor and runtime libraries?"
-            )
-        }
-
-        var instance = scope.instance
-        for (validator in VALIDATORS) {
-            with(validator) {
-                instance = instance.validate(element)
-            }
-        }
-
-        return instance
-    }
-
-    abstract fun parse(element: E): List<FactoryType>
 }
 
 private fun KotlinMethodMetadata.getNullableCardinality(paramName: String, paramDepth: Int): Cardinality =

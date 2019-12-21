@@ -10,7 +10,7 @@ import magnet.processor.instances.parser.ParserInstance
 import javax.lang.model.element.Element
 
 object TypeAndTypesValidator : AspectValidator {
-    override fun ParserInstance.validate(element: Element): ParserInstance {
+    override fun <E : Element> ParserInstance<E>.validate(): ParserInstance<E> {
         val isTypeDeclared = declaredType != null
         val areTypesDeclared = declaredTypes?.isNotEmpty() ?: false
 

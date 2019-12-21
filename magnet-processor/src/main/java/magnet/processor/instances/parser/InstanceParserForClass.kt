@@ -21,6 +21,12 @@ import kotlinx.metadata.Flag
 import kotlinx.metadata.Flags
 import magnet.Instance
 import magnet.processor.MagnetProcessorEnv
+import magnet.processor.common.CONSTRUCTOR_NAME
+import magnet.processor.common.DefaultKotlinMethodMetadata
+import magnet.processor.common.FunctionSelector
+import magnet.processor.common.KotlinMethodMetadata
+import magnet.processor.common.ParameterMeta
+import magnet.processor.common.hasParameters
 import magnet.processor.common.throwCompilationError
 import magnet.processor.common.throwValidationError
 import magnet.processor.instances.CreateMethod
@@ -31,26 +37,19 @@ import magnet.processor.instances.GetSelectorMethod
 import magnet.processor.instances.GetSiblingTypesMethod
 import magnet.processor.instances.MethodParameter
 import magnet.processor.instances.TypeCreateStatement
-import magnet.processor.common.CONSTRUCTOR_NAME
-import magnet.processor.common.DefaultKotlinMethodMetadata
-import magnet.processor.common.FunctionSelector
-import magnet.processor.common.KotlinMethodMetadata
-import magnet.processor.common.ParameterMeta
-import magnet.processor.common.hasParameters
 import javax.lang.model.element.Element
 import javax.lang.model.element.ExecutableElement
 import javax.lang.model.element.Modifier
 import javax.lang.model.element.TypeElement
 import javax.lang.model.util.ElementFilter
 
-internal class ClassInstanceParser(
+internal class InstanceParserForClass(
     env: MagnetProcessorEnv
 ) : InstanceParser<TypeElement>(env, true) {
 
-    override fun parse(element: TypeElement): List<FactoryType> {
+    override fun generateFactories(instance: ParserInstance<TypeElement>): List<FactoryType> {
 
-        val instance = parseInstance(element)
-        val instanceType = ClassName.get(element)
+        val instanceType = ClassName.get(instance.element)
         val instancePackage = instanceType.packageName()
 
         return instance.types.map {
@@ -75,7 +74,7 @@ internal class ClassInstanceParser(
 
             val factoryName = generateFactoryName(hasSiblingTypes, instanceType, it)
             FactoryType(
-                element = element,
+                element = instance.element,
                 interfaceType = it,
                 classifier = instance.classifier,
                 scoping = instance.scoping,
@@ -85,7 +84,7 @@ internal class ClassInstanceParser(
                 implementationType = instanceType,
                 factoryType = ClassName.bestGuess("$instancePackage.$factoryName"),
                 createStatement = TypeCreateStatement(instanceType),
-                createMethod = parseCreateMethod(element),
+                createMethod = parseCreateMethod(instance.element),
                 getScopingMethod = GetScopingMethod(instance.scoping),
                 getLimitMethod = getLimitMethod,
                 getSelectorMethod = getSelectorMethod,

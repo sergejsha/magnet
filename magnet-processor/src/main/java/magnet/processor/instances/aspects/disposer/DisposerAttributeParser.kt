@@ -2,6 +2,7 @@ package magnet.processor.instances.aspects.disposer
 
 import magnet.processor.common.throwValidationError
 import magnet.processor.instances.parser.AttributeParser
+import magnet.processor.instances.parser.ParserInstance
 import javax.lang.model.element.AnnotationValue
 import javax.lang.model.element.Element
 import javax.lang.model.element.ElementKind
@@ -10,16 +11,17 @@ import javax.lang.model.element.Modifier
 import javax.lang.model.type.TypeKind
 
 object DisposerAttributeParser : AttributeParser("disposer") {
-    override fun Scope.parse(value: AnnotationValue, element: Element) =
-        instance.copy(disposer = parseMethodName(value, element))
+    override fun <E : Element> Scope<E>.parse(value: AnnotationValue): ParserInstance<E> =
+        instance.copy(disposer = parseMethodName(value))
 
-    private fun Scope.parseMethodName(value: AnnotationValue, element: Element): String {
+    private fun <E : Element> Scope<E>.parseMethodName(value: AnnotationValue): String {
 
         if (element.kind != ElementKind.CLASS)
             element.throwValidationError("Disposer can be defined for annotated class only.")
 
         val methodName = env.annotation
             .getStringValue(value)
+
             .removeSurrounding("\"")
 
         val methodElement = element.enclosedElements

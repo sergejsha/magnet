@@ -6,7 +6,7 @@ import magnet.processor.instances.aspects.type.TypeAndTypesValidator
 import javax.lang.model.element.Element
 
 interface AspectValidator {
-    fun ParserInstance.validate(element: Element): ParserInstance
+    fun <E : Element> ParserInstance<E>.validate(): ParserInstance<E>
 
     object Registry {
         val VALIDATORS: List<AspectValidator> = listOf(

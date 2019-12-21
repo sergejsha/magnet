@@ -12,7 +12,7 @@ import javax.lang.model.util.SimpleAnnotationValueVisitor6
 
 object TypesAttributeParser : AttributeParser("types") {
 
-    override fun Scope.parse(value: AnnotationValue, element: Element): ParserInstance {
+    override fun <E : Element> Scope<E>.parse(value: AnnotationValue): ParserInstance<E> {
         val typesExtractor = TypesExtractor(env.elements)
             .apply { value.accept(this, null) }
 

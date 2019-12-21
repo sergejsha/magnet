@@ -42,11 +42,12 @@ import javax.lang.model.element.Modifier
 import javax.lang.model.element.TypeElement
 
 /** Awesome static factory method parser. */
-internal class AnnotatedMethodInstanceParser(
+internal class InstanceParserForMethod(
     env: MagnetProcessorEnv
 ) : InstanceParser<ExecutableElement>(env, false) {
 
-    override fun parse(element: ExecutableElement): List<FactoryType> {
+    override fun generateFactories(instance: ParserInstance<ExecutableElement>): List<FactoryType> {
+        val element = instance.element
 
         if (!element.modifiers.contains(Modifier.STATIC)) {
             throw ValidationException(
@@ -62,9 +63,7 @@ internal class AnnotatedMethodInstanceParser(
             )
         }
 
-        val instance = parseInstance(element)
         val staticMethodReturnType = TypeName.get(element.returnType)
-
         for (type in instance.types) {
             if (type != staticMethodReturnType) {
                 if (staticMethodReturnType is ParameterizedTypeName) {
