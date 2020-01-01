@@ -11,7 +11,6 @@ import magnet.processor.instances.parser.ParserInstance
 import javax.lang.model.element.Element
 import javax.lang.model.element.TypeElement
 
-
 object TypeAndTypesValidator : AspectValidator {
     override fun <E : Element> ParserInstance<E>.validate(
         env: MagnetProcessorEnv
