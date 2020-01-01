@@ -9,5 +9,4 @@ class UnderTest {
         return new Type<Parameter>() {
         };
     }
-
 }

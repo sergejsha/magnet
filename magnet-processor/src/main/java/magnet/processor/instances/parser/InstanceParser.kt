@@ -188,6 +188,7 @@ internal abstract class InstanceParser<E : Element>(
 
                     else -> {
                         paramParameterType = rawType
+                        paramTypeErased = true
                         variable.annotations { cardinality, classifier ->
                             paramExpression = Expression.Getter(cardinality)
                             paramClassifier = classifier

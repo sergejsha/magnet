@@ -6,13 +6,10 @@ import magnet.Instance;
 @Instance(type = Page.class)
 class HomePageWithGenericParam<T extends Object> implements Page {
 
-    HomePageWithGenericParam(
-            T genericThing
-    ) { }
+    HomePageWithGenericParam(T genericThing) { }
 
     @Override
     public void show() {
         // nop
     }
-
 }

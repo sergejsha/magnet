@@ -763,23 +763,6 @@ class MagnetProcessorTest {
     }
 
     @Test
-    fun generateFactoryIndex_DependentOnInterfaceWithGenericType() {
-
-        val compilation = Compiler.javac()
-            .withProcessors(MagnetProcessor())
-            .compile(
-                withResource("Executor.java"),
-                withResource("ExecutorImpl.java"),
-                withResource("ExecutorMaster.java"),
-                withResource("AppExtensionRegistry.java")
-            )
-
-        assertThat(compilation)
-            .generatedSourceFile("app/extension/ExecutorMasterMagnetFactory")
-            .hasSourceEquivalentTo(withResource("generated/DependentOnInterfaceWithGenericType_ExecutorMagnetFactory.java"))
-    }
-
-    @Test
     fun generateFactory_Constructor_Public_PackagePrivate() {
 
         val path = "Constructor_Public_PackagePrivate"
@@ -910,6 +893,40 @@ class MagnetProcessorTest {
 
         assertThat(compilation).failed()
         assertThat(compilation).hadErrorContaining("must have exactly one public or package-private constructor")
+    }
+
+    @Test
+    fun generateFactory_Generics_GetSingle_Unchecked() {
+        val path = "Generics_GetSingle_Unchecked"
+        val compilation = Compiler.javac()
+            .withProcessors(MagnetProcessor())
+            .compile(
+                withResource("$path/Dependency.java"),
+                withResource("$path/UnderTest.java")
+            )
+
+        assertThat(compilation).succeededWithoutWarnings()
+
+        assertThat(compilation)
+            .generatedSourceFile("app/UnderTestMagnetFactory")
+            .hasSourceEquivalentTo(withResource("$path/expected/UnderTestMagnetFactory.java"))
+    }
+
+    @Test
+    fun generateFactory_Generics_GetOptional_Unchecked() {
+        val path = "Generics_GetOptional_Unchecked"
+        val compilation = Compiler.javac()
+            .withProcessors(MagnetProcessor())
+            .compile(
+                withResource("$path/Dependency.java"),
+                withResource("$path/UnderTest.java")
+            )
+
+        assertThat(compilation).succeededWithoutWarnings()
+
+        assertThat(compilation)
+            .generatedSourceFile("app/UnderTestMagnetFactory")
+            .hasSourceEquivalentTo(withResource("$path/expected/UnderTestMagnetFactory.java"))
     }
 
     private fun withResource(name: String): JavaFileObject {
