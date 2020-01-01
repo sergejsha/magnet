@@ -3,21 +3,28 @@ package magnet.processor.instances.aspects.type
 import com.squareup.javapoet.ClassName
 import magnet.Instance
 import magnet.Scoping
+import magnet.processor.MagnetProcessorEnv
 import magnet.processor.common.throwCompilationError
 import magnet.processor.common.throwValidationError
 import magnet.processor.instances.parser.AspectValidator
 import magnet.processor.instances.parser.ParserInstance
 import javax.lang.model.element.Element
+import javax.lang.model.element.TypeElement
+
 
 object TypeAndTypesValidator : AspectValidator {
-    override fun <E : Element> ParserInstance<E>.validate(): ParserInstance<E> {
+    override fun <E : Element> ParserInstance<E>.validate(
+        env: MagnetProcessorEnv
+    ): ParserInstance<E> {
+        val elementWithType =
+            if (element is TypeElement && declaredType == null && declaredTypes.isNullOrEmpty())
+                copy(declaredType = element.autodetectType(env)) else this
+        return elementWithType.validateTypes()
+    }
+
+    private fun <E : Element> ParserInstance<E>.validateTypes(): ParserInstance<E> {
         val isTypeDeclared = declaredType != null
         val areTypesDeclared = declaredTypes?.isNotEmpty() ?: false
-
-        if (!isTypeDeclared && !areTypesDeclared)
-            element.throwValidationError(
-                "${Instance::class.java} must declare either 'type' or 'types' property."
-            )
 
         if (isTypeDeclared && areTypesDeclared)
             element.throwValidationError(
@@ -44,5 +51,17 @@ object TypeAndTypesValidator : AspectValidator {
         }
 
         element.throwCompilationError("Cannot verify type declaration.")
+    }
+
+    private fun TypeElement.autodetectType(env: MagnetProcessorEnv): TypeElement {
+        if (interfaces.isEmpty()) {
+            val superType = ClassName.get(superclass)
+            if (superType is ClassName && superType.reflectionName() == "java.lang.Object") {
+                return this
+            }
+        }
+        throwValidationError(
+            "${Instance::class.java} must declare either 'type' or 'types' property."
+        )
     }
 }

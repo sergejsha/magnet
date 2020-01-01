@@ -929,6 +929,22 @@ class MagnetProcessorTest {
             .hasSourceEquivalentTo(withResource("$path/expected/UnderTestMagnetFactory.java"))
     }
 
+    @Test
+    fun generateFactory_TypeAutoDetect_ExtendsObjectNoInterfaces() {
+        val path = "TypeAutoDetect_ExtendsObjectNoInterfaces"
+        val compilation = Compiler.javac()
+            .withProcessors(MagnetProcessor())
+            .compile(
+                withResource("$path/UnderTest.java")
+            )
+
+        assertThat(compilation).succeededWithoutWarnings()
+
+        assertThat(compilation)
+            .generatedSourceFile("app/UnderTestMagnetFactory")
+            .hasSourceEquivalentTo(withResource("$path/expected/UnderTestMagnetFactory.java"))
+    }
+
     private fun withResource(name: String): JavaFileObject {
         return JavaFileObjects.forResource(javaClass.simpleName + '/' + name)
     }

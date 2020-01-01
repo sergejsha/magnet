@@ -76,7 +76,7 @@ internal abstract class InstanceParser<E : Element>(
         var instance = scope.instance
         for (validator in VALIDATORS) {
             with(validator) {
-                instance = instance.validate()
+                instance = instance.validate(env)
             }
         }
 

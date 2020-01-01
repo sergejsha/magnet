@@ -1,13 +1,16 @@
 package magnet.processor.instances.aspects.limitedto
 
 import magnet.Scoping
+import magnet.processor.MagnetProcessorEnv
 import magnet.processor.common.throwValidationError
 import magnet.processor.instances.parser.AspectValidator
 import magnet.processor.instances.parser.ParserInstance
 import javax.lang.model.element.Element
 
 object LimitedToValidator : AspectValidator {
-    override fun <E : Element> ParserInstance<E>.validate(): ParserInstance<E> {
+    override fun <E : Element> ParserInstance<E>.validate(
+        env: MagnetProcessorEnv
+    ): ParserInstance<E> {
         if (limitedTo == "*") {
             element.throwValidationError(
                 "Limit must not use reserved '*' value. Use another value."
