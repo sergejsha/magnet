@@ -42,5 +42,5 @@ object SelectorAttributeParser : AttributeParser("selector") {
     }
 }
 
-private val DELIMITER = Regex("[?!\\s|.]+")
+private val DELIMITER = Regex("[\\s|.]+")
 private val OPERATORS = arrayListOf(">", "<", ">=", "<=", "==", "!=", "in", "!in")

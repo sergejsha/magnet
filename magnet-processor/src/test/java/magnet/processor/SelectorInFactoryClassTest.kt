@@ -106,7 +106,7 @@ class SelectorInFactoryClassTest {
     }
 
     @Test
-    fun `Valid selector (2 operands)`() {
+    fun `Valid selector (2 operands, in)`() {
         val compilation = Compiler.javac()
             .withProcessors(MagnetProcessor())
             .compile(
@@ -119,6 +119,38 @@ class SelectorInFactoryClassTest {
         CompilationSubject.assertThat(compilation)
             .generatedSourceFile("selector/Implementation8MagnetFactory")
             .hasSourceEquivalentTo(withResource("generated/Implementation8MagnetFactory.java"))
+    }
+
+    @Test
+    fun `Valid selector (1 operand, !=)`() {
+        val compilation = Compiler.javac()
+            .withProcessors(MagnetProcessor())
+            .compile(
+                withResource("Interface.java"),
+                withResource("Implementation9.java")
+            )
+
+        CompilationSubject.assertThat(compilation).succeededWithoutWarnings()
+
+        CompilationSubject.assertThat(compilation)
+            .generatedSourceFile("selector/Implementation9MagnetFactory")
+            .hasSourceEquivalentTo(withResource("generated/Implementation9MagnetFactory.java"))
+    }
+
+    @Test
+    fun `Valid selector (2 operands, !in)`() {
+        val compilation = Compiler.javac()
+            .withProcessors(MagnetProcessor())
+            .compile(
+                withResource("Interface.java"),
+                withResource("Implementation10.java")
+            )
+
+        CompilationSubject.assertThat(compilation).succeededWithoutWarnings()
+
+        CompilationSubject.assertThat(compilation)
+            .generatedSourceFile("selector/Implementation10MagnetFactory")
+            .hasSourceEquivalentTo(withResource("generated/Implementation10MagnetFactory.java"))
     }
 
     private fun withResource(name: String): JavaFileObject =
