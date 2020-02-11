@@ -122,7 +122,7 @@ class SelectorInFactoryClassTest {
     }
 
     @Test
-    fun `Valid selector (2 operands, !=)`() {
+    fun `Valid selector (1 operand, !=)`() {
         val compilation = Compiler.javac()
             .withProcessors(MagnetProcessor())
             .compile(
