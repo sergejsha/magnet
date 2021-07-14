@@ -35,7 +35,6 @@ import magnet.processor.instances.GetSelectorMethod
 import magnet.processor.instances.GetSiblingTypesMethod
 import magnet.processor.instances.MethodParameter
 import magnet.processor.instances.StaticMethodCreateStatement
-import java.util.Locale
 import javax.lang.model.element.Element
 import javax.lang.model.element.ExecutableElement
 import javax.lang.model.element.Modifier
@@ -149,7 +148,7 @@ internal class InstanceParserForMethod(
 
 private fun String.capitalize() =
     replaceFirstChar {
-        if (it.isLowerCase()) it.titlecase(Locale.getDefault())
+        if (it.isLowerCase()) it.uppercaseChar().toString()
         else it.toString()
     }
 
