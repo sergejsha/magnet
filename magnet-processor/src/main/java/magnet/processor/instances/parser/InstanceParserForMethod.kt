@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2019 Sergej Shafarenka, www.halfbit.de
+ * Copyright (C) 2018-2021 Sergej Shafarenka, www.halfbit.de
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -145,6 +145,12 @@ internal class InstanceParserForMethod(
         }
     }
 }
+
+private fun String.capitalize() =
+    replaceFirstChar {
+        if (it.isLowerCase()) it.uppercaseChar().toString()
+        else it.toString()
+    }
 
 private fun Element.getTopmostTypeElement(): TypeElement {
     var result: TypeElement? = null

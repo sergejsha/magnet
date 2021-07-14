@@ -29,7 +29,7 @@ inline fun <reified T> Scope.getMany(classifier: String = Classifier.NONE): List
     this.getMany(T::class.java, classifier)
 
 /** Bind given instance into this scope. */
-inline fun <reified T> Scope.bind(instance: T, classifier: String = Classifier.NONE) =
+inline fun <reified T : Any> Scope.bind(instance: T, classifier: String = Classifier.NONE) =
     this.bind(T::class.java, instance, classifier)
 
 /** Creates a subscope of the current scope. */
