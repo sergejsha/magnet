@@ -145,6 +145,14 @@ dependencies {
 }
 ```
 
+# Compatibility
+
+Kotlin Version | Magnet Version
+-----------|-----------
+| 1.5.x | 3.5 |
+| 1.4.x | 3.4 |
+| 1.3.x | 3.4 |
+
 # Proguard & R8
 
 ```
