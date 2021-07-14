@@ -1,3 +1,19 @@
+/*
+ * Copyright (C) 2018-2021 Sergej Shafarenka, www.halfbit.de
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package magnet.processor.instances.aspects.type
 
 import com.squareup.javapoet.ClassName
@@ -17,7 +33,7 @@ object TypeAndTypesValidator : AspectValidator {
     ): ParserInstance<E> {
         val elementWithType =
             if (element is TypeElement && declaredType == null && declaredTypes.isNullOrEmpty())
-                copy(declaredType = element.autodetectType(env)) else this
+                copy(declaredType = element.autodetectType()) else this
         return elementWithType.validateTypes()
     }
 
@@ -52,7 +68,7 @@ object TypeAndTypesValidator : AspectValidator {
         element.throwCompilationError("Cannot verify type declaration.")
     }
 
-    private fun TypeElement.autodetectType(env: MagnetProcessorEnv): TypeElement {
+    private fun TypeElement.autodetectType(): TypeElement {
         if (interfaces.isEmpty()) {
             val superType = ClassName.get(superclass)
             if (superType is ClassName && superType.reflectionName() == "java.lang.Object") {
