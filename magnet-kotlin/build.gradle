@@ -16,7 +16,7 @@ compileTestKotlin {
 }
 
 dependencies {
-    compile project(':magnet')
+    api project(':magnet')
     implementation deps.kotlinjdk7
 
     testImplementation deps.junit

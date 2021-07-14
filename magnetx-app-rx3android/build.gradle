@@ -7,15 +7,14 @@ repositories {
 }
 
 android {
-    compileSdkVersion 28
+    compileSdkVersion 30
     defaultConfig {
         minSdkVersion 15
-        targetSdkVersion 28
+        targetSdkVersion 30
     }
 }
 
 dependencies {
-    compileOnly deps.android
     compileOnly deps.rx3android
     implementation deps.kotlinjdk8
     implementation project(':magnet')

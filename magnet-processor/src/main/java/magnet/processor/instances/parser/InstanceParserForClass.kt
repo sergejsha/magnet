@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2019 Sergej Shafarenka, www.halfbit.de
+ * Copyright (C) 2018-2021 Sergej Shafarenka, www.halfbit.de
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -170,7 +170,7 @@ private class ConstructorFunctionSelector(
     private var overloadConstructor: ExecutableElement? = null
 
     override fun visitFunction(flags: Flags, name: String): Boolean =
-        Flag.Constructor.IS_PRIMARY(flags) && name == CONSTRUCTOR_NAME
+        name == CONSTRUCTOR_NAME && !Flag.Constructor.IS_SECONDARY(flags)
 
     override fun acceptFunctionParameters(parameters: Map<String, ParameterMeta>): Map<String, ParameterMeta> {
         val overloadedParameters = parameters.filter { it.value.types.firstOrNull()?.default != true }
