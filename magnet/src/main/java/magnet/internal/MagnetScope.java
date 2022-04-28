@@ -211,6 +211,11 @@ final class MagnetScope implements Scope, Visitor.Scope, FactoryFilter, Instance
         }
     }
 
+    @Override
+    public boolean isDisposed() {
+        return disposed;
+    }
+
     private void onChildScopeDisposed(MagnetScope childScope) {
         if (childrenScopes == null) return;
         WeakScopeReference prevWeakScope = null;
