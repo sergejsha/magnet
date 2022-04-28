@@ -3,7 +3,7 @@ configurations {
 }
 
 dependencies {
-    ktlint 'com.pinterest:ktlint:0.35.0'
+    ktlint 'com.pinterest:ktlint:0.42.1'
 }
 
 def reportsDir = "$buildDir/reports/ktlint"

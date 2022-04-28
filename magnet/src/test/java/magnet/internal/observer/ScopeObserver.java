@@ -73,7 +73,7 @@ public class ScopeObserver implements Visitor {
         }
 
         @Override public void hasNoInstances() {
-            assertThat(instances.size()).named("number of instances in scope").isEqualTo(0);
+            assertThat(instances.size()).isEqualTo(0);
         }
 
         @Override public void hasInstanceTypes(Class<?>... instanceTypes) {

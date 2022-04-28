@@ -40,7 +40,7 @@ class SingleLazyTest {
 
     @Test
     fun `value returns value`() {
-        assertThat(underTest.value).isSameAs(value)
+        assertThat(underTest.value).isSameInstanceAs(value)
     }
 
     @Test

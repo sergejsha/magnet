@@ -27,4 +27,4 @@ dependencies {
     kapt project(':magnet-processor')
 }
 
-apply from: rootProject.file('build-maven-push.gradle')
+//apply from: rootProject.file('build-maven-push.gradle')

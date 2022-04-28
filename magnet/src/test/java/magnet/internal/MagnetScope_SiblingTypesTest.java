@@ -39,7 +39,7 @@ public class MagnetScope_SiblingTypesTest {
 
         Interface1 instance1 = directScope.getSingle(Interface1.class);
         Interface2 instance2 = directScope.getSingle(Interface2.class);
-        assertThat(instance1).isSameAs(instance2);
+        assertThat(instance1).isSameInstanceAs(instance2);
     }
 
     @Test
@@ -50,7 +50,7 @@ public class MagnetScope_SiblingTypesTest {
 
         Interface2 instance2 = directScope.getSingle(Interface2.class);
         Interface1 instance1 = directScope.getSingle(Interface1.class);
-        assertThat(instance1).isSameAs(instance2);
+        assertThat(instance1).isSameInstanceAs(instance2);
     }
 
     @Test
@@ -62,7 +62,7 @@ public class MagnetScope_SiblingTypesTest {
 
         Interface1 instance1 = topMost.getSingle(Interface1.class);
         Interface2 instance2 = topMost.getSingle(Interface2.class);
-        assertThat(instance1).isSameAs(instance2);
+        assertThat(instance1).isSameInstanceAs(instance2);
     }
 
     @Test
@@ -73,7 +73,7 @@ public class MagnetScope_SiblingTypesTest {
 
         Interface1 instance1 = directScope.getSingle(Interface1.class);
         Interface2 instance2 = directScope.getSingle(Interface2.class);
-        assertThat(instance1).isSameAs(instance2);
+        assertThat(instance1).isSameInstanceAs(instance2);
     }
 
     @Test

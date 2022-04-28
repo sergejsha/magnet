@@ -17,7 +17,7 @@ compileTestKotlin {
 
 dependencies {
     api project(':magnet')
-    implementation deps.kotlinjdk7
+    implementation deps.kotlinjdk8
 
     testImplementation deps.junit
     testImplementation deps.truth
@@ -25,4 +25,4 @@ dependencies {
     testImplementation deps.mockitoKotlin
 }
 
-apply from: rootProject.file('build-maven-push.gradle')
+//apply from: rootProject.file('build-maven-push.gradle')

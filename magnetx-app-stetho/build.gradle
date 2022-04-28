@@ -7,10 +7,10 @@ repositories {
 }
 
 android {
-    compileSdkVersion 30
+    compileSdkVersion 32
     defaultConfig {
         minSdkVersion 15
-        targetSdkVersion 30
+        targetSdkVersion 32
         versionCode 0
         versionName "0"
     }
@@ -21,7 +21,7 @@ dependencies {
     api project(':magnetx-app')
 
     compileOnly deps.stetho
-    
+
     implementation deps.kotlinjdk8
     kapt project(':magnet-processor')
 }
@@ -30,5 +30,5 @@ tasks.withType(Javadoc).all {
     excludes = ['**/*.kt']
 }
 
-apply from: rootProject.file('build-maven-push.gradle')
+//apply from: rootProject.file('build-maven-push.gradle')
 
