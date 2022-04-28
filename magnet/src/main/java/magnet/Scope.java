@@ -125,6 +125,9 @@ public interface Scope {
     /** Disposes this and all children scopes. Notifies instances with {@link magnet.Instance#disposer()}. */
     void dispose();
 
+    /** Returns `true` is the scope is disposed, or `false` otherwise. */
+    boolean isDisposed();
+
     /** Visits all instances and child scopes of given depth (use {@code Integer.MAX_VALUE} for visiting all scopes). */
     void accept(Visitor visitor, int depth);
 

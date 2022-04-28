@@ -67,6 +67,10 @@ public class InstrumentedScope implements Scope, FactoryFilter {
         scope.dispose();
     }
 
+    @Override public boolean isDisposed() {
+        return scope.isDisposed();
+    }
+
     @Override public void accept(Visitor visitor, int depth) {
         scope.accept(visitor, depth);
     }
