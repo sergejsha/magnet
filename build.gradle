@@ -39,7 +39,6 @@ ext.deps = [:]
 
 // open source
 ext.deps.kotlinjdk8 = "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
-ext.deps.kotlinjdk7 = "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
 ext.deps.javapoet = 'com.squareup:javapoet:1.13.0'
 ext.deps.android = 'com.google.android:android:4.1.1.4'
 ext.deps.rxandroid = 'io.reactivex.rxjava2:rxandroid:2.1.1'

@@ -1,5 +1,7 @@
-apply plugin: 'java-library'
-apply plugin: 'com.vanniktech.maven.publish'
+plugins {
+    id 'java-library'
+    id 'com.vanniktech.maven.publish'
+}
 
 sourceCompatibility = appJavaVersion
 targetCompatibility = appJavaVersion
