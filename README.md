@@ -164,10 +164,9 @@ Kotlin Version | Magnet Version
 
 1. Set JAVA_HOME variable to JDK 11.
 2. Import project into Android Studio.
-3. Set Gradle -> Gradle Settings... -> Gradle JDK to JDK 11.
-
-To build the project run `./gradlew build`
-To release the project run `./gradlew publish`
+3. Set Gradle → Gradle Settings... → Gradle JDK to JDK 11.
+4. To build the project run `./gradlew build`
+5. To release the project run `./gradlew publish`
 
 # License
 
