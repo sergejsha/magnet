@@ -1,28 +1,26 @@
-apply plugin: 'kotlin'
-
-sourceCompatibility = kotlinExtJavaVersion
-targetCompatibility = kotlinExtJavaVersion
+plugins {
+    id 'kotlin'
+    id 'com.vanniktech.maven.publish'
+}
 
 compileKotlin {
     kotlinOptions {
-        jvmTarget = kotlinExtJavaVersion
+        jvmTarget = javaVersion
     }
 }
 
 compileTestKotlin {
     kotlinOptions {
-        jvmTarget = kotlinExtJavaVersion
+        jvmTarget = javaVersion
     }
 }
 
 dependencies {
     api project(':magnet')
-    implementation deps.kotlinjdk7
+    implementation deps.kotlinjdk
 
     testImplementation deps.junit
     testImplementation deps.truth
     testImplementation deps.mockito
     testImplementation deps.mockitoKotlin
 }
-
-apply from: rootProject.file('build-maven-push.gradle')

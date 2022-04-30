@@ -1,10 +1,10 @@
 package magnet.kotlin.internal
 
 import com.google.common.truth.Truth.assertThat
-import com.nhaarman.mockitokotlin2.mock
-import com.nhaarman.mockitokotlin2.never
-import com.nhaarman.mockitokotlin2.same
-import com.nhaarman.mockitokotlin2.verify
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.never
+import org.mockito.kotlin.same
+import org.mockito.kotlin.verify
 import magnet.Scope
 import magnet.internal.SingleLazy
 import org.junit.Test
@@ -40,7 +40,7 @@ class SingleLazyTest {
 
     @Test
     fun `value returns value`() {
-        assertThat(underTest.value).isSameAs(value)
+        assertThat(underTest.value).isSameInstanceAs(value)
     }
 
     @Test

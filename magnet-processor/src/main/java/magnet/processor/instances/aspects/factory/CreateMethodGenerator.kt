@@ -1,22 +1,10 @@
 package magnet.processor.instances.aspects.factory
 
-import com.squareup.javapoet.ClassName
-import com.squareup.javapoet.CodeBlock
-import com.squareup.javapoet.MethodSpec
-import com.squareup.javapoet.TypeName
-import com.squareup.javapoet.TypeSpec
+import com.squareup.javapoet.*
 import magnet.internal.ManyLazy
 import magnet.internal.OptionalLazy
 import magnet.internal.SingleLazy
-import magnet.processor.instances.Cardinality
-import magnet.processor.instances.CreateMethod
-import magnet.processor.instances.CreateStatement
-import magnet.processor.instances.Expression
-import magnet.processor.instances.FactoryType
-import magnet.processor.instances.MethodParameter
-import magnet.processor.instances.PARAM_SCOPE_NAME
-import magnet.processor.instances.StaticMethodCreateStatement
-import magnet.processor.instances.TypeCreateStatement
+import magnet.processor.instances.*
 
 interface CreateMethodGenerator {
 
@@ -47,6 +35,7 @@ interface CreateMethodGenerator {
                     parameter.classifier
                 )
             }
+            Expression.Scope -> {}
         }
     }
 
@@ -95,7 +84,8 @@ class DefaultCreateMethodGenerator : CreateMethodGenerator {
     private lateinit var impl: CreateMethodGenerator
 
     override fun visitFactoryClass(factoryType: FactoryType) {
-        impl = if (factoryType.customFactoryType != null) customFactoryGenerator else standardFactoryGenerator
+        impl =
+            if (factoryType.customFactoryType != null) customFactoryGenerator else standardFactoryGenerator
         impl.visitFactoryClass(factoryType)
     }
 

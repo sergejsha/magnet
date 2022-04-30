@@ -1,6 +1,5 @@
 buildscript {
-    ext.kotlin_version = '1.5.10'
-    ext.android_build_version = '4.2.2'
+    ext.kotlin_version = '1.6.21'
 
     repositories {
         mavenCentral()
@@ -8,13 +7,13 @@ buildscript {
     }
 
     dependencies {
-        classpath "com.android.tools.build:gradle:$android_build_version"
+        classpath "com.android.tools.build:gradle:7.0.4"
+        classpath "com.vanniktech:gradle-maven-publish-plugin:0.19.0"
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
     }
 }
 
 allprojects {
-
     repositories {
         mavenCentral()
     }
@@ -22,36 +21,32 @@ allprojects {
     configurations {
         all {
             resolutionStrategy {
-                force deps.kotlinjdk7
+                force deps.kotlinjdk
             }
         }
     }
 }
 
 ext {
-    appJavaVersion = JavaVersion.VERSION_1_8
-    toolsJavaVersion = JavaVersion.VERSION_1_8
-    kotlinExtJavaVersion = JavaVersion.VERSION_1_8
+    javaVersion = JavaVersion.VERSION_11
 }
 
 ext.deps = [:]
 
 // open source
-ext.deps.kotlinjdk8 = "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
-ext.deps.kotlinjdk7 = "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+ext.deps.kotlinjdk = "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
 ext.deps.javapoet = 'com.squareup:javapoet:1.13.0'
 ext.deps.android = 'com.google.android:android:4.1.1.4'
 ext.deps.rxandroid = 'io.reactivex.rxjava2:rxandroid:2.1.1'
 ext.deps.rx3android = 'io.reactivex.rxjava3:rxandroid:3.0.0'
-ext.deps.leakcanary = 'com.squareup.leakcanary:leakcanary-android:1.6.3'
 ext.deps.stetho = 'com.facebook.stetho:stetho:1.5.1'
-ext.deps.kotlinMetadata = 'org.jetbrains.kotlinx:kotlinx-metadata-jvm:0.3.0'
+ext.deps.kotlinMetadata = 'org.jetbrains.kotlinx:kotlinx-metadata-jvm:0.4.2'
 ext.deps.annotations = 'org.jetbrains:annotations:16.0.1'
 
 // testing
 ext.deps.junit = 'junit:junit:4.12'
 ext.deps.jsr305 = 'com.google.code.findbugs:jsr305:3.0.2'
-ext.deps.mockito = 'org.mockito:mockito-core:2.28.2'
-ext.deps.mockitoKotlin = 'com.nhaarman.mockitokotlin2:mockito-kotlin:2.2.0'
-ext.deps.truth = 'com.google.truth:truth:0.37'
-ext.deps.compileTesting = 'com.google.testing.compile:compile-testing:0.15'
+ext.deps.mockito = 'org.mockito:mockito-core:4.5.1'
+ext.deps.mockitoKotlin = 'org.mockito.kotlin:mockito-kotlin:4.0.0'
+ext.deps.truth = 'com.google.truth:truth:1.1.3'
+ext.deps.compileTesting = 'com.google.testing.compile:compile-testing:0.19'

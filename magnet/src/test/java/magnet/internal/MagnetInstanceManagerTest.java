@@ -160,7 +160,7 @@ public class MagnetInstanceManagerTest {
 
         // then
         assertThat(factories).hasSize(2);
-        assertThat(factories).containsAllOf(instanceFactoryType2Impl1, instanceFactoryType2Impl2);
+        assertThat(factories).containsExactly(instanceFactoryType2Impl1, instanceFactoryType2Impl2);
     }
 
     @Test

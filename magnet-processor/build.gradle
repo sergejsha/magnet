@@ -1,31 +1,28 @@
-apply plugin: 'kotlin'
-
-sourceCompatibility = toolsJavaVersion
-targetCompatibility = toolsJavaVersion
+plugins {
+    id 'kotlin'
+    id 'com.vanniktech.maven.publish'
+}
 
 compileKotlin {
     kotlinOptions {
-        jvmTarget = toolsJavaVersion
+        jvmTarget = javaVersion
     }
 }
 
 compileTestKotlin {
     kotlinOptions {
-        jvmTarget = toolsJavaVersion
+        jvmTarget = javaVersion
     }
 }
 
 dependencies {
     implementation project(':magnet')
     implementation project(':magnet-kotlin')
-    implementation deps.kotlinjdk8
+    implementation deps.kotlinjdk
     implementation deps.kotlinMetadata
     implementation deps.javapoet
 
     testImplementation deps.compileTesting
     testImplementation deps.jsr305
-    testImplementation files(org.gradle.internal.jvm.Jvm.current().getToolsJar()) // for ./gradlew test
+    testImplementation files(file("libs/tools.jar"))
 }
-
-apply from: rootProject.file('build-maven-push.gradle')
-apply from: rootProject.file('ktlint.gradle')

@@ -58,7 +58,7 @@ public class MagnetScope_GetManyTest {
         List<MenuItem> onesInScope = scope1.getManyInScope(MenuItem.class, "one");
         assertThat(onesInScope).hasSize(3);
         assertThat(onesInScope).containsNoDuplicates();
-        assertThat(onesInScope).containsAllIn(oneList);
+        assertThat(onesInScope).containsAtLeastElementsIn(oneList);
     }
 
     @Test(expected = IllegalStateException.class)

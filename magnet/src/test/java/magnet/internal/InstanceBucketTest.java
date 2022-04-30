@@ -28,7 +28,7 @@ public class InstanceBucketTest {
         InstanceBucket<String> instances = new InstanceBucket(
             scope, factory1, Interface1.class, instance1, Classifier.NONE, listener
         );
-        assertThat(instances.getScope()).isSameAs(scope);
+        assertThat(instances.getScope()).isSameInstanceAs(scope);
     }
 
     @Test
@@ -59,7 +59,7 @@ public class InstanceBucketTest {
             scope, factory1, Interface1.class, instance1, Classifier.NONE, listener
         );
         Interface1 result = instances.getSingleInstance();
-        assertThat(result).isSameAs(instance1);
+        assertThat(result).isSameInstanceAs(instance1);
     }
 
     interface Interface1 {}

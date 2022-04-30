@@ -26,6 +26,7 @@ object TypesAttributeParser : AttributeParser("types") {
     }
 }
 
+@Suppress("DEPRECATION")
 private class TypesExtractor(private val elements: Elements) :
     SimpleAnnotationValueVisitor6<Void?, Void>() {
 

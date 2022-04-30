@@ -1,6 +1,11 @@
 package magnet.internal;
 
-import magnet.Classifier;
+import static com.google.common.truth.Truth.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -11,11 +16,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static com.google.common.truth.Truth.assertThat;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import magnet.Classifier;
 
 @RunWith(MockitoJUnitRunner.Silent.class)
 public class FactoryFilter_MagnetInstanceManagerTest {
@@ -46,7 +47,7 @@ public class FactoryFilter_MagnetInstanceManagerTest {
         when(factoryFilter.filter(instanceFactory1)).thenReturn(true);
         InstanceFactory<Interface1> factory = instanceManager
             .getFilteredInstanceFactory(Interface1.class, Classifier.NONE, factoryFilter);
-        assertThat(factory).isSameAs(instanceFactory1);
+        assertThat(factory).isSameInstanceAs(instanceFactory1);
     }
 
     @Test
@@ -63,7 +64,7 @@ public class FactoryFilter_MagnetInstanceManagerTest {
         when(factoryFilter.filter(instanceFactory22)).thenReturn(true);
         InstanceFactory<Interface2> factory = instanceManager
             .getFilteredInstanceFactory(Interface2.class, Classifier.NONE, factoryFilter);
-        assertThat(factory).isSameAs(instanceFactory22);
+        assertThat(factory).isSameInstanceAs(instanceFactory22);
     }
 
     @Test
@@ -108,7 +109,7 @@ public class FactoryFilter_MagnetInstanceManagerTest {
 
         assertThat(factories).isNotNull();
         assertThat(factories).hasSize(1);
-        assertThat(factories.get(0)).isSameAs(instanceFactory22);
+        assertThat(factories.get(0)).isSameInstanceAs(instanceFactory22);
     }
 
     @Test
@@ -123,8 +124,8 @@ public class FactoryFilter_MagnetInstanceManagerTest {
 
         assertThat(factories).isNotNull();
         assertThat(factories).hasSize(2);
-        assertThat(factories.get(0)).isSameAs(instanceFactory21);
-        assertThat(factories.get(1)).isSameAs(instanceFactory22);
+        assertThat(factories.get(0)).isSameInstanceAs(instanceFactory21);
+        assertThat(factories.get(1)).isSameInstanceAs(instanceFactory22);
     }
 
     @Test
@@ -138,8 +139,8 @@ public class FactoryFilter_MagnetInstanceManagerTest {
         verify(factoryFilter, never()).filter(any());
         assertThat(factories).isNotNull();
         assertThat(factories).hasSize(2);
-        assertThat(factories.get(0)).isSameAs(instanceFactory21);
-        assertThat(factories.get(1)).isSameAs(instanceFactory22);
+        assertThat(factories.get(0)).isSameInstanceAs(instanceFactory21);
+        assertThat(factories.get(1)).isSameInstanceAs(instanceFactory22);
     }
 
     @Test
@@ -154,7 +155,7 @@ public class FactoryFilter_MagnetInstanceManagerTest {
         verify(factoryFilter, never()).filter(instanceFactory21);
         assertThat(factories).isNotNull();
         assertThat(factories).hasSize(1);
-        assertThat(factories.get(0)).isSameAs(instanceFactory22);
+        assertThat(factories.get(0)).isSameInstanceAs(instanceFactory22);
     }
 
     interface Interface1 {}

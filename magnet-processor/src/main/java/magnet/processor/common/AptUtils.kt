@@ -61,6 +61,7 @@ fun Element.throwCompilationError(message: String): Nothing {
     throw CompilationException(this, message)
 }
 
+@Suppress("DEPRECATION")
 class AnnotationValueExtractor(
     private val elements: Elements
 ) : SimpleAnnotationValueVisitor6<Void?, Void>() {
