@@ -3,8 +3,8 @@ plugins {
     id 'com.vanniktech.maven.publish'
 }
 
-sourceCompatibility = appJavaVersion
-targetCompatibility = appJavaVersion
+sourceCompatibility = javaVersion
+targetCompatibility = javaVersion
 
 dependencies {
     compileOnly deps.annotations

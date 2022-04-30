@@ -3,18 +3,15 @@ plugins {
     id 'com.vanniktech.maven.publish'
 }
 
-sourceCompatibility = kotlinExtJavaVersion
-targetCompatibility = kotlinExtJavaVersion
-
 compileKotlin {
     kotlinOptions {
-        jvmTarget = kotlinExtJavaVersion
+        jvmTarget = javaVersion
     }
 }
 
 compileTestKotlin {
     kotlinOptions {
-        jvmTarget = kotlinExtJavaVersion
+        jvmTarget = javaVersion
     }
 }
 

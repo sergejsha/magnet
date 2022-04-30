@@ -5,13 +5,13 @@ plugins {
 
 compileKotlin {
     kotlinOptions {
-        jvmTarget = toolsJavaVersion
+        jvmTarget = javaVersion
     }
 }
 
 compileTestKotlin {
     kotlinOptions {
-        jvmTarget = toolsJavaVersion
+        jvmTarget = javaVersion
     }
 }
 

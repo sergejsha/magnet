@@ -1,6 +1,5 @@
 buildscript {
     ext.kotlin_version = '1.6.21'
-    ext.android_build_version = '7.0.4'
 
     repositories {
         mavenCentral()
@@ -8,14 +7,13 @@ buildscript {
     }
 
     dependencies {
-        classpath "com.android.tools.build:gradle:$android_build_version"
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+        classpath "com.android.tools.build:gradle:7.0.4"
         classpath "com.vanniktech:gradle-maven-publish-plugin:0.19.0"
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
     }
 }
 
 allprojects {
-
     repositories {
         mavenCentral()
     }
@@ -30,9 +28,7 @@ allprojects {
 }
 
 ext {
-    appJavaVersion = JavaVersion.VERSION_11
-    toolsJavaVersion = JavaVersion.VERSION_11
-    kotlinExtJavaVersion = JavaVersion.VERSION_11
+    javaVersion = JavaVersion.VERSION_11
 }
 
 ext.deps = [:]
@@ -43,7 +39,6 @@ ext.deps.javapoet = 'com.squareup:javapoet:1.13.0'
 ext.deps.android = 'com.google.android:android:4.1.1.4'
 ext.deps.rxandroid = 'io.reactivex.rxjava2:rxandroid:2.1.1'
 ext.deps.rx3android = 'io.reactivex.rxjava3:rxandroid:3.0.0'
-ext.deps.leakcanary = 'com.squareup.leakcanary:leakcanary-android:2.9.1'
 ext.deps.stetho = 'com.facebook.stetho:stetho:1.5.1'
 ext.deps.kotlinMetadata = 'org.jetbrains.kotlinx:kotlinx-metadata-jvm:0.4.2'
 ext.deps.annotations = 'org.jetbrains:annotations:16.0.1'

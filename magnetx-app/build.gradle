@@ -4,18 +4,15 @@ plugins {
     id 'com.vanniktech.maven.publish'
 }
 
-sourceCompatibility = toolsJavaVersion
-targetCompatibility = toolsJavaVersion
-
 compileKotlin {
     kotlinOptions {
-        jvmTarget = toolsJavaVersion
+        jvmTarget = javaVersion
     }
 }
 
 compileTestKotlin {
     kotlinOptions {
-        jvmTarget = toolsJavaVersion
+        jvmTarget = javaVersion
     }
 }
 
