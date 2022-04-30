@@ -1,3 +1,4 @@
+![Build Magnet](https://github.com/sergejsha/magnet/actions/workflows/android.yml/badge.svg)
 ![](https://img.shields.io/badge/production-ready-brightgreen.svg)
 [![Kotlin version badge](https://img.shields.io/badge/kotlin-1.6.21-blue.svg)](http://kotlinlang.org/)
 [![Maven Central](http://img.shields.io/maven-central/v/de.halfbit/magnet.svg)](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22de.halfbit%22%20a%3A%22magnet%22)
