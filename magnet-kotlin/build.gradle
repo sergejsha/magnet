@@ -1,4 +1,5 @@
 apply plugin: 'kotlin'
+apply plugin: 'com.vanniktech.maven.publish'
 
 sourceCompatibility = kotlinExtJavaVersion
 targetCompatibility = kotlinExtJavaVersion
@@ -24,5 +25,3 @@ dependencies {
     testImplementation deps.mockito
     testImplementation deps.mockitoKotlin
 }
-
-//apply from: rootProject.file('build-maven-push.gradle')

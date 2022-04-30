@@ -1,5 +1,6 @@
 apply plugin: 'kotlin'
 apply plugin: 'kotlin-kapt'
+apply plugin: 'com.vanniktech.maven.publish'
 
 sourceCompatibility = toolsJavaVersion
 targetCompatibility = toolsJavaVersion
@@ -21,5 +22,3 @@ dependencies {
     api project(':magnet')
     kapt project(':magnet-processor')
 }
-
-//apply from: rootProject.file('build-maven-push.gradle')

@@ -10,6 +10,7 @@ buildscript {
     dependencies {
         classpath "com.android.tools.build:gradle:$android_build_version"
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+        classpath "com.vanniktech:gradle-maven-publish-plugin:0.19.0"
     }
 }
 

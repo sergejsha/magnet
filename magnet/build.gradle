@@ -1,4 +1,5 @@
 apply plugin: 'java-library'
+apply plugin: 'com.vanniktech.maven.publish'
 
 sourceCompatibility = appJavaVersion
 targetCompatibility = appJavaVersion
@@ -11,5 +12,3 @@ dependencies {
     testImplementation deps.truth
     testCompileOnly deps.annotations
 }
-
-//apply from: rootProject.file('build-maven-push.gradle')

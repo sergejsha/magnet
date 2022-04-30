@@ -1,7 +1,5 @@
 apply plugin: 'kotlin'
-
-sourceCompatibility = toolsJavaVersion
-targetCompatibility = toolsJavaVersion
+apply plugin: 'com.vanniktech.maven.publish'
 
 compileKotlin {
     kotlinOptions {
@@ -24,8 +22,5 @@ dependencies {
 
     testImplementation deps.compileTesting
     testImplementation deps.jsr305
-    testImplementation files(org.gradle.internal.jvm.Jvm.current().getToolsJar()) // for ./gradlew test
+    testImplementation files(org.gradle.internal.jvm.Jvm.current().getToolsJar())
 }
-
-//apply from: rootProject.file('build-maven-push.gradle')
-//apply from: rootProject.file('ktlint.gradle')
