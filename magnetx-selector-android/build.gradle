@@ -25,7 +25,7 @@ compileTestKotlin {
 
 dependencies {
     compileOnly deps.android
-    implementation deps.kotlinjdk8
+    implementation deps.kotlinjdk
     implementation project(':magnet')
     kapt project(':magnet-processor')
 }

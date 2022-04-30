@@ -10,10 +10,10 @@ repositories {
 }
 
 android {
-    compileSdkVersion 32
+    compileSdkVersion 31
     defaultConfig {
         minSdkVersion 15
-        targetSdkVersion 32
+        targetSdkVersion 31
         versionCode 0
         versionName "0"
     }
@@ -25,7 +25,7 @@ dependencies {
     implementation project(':magnet')
     implementation project(':magnetx-app-stetho')
 
-    implementation deps.kotlinjdk8
+    implementation deps.kotlinjdk
     kapt project(':magnet-processor')
 }
 

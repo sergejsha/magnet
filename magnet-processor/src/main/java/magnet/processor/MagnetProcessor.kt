@@ -24,18 +24,14 @@ import magnet.processor.common.CompilationException
 import magnet.processor.common.ValidationException
 import magnet.processor.instances.InstanceProcessor
 import magnet.processor.registry.RegistryProcessor
-import javax.annotation.processing.AbstractProcessor
-import javax.annotation.processing.Filer
-import javax.annotation.processing.ProcessingEnvironment
-import javax.annotation.processing.RoundEnvironment
-import javax.annotation.processing.SupportedSourceVersion
+import javax.annotation.processing.*
 import javax.lang.model.SourceVersion
 import javax.lang.model.element.TypeElement
 import javax.lang.model.util.Elements
 import javax.lang.model.util.Types
 import javax.tools.Diagnostic
 
-@SupportedSourceVersion(SourceVersion.RELEASE_8)
+@SupportedSourceVersion(SourceVersion.RELEASE_11)
 class MagnetProcessor : AbstractProcessor() {
 
     private lateinit var env: MagnetProcessorEnv
@@ -96,8 +92,8 @@ class MagnetProcessorEnv(
         processEnvironment.messager.printMessage(
             Diagnostic.Kind.ERROR,
             "Unexpected compilation error," +
-                " please file the bug at https://github.com/beworker/magnet/issues." +
-                " Message: ${e.message ?: "none."}",
+                    " please file the bug at https://github.com/beworker/magnet/issues." +
+                    " Message: ${e.message ?: "none."}",
             e.element
         )
     }
@@ -106,8 +102,8 @@ class MagnetProcessorEnv(
         processEnvironment.messager.printMessage(
             Diagnostic.Kind.ERROR,
             "Unexpected compilation error," +
-                " please file the bug at https://github.com/beworker/magnet/issues." +
-                " Message: ${e.message ?: "none."}"
+                    " please file the bug at https://github.com/beworker/magnet/issues." +
+                    " Message: ${e.message ?: "none."}"
         )
     }
 }

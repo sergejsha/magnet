@@ -1,6 +1,6 @@
 buildscript {
     ext.kotlin_version = '1.6.21'
-    ext.android_build_version = '4.2.2'
+    ext.android_build_version = '7.0.4'
 
     repositories {
         mavenCentral()
@@ -23,22 +23,22 @@ allprojects {
     configurations {
         all {
             resolutionStrategy {
-                force deps.kotlinjdk8
+                force deps.kotlinjdk
             }
         }
     }
 }
 
 ext {
-    appJavaVersion = JavaVersion.VERSION_1_8
-    toolsJavaVersion = JavaVersion.VERSION_1_8
-    kotlinExtJavaVersion = JavaVersion.VERSION_1_8
+    appJavaVersion = JavaVersion.VERSION_11
+    toolsJavaVersion = JavaVersion.VERSION_11
+    kotlinExtJavaVersion = JavaVersion.VERSION_11
 }
 
 ext.deps = [:]
 
 // open source
-ext.deps.kotlinjdk8 = "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
+ext.deps.kotlinjdk = "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
 ext.deps.javapoet = 'com.squareup:javapoet:1.13.0'
 ext.deps.android = 'com.google.android:android:4.1.1.4'
 ext.deps.rxandroid = 'io.reactivex.rxjava2:rxandroid:2.1.1'

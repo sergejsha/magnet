@@ -20,7 +20,7 @@ compileTestKotlin {
 }
 
 dependencies {
-    implementation deps.kotlinjdk8
+    implementation deps.kotlinjdk
     api project(':magnet')
     kapt project(':magnet-processor')
 }

@@ -10,10 +10,10 @@ repositories {
 }
 
 android {
-    compileSdkVersion 32
+    compileSdkVersion 31
     defaultConfig {
         minSdkVersion 15
-        targetSdkVersion 32
+        targetSdkVersion 31
         versionCode 0
         versionName "0"
     }
@@ -21,7 +21,7 @@ android {
 
 dependencies {
     compileOnly deps.rxandroid
-    implementation deps.kotlinjdk8
+    implementation deps.kotlinjdk
     implementation project(':magnet')
     kapt project(':magnet-processor')
     api project(':magnetx-app')

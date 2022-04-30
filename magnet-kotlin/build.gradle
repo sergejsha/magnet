@@ -20,7 +20,7 @@ compileTestKotlin {
 
 dependencies {
     api project(':magnet')
-    implementation deps.kotlinjdk8
+    implementation deps.kotlinjdk
 
     testImplementation deps.junit
     testImplementation deps.truth
