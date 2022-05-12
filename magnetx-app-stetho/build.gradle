@@ -20,11 +20,8 @@ android {
 }
 
 dependencies {
-    implementation project(':magnet')
     api project(':magnetx-app')
-
     compileOnly deps.stetho
-
     implementation deps.kotlinjdk
     kapt project(':magnet-processor')
 }
