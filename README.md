@@ -170,11 +170,11 @@ Kotlin Version | Magnet Version
 
 # Maven repository configurations
 
-Gradlw task | Repository | Configuration
--------------|------------|--------------
-| ./gradlew publish  | Central  | mavenCentral() |
-| ./gradlew publish  | Snapshot | maven { url = "https://oss.sonatype.org/content/repositories/snapshots/" } |
-| ./gradlew publishToMavenLocal | Local    | mavenLocal() |
+Repository | Configuration
+------------|--------------
+Central  | mavenCentral()
+Snapshot | maven { url = "https://oss.sonatype.org/content/repositories/snapshots/" }
+Local    | mavenLocal()
 
 # License
 
