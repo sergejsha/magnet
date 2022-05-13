@@ -168,6 +168,14 @@ Kotlin Version | Magnet Version
 4. To build the project run `./gradlew build`
 5. To release the project run `./gradlew publish`
 
+# Maven repository configurations
+
+Gradlw task | Repository | Configuration
+-------------|------------|--------------
+| ./gradlew publish  | Central  | mavenCentral() |
+| ./gradlew publish  | Snapshot | maven { url = "https://oss.sonatype.org/content/repositories/snapshots/" } |
+| ./gradlew publishToMavenLocal | Local    | mavenLocal() |
+
 # License
 
 ```
