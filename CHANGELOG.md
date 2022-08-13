@@ -1,5 +1,13 @@
 # Changelog
 
+## 3.7 (snapshot) - 2022.08.13
+
+- Bump versions:
+  - Kotlin 1.7.10
+  - Android Gradle Plugin (AGP) 7.2.0
+  - Stetho 1.6.0
+  - Kotlin Metadata JVM 0.5.0
+
 ## 3.6 (release) - 2022.08.13
 
 - Migrate to Kotlin 1.6.21, Java 11 and AGP 7.0.4.
