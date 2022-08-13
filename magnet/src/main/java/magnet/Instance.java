@@ -16,11 +16,11 @@
 
 package magnet;
 
+import static java.lang.annotation.RetentionPolicy.CLASS;
+
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
-
-import static java.lang.annotation.RetentionPolicy.CLASS;
 
 /**
  * Magnet instantiates classes marked with this annotation automatically. Annotated
@@ -115,20 +115,26 @@ public @interface Instance {
      * <p>
      * <code>android.api (comparison operator) (api version)</code>
      * <p>
-     * For instance, the expression <code>android.api >= 28</code> will only create
-     * annotated instance if Build.VERSION.SDK_INT >= 28. For the other versions
+     * For instance, the expression <code>android.api &gt;= 28</code> will only create
+     * annotated instance if Build.VERSION.SDK_INT &gt;= 28. For the other versions
      * <code>null</code> is returned. Make sure to use optional injection to handle
      * this case.
      */
     String selector() default SelectorFilter.DEFAULT_SELECTOR;
 
-    /** Custom factory to be used for creating instance instead of the generated one. */
+    /**
+     * Custom factory to be used for creating instance instead of the generated one.
+     */
     Class<? extends Factory> factory() default Factory.class;
 
-    /** Name of optional disposer method to be called, when whole scope gets disposed. */
+    /**
+     * Name of optional disposer method to be called, when whole scope gets disposed.
+     */
     String disposer() default "";
 
-    /** Magnet ignores this annotation when this flag is set to <code>true</code>. */
+    /**
+     * Magnet ignores this annotation when this flag is set to <code>true</code>.
+     */
     boolean disabled() default false;
 
 }
