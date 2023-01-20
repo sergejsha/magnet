@@ -147,10 +147,10 @@ dependencies {
 
 # Compatibility
 
-| Kotlin Version | Magnet Version |
+| Kotlin Version | Magnet Version | 
 |----------------|----------------|
 | 1.8.x          | 3.8 (snapshot) |
-| 1.7.x          | 3.7 (snapshot) |
+| 1.7.x          | 3.7            |
 | 1.6.x          | 3.6            |
 | 1.5.x          | 3.5            |
 | 1.4.x          | 3.4            |
