@@ -16,11 +16,11 @@ Magnet defines and opetates on two core concepts: `Scopes` and `Instances`.
 
 `Scope` is a container for instances. Scopes can be combined into a hierarchical tree by referencing parent scopes. The most top scope of the tree hierarchy, which has no parent scope, is called the root scope.
 
-`Instance` is a concrete occurance of an injected type. Instances can be allocated in scopes (scoped instances) or outside of scopes (unscoped instances).
+`Instance` is a concrete occurrence of an injected type. Instances can be allocated in scopes (scoped instances) or outside of scopes (unscoped instances).
 
 # The Dependency Rule
 
-Scopes depend on each other using the strong dependency rule - *scope dependency can only point torwards its parent scope*. The dependency direction between two scopes enforces the direction of dependencies between instances allocated in those scopes. Instances allocated in a parent scope can know nothing about instances allocated in its child scopes. This simple design rule helps preventing memory leaks and allows safe disposal of child scopes and garbage collecting instances allocated there.
+Scopes depend on each other using the strong dependency rule - *scope dependency can only point towards its parent scope*. The dependency direction between two scopes enforces the direction of dependencies between instances allocated in those scopes. Instances allocated in a parent scope can know nothing about instances allocated in its child scopes. This simple design rule helps preventing memory leaks and allows safe disposal of child scopes and garbage collecting instances allocated there.
 
 # Getting Started
 
@@ -147,13 +147,14 @@ dependencies {
 
 # Compatibility
 
-Kotlin Version | Magnet Version
------------|-----------
-| 1.7.x | 3.7 (snapshot) |
-| 1.6.x | 3.6 |
-| 1.5.x | 3.5 |
-| 1.4.x | 3.4 |
-| 1.3.x | 3.4 |
+| Kotlin Version | Magnet Version |
+|----------------|----------------|
+| 1.8.x          | 3.8 (snapshot) |
+| 1.7.x          | 3.7 (snapshot) |
+| 1.6.x          | 3.6            |
+| 1.5.x          | 3.5            |
+| 1.4.x          | 3.4            |
+| 1.3.x          | 3.4            |
 
 # Proguard & R8
 
@@ -171,16 +172,16 @@ Kotlin Version | Magnet Version
 
 # Maven repository configurations
 
-Repository | Configuration
-------------|--------------
-Central  | mavenCentral()
-Snapshot | maven { url = "https://oss.sonatype.org/content/repositories/snapshots/" }
-Local    | mavenLocal()
+| Repository | Configuration                                                              |
+|------------|----------------------------------------------------------------------------|
+| Central    | mavenCentral()                                                             |
+| Snapshot   | maven { url = "https://oss.sonatype.org/content/repositories/snapshots/" } |
+| Local      | mavenLocal()                                                               |
 
 # License
 
 ```
-Copyright 2018-2022 Sergej Shafarenka, www.halfbit.de
+Copyright 2018-2023 Sergej Shafarenka, www.halfbit.de
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
