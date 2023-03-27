@@ -1,5 +1,19 @@
 # Changelog
 
+## 3.8 (release) - 2023.03.27
+
+- Same as 3.8 (snapshot) 
+
+## 3.8 (snapshot) - 2023.01.20
+
+- Bump versions:
+  - Kotlin 1.8.0
+  - Kotlin Metadata JVM 0.6.0
+
+## 3.7 (release) - 2023.01.20
+
+- Same as 3.7 (snapshot)  
+
 ## 3.7 (snapshot) - 2022.08.13
 
 - Bump versions:
