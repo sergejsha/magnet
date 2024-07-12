@@ -1,6 +1,6 @@
-![Build Magnet](https://github.com/sergejsha/magnet/actions/workflows/android.yml/badge.svg)
 [![Kotlin version badge](https://img.shields.io/badge/kotlin-1.8.0-blue.svg)](http://kotlinlang.org/)
 [![Maven Central](http://img.shields.io/maven-central/v/de.halfbit/magnet.svg)](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22de.halfbit%22%20a%3A%22magnet%22)
+![maintenance-status](https://img.shields.io/badge/maintenance-as--is-yellow.svg)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](http://www.apache.org/licenses/LICENSE-2.0)
 
 ‼️ 27.01.2023: This project is not actively developed anymore ‼️
